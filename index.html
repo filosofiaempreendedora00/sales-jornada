@@ -44,6 +44,20 @@ body {
   overflow: hidden;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.header-logo {
+  width: 72px;
+  display: block;
+  margin: 0 auto 20px;
+  animation: float 3.5s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
 .header::before {
   content: '';
   position: absolute;
@@ -225,6 +239,47 @@ body {
   gap: 7px;
 }
 
+/* ── ANCHOR STAGES (Concepção + Fine Tuning) ─────── */
+.stage--anchor {
+  background: rgba(255,255,255,0.022);
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 16px;
+  position: relative;
+}
+
+.stage--anchor .stage-head {
+  padding-top: 20px;
+}
+
+.stage--anchor .nodes-wrap {
+  padding-bottom: 16px;
+}
+
+.stage--anchor .node {
+  background: rgba(255,255,255,0.03);
+}
+
+.stage--anchor .node:hover {
+  background: color-mix(in srgb, var(--nc, #9b6dff) 9%, rgba(255,255,255,0.03));
+}
+
+.stage-anchor-tag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border: 1px dashed rgba(255,255,255,0.1);
+  border-radius: 99px;
+  padding: 2px 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
 /* ── NODE ────────────────────────────────────────── */
 .node {
   position: relative;
@@ -276,6 +331,48 @@ body {
 
 .node.is-warn {
   border-color: rgba(255, 168, 38, 0.28);
+}
+
+/* ── SUBTASKS ────────────────────────────────────── */
+.node-subtasks {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-left: 10px;
+  position: relative;
+}
+
+.node-subtasks::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 10px;
+  bottom: 6px;
+  width: 1px;
+  background: rgba(255,255,255,0.07);
+}
+
+.node--subtask {
+  padding: 9px 11px;
+  background: rgba(0,0,0,0.25) !important;
+  border-color: rgba(255,255,255,0.05) !important;
+}
+
+.node--subtask .node-label {
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.node--subtask .node-obj {
+  font-size: 9.5px;
+  padding-left: 20px;
+}
+
+.node--subtask .node-emoji {
+  font-size: 13px;
 }
 
 .node-row {
@@ -490,11 +587,14 @@ body {
 /* Panel body */
 .panel-body {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding: 20px 24px 24px;
+  padding: 20px 24px 32px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
 }
 
 .panel-body::-webkit-scrollbar { width: 3px; }
@@ -565,6 +665,128 @@ body {
 .type-error .alert-text { color: #fca5a5; }
 .type-impact .alert-text { color: #fde68a; }
 
+/* ── PANEL LINKS (cases) ─────────────────────────── */
+.links-block {
+  background: linear-gradient(135deg, rgba(255,168,38,0.08) 0%, rgba(255,168,38,0.04) 100%);
+  border-radius: 12px;
+  padding: 15px 17px;
+  border: 1px solid rgba(255,168,38,0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.links-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #ffa826, rgba(255,168,38,0.2));
+  border-radius: 12px 12px 0 0;
+}
+
+.links-block .block-label {
+  color: rgba(255,168,38,0.65);
+  margin-bottom: 11px;
+}
+
+.links-cases-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 11px;
+}
+
+.links-cases-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.links-group-title {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,168,38,0.7);
+  background: rgba(255,168,38,0.07);
+  border: 1px solid rgba(255,168,38,0.15);
+  border-radius: 5px;
+  padding: 3px 8px;
+  display: inline-block;
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+
+.links-group-title:first-of-type { margin-top: 2px; }
+
+.link-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,168,38,0.08);
+}
+
+.link-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.link-name {
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 600;
+  flex: 1;
+}
+
+.link-anchor {
+  color: #ffa826;
+  text-decoration: none;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  opacity: 0.75;
+  white-space: nowrap;
+  transition: opacity 0.15s;
+}
+
+.link-anchor:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.tools-block {
+  background: linear-gradient(135deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.04) 100%);
+  border-radius: 12px;
+  padding: 15px 17px;
+  border: 1px solid rgba(77,141,255,0.22);
+  position: relative;
+  overflow: hidden;
+}
+
+.tools-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #4d8dff, rgba(77,141,255,0.2));
+  border-radius: 12px 12px 0 0;
+}
+
+.tools-block .block-label {
+  color: rgba(77,141,255,0.65);
+  margin-bottom: 11px;
+}
+
+.tools-block .link-row {
+  border-bottom-color: rgba(77,141,255,0.08);
+}
+
+.tools-block .link-anchor {
+  color: #4d8dff;
+}
+
 /* Panel footer */
 .panel-footer {
   padding: 14px 24px 24px;
@@ -600,8 +822,17 @@ body {
 }
 
 .toggle-icon {
-  font-size: 16px;
-  line-height: 1;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  display: inline-block;
+  flex-shrink: 0;
+  transition: background 0.18s;
+}
+
+.toggle-btn.is-done .toggle-icon {
+  background: currentColor;
 }
 
 /* ── FOOTER ──────────────────────────────────────── */
@@ -648,6 +879,7 @@ body {
 <!--  HEADER                                        -->
 <!-- ══════════════════════════════════════════════ -->
 <header class="header">
+  <img src="logo.png" alt="Turbo" class="header-logo">
   <div class="badge">Metodologia Turbo</div>
   <h1>A Jornada Turbo do e-commerce</h1>
   <div class="progress-wrap">
@@ -701,7 +933,7 @@ body {
   <div class="panel-body" id="panel-body"></div>
   <div class="panel-footer">
     <button class="toggle-btn" id="toggle-btn">
-      <span class="toggle-icon" id="toggle-icon">○</span>
+      <span class="toggle-icon" id="toggle-icon"></span>
       <span id="toggle-label">Marcar como estruturado</span>
     </button>
   </div>
@@ -720,6 +952,8 @@ const STAGES = [
     id: 'concepcao',
     num: '01',
     title: 'Concepção',
+    anchor: true,
+    anchorLabel: 'pré-operação',
     subtitle: 'acerte o produto uma vez — e venda sem precisar convencer',
     color: '#9b6dff',
     nodes: [
@@ -739,7 +973,7 @@ const STAGES = [
   {
     id: 'conversao',
     num: '02',
-    title: 'Preparando o terreno',
+    title: 'Aquecendo os motores',
     subtitle: 'extraia mais dinheiro de cada visita sem gastar mais em anúncio',
     color: '#4d8dff',
     nodes: [
@@ -752,7 +986,12 @@ const STAGES = [
         why: 'Confiança é construída por consistência. Uma marca com visual profissional vende mais do que um produto melhor com cara amadora.',
         mistake: 'Criar um logo no Canva e achar que identidade está feita. Trocar de estilo visual a cada campanha nova.',
         impact: 'Sua marca parece amadora mesmo com produto bom. O cliente vê, quase compra, hesita — e vai embora.',
-        deps: ['definicoes']
+        deps: ['definicoes'],
+        links: [
+          { label: 'DOT',         url: 'https://drive.google.com/file/d/1Szr_psZIkj_2q4kCHC4EMn2PHfQY5Kb1/view?usp=sharing' },
+          { label: 'Lavira',      url: 'https://drive.google.com/file/d/1Mgf2ATdS5ASRXIAu_tIQr1HRbd9TSLDu/view?usp=sharing' },
+          { label: 'Moov Energy', url: 'https://drive.google.com/file/d/11UajAmBLkhFNjFnFn1xfGJ06_FOAVwbO/view?usp=sharing' }
+        ]
       },
       {
         id: 'embalagem',
@@ -763,7 +1002,12 @@ const STAGES = [
         why: 'A embalagem é o primeiro contato visual com o produto. Ela vende antes mesmo de o cliente ler uma palavra. Uma embalagem fraca desvaloriza até o melhor produto.',
         mistake: 'Tratar embalagem como custo a minimizar, em vez de investimento em percepção de valor. Rótulo genérico em produto premium é contradição.',
         impact: 'Fotos de produto sem apelo, unboxing sem encantamento, percepção de valor baixa — e margem que nunca cresce.',
-        deps: ['identidade']
+        deps: ['identidade'],
+        links: [
+          { label: 'Pharmapack', url: 'https://drive.google.com/drive/u/1/folders/1A6uZgxnGywPnokLLaFjlFPuSCgqBvDKH' },
+          { label: 'Lavira',     url: 'https://drive.google.com/drive/u/1/folders/1AVzOGxwJ85RuYPBgQUzgVq8_GzrGs6pM' },
+          { label: 'Barq',       url: 'https://drive.google.com/drive/u/1/folders/1wPy0Cn7jm81vPSnSGDjOOVeQ02LvyNNi' }
+        ]
       },
       {
         id: 'redes',
@@ -774,7 +1018,10 @@ const STAGES = [
         why: 'Antes de qualquer compra, o cliente vai checar seu Instagram ou TikTok. Se o perfil parece abandonado ou sem identidade, a venda não acontece.',
         mistake: 'Ter perfil criado mas sem atualização, com bio genérica e feed inconsistente. Presença fraca gera desconfiança na hora errada.',
         impact: 'O anúncio convence, o cliente vai ver o perfil — e desiste. Você perde a venda na etapa de validação social.',
-        deps: ['identidade']
+        deps: ['identidade'],
+        links: [
+          { label: 'Proton (exemplo)', url: 'https://drive.google.com/file/d/1cKf7-AFdbUpq2VRAPS-ffdNwWF3WGfhd/view?usp=sharing' }
+        ]
       },
       {
         id: 'loja',
@@ -785,26 +1032,41 @@ const STAGES = [
         why: 'De nada adianta trazer tráfego para uma loja que não converte. Cada visita perdida é dinheiro jogado fora.',
         mistake: 'Loja bonita, cheia de informação, sem hierarquia clara e sem foco em levar o visitante ao botão de compra.',
         impact: 'CPL e CPA disparam. Você aumenta o orçamento de anúncios, mas o retorno não aparece — e você não entende por quê.',
-        deps: ['identidade', 'redes']
+        deps: ['identidade', 'redes'],
+        links: [
+          { label: 'Guday',      url: 'https://guday.com.br/',             group: 'PERSONALIZADO' },
+          { label: 'Push Matcha',url: 'https://pushmatcha.com.br/',        group: 'PERSONALIZADO' },
+          { label: 'Pace It',    url: 'https://loja.paceit.com.br/',       group: 'PERSONALIZADO' },
+          { label: 'Dates Snacks', url: 'https://dates-snacks.com.br/',     group: 'Tema Turbo - DNVB' },
+          { label: 'Ovacare',    url: 'https://www.ovacare.com.br/',       group: 'Tema Turbo - DNVB' },
+          { label: 'Otoman',     url: 'https://otomen.com.br/',            group: 'Tema Turbo - DNVB' },
+          { label: 'Bready',     url: 'https://www.meubready.com.br/',     group: 'Tema Turbo - DNVB' },
+          { label: 'BSCROSS',    url: 'https://bscross.com.br/',           group: 'Tema Turbo - Vestuário' },
+          { label: 'Florest',    url: 'https://www.florestoficial.com.br/',group: 'Tema Turbo - Vestuário' },
+          { label: 'Sie Wear',   url: 'https://siewear.com/',              group: 'Tema Turbo - Vestuário' }
+        ]
       },
       {
         id: 'automacoes',
         icon: '⚙️',
-        name: 'Automações (carrinho abandonado)',
+        name: 'Automações básicas',
         objective: 'Recuperar vendas e comunicar com os clientes',
         what: 'Sequências automáticas — por e-mail, WhatsApp ou SMS — que recuperam clientes que adicionaram ao carrinho mas não finalizaram a compra.',
         why: 'Cerca de 70% dos carrinhos são abandonados. Recuperar até 15% disso com automação é receita extra sem nenhum custo de aquisição.',
         mistake: 'Não ter nenhuma automação ativa, ou enviar apenas um e-mail genérico sem urgência, personalização ou sequência.',
         impact: 'Você deixa dinheiro na mesa todo dia. São vendas que já estavam quase feitas — e você simplesmente não foi buscar.',
-        deps: ['loja']
+        deps: ['loja'],
+        links: [
+          { label: 'flashCRM', url: 'https://www.flashcrm.com.br/', type: 'tool' }
+        ]
       }
     ]
   },
   {
     id: 'aquisicao',
     num: '03',
-    title: 'Aquisição',
-    subtitle: 'leve o produto pra frente de quem já está pronto pra comprar',
+    title: 'Aceleração',
+    subtitle: 'aquisição de clientes — leve o produto pra frente de quem já está pronto pra comprar',
     color: '#0dcfe8',
     nodes: [
       {
@@ -816,7 +1078,13 @@ const STAGES = [
         why: 'UGC converte mais porque parece real. Quem assiste se enxerga no conteúdo e a barreira de compra cai. CPA despenca.',
         mistake: 'Usar só peças produzidas que parecem propaganda. O público já aprendeu a ignorar isso.',
         impact: 'CTR baixo, CPM alto, custo por aquisição elevado. Você gasta mais para adquirir cada cliente.',
-        deps: ['definicoes']
+        deps: ['definicoes'],
+        links: [
+          { label: 'Sulmel',      url: 'https://drive.google.com/drive/u/1/folders/1lIRWpKfm_FPw_gDNdwEgy3tDGLiRV2zT' },
+          { label: 'Vekka',       url: 'https://drive.google.com/drive/u/1/folders/1tZbBXg6xeCK2aTrEbrSaerIXFi-W539L' },
+          { label: 'Minimal Club',url: 'https://drive.google.com/drive/u/1/folders/1w579OBMG3RG6x4StULmecFqMdnB9qstr' },
+          { label: 'Outros',      url: 'https://drive.google.com/drive/u/1/folders/1jbA4uvbqdPDRjrkuv-ADPHxSLvKRz3YY' }
+        ]
       },
       {
         id: 'trafego',
@@ -827,7 +1095,12 @@ const STAGES = [
         why: 'É o motor de escala do negócio. Com loja e criativos estruturados, tráfego orientado a dados multiplica resultado de forma previsível.',
         mistake: 'Subir orçamento sem analisar métricas, rodar sem estrutura de campanha ou confiar apenas no "aprendizado" do algoritmo.',
         impact: 'Sem dados, você escala no escuro. Cada real investido pode estar indo para o público errado — e você não sabe.',
-        deps: ['criativos', 'loja', 'automacoes']
+        deps: ['criativos', 'loja', 'automacoes'],
+        links: [
+          { label: 'Caveo',       url: 'https://app.clickup.com/31021986/v/dc/xjpx2-13143/xjpx2-770033' },
+          { label: 'Noway',       url: 'https://app.clickup.com/31021986/v/dc/xjpx2-13143/xjpx2-770093' },
+          { label: 'Óticas Paris',url: 'https://app.clickup.com/31021986/v/dc/xjpx2-13143/xjpx2-770053' }
+        ]
       },
       {
         id: 'comunidade',
@@ -858,18 +1131,50 @@ const STAGES = [
         why: 'Cria autoridade, aquece leads e reduz o custo de aquisição no longo prazo. Tráfego pago sem orgânico é caro e frágil demais.',
         mistake: 'Postar de forma irregular, sem estratégia, esperando viralizar por acidente.',
         impact: 'Dependência total do pago. Se o anúncio parar — ou o algoritmo mudar — as vendas param junto.',
-        deps: ['redes', 'identidade']
+        deps: ['redes', 'identidade'],
+        links: [
+          { label: 'Monvitta', url: 'https://www.instagram.com/monvitta/' },
+          { label: 'Bellamo',  url: 'https://www.instagram.com/bellamo.oficial/' },
+          { label: 'Proton',   url: 'https://www.instagram.com/proton.on/' }
+        ]
+      },
+      {
+        id: 'crm-estrategico',
+        icon: '📊',
+        name: 'CRM Estratégico',
+        objective: 'Gerir relacionamento e nutrir clientes no longo prazo',
+        what: 'A gestão do relacionamento com sua base: quem comprou, quando, o que recebe e como é reativado. CRM estratégico transforma clientes em compradores recorrentes.',
+        why: 'Vender para quem já comprou é 5x mais barato do que conquistar alguém novo. Uma base bem gerida é um ativo que cresce com o tempo.',
+        mistake: 'Não ter base organizada, não segmentar por comportamento de compra ou tratar todos os clientes da mesma forma.',
+        impact: 'Receita recorrente nunca se consolida e o negócio fica eternamente dependente de novos clientes para sobreviver.',
+        deps: ['organico', 'trafego'],
+        links: [
+          { label: 'Guday (Figma)', url: 'https://www.figma.com/design/AA04X6jRFBtwMfCvXlMZ2h/Guday?node-id=1-119&p=f&t=dpBlTVftgzCpLKFU-0' }
+        ]
       },
       {
         id: 'broadcasts',
         icon: '📣',
         name: 'Broadcasts',
+        parentId: 'crm-estrategico',
         objective: 'Vender em massa via e-mail/whatsapp marketing',
         what: 'Envio de mensagens em massa para sua base própria — e-mail, WhatsApp, SMS — com ofertas, conteúdo e ativações de compra.',
         why: 'Sua lista é o único canal que você controla 100%. Um broadcast bem feito para uma base quente pode gerar picos de receita imediatos.',
         mistake: 'Só mandar mensagem quando quer vender. Mandar sempre a mesma oferta para toda a base, sem segmentação.',
         impact: 'Base fria, descadastros em massa, zero retorno. Você tem uma lista enorme que não responde mais.',
         deps: ['organico', 'trafego']
+      },
+      {
+        id: 'reguas',
+        icon: '🔗',
+        name: 'Réguas de automação',
+        parentId: 'crm-estrategico',
+        objective: 'Nutrir e converter leads no piloto automático',
+        what: 'Sequências de mensagens automatizadas — por e-mail ou WhatsApp — disparadas com base no comportamento do lead: primeiro acesso, abandono, pós-compra, inatividade.',
+        why: 'Enquanto você dorme, a régua trabalha. É a forma mais escalável de nutrir, converter e reter clientes sem esforço manual a cada envio.',
+        mistake: 'Montar uma régua genérica igual para todo mundo, sem segmentar por comportamento. Ou criar uma sequência e nunca mais revisar os resultados.',
+        impact: 'Leads que poderiam converter esfriam e somem. Clientes que compraram uma vez não voltam por falta de estímulo no momento certo.',
+        deps: ['broadcasts']
       },
       {
         id: 'remarketing',
@@ -888,6 +1193,8 @@ const STAGES = [
     id: 'fine-tuning',
     num: '05',
     title: 'Fine Tuning',
+    anchor: true,
+    anchorLabel: 'nível avançado',
     subtitle: 'espreme mais resultado de cada real investido',
     color: '#f97316',
     nodes: [
@@ -944,9 +1251,10 @@ function renderFlow() {
 
     // Column
     const col = document.createElement('div');
-    col.className = 'stage';
+    col.className = 'stage' + (stage.anchor ? ' stage--anchor' : '');
 
     col.innerHTML = `
+      ${stage.anchor ? `<span class="stage-anchor-tag">${stage.anchorLabel}</span>` : ''}
       <div class="stage-head">
         <p class="stage-num" style="color:${stage.color}">${stage.num}</p>
         <p class="stage-name" style="color:${stage.color}">${stage.title}</p>
@@ -959,9 +1267,9 @@ function renderFlow() {
 
     const wrap = col.querySelector(`#nw-${stage.id}`);
 
-    stage.nodes.forEach(node => {
+    function buildNodeEl(node, isSub = false) {
       const el = document.createElement('div');
-      el.className = 'node';
+      el.className = 'node' + (isSub ? ' node--subtask' : '');
       el.id = `n-${node.id}`;
       el.style.setProperty('--nc', stage.color);
       el.dataset.id = node.id;
@@ -969,8 +1277,8 @@ function renderFlow() {
       const isDone = state.done.has(node.id);
       const warn   = !isDone && isWarn(node.id);
 
-      if (isDone)              el.classList.add('is-done');
-      else if (warn)           el.classList.add('is-warn');
+      if (isDone) el.classList.add('is-done');
+      else if (warn) el.classList.add('is-warn');
       if (state.active === node.id) el.classList.add('is-active');
 
       el.innerHTML = `
@@ -982,7 +1290,23 @@ function renderFlow() {
         ${node.objective ? `<p class="node-obj">${node.objective}</p>` : ''}
       `;
 
-      el.addEventListener('click', () => openPanel(node.id));
+      el.addEventListener('click', (e) => { e.stopPropagation(); openPanel(node.id); });
+      return el;
+    }
+
+    // Separate top-level nodes from children
+    const topNodes   = stage.nodes.filter(n => !n.parentId);
+    const childNodes = stage.nodes.filter(n => n.parentId);
+
+    topNodes.forEach(node => {
+      const el = buildNodeEl(node);
+      const children = childNodes.filter(c => c.parentId === node.id);
+      if (children.length) {
+        const sub = document.createElement('div');
+        sub.className = 'node-subtasks';
+        children.forEach(c => sub.appendChild(buildNodeEl(c, true)));
+        el.appendChild(sub);
+      }
       wrap.appendChild(el);
     });
 
@@ -1075,6 +1399,75 @@ function renderDiagnosis() {
 }
 
 // ─────────────────────────────────────────────────
+//  PANEL HELPERS
+// ─────────────────────────────────────────────────
+function buildLinksHTML(links, color) {
+  if (!links || links.length === 0) return '';
+
+  const toolLinks = links.filter(l => l.type === 'tool');
+  const caseLinks = links.filter(l => l.type !== 'tool');
+  let html = '';
+
+  // ── Cases block (amber) ──────────────────────────
+  if (caseLinks.length > 0) {
+    const hasGroups = caseLinks.some(l => l.group);
+    let rows = '';
+
+    if (hasGroups) {
+      const groups = {};
+      const order  = [];
+      caseLinks.forEach(l => {
+        const g = l.group || '';
+        if (!groups[g]) { groups[g] = []; order.push(g); }
+        groups[g].push(l);
+      });
+      order.forEach((g, gi) => {
+        if (g) {
+          if (gi > 0) rows += `<div style="height:1px;background:rgba(255,168,38,0.1);margin:8px 0 10px;"></div>`;
+          rows += `<p class="links-group-title">${g}</p>`;
+        }
+        groups[g].forEach(l => {
+          rows += `<div class="link-row">
+            <span class="link-name">${l.label}</span>
+            <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
+          </div>`;
+        });
+      });
+    } else {
+      caseLinks.forEach(l => {
+        rows += `<div class="link-row">
+          <span class="link-name">${l.label}</span>
+          <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
+        </div>`;
+      });
+    }
+
+    html += `<div class="links-block">
+      <p class="block-label">✦ cases &amp; referências</p>
+      ${rows}
+    </div>`;
+  }
+
+  // ── Tools block (blue) ───────────────────────────
+  if (toolLinks.length > 0) {
+    let rows = '';
+    toolLinks.forEach(l => {
+      rows += `<div class="link-row">
+        <span class="link-name">${l.label}</span>
+        <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
+      </div>`;
+    });
+
+    html += `<div class="tools-block">
+      <p class="block-label">⚙ ferramenta parceira</p>
+      ${rows}
+    </div>`;
+  }
+
+  return html;
+}
+
+// ─────────────────────────────────────────────────
 //  PANEL
 // ─────────────────────────────────────────────────
 function openPanel(nodeId) {
@@ -1098,20 +1491,7 @@ function openPanel(nodeId) {
       <p class="block-label">Por que importa</p>
       <p class="block-text">${node.why}</p>
     </div>
-    <div class="alert-block type-error">
-      <span class="alert-emoji">⚠️</span>
-      <div>
-        <p class="alert-inner-label">Erro mais comum</p>
-        <p class="alert-text">${node.mistake}</p>
-      </div>
-    </div>
-    <div class="alert-block type-impact">
-      <span class="alert-emoji">💸</span>
-      <div>
-        <p class="alert-inner-label">Impacto de pular essa etapa</p>
-        <p class="alert-text">${node.impact}</p>
-      </div>
-    </div>
+    ${buildLinksHTML(node.links, color)}
   `;
 
   syncToggleBtn();
@@ -1137,7 +1517,7 @@ function syncToggleBtn() {
   if (!id) return;
   const done  = state.done.has(id);
   const btn   = document.getElementById('toggle-btn');
-  document.getElementById('toggle-icon').textContent  = done ? '✓' : '○';
+  document.getElementById('toggle-icon').textContent  = '';
   document.getElementById('toggle-label').textContent = done ? 'Marcado como estruturado' : 'Marcar como estruturado';
   done ? btn.classList.add('is-done') : btn.classList.remove('is-done');
 }
