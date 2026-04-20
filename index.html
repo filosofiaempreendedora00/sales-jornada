@@ -667,10 +667,9 @@ body {
 .links-block {
   background: linear-gradient(135deg, rgba(255,168,38,0.08) 0%, rgba(255,168,38,0.04) 100%);
   border-radius: 12px;
-  padding: 12px 14px;
+  padding: 12px 14px 14px;
   border: 1px solid rgba(255,168,38,0.22);
   position: relative;
-  overflow: hidden;
 }
 
 .links-block::before {
@@ -757,10 +756,9 @@ body {
 .tools-block {
   background: linear-gradient(135deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.04) 100%);
   border-radius: 12px;
-  padding: 15px 17px;
+  padding: 12px 14px 14px;
   border: 1px solid rgba(77,141,255,0.22);
   position: relative;
-  overflow: hidden;
 }
 
 .tools-block::before {
@@ -832,6 +830,225 @@ body {
 .toggle-btn.is-done .toggle-icon {
   background: currentColor;
 }
+
+/* ── CHECKLIST ───────────────────────────────────── */
+.checklist-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.checklist-section {
+  background: var(--surface2);
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.checklist-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 13px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s;
+}
+
+.checklist-header:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.checklist-header-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.checklist-header-label {
+  flex: 1;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.checklist-header-meta {
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.checklist-chevron {
+  font-size: 9px;
+  color: var(--text-3);
+  transition: transform 0.22s ease;
+  line-height: 1;
+}
+
+.checklist-section.is-open .checklist-chevron {
+  transform: rotate(180deg);
+}
+
+.checklist-items {
+  display: none;
+  flex-direction: column;
+  padding: 0 13px 10px;
+  gap: 1px;
+}
+
+.checklist-section.is-open .checklist-items {
+  display: flex;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.check-box {
+  width: 13px;
+  height: 13px;
+  border-radius: 3px;
+  border: 1.5px solid var(--text-3);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.15s;
+  position: relative;
+}
+
+.checklist-item.is-checked .check-box {
+  background: var(--panel-color, var(--c1));
+  border-color: var(--panel-color, var(--c1));
+}
+
+.checklist-item.is-checked .check-box::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: #000;
+  font-weight: 900;
+  line-height: 13px;
+  text-align: center;
+}
+
+.check-label {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.checklist-item.is-checked .check-label {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+
+/* ── FOCUS MODE ──────────────────────────────────── */
+.flow-wrap {
+  transition: background 0.4s ease;
+}
+
+.flow-wrap.has-focus {
+  background: rgba(0,0,0,0.35);
+}
+
+.flow .stage,
+.flow .connector {
+  transition: transform 0.45s cubic-bezier(0.4,0,0.2,1),
+              opacity  0.45s ease,
+              filter   0.45s ease;
+}
+
+.flow.has-focus .connector {
+  opacity: 0.08;
+}
+
+.flow.has-focus .stage:not(.is-focused) {
+  opacity: 0.12;
+  transform: scale(0.93);
+  pointer-events: none;
+  filter: blur(1px);
+}
+
+.flow.has-focus .stage.is-focused {
+  transform: scale(1.1);
+  z-index: 10;
+  position: relative;
+}
+
+.stage-name {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.stage-name:hover {
+  opacity: 0.75;
+}
+
+/* Navigation arrows */
+.focus-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 85;
+  background: rgba(15,15,30,0.75);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%;
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,0.7);
+  font-size: 20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: opacity 0.3s ease, background 0.18s, color 0.18s, transform 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+.focus-nav.is-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.focus-nav:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+.focus-nav--prev { left: 18px; }
+.focus-nav--next { right: 18px; }
+
+.focus-exit-hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 85;
+  font-size: 11px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.focus-exit-hint.is-visible { opacity: 1; }
 
 /* ── FOOTER ──────────────────────────────────────── */
 .footer {
@@ -920,6 +1137,10 @@ body {
 <!-- ══════════════════════════════════════════════ -->
 <!--  PANEL                                         -->
 <!-- ══════════════════════════════════════════════ -->
+<button class="focus-nav focus-nav--prev" id="focus-prev" aria-label="Fase anterior">‹</button>
+<button class="focus-nav focus-nav--next" id="focus-next" aria-label="Próxima fase">›</button>
+<div class="focus-exit-hint" id="focus-hint">clique fora para sair</div>
+
 <div class="overlay" id="overlay"></div>
 
 <aside class="panel" id="panel">
@@ -952,7 +1173,7 @@ const STAGES = [
     title: 'Concepção',
     anchor: true,
     anchorLabel: 'pré-operação',
-    subtitle: 'acerte o produto uma vez — e venda sem precisar convencer',
+    subtitle: 'Ainda mais importante que a velocidade, é poder enxergar a direção correta',
     color: '#9b6dff',
     nodes: [
       {
@@ -964,7 +1185,111 @@ const STAGES = [
         why: 'Sem isso resolvido, você está apenas gastando dinheiro mais rápido. Tráfego, página e conteúdo sem base estratégica não vendem — só custam.',
         mistake: 'Pular essa etapa e ir direto para os anúncios achando que o produto "se vende sozinho". Ou validar com amigos e família em vez do mercado real.',
         impact: 'Você monta tudo — anúncio, site, conteúdo — e nada converte. O problema não está na execução: está na fundação.',
-        deps: []
+        deps: [],
+        checklist: [
+          {
+            id: 'mercado', icon: '🎯', label: 'Mercado & Oportunidade',
+            items: [
+              'Qual problema real estou resolvendo?',
+              'Esse problema é recorrente ou pontual?',
+              'Qual o tamanho do mercado (TAM/SAM/SOM)?',
+              'Esse mercado está crescendo, estagnado ou morrendo?',
+              'Existem players grandes? Quem domina?',
+              'Existe demanda comprovada (busca, ads, players vendendo)?',
+              'É um mercado de impulso ou consideração?',
+              'Ticket médio típico desse mercado?'
+            ]
+          },
+          {
+            id: 'cliente', icon: '👤', label: 'Cliente (ICP Claro)',
+            items: [
+              'Quem é o cliente ideal (idade, renda, contexto)?',
+              'Qual dor principal dele?',
+              'O que ele já tentou antes?',
+              'O que frustra ele nas soluções atuais?',
+              'O que faz ele comprar por impulso?',
+              'Quais objeções ele tem?',
+              'Onde ele passa tempo (Instagram, TikTok, Google)?',
+              'Como ele descreve o problema com as próprias palavras?'
+            ]
+          },
+          {
+            id: 'produto', icon: '🧪', label: 'Produto & Oferta',
+            items: [
+              'O produto resolve de forma clara o problema?',
+              'Qual o diferencial real (não genérico)?',
+              'Existe algum "mecanismo único"?',
+              'O produto é validado ou é aposta?',
+              'Margem bruta do produto?',
+              'Qual é a promessa central?',
+              'Quais são os principais benefícios percebidos?',
+              'O produto permite recompra?',
+              'Existe potencial de upsell/cross-sell?'
+            ]
+          },
+          {
+            id: 'preco', icon: '💰', label: 'Precificação & Economia',
+            items: [
+              'Qual o preço ideal vs concorrentes?',
+              'Qual margem líquida esperada?',
+              'Qual CPA máximo aceitável?',
+              'Qual ROAS mínimo sustentável?',
+              'Qual ticket médio projetado?',
+              'Existe espaço pra promo/desconto sem quebrar margem?',
+              'Qual o LTV esperado?',
+              'Unidade econômica fecha?'
+            ]
+          },
+          {
+            id: 'financeiro', icon: '🧾', label: 'Estrutura Financeira (DRE)',
+            items: [
+              'Receita projetada (curto prazo)',
+              'Custos fixos (time, ferramentas, etc)',
+              'Custos variáveis (produto, logística, taxas)',
+              'Investimento em mídia previsto',
+              'Margem de contribuição',
+              'Break-even (ponto de equilíbrio)',
+              'Caixa necessário pra rodar operação'
+            ]
+          },
+          {
+            id: 'operacao', icon: '🏭', label: 'Operação & Fornecedores',
+            items: [
+              'Quem fornece o produto?',
+              'Qual prazo de produção/entrega?',
+              'Qual custo por unidade?',
+              'Existe risco de ruptura de estoque?',
+              'Embalagem definida (custo + experiência)?',
+              'Logística (frete, prazos, transportadoras)?',
+              'Política de troca/devolução?',
+              'SLA de atendimento?',
+              'Escalabilidade da operação?'
+            ]
+          },
+          {
+            id: 'posicionamento', icon: '🧲', label: 'Posicionamento & Estratégia',
+            items: [
+              'Como o produto será percebido? (premium, acessível, nichado)',
+              'Qual é a Big Idea?',
+              'Qual narrativa central da marca?',
+              'Por que alguém escolheria você e não outro?',
+              'Qual ângulo principal de venda?',
+              'Existe prova social inicial?',
+              'Existe algum elemento de autoridade?'
+            ]
+          },
+          {
+            id: 'riscos', icon: '⚠️', label: 'Riscos & Validação',
+            items: [
+              'Qual a maior hipótese de risco?',
+              'O que pode dar errado aqui?',
+              'Já existe validação mínima (vendas, testes, feedback)?',
+              'Existe dependência de fornecedor/plataforma?',
+              'O produto pode ser facilmente copiado?',
+              'Existe barreira de entrada real?'
+            ]
+          }
+        ]
       }
     ]
   },
@@ -972,7 +1297,7 @@ const STAGES = [
     id: 'conversao',
     num: '02',
     title: 'Aquecimento',
-    subtitle: 'aquecendo os motores — preparando o terreno bem antes de acelerar',
+    subtitle: 'Garanta que a sua \'máquina\' esteja bem preparada antes de pisar fundo no acelerador',
     color: '#4d8dff',
     nodes: [
       {
@@ -1032,6 +1357,7 @@ const STAGES = [
         impact: 'CPL e CPA disparam. Você aumenta o orçamento de anúncios, mas o retorno não aparece — e você não entende por quê.',
         deps: ['identidade', 'redes'],
         links: [
+          { label: 'CRO Turbo Tech', url: 'https://cro-turbo-tech.vercel.app/', type: 'tool' },
           { label: 'Guday',      url: 'https://guday.com.br/',             group: 'PERSONALIZADO' },
           { label: 'Push Matcha',url: 'https://pushmatcha.com.br/',        group: 'PERSONALIZADO' },
           { label: 'Pace It',    url: 'https://loja.paceit.com.br/',       group: 'PERSONALIZADO' },
@@ -1064,7 +1390,7 @@ const STAGES = [
     id: 'aquisicao',
     num: '03',
     title: 'Aceleração',
-    subtitle: 'aquisição de clientes — leve o produto pra frente de quem já está pronto pra comprar',
+    subtitle: 'Com sua máquina bem projetada, é hora de colocar combustível e acelerar com segurança',
     color: '#0dcfe8',
     nodes: [
       {
@@ -1072,7 +1398,7 @@ const STAGES = [
         icon: '📈',
         name: 'Performance (tráfego pago orientado a dados)',
         objective: 'Vender via anúncios online',
-        what: 'Gestão de anúncios pagos orientada por métricas de negócio — não só ROAS e CPA, mas CAC, ticket-médio, margem por canal e retorno sobre o faturamento. O cliente recebe relatórios que qualquer sócio entende, não dashboards de agência que só impressionam quem não sabe o que está olhando.',
+        what: 'Gestão de anúncios online orientada por métricas de negócio — não apenas métricas de marketing (CTR, CPC, CPA, etc), mas CAC, ticket-médio, margem e retorno sobre o faturamento. Você recebe relatórios de negócio, não print de dashboard.',
         why: 'É o motor de escala do negócio. Com loja e criativos estruturados, tráfego orientado a dados multiplica resultado de forma previsível.',
         mistake: 'Subir orçamento sem analisar métricas, rodar sem estrutura de campanha ou confiar apenas no "aprendizado" do algoritmo.',
         impact: 'Sem dados, você escala no escuro. Cada real investido pode estar indo para o público errado — e você não sabe.',
@@ -1117,7 +1443,7 @@ const STAGES = [
     id: 'engajamento-retencao',
     num: '04',
     title: 'Eficiência',
-    subtitle: 'engajamento e retenção — vender mais vezes pros mesmos clientes',
+    subtitle: 'Torne seu investimento em tráfego mais eficiente e maximize o retorno sobre seu investimento',
     color: '#12d490',
     nodes: [
       {
@@ -1151,18 +1477,6 @@ const STAGES = [
         ]
       },
       {
-        id: 'broadcasts',
-        icon: '📣',
-        name: 'Broadcasts',
-        parentId: 'crm-estrategico',
-        objective: 'Vender em massa via e-mail/whatsapp marketing',
-        what: 'Envio de mensagens em massa para sua base própria — e-mail, WhatsApp, SMS — com ofertas, conteúdo e ativações de compra.',
-        why: 'Sua lista é o único canal que você controla 100%. Um broadcast bem feito para uma base quente pode gerar picos de receita imediatos.',
-        mistake: 'Só mandar mensagem quando quer vender. Mandar sempre a mesma oferta para toda a base, sem segmentação.',
-        impact: 'Base fria, descadastros em massa, zero retorno. Você tem uma lista enorme que não responde mais.',
-        deps: ['organico', 'trafego']
-      },
-      {
         id: 'reguas',
         icon: '🔗',
         name: 'Réguas de automação',
@@ -1172,6 +1486,25 @@ const STAGES = [
         why: 'Enquanto você dorme, a régua trabalha. É a forma mais escalável de nutrir, converter e reter clientes sem esforço manual a cada envio.',
         mistake: 'Montar uma régua genérica igual para todo mundo, sem segmentar por comportamento. Ou criar uma sequência e nunca mais revisar os resultados.',
         impact: 'Leads que poderiam converter esfriam e somem. Clientes que compraram uma vez não voltam por falta de estímulo no momento certo.',
+        deps: ['broadcasts'],
+        links: [
+          { label: 'Guday (Figma)', url: 'https://www.figma.com/design/AA04X6jRFBtwMfCvXlMZ2h/Guday?node-id=1-119&p=f&t=dpBlTVftgzCpLKFU-0' }
+        ]
+      },
+      {
+        id: 'broadcasts',
+        icon: '📣',
+        name: 'Broadcasts',
+        parentId: 'crm-estrategico',
+        objective: 'Vender em massa via e-mail/whatsapp marketing',
+        what: 'Envio de mensagens em massa para sua base própria — e-mail, WhatsApp, SMS — com ofertas, conteúdo e ativações de compra.',
+        why: 'Sua lista é o único canal que você controla 100%. Um broadcast bem feito para uma base quente pode gerar picos de receita imediatos.',
+        mistake: 'Só mandar mensagem quando quer vender. Mandar sempre a mesma oferta para toda a base, sem segmentação.',
+        impact: 'Base fria, descadastros em massa, zero retorno. Você tem uma lista enorme que não responde mais.',
+        deps: ['organico', 'trafego'],
+        links: [
+          { label: 'Guday (Figma)', url: 'https://www.figma.com/design/AA04X6jRFBtwMfCvXlMZ2h/Guday?node-id=1-119&p=f&t=dpBlTVftgzCpLKFU-0' }
+        ]
         deps: ['broadcasts']
       },
       {
@@ -1193,7 +1526,7 @@ const STAGES = [
     title: 'Fine Tuning',
     anchor: true,
     anchorLabel: 'nível avançado',
-    subtitle: 'espreme mais resultado de cada real investido',
+    subtitle: 'Aqui você já atingiu velocidade de cruzeiro. A escala.<br><br>Pequenos ajustes em engrenagens podem colocar um caminhão de dinheiro no seu bolso.',
     color: '#f97316',
     nodes: [
       {
@@ -1205,7 +1538,10 @@ const STAGES = [
         why: 'Um aumento de 1% na taxa de conversão pode dobrar o faturamento sem investir um centavo a mais em anúncio. É puro ganho de margem.',
         mistake: 'Fazer mudanças baseadas em achismo ao invés de dados. Ou mudar tudo de uma vez sem saber o que gerou qual resultado.',
         impact: 'Você escala orçamento de anúncios mas a conversão não acompanha. Cada real investido rende menos do que poderia.',
-        deps: ['loja', 'trafego']
+        deps: ['loja', 'trafego'],
+        links: [
+          { label: 'CRO Turbo Tech', url: 'https://cro-turbo-tech.vercel.app/', type: 'tool' }
+        ]
       }
     ]
   }
@@ -1216,7 +1552,10 @@ const STAGES = [
 // ─────────────────────────────────────────────────
 const state = {
   done: new Set(),
-  active: null
+  active: null,
+  focusedStage: null,
+  checkDone: new Set(),
+  checkOpen: new Set()
 };
 
 // ─────────────────────────────────────────────────
@@ -1250,6 +1589,7 @@ function renderFlow() {
     // Column
     const col = document.createElement('div');
     col.className = 'stage' + (stage.anchor ? ' stage--anchor' : '');
+    col.dataset.stageId = stage.id;
 
     col.innerHTML = `
       ${stage.anchor ? `<span class="stage-anchor-tag">${stage.anchorLabel}</span>` : ''}
@@ -1258,7 +1598,6 @@ function renderFlow() {
         <p class="stage-name" style="color:${stage.color}">${stage.title}</p>
         <div class="stage-divider" style="background:linear-gradient(90deg,${stage.color},transparent)"></div>
         <p class="stage-subtitle">${stage.subtitle}</p>
-        <p class="stage-stat">${doneCount} / ${stage.nodes.length} ok</p>
       </div>
       <div class="nodes-wrap" id="nw-${stage.id}"></div>
     `;
@@ -1397,6 +1736,52 @@ function renderDiagnosis() {
 }
 
 // ─────────────────────────────────────────────────
+//  CHECKLIST
+// ─────────────────────────────────────────────────
+function buildChecklistHTML(node) {
+  if (!node.checklist || node.checklist.length === 0) return '';
+
+  const sections = node.checklist.map(sec => {
+    const key      = `${node.id}:${sec.id}`;
+    const isOpen   = state.checkOpen.has(key);
+    const total    = sec.items.length;
+    const done     = sec.items.filter((_, i) => state.checkDone.has(`${key}:${i}`)).length;
+
+    const items = sec.items.map((item, i) => {
+      const checked = state.checkDone.has(`${key}:${i}`);
+      return `<div class="checklist-item${checked ? ' is-checked' : ''}" data-check="${key}:${i}">
+        <div class="check-box"></div>
+        <span class="check-label">${item}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="checklist-section${isOpen ? ' is-open' : ''}" data-section="${key}">
+      <div class="checklist-header" data-toggle="${key}">
+        <span class="checklist-header-icon">${sec.icon}</span>
+        <span class="checklist-header-label">${sec.label}</span>
+        <span class="checklist-header-meta">${done}/${total}</span>
+        <span class="checklist-chevron">▼</span>
+      </div>
+      <div class="checklist-items">${items}</div>
+    </div>`;
+  }).join('');
+
+  return `<div class="checklist-wrap">${sections}</div>`;
+}
+
+function refreshChecklist(nodeId) {
+  const node = getNode(nodeId);
+  if (!node || !node.checklist) return;
+  const wrap = document.querySelector('.checklist-wrap');
+  if (!wrap) return;
+  wrap.outerHTML = buildChecklistHTML(node).replace('<div class="checklist-wrap">', '<div class="checklist-wrap">');
+  // Re-insert cleanly
+  const pb = document.getElementById('panel-body');
+  const existing = pb.querySelector('.checklist-wrap');
+  if (existing) existing.outerHTML = buildChecklistHTML(node);
+}
+
+// ─────────────────────────────────────────────────
 //  PANEL HELPERS
 // ─────────────────────────────────────────────────
 function buildLinksHTML(links, color) {
@@ -1490,6 +1875,7 @@ function openPanel(nodeId) {
       <p class="block-text">${node.why}</p>
     </div>
     ${buildLinksHTML(node.links, color)}
+    ${buildChecklistHTML(node)}
   `;
 
   syncToggleBtn();
@@ -1536,10 +1922,125 @@ function toggleDone() {
 // ─────────────────────────────────────────────────
 //  EVENTS
 // ─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────
+//  FOCUS MODE
+// ─────────────────────────────────────────────────
+function focusStage(stageId) {
+  state.focusedStage = stageId;
+  const flow    = document.getElementById('flow');
+  const wrap    = document.querySelector('.flow-wrap');
+  flow.classList.add('has-focus');
+  wrap.classList.add('has-focus');
+
+  document.querySelectorAll('.stage').forEach(el => {
+    if (el.dataset.stageId === stageId) {
+      el.classList.add('is-focused');
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }), 30);
+    } else {
+      el.classList.remove('is-focused');
+    }
+  });
+
+  updateFocusNav();
+}
+
+function unfocusStage() {
+  state.focusedStage = null;
+  document.getElementById('flow').classList.remove('has-focus');
+  document.querySelector('.flow-wrap').classList.remove('has-focus');
+  document.querySelectorAll('.stage').forEach(el => el.classList.remove('is-focused'));
+  updateFocusNav();
+}
+
+function updateFocusNav() {
+  const prev = document.getElementById('focus-prev');
+  const next = document.getElementById('focus-next');
+  const hint = document.getElementById('focus-hint');
+  const idx  = STAGES.findIndex(s => s.id === state.focusedStage);
+  const active = state.focusedStage !== null;
+
+  hint.classList.toggle('is-visible', active);
+  prev.classList.toggle('is-visible', active && idx > 0);
+  next.classList.toggle('is-visible', active && idx < STAGES.length - 1);
+}
+
+function navigateFocus(dir) {
+  const idx = STAGES.findIndex(s => s.id === state.focusedStage);
+  const next = STAGES[idx + dir];
+  if (next) focusStage(next.id);
+}
+
+// Stage name click — delegated from flow
+document.getElementById('flow').addEventListener('click', e => {
+  const nameEl = e.target.closest('.stage-name');
+  if (!nameEl) return;
+  const stageEl = nameEl.closest('.stage');
+  if (!stageEl) return;
+  e.stopPropagation();
+  if (state.focusedStage === stageEl.dataset.stageId) {
+    unfocusStage();
+  } else {
+    focusStage(stageEl.dataset.stageId);
+  }
+});
+
+// Click outside stages to exit
+document.querySelector('.flow-wrap').addEventListener('click', e => {
+  if (!state.focusedStage) return;
+  if (!e.target.closest('.stage')) unfocusStage();
+});
+
+document.getElementById('focus-prev').addEventListener('click', () => navigateFocus(-1));
+document.getElementById('focus-next').addEventListener('click', () => navigateFocus(+1));
+
 document.getElementById('overlay').addEventListener('click', closePanel);
 document.getElementById('close-btn').addEventListener('click', closePanel);
 document.getElementById('toggle-btn').addEventListener('click', toggleDone);
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closePanel(); });
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closePanel(); unfocusStage(); }
+  if (e.key === 'ArrowLeft'  && state.focusedStage) navigateFocus(-1);
+  if (e.key === 'ArrowRight' && state.focusedStage) navigateFocus(+1);
+});
+
+// Checklist delegation
+document.getElementById('panel-body').addEventListener('click', e => {
+  // Toggle section open/close
+  const toggleEl = e.target.closest('[data-toggle]');
+  if (toggleEl) {
+    const key = toggleEl.dataset.toggle;
+    const sec = toggleEl.closest('.checklist-section');
+    if (state.checkOpen.has(key)) {
+      state.checkOpen.delete(key);
+      sec.classList.remove('is-open');
+    } else {
+      state.checkOpen.add(key);
+      sec.classList.add('is-open');
+    }
+    // Update meta count (no full re-render needed)
+    return;
+  }
+
+  // Toggle check item
+  const itemEl = e.target.closest('[data-check]');
+  if (itemEl) {
+    const key = itemEl.dataset.check;
+    if (state.checkDone.has(key)) {
+      state.checkDone.delete(key);
+      itemEl.classList.remove('is-checked');
+    } else {
+      state.checkDone.add(key);
+      itemEl.classList.add('is-checked');
+    }
+    // Update section meta counter
+    const sec    = itemEl.closest('.checklist-section');
+    const metaEl = sec ? sec.querySelector('.checklist-header-meta') : null;
+    if (metaEl) {
+      const items = sec.querySelectorAll('[data-check]');
+      const done  = sec.querySelectorAll('[data-check].is-checked').length;
+      metaEl.textContent = `${done}/${items.length}`;
+    }
+  }
+});
 
 // ─────────────────────────────────────────────────
 //  INIT
