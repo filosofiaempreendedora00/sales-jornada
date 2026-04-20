@@ -166,9 +166,10 @@ body {
 /* ── FLOW WRAPPER ────────────────────────────────── */
 .flow-wrap {
   overflow-x: auto;
-  padding: 8px 24px 48px;
+  padding: 64px 24px 64px;
   -webkit-overflow-scrolling: touch;
   cursor: default;
+  transition: background 0.4s ease;
 }
 
 .flow-wrap::-webkit-scrollbar { height: 3px; }
@@ -957,12 +958,10 @@ body {
 }
 
 /* ── FOCUS MODE ──────────────────────────────────── */
-.flow-wrap {
-  transition: background 0.4s ease;
-}
 
 .flow-wrap.has-focus {
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
 }
 
 .flow .stage,
@@ -984,7 +983,8 @@ body {
 }
 
 .flow.has-focus .stage.is-focused {
-  transform: scale(1.1);
+  transform: scale(1.08);
+  transform-origin: 50% 55%;
   z-index: 10;
   position: relative;
 }
@@ -1115,7 +1115,7 @@ body {
 <!-- ══════════════════════════════════════════════ -->
 <!--  FLOW                                          -->
 <!-- ══════════════════════════════════════════════ -->
-<div class="flow-wrap">
+<div class="flow-wrap" id="flow-wrap">
   <div class="flow" id="flow"></div>
 </div>
 
@@ -1505,7 +1505,6 @@ const STAGES = [
         links: [
           { label: 'Guday (Figma)', url: 'https://www.figma.com/design/AA04X6jRFBtwMfCvXlMZ2h/Guday?node-id=1-119&p=f&t=dpBlTVftgzCpLKFU-0' }
         ]
-        deps: ['broadcasts']
       },
       {
         id: 'remarketing',
@@ -1542,6 +1541,100 @@ const STAGES = [
         links: [
           { label: 'CRO Turbo Tech', url: 'https://cro-turbo-tech.vercel.app/', type: 'tool' }
         ]
+      },
+      {
+        id: 'otimizacoes',
+        icon: '🔁',
+        name: 'Otimizações em geral',
+        objective: 'Iterar sistematicamente sobre o que já funciona',
+        what: 'A fase de fine-tuning é sobre otimizar o que já está rodando. Cada pilar do negócio tem suas próprias alavancas de melhoria contínua.',
+        why: 'Pequenos ganhos acumulados em múltiplas frentes geram impacto desproporcional no resultado final.',
+        mistake: '',
+        impact: '',
+        deps: ['cro']
+      },
+      {
+        id: 'otim-performance',
+        icon: '📈',
+        name: 'Performance',
+        parentId: 'otimizacoes',
+        objective: 'Encontrar ângulos vencedores e replicar abordagens',
+        what: 'Encontrar ângulos vencedores e replicar abordagens.',
+        why: 'Dobrar o que já converte é mais rápido do que testar do zero.',
+        mistake: '',
+        impact: '',
+        deps: []
+      },
+      {
+        id: 'otim-criativos',
+        icon: '🎬',
+        name: 'Criativos UGC',
+        parentId: 'otimizacoes',
+        objective: 'Identificar padrões de creators, hooks e produtos vencedores, e iterar',
+        what: 'Identificar padrões de creators, hooks e produtos vencedores, e iterar.',
+        why: 'O criativo que converte hoje vai saturar. A iteração constante mantém o CPA baixo.',
+        mistake: '',
+        impact: '',
+        deps: []
+      },
+      {
+        id: 'otim-organico',
+        icon: '📱',
+        name: 'Social orgânico',
+        parentId: 'otimizacoes',
+        objective: 'Mapear conteúdos vencedores e canalizar esforços',
+        what: 'Mapear conteúdos vencedores e canalizar esforços.',
+        why: 'Concentrar energia no que já performa reduz desperdício e amplifica alcance.',
+        mistake: '',
+        impact: '',
+        deps: []
+      },
+      {
+        id: 'otim-crm',
+        icon: '📊',
+        name: 'CRM Estratégico',
+        parentId: 'otimizacoes',
+        objective: 'Fazer a manutenção das automações e limpeza da lista',
+        what: 'Fazer a manutenção das automações e limpeza da lista.',
+        why: 'Lista saudável entrega mais, custa menos e protege a reputação do domínio.',
+        mistake: '',
+        impact: '',
+        deps: []
+      },
+      {
+        id: 'funis-alternativos',
+        icon: '🧭',
+        name: 'Funis alternativos',
+        objective: 'Explorar novos formatos de entrada para escalar fora do padrão',
+        what: 'Funis de venda construídos em formatos alternativos ao anúncio direto — como artigos editoriais e listas — que aquecen o lead antes da oferta.',
+        why: 'Mercados competitivos exigem abordagens menos saturadas. Funis alternativos chegam onde o anúncio comum não converte mais.',
+        mistake: '',
+        impact: '',
+        deps: ['cro']
+      },
+      {
+        id: 'advertorial',
+        icon: '📰',
+        name: 'Advertorial',
+        parentId: 'funis-alternativos',
+        objective: 'Artigo editorial que vende sem parecer anúncio',
+        what: 'Artigo editorial que vende sem parecer anúncio.',
+        why: 'Reduz a resistência do leitor e aquece o lead com contexto antes de apresentar a oferta.',
+        mistake: '',
+        impact: '',
+        deps: []
+      },
+      {
+        id: 'listicle',
+        icon: '📋',
+        name: 'Listicle',
+        parentId: 'funis-alternativos',
+        objective: 'Lista de recomendações que guia o leitor naturalmente até o produto',
+        what: 'Lista de recomendações que guia o leitor naturalmente até o produto.',
+        why: 'Formato de alto consumo que gera comparação favorável e decisão de compra com baixa fricção.',
+        mistake: '',
+        impact: '',
+        deps: []
       }
     ]
   }
@@ -1927,15 +2020,17 @@ function toggleDone() {
 // ─────────────────────────────────────────────────
 function focusStage(stageId) {
   state.focusedStage = stageId;
-  const flow    = document.getElementById('flow');
-  const wrap    = document.querySelector('.flow-wrap');
+  const flow = document.getElementById('flow');
+  const wrap = document.getElementById('flow-wrap');
   flow.classList.add('has-focus');
   wrap.classList.add('has-focus');
 
   document.querySelectorAll('.stage').forEach(el => {
     if (el.dataset.stageId === stageId) {
       el.classList.add('is-focused');
-      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }), 30);
+      setTimeout(() => {
+        el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'center' });
+      }, 30);
     } else {
       el.classList.remove('is-focused');
     }
@@ -1947,7 +2042,7 @@ function focusStage(stageId) {
 function unfocusStage() {
   state.focusedStage = null;
   document.getElementById('flow').classList.remove('has-focus');
-  document.querySelector('.flow-wrap').classList.remove('has-focus');
+  document.getElementById('flow-wrap').classList.remove('has-focus');
   document.querySelectorAll('.stage').forEach(el => el.classList.remove('is-focused'));
   updateFocusNav();
 }
@@ -1985,7 +2080,7 @@ document.getElementById('flow').addEventListener('click', e => {
 });
 
 // Click outside stages to exit
-document.querySelector('.flow-wrap').addEventListener('click', e => {
+document.getElementById('flow-wrap').addEventListener('click', e => {
   if (!state.focusedStage) return;
   if (!e.target.closest('.stage')) unfocusStage();
 });
