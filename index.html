@@ -589,12 +589,10 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 20px 24px 32px;
+  padding: 20px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
-  mask-image: linear-gradient(to bottom, black calc(100% - 40px), transparent 100%);
 }
 
 .panel-body::-webkit-scrollbar { width: 3px; }
@@ -669,7 +667,7 @@ body {
 .links-block {
   background: linear-gradient(135deg, rgba(255,168,38,0.08) 0%, rgba(255,168,38,0.04) 100%);
   border-radius: 12px;
-  padding: 15px 17px;
+  padding: 12px 14px;
   border: 1px solid rgba(255,168,38,0.22);
   position: relative;
   overflow: hidden;
@@ -710,10 +708,10 @@ body {
   background: rgba(255,168,38,0.07);
   border: 1px solid rgba(255,168,38,0.15);
   border-radius: 5px;
-  padding: 3px 8px;
+  padding: 2px 7px;
   display: inline-block;
-  margin-bottom: 6px;
-  margin-top: 14px;
+  margin-bottom: 4px;
+  margin-top: 10px;
 }
 
 .links-group-title:first-of-type { margin-top: 2px; }
@@ -723,7 +721,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 6px 0;
+  padding: 4px 0;
   border-bottom: 1px solid rgba(255,168,38,0.08);
 }
 
@@ -881,7 +879,7 @@ body {
 <header class="header">
   <img src="logo.png" alt="Turbo" class="header-logo">
   <div class="badge">Metodologia Turbo</div>
-  <h1>A Jornada Turbo do e-commerce</h1>
+  <h1>A Jornada do E-commerce Turbo</h1>
   <div class="progress-wrap">
     <div class="progress-meta">
       <span id="prog-label"></span>
@@ -973,8 +971,8 @@ const STAGES = [
   {
     id: 'conversao',
     num: '02',
-    title: 'Aquecendo os motores',
-    subtitle: 'extraia mais dinheiro de cada visita sem gastar mais em anúncio',
+    title: 'Aquecimento',
+    subtitle: 'aquecendo os motores — preparando o terreno bem antes de acelerar',
     color: '#4d8dff',
     nodes: [
       {
@@ -1028,7 +1026,7 @@ const STAGES = [
         icon: '🛍️',
         name: 'Loja virtual bem estruturada',
         objective: 'Converter visitantes em clientes e maximizar o ticket-médio',
-        what: 'Sua vitrine digital: onde o visitante chega, entende a oferta e decide comprar. Precisa ser rápida, clara e otimizada para conversão.',
+        what: 'Sua vitrine digital: onde o visitante chega, entende a oferta e decide comprar. Seu site precisa ser rápido, com uma navegação intuitiva e otimizado para conversão.',
         why: 'De nada adianta trazer tráfego para uma loja que não converte. Cada visita perdida é dinheiro jogado fora.',
         mistake: 'Loja bonita, cheia de informação, sem hierarquia clara e sem foco em levar o visitante ao botão de compra.',
         impact: 'CPL e CPA disparam. Você aumenta o orçamento de anúncios, mas o retorno não aparece — e você não entende por quê.',
@@ -1070,28 +1068,11 @@ const STAGES = [
     color: '#0dcfe8',
     nodes: [
       {
-        id: 'criativos',
-        icon: '🎬',
-        name: 'Criativos UGC (para reduzir CPA)',
-        objective: 'Reduzir o CPA e maximizar ROAS',
-        what: 'Vídeos e imagens gravados por clientes reais — autênticos, sem produção exagerada — que capturam atenção e geram identificação imediata.',
-        why: 'UGC converte mais porque parece real. Quem assiste se enxerga no conteúdo e a barreira de compra cai. CPA despenca.',
-        mistake: 'Usar só peças produzidas que parecem propaganda. O público já aprendeu a ignorar isso.',
-        impact: 'CTR baixo, CPM alto, custo por aquisição elevado. Você gasta mais para adquirir cada cliente.',
-        deps: ['definicoes'],
-        links: [
-          { label: 'Sulmel',      url: 'https://drive.google.com/drive/u/1/folders/1lIRWpKfm_FPw_gDNdwEgy3tDGLiRV2zT' },
-          { label: 'Vekka',       url: 'https://drive.google.com/drive/u/1/folders/1tZbBXg6xeCK2aTrEbrSaerIXFi-W539L' },
-          { label: 'Minimal Club',url: 'https://drive.google.com/drive/u/1/folders/1w579OBMG3RG6x4StULmecFqMdnB9qstr' },
-          { label: 'Outros',      url: 'https://drive.google.com/drive/u/1/folders/1jbA4uvbqdPDRjrkuv-ADPHxSLvKRz3YY' }
-        ]
-      },
-      {
         id: 'trafego',
         icon: '📈',
         name: 'Performance (tráfego pago orientado a dados)',
         objective: 'Vender via anúncios online',
-        what: 'Gestão de anúncios pagos — Meta Ads, Google Ads, TikTok Ads — com decisões baseadas em dados: ROAS, CPA, frequência, funil.',
+        what: 'Gestão de anúncios pagos orientada por métricas de negócio — não só ROAS e CPA, mas CAC, ticket-médio, margem por canal e retorno sobre o faturamento. O cliente recebe relatórios que qualquer sócio entende, não dashboards de agência que só impressionam quem não sabe o que está olhando.',
         why: 'É o motor de escala do negócio. Com loja e criativos estruturados, tráfego orientado a dados multiplica resultado de forma previsível.',
         mistake: 'Subir orçamento sem analisar métricas, rodar sem estrutura de campanha ou confiar apenas no "aprendizado" do algoritmo.',
         impact: 'Sem dados, você escala no escuro. Cada real investido pode estar indo para o público errado — e você não sabe.',
@@ -1100,6 +1081,23 @@ const STAGES = [
           { label: 'Caveo',       url: 'https://app.clickup.com/31021986/v/dc/xjpx2-13143/xjpx2-770033' },
           { label: 'Noway',       url: 'https://app.clickup.com/31021986/v/dc/xjpx2-13143/xjpx2-770093' },
           { label: 'Óticas Paris',url: 'https://app.clickup.com/31021986/v/dc/xjpx2-13143/xjpx2-770053' }
+        ]
+      },
+      {
+        id: 'criativos',
+        icon: '🎬',
+        name: 'Criativos UGC (para reduzir CPA)',
+        objective: 'Reduzir o CPA e maximizar ROAS',
+        what: 'Vídeos gravados por creators com fit exato com o ICP da marca — pessoas que parecem o cliente ideal, falam a língua dele e geram identificação imediata.',
+        why: 'UGC converte mais porque é um tipo de anúncio sem cara de anúncio. Quem assiste se identifica com o conteúdo e a barreira de compra cai. O CPA despenca e o ROAS explode.',
+        mistake: 'Usar só peças produzidas que parecem propaganda. O público já aprendeu a ignorar isso.',
+        impact: 'CTR baixo, CPM alto, custo por aquisição elevado. Você gasta mais para adquirir cada cliente.',
+        deps: ['definicoes'],
+        links: [
+          { label: 'Sulmel',      url: 'https://drive.google.com/drive/u/1/folders/1lIRWpKfm_FPw_gDNdwEgy3tDGLiRV2zT' },
+          { label: 'Vekka',       url: 'https://drive.google.com/drive/u/1/folders/1tZbBXg6xeCK2aTrEbrSaerIXFi-W539L' },
+          { label: 'Minimal Club',url: 'https://drive.google.com/drive/u/1/folders/1w579OBMG3RG6x4StULmecFqMdnB9qstr' },
+          { label: 'Outros',      url: 'https://drive.google.com/drive/u/1/folders/1jbA4uvbqdPDRjrkuv-ADPHxSLvKRz3YY' }
         ]
       },
       {
@@ -1118,8 +1116,8 @@ const STAGES = [
   {
     id: 'engajamento-retencao',
     num: '04',
-    title: 'Engajamento & Retenção',
-    subtitle: 'vender mais vezes pros mesmos clientes',
+    title: 'Eficiência',
+    subtitle: 'engajamento e retenção — vender mais vezes pros mesmos clientes',
     color: '#12d490',
     nodes: [
       {
@@ -1423,7 +1421,7 @@ function buildLinksHTML(links, color) {
       });
       order.forEach((g, gi) => {
         if (g) {
-          if (gi > 0) rows += `<div style="height:1px;background:rgba(255,168,38,0.1);margin:8px 0 10px;"></div>`;
+          if (gi > 0) rows += `<div style="height:1px;background:rgba(255,168,38,0.1);margin:6px 0 6px;"></div>`;
           rows += `<p class="links-group-title">${g}</p>`;
         }
         groups[g].forEach(l => {
