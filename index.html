@@ -1276,7 +1276,8 @@ body {
 /* bridge connector between the two groups */
 .group-bridge {
   display: flex; align-items: center; flex-shrink: 0;
-  padding: 0 2px; margin-top: 44px; /* align with gear midpoint */
+  padding: 0 4px; margin-top: 54px; /* align with collapsed icon zone midpoint */
+  transition: margin-top 0.38s cubic-bezier(0.4,0,0.2,1);
 }
 .group-bridge-inner { display: flex; align-items: center; }
 .group-bridge-line  { width: 18px; height: 2px; background: var(--border2); }
@@ -1337,12 +1338,52 @@ body {
 }
 .gear-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
 .gear-name-label {
-  font-size: 9.5px; font-weight: 700; color: var(--text-2);
-  text-align: center; white-space: nowrap; letter-spacing: 0.2px;
+  font-size: 9px; font-weight: 800; color: var(--text-2);
+  text-align: center; white-space: nowrap; letter-spacing: 0.5px;
+  text-transform: uppercase; order: -1; /* always first */
 }
-.gear-impact {
-  font-size: 8.5px; font-weight: 700; text-align: center; min-height: 12px;
-  max-width: 110px; line-height: 1.3; white-space: nowrap;
+
+/* ── Collapsed icon zone ── */
+.gear-group-icon-zone {
+  overflow: hidden; max-height: 0; opacity: 0; pointer-events: none;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  transition: max-height 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.3s, padding 0.35s;
+  padding: 0;
+}
+.gear-group.is-collapsed .gear-group-icon-zone {
+  max-height: 140px; opacity: 1; pointer-events: auto; padding: 14px 0 8px;
+}
+.group-anim-icon {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px;
+}
+.group-anim-emoji {
+  font-size: 38px; position: relative; z-index: 2; display: block;
+}
+[data-group="marketing"] .group-anim-emoji { animation: mkIconAnim 2.4s ease-in-out infinite; }
+[data-group="site"]      .group-anim-emoji { animation: siteIconAnim 2.4s ease-in-out infinite; }
+@keyframes mkIconAnim {
+  0%,100% { transform: scale(1) rotate(-3deg); filter: drop-shadow(0 0 7px rgba(77,141,255,0.45)); }
+  50%     { transform: scale(1.12) rotate(3deg); filter: drop-shadow(0 0 20px rgba(77,141,255,0.85)); }
+}
+@keyframes siteIconAnim {
+  0%,100% { transform: scale(1); filter: drop-shadow(0 0 7px rgba(18,212,144,0.45)); }
+  50%     { transform: scale(1.12); filter: drop-shadow(0 0 20px rgba(18,212,144,0.85)); }
+}
+.group-anim-ring {
+  position: absolute; border-radius: 50%; width: 54px; height: 54px;
+  animation: ringExpand 2.4s ease-out infinite;
+}
+[data-group="marketing"] .group-anim-ring { border: 1.5px solid rgba(77,141,255,0.55); }
+[data-group="site"]      .group-anim-ring { border: 1.5px solid rgba(18,212,144,0.55); }
+.group-anim-ring.r2 { animation-delay: 1.2s; }
+@keyframes ringExpand {
+  0%   { transform: scale(0.7); opacity: 0.9; }
+  100% { transform: scale(2.0); opacity: 0; }
+}
+.group-anim-sublabel {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.4px;
+  color: var(--muted); text-align: center; white-space: nowrap;
 }
 .gear-connector {
   display: flex; align-items: center; padding-bottom: 58px; flex-shrink: 0;
@@ -4123,6 +4164,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       const suffix = g.unit === '%'  ? `<span class="gear-val-suffix">%</span>`  : '';
       const inputW = g.unit === 'R$' ? '44px' : (gearDecimals(g) === 0 ? '34px' : '36px');
       return `<div class="gear-item" id="gear-${g.id}" data-gear="${g.id}">
+        <span class="gear-name-label">${g.label}</span>
         <div class="gear-svg-wrap"><div id="gsvg-${g.id}"></div></div>
         <div class="gear-val-badge" id="gbadge-${g.id}">
           <span class="gear-val-abbr">${g.abbr}</span>
@@ -4136,7 +4178,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         <div class="gear-slider-wrap">
           <input type="range" class="gear-slider" id="gslider-${g.id}" min="${g.min}" max="${g.max}" step="${g.step}" value="${rawVal}">
         </div>
-        <span class="gear-name-label">${g.label}</span>
       </div>`;
     }
     const mkDefs   = GDEFS.slice(0, 2);  // CTR, CPC
@@ -4147,15 +4188,23 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     const siteDots = siteDefs.map(g => `<span class="gear-health-dot" id="gdot-${g.id}"></span>`).join('');
 
     const gearsHTML = `
-      <div class="gear-group" id="ggroup-marketing" data-group="marketing">
+      <div class="gear-group is-collapsed" id="ggroup-marketing" data-group="marketing">
         <div class="gear-group-header" id="ggheader-marketing">
           <div class="gear-group-label">
-            <span class="gear-group-icon">📢</span>
+            <span class="gear-group-icon">📣</span>
             <span class="gear-group-title">Marketing</span>
             <span class="gear-group-summary" id="ggsum-marketing"></span>
             <div class="gear-group-dots">${mkDots}</div>
           </div>
           <button class="gear-group-toggle" id="ggtoggle-marketing"></button>
+        </div>
+        <div class="gear-group-icon-zone">
+          <div class="group-anim-icon">
+            <div class="group-anim-ring r1"></div>
+            <div class="group-anim-ring r2"></div>
+            <span class="group-anim-emoji">📣</span>
+          </div>
+          <span class="group-anim-sublabel">Clique para ver métricas de anúncio</span>
         </div>
         <div class="gear-group-body" id="ggbody-marketing">${mkBody}</div>
       </div>
@@ -4165,7 +4214,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           <div class="group-bridge-arrow"></div>
         </div>
       </div>
-      <div class="gear-group" id="ggroup-site" data-group="site">
+      <div class="gear-group is-collapsed" id="ggroup-site" data-group="site">
         <div class="gear-group-header" id="ggheader-site">
           <div class="gear-group-label">
             <span class="gear-group-icon">🌐</span>
@@ -4174,6 +4223,14 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             <div class="gear-group-dots">${siteDots}</div>
           </div>
           <button class="gear-group-toggle" id="ggtoggle-site"></button>
+        </div>
+        <div class="gear-group-icon-zone">
+          <div class="group-anim-icon">
+            <div class="group-anim-ring r1"></div>
+            <div class="group-anim-ring r2"></div>
+            <span class="group-anim-emoji">🛒</span>
+          </div>
+          <span class="group-anim-sublabel">Clique para ver métricas do site</span>
         </div>
         <div class="gear-group-body" id="ggbody-site">${siteBody}</div>
       </div>`;
