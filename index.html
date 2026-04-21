@@ -1206,22 +1206,27 @@ body {
 .gear-item:hover { background: rgba(255,255,255,0.03); }
 .gear-item.is-active { background: rgba(255,255,255,0.05); }
 .gear-svg-wrap {
-  position: relative; width: 88px; height: 88px;
+  width: 88px; height: 88px;
   display: flex; align-items: center; justify-content: center;
 }
 @keyframes gearSpin { to { transform: rotate(360deg); } }
 .gear-spin { width: 88px; height: 88px; }
-.gear-center-label {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  pointer-events: none; gap: 2px;
+/* value badge — sits below the gear, above the slider */
+.gear-val-badge {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 4px 10px;
+  min-width: 72px;
 }
-.gear-center-abbr {
-  font-size: 7.5px; font-weight: 800; letter-spacing: 1.5px;
-  text-transform: uppercase; color: rgba(255,255,255,0.35); line-height: 1;
+.gear-val-abbr {
+  font-size: 8px; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--muted); line-height: 1;
 }
-.gear-center-val {
-  font-size: 12px; font-weight: 900; color: var(--text); line-height: 1.1; letter-spacing: -0.3px;
+.gear-val-num {
+  font-size: 15px; font-weight: 900; line-height: 1.15; letter-spacing: -0.5px;
+  color: var(--text);
 }
 .gear-slider-wrap { width: 88px; }
 .gear-slider {
@@ -1239,7 +1244,7 @@ body {
 }
 .gear-impact {
   font-size: 8.5px; font-weight: 700; text-align: center; min-height: 12px;
-  max-width: 100px; line-height: 1.3; white-space: nowrap;
+  max-width: 110px; line-height: 1.3; white-space: nowrap;
 }
 .gear-connector {
   display: flex; align-items: center; padding-bottom: 58px; flex-shrink: 0;
@@ -3893,6 +3898,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       if (svgW) svgW.innerHTML = makeGearSVG(h, i%2===0?'normal':'rev');
       const valEl = document.getElementById(`gval-${g.id}`);
       if (valEl) { valEl.textContent = g.unit==='R$' ? `R$${val.toFixed(2)}` : `${val.toFixed(1)}%`; valEl.style.color = c; }
+      const badge = document.getElementById(`gbadge-${g.id}`);
+      if (badge) { badge.style.borderColor = `${c}40`; badge.style.background = `${c}12`; }
       const sl = document.getElementById(`gslider-${g.id}`);
       if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
       const imp = calcImpact(g);
@@ -3991,10 +3998,10 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       return `<div class="gear-item" id="gear-${g.id}" data-gear="${g.id}">
         <div class="gear-svg-wrap">
           <div id="gsvg-${g.id}"></div>
-          <div class="gear-center-label">
-            <span class="gear-center-abbr">${g.abbr}</span>
-            <span class="gear-center-val" id="gval-${g.id}">${dispVal}</span>
-          </div>
+        </div>
+        <div class="gear-val-badge" id="gbadge-${g.id}">
+          <span class="gear-val-abbr">${g.abbr}</span>
+          <span class="gear-val-num" id="gval-${g.id}">${dispVal}</span>
         </div>
         <div class="gear-slider-wrap">
           <input type="range" class="gear-slider" id="gslider-${g.id}" min="${g.min}" max="${g.max}" step="${g.step}" value="${PERF[g.id]}">
