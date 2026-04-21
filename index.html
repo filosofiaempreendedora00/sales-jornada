@@ -1202,60 +1202,76 @@ body {
 /* ── Gear groups (Marketing / Site) ── */
 .gear-group {
   display: flex; flex-direction: column; align-items: center;
-  border-radius: 18px; padding: 0 10px 14px;
+  border-radius: 18px; padding: 0 12px 14px;
   border: 1px solid transparent;
   transition: border-color 0.3s, background 0.3s;
 }
 .gear-group[data-group="marketing"] {
-  background: rgba(77,141,255,0.055);
-  border-color: rgba(77,141,255,0.22);
+  background: rgba(77,141,255,0.06);
+  border-color: rgba(77,141,255,0.24);
 }
 .gear-group[data-group="site"] {
-  background: rgba(18,212,144,0.055);
-  border-color: rgba(18,212,144,0.22);
+  background: rgba(18,212,144,0.06);
+  border-color: rgba(18,212,144,0.24);
 }
 .gear-group-header {
   display: flex; align-items: center; justify-content: space-between;
-  width: 100%; padding: 10px 6px 10px; gap: 10px; cursor: pointer;
-  user-select: none;
+  width: 100%; padding: 11px 4px 9px; gap: 8px; cursor: pointer;
+  user-select: none; border-bottom: 1px solid transparent;
+  transition: border-color 0.25s;
 }
-.gear-group-label { display: flex; align-items: center; gap: 6px; flex: 1; }
-.gear-group-icon  { font-size: 13px; }
+[data-group="marketing"] .gear-group-header { border-bottom-color: rgba(77,141,255,0.15); }
+[data-group="site"]      .gear-group-header { border-bottom-color: rgba(18,212,144,0.15); }
+.gear-group.is-collapsed .gear-group-header { border-bottom-color: transparent; }
+.gear-group-label { display: flex; align-items: center; gap: 7px; flex: 1; min-width: 0; }
+.gear-group-icon  { font-size: 14px; flex-shrink: 0; }
 .gear-group-title {
-  font-size: 9px; font-weight: 900; letter-spacing: 1.8px;
-  text-transform: uppercase;
+  font-size: 9.5px; font-weight: 900; letter-spacing: 2px;
+  text-transform: uppercase; flex-shrink: 0;
 }
 [data-group="marketing"] .gear-group-title { color: #4d8dff; }
 [data-group="site"]      .gear-group-title { color: #12d490; }
-/* health dots — always visible, show summary when collapsed */
-.gear-group-dots { display: flex; gap: 5px; align-items: center; margin-left: 4px; }
+/* collapsed summary text (site conversion / marketing metrics) */
+.gear-group-summary {
+  font-size: 10px; font-weight: 800; letter-spacing: 0.3px;
+  white-space: nowrap; overflow: hidden;
+  max-width: 0; opacity: 0;
+  transition: max-width 0.35s cubic-bezier(0.4,0,0.2,1), opacity 0.25s;
+}
+.gear-group.is-collapsed .gear-group-summary { max-width: 160px; opacity: 1; }
+[data-group="marketing"] .gear-group-summary { color: rgba(77,141,255,0.75); }
+[data-group="site"]      .gear-group-summary { color: rgba(18,212,144,0.75); }
+/* health dots */
+.gear-group-dots { display: flex; gap: 5px; align-items: center; flex-shrink: 0; }
 .gear-health-dot {
   width: 8px; height: 8px; border-radius: 50%;
   background: var(--surface3); transition: background 0.35s;
   flex-shrink: 0;
 }
-/* toggle chevron */
+/* toggle button */
 .gear-group-toggle {
   width: 22px; height: 22px; border-radius: 7px;
   background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-  color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer;
+  color: var(--muted); font-size: 12px; font-weight: 900; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background 0.2s, color 0.2s;
+  flex-shrink: 0; transition: background 0.2s, color 0.2s, border-color 0.2s;
   line-height: 1;
 }
-.gear-group-toggle:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+[data-group="marketing"] .gear-group-toggle:hover { background: rgba(77,141,255,0.15); border-color: rgba(77,141,255,0.4); color: #4d8dff; }
+[data-group="site"]      .gear-group-toggle:hover { background: rgba(18,212,144,0.15); border-color: rgba(18,212,144,0.4); color: #12d490; }
+.gear-group.is-collapsed .gear-group-toggle::after { content: '+'; }
+.gear-group:not(.is-collapsed) .gear-group-toggle::after { content: '−'; }
 /* gear group body */
 .gear-group-body {
   display: flex; align-items: flex-start; gap: 0;
-  overflow: hidden;
+  overflow: hidden; padding-top: 0;
   max-height: 400px; opacity: 1;
-  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s, padding 0.3s;
 }
+.gear-group:not(.is-collapsed) .gear-group-body { padding-top: 10px; }
 .gear-group.is-collapsed .gear-group-body {
-  max-height: 0; opacity: 0; pointer-events: none;
+  max-height: 0; opacity: 0; pointer-events: none; padding-top: 0;
 }
-.gear-group.is-collapsed .gear-group-toggle::after { content: '+'; }
-.gear-group:not(.is-collapsed) .gear-group-toggle::after { content: '−'; }
 
 /* bridge connector between the two groups */
 .group-bridge {
@@ -1296,7 +1312,7 @@ body {
   text-transform: uppercase; color: var(--muted); line-height: 1;
 }
 .gear-val-row {
-  display: flex; align-items: baseline; gap: 1px;
+  display: flex; align-items: baseline; gap: 0;
 }
 .gear-val-prefix, .gear-val-suffix {
   font-size: 10px; font-weight: 800; color: var(--muted); line-height: 1;
@@ -3883,7 +3899,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       msgs:{good:'✓ Seus anúncios estão gerando bom engajamento. As pessoas respondem bem à sua comunicação.',warn:'⚠ CTR na média. Teste criativos mais impactantes, headlines diretas e novos formatos.',bad:'✕ CTR baixo. Seu anúncio não desperta curiosidade. Revise criativo, copy e audiência com urgência.'},
     },
     {
-      id:'cpc', label:'CPC', abbr:'CPC', unit:'R$', min:0.10, max:20, step:0.10,
+      id:'cpc', label:'CPC', abbr:'CPC', unit:'R$', min:0.10, max:20, step:0.10, decimals:2,
       bench: null,
       explain:'Custo por Clique — quanto você paga por cada visitante. Quanto menor, mais visitantes você consegue com o mesmo investimento.',
       impactDirect: true, impactLabel:'−R$0,50 no CPC',
@@ -3971,6 +3987,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function fmtBRL(n) { return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); }
   function fmtN(n)   { return Math.round(n).toLocaleString('pt-BR'); }
 
+  // Decimal places per gear — explicit or derived from step string
+  function gearDecimals(g) {
+    if (g.decimals !== undefined) return g.decimals;
+    const s = g.step.toString();
+    const dot = s.indexOf('.');
+    return dot === -1 ? 0 : s.length - dot - 1;
+  }
+  function fmtGearVal(g, val) { return val.toFixed(gearDecimals(g)); }
+
   function render() {
     const r = calcWith(PERF);
     const map = [
@@ -3989,7 +4014,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       const svgW = document.getElementById(`gsvg-${g.id}`);
       if (svgW) svgW.innerHTML = makeGearSVG(h, i%2===0?'normal':'rev');
       const valEl = document.getElementById(`gval-${g.id}`);
-      if (valEl && document.activeElement !== valEl) { valEl.value = val; valEl.style.color = c; }
+      if (valEl && document.activeElement !== valEl) { valEl.value = fmtGearVal(g, val); valEl.style.color = c; }
       else if (valEl) valEl.style.color = c;
       const badge = document.getElementById(`gbadge-${g.id}`);
       if (badge) { badge.style.borderColor = `${c}40`; badge.style.background = `${c}12`; }
@@ -3999,6 +4024,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
       // impact preview removed from gear face (still available in detail panel)
     });
+
+    // Group summaries (shown when collapsed)
+    const mkSum = document.getElementById('ggsum-marketing');
+    if (mkSum) mkSum.textContent = `CTR ${fmtGearVal(GDEFS[0], PERF.ctr)}% · CPC R$${fmtGearVal(GDEFS[1], PERF.cpc)}`;
+    const siteConv = (PERF.connectRate/100) * (PERF.addToCart/100) * (PERF.checkoutStart/100) * (PERF.conversion/100) * 100;
+    const siteSum = document.getElementById('ggsum-site');
+    if (siteSum) siteSum.textContent = `Conv. geral ${siteConv.toFixed(2)}%`;
 
     // Car glow
     const carEl = document.getElementById('perf-car-svg');
@@ -4083,20 +4115,21 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     if (!overlay) return;
 
     const connHTML = `<div class="gear-connector"><div class="gear-conn-inner"><div class="gear-conn-line"></div><div class="gear-conn-arrow"></div></div></div>`;
+
     function gearHTML(g) {
       const rawVal = PERF[g.id];
+      const dispVal = fmtGearVal(g, rawVal);
       const prefix = g.unit === 'R$' ? `<span class="gear-val-prefix">R$</span>` : '';
       const suffix = g.unit === '%'  ? `<span class="gear-val-suffix">%</span>`  : '';
-      const inputW = g.unit === 'R$' ? '42px' : '38px';
+      const inputW = g.unit === 'R$' ? '44px' : (gearDecimals(g) === 0 ? '34px' : '36px');
       return `<div class="gear-item" id="gear-${g.id}" data-gear="${g.id}">
         <div class="gear-svg-wrap"><div id="gsvg-${g.id}"></div></div>
         <div class="gear-val-badge" id="gbadge-${g.id}">
           <span class="gear-val-abbr">${g.abbr}</span>
           <div class="gear-val-row">
             ${prefix}
-            <input class="gear-val-input" id="gval-${g.id}" type="number"
-              min="${g.min}" max="${g.max}" step="${g.step}" value="${rawVal}"
-              style="width:${inputW}">
+            <input class="gear-val-input" id="gval-${g.id}" type="text" inputmode="decimal"
+              value="${dispVal}" style="width:${inputW}">
             ${suffix}
           </div>
         </div>
@@ -4119,6 +4152,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           <div class="gear-group-label">
             <span class="gear-group-icon">📢</span>
             <span class="gear-group-title">Marketing</span>
+            <span class="gear-group-summary" id="ggsum-marketing"></span>
             <div class="gear-group-dots">${mkDots}</div>
           </div>
           <button class="gear-group-toggle" id="ggtoggle-marketing"></button>
@@ -4136,6 +4170,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           <div class="gear-group-label">
             <span class="gear-group-icon">🌐</span>
             <span class="gear-group-title">Site</span>
+            <span class="gear-group-summary" id="ggsum-site"></span>
             <div class="gear-group-dots">${siteDots}</div>
           </div>
           <button class="gear-group-toggle" id="ggtoggle-site"></button>
@@ -4244,14 +4279,20 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         if (inp && document.activeElement !== inp) inp.value = parseFloat(sl.value);
         render();
       });
-      if (inp) inp.addEventListener('input', () => {
-        let v = parseFloat(inp.value);
-        if (isNaN(v)) return;
-        v = Math.min(g.max, Math.max(g.min, v));
-        PERF[g.id] = v;
-        if (sl) sl.value = v;
-        render();
-      });
+      if (inp) {
+        inp.addEventListener('input', () => {
+          let v = parseFloat(inp.value.replace(',', '.'));
+          if (isNaN(v)) return;
+          v = Math.min(g.max, Math.max(g.min, v));
+          PERF[g.id] = v;
+          if (sl) sl.value = v;
+          render();
+        });
+        inp.addEventListener('blur', () => {
+          let v = parseFloat(inp.value.replace(',', '.'));
+          if (!isNaN(v)) inp.value = fmtGearVal(g, Math.min(g.max, Math.max(g.min, v)));
+        });
+      }
     });
     document.getElementById('perf-investment').addEventListener('input', e => { PERF.investment = parseFloat(e.target.value)||0; render(); });
     document.getElementById('perf-ticket').addEventListener('input', e => { PERF.ticket = parseFloat(e.target.value)||0; render(); });
