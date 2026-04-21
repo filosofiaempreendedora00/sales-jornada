@@ -1295,10 +1295,21 @@ body {
   font-size: 8px; font-weight: 800; letter-spacing: 1.5px;
   text-transform: uppercase; color: var(--muted); line-height: 1;
 }
-.gear-val-num {
-  font-size: 15px; font-weight: 900; line-height: 1.15; letter-spacing: -0.5px;
-  color: var(--text);
+.gear-val-row {
+  display: flex; align-items: baseline; gap: 1px;
 }
+.gear-val-prefix, .gear-val-suffix {
+  font-size: 10px; font-weight: 800; color: var(--muted); line-height: 1;
+}
+.gear-val-input {
+  font-size: 15px; font-weight: 900; line-height: 1.15; letter-spacing: -0.5px;
+  color: var(--text); background: none; border: none; outline: none;
+  width: 46px; text-align: center; padding: 0; cursor: text;
+  -moz-appearance: textfield;
+}
+.gear-val-input::-webkit-outer-spin-button,
+.gear-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.gear-val-input:focus { color: #fff; }
 .gear-slider-wrap { width: 88px; }
 .gear-slider {
   -webkit-appearance: none; width: 100%; height: 3px;
@@ -3857,8 +3868,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   'use strict';
 
   const PERF = {
-    investment: 10000, ticket: 350,
-    ctr: 2.0, cpc: 1.50, connectRate: 80, addToCart: 6.5, checkoutStart: 55, conversion: 70,
+    investment: 3500, ticket: 350,
+    ctr: 2.0, cpc: 1.50, connectRate: 85, addToCart: 6.5, checkoutStart: 55, conversion: 70,
     activeGear: null,
   };
 
@@ -3978,19 +3989,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       const svgW = document.getElementById(`gsvg-${g.id}`);
       if (svgW) svgW.innerHTML = makeGearSVG(h, i%2===0?'normal':'rev');
       const valEl = document.getElementById(`gval-${g.id}`);
-      if (valEl) { valEl.textContent = g.unit==='R$' ? `R$${val.toFixed(2)}` : `${val.toFixed(1)}%`; valEl.style.color = c; }
+      if (valEl && document.activeElement !== valEl) { valEl.value = val; valEl.style.color = c; }
+      else if (valEl) valEl.style.color = c;
       const badge = document.getElementById(`gbadge-${g.id}`);
       if (badge) { badge.style.borderColor = `${c}40`; badge.style.background = `${c}12`; }
       const dot = document.getElementById(`gdot-${g.id}`);
       if (dot) dot.style.background = c;
       const sl = document.getElementById(`gslider-${g.id}`);
       if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
-      const imp = calcImpact(g);
-      const impEl = document.getElementById(`gimp-${g.id}`);
-      if (impEl && imp !== null && Math.abs(imp) > 0.5) {
-        impEl.textContent = `${g.impactLabel} = ${imp>=0?'+':''}${fmtBRL(imp)}`;
-        impEl.style.color = imp >= 0 ? '#12d490' : '#ef4444';
-      } else if (impEl) impEl.textContent = '';
+      // impact preview removed from gear face (still available in detail panel)
     });
 
     // Car glow
@@ -4077,18 +4084,26 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
     const connHTML = `<div class="gear-connector"><div class="gear-conn-inner"><div class="gear-conn-line"></div><div class="gear-conn-arrow"></div></div></div>`;
     function gearHTML(g) {
-      const dispVal = g.unit==='R$' ? `R$${PERF[g.id].toFixed(2)}` : `${PERF[g.id].toFixed(1)}%`;
+      const rawVal = PERF[g.id];
+      const prefix = g.unit === 'R$' ? `<span class="gear-val-prefix">R$</span>` : '';
+      const suffix = g.unit === '%'  ? `<span class="gear-val-suffix">%</span>`  : '';
+      const inputW = g.unit === 'R$' ? '42px' : '38px';
       return `<div class="gear-item" id="gear-${g.id}" data-gear="${g.id}">
         <div class="gear-svg-wrap"><div id="gsvg-${g.id}"></div></div>
         <div class="gear-val-badge" id="gbadge-${g.id}">
           <span class="gear-val-abbr">${g.abbr}</span>
-          <span class="gear-val-num" id="gval-${g.id}">${dispVal}</span>
+          <div class="gear-val-row">
+            ${prefix}
+            <input class="gear-val-input" id="gval-${g.id}" type="number"
+              min="${g.min}" max="${g.max}" step="${g.step}" value="${rawVal}"
+              style="width:${inputW}">
+            ${suffix}
+          </div>
         </div>
         <div class="gear-slider-wrap">
-          <input type="range" class="gear-slider" id="gslider-${g.id}" min="${g.min}" max="${g.max}" step="${g.step}" value="${PERF[g.id]}">
+          <input type="range" class="gear-slider" id="gslider-${g.id}" min="${g.min}" max="${g.max}" step="${g.step}" value="${rawVal}">
         </div>
         <span class="gear-name-label">${g.label}</span>
-        <span class="gear-impact" id="gimp-${g.id}"></span>
       </div>`;
     }
     const mkDefs   = GDEFS.slice(0, 2);  // CTR, CPC
@@ -4222,8 +4237,21 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
     });
     GDEFS.forEach(g => {
-      const sl = document.getElementById(`gslider-${g.id}`);
-      if (sl) sl.addEventListener('input', () => { PERF[g.id] = parseFloat(sl.value); render(); });
+      const sl  = document.getElementById(`gslider-${g.id}`);
+      const inp = document.getElementById(`gval-${g.id}`);
+      if (sl) sl.addEventListener('input', () => {
+        PERF[g.id] = parseFloat(sl.value);
+        if (inp && document.activeElement !== inp) inp.value = parseFloat(sl.value);
+        render();
+      });
+      if (inp) inp.addEventListener('input', () => {
+        let v = parseFloat(inp.value);
+        if (isNaN(v)) return;
+        v = Math.min(g.max, Math.max(g.min, v));
+        PERF[g.id] = v;
+        if (sl) sl.value = v;
+        render();
+      });
     });
     document.getElementById('perf-investment').addEventListener('input', e => { PERF.investment = parseFloat(e.target.value)||0; render(); });
     document.getElementById('perf-ticket').addEventListener('input', e => { PERF.ticket = parseFloat(e.target.value)||0; render(); });
