@@ -38,7 +38,7 @@ body {
 
 /* ── HEADER ─────────────────────────────────────── */
 .header {
-  padding: 80px 24px 56px;
+  padding: 36px 24px 28px;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -50,9 +50,9 @@ body {
 }
 
 .header-logo {
-  width: 72px;
+  width: 48px;
   display: block;
-  margin: 0 auto 20px;
+  margin: 0 auto 14px;
   animation: float 3.5s ease-in-out infinite;
   position: relative;
   z-index: 1;
@@ -166,7 +166,7 @@ body {
 /* ── FLOW WRAPPER ────────────────────────────────── */
 .flow-wrap {
   overflow-x: auto;
-  padding: 64px 24px 64px;
+  padding: 20px 24px 40px;
   -webkit-overflow-scrolling: touch;
   cursor: default;
   transition: background 0.4s ease;
@@ -1082,6 +1082,223 @@ body {
   .panel-footer { padding: 12px 20px 32px; }
 }
 
+/* ── PERFORMANCE SIMULATOR ─────────────────────── */
+.perf-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: var(--bg);
+  display: none; flex-direction: column; overflow: hidden;
+}
+.perf-overlay.is-open { display: flex; }
+
+.perf-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 24px; height: 54px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0; background: var(--surface);
+}
+.perf-header-title {
+  flex: 1; font-size: 13.5px; font-weight: 800; letter-spacing: 0.3px;
+  display: flex; align-items: center; gap: 10px;
+}
+.perf-header-sub {
+  font-size: 11px; font-weight: 500; color: var(--text-3); letter-spacing: 0;
+}
+.perf-close {
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; background: var(--surface2);
+  border: 1px solid var(--border); cursor: pointer;
+  color: var(--text-2); font-size: 15px; transition: all 0.18s;
+}
+.perf-close:hover { background: rgba(239,68,68,0.1); color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+.perf-body { flex: 1; display: flex; min-height: 0; }
+
+/* Left inputs */
+.perf-left {
+  width: 236px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  padding: 22px 16px; display: flex; flex-direction: column; gap: 12px;
+  overflow-y: auto; background: var(--surface);
+}
+.perf-section-label {
+  font-size: 9px; font-weight: 800; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 2px;
+}
+.input-card {
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 13px; padding: 13px 15px; transition: border-color 0.2s;
+}
+.input-card:focus-within { border-color: var(--c1); }
+.input-card-label {
+  font-size: 9px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--text-3);
+  margin-bottom: 9px; display: flex; align-items: center; gap: 6px;
+}
+.input-card-row { display: flex; align-items: baseline; gap: 5px; }
+.input-card-prefix { font-size: 13px; font-weight: 700; color: var(--text-3); }
+.input-card-field {
+  background: transparent; border: none; outline: none;
+  color: var(--text); font-size: 24px; font-weight: 900;
+  font-family: inherit; width: 100%; letter-spacing: -0.5px;
+}
+.input-card-field::placeholder { color: var(--text-3); }
+.input-card-hint { font-size: 10px; color: var(--text-3); margin-top: 5px; line-height: 1.4; }
+.perf-tip {
+  background: rgba(155,109,255,0.06); border: 1px solid rgba(155,109,255,0.15);
+  border-radius: 10px; padding: 12px 13px; font-size: 11px;
+  color: var(--text-3); line-height: 1.6; margin-top: auto;
+}
+
+/* Center */
+.perf-center { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.gears-area {
+  flex-shrink: 0; padding: 24px 16px 12px;
+  display: flex; align-items: flex-start; justify-content: center;
+}
+.gear-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer; padding: 8px 6px; border-radius: 14px;
+  transition: background 0.2s; user-select: none;
+}
+.gear-item:hover { background: rgba(255,255,255,0.03); }
+.gear-item.is-active { background: rgba(255,255,255,0.05); }
+.gear-svg-wrap {
+  position: relative; width: 88px; height: 88px;
+  display: flex; align-items: center; justify-content: center;
+}
+@keyframes gearSpin { to { transform: rotate(360deg); } }
+.gear-spin { width: 88px; height: 88px; }
+.gear-center-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none; gap: 2px;
+}
+.gear-center-abbr {
+  font-size: 7.5px; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.35); line-height: 1;
+}
+.gear-center-val {
+  font-size: 12px; font-weight: 900; color: var(--text); line-height: 1.1; letter-spacing: -0.3px;
+}
+.gear-slider-wrap { width: 88px; }
+.gear-slider {
+  -webkit-appearance: none; width: 100%; height: 3px;
+  border-radius: 2px; background: var(--surface3); outline: none; cursor: pointer;
+}
+.gear-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 13px; height: 13px; border-radius: 50%;
+  background: var(--gear-color, var(--c1)); cursor: pointer; transition: transform 0.15s;
+}
+.gear-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
+.gear-name-label {
+  font-size: 9.5px; font-weight: 700; color: var(--text-2);
+  text-align: center; white-space: nowrap; letter-spacing: 0.2px;
+}
+.gear-impact {
+  font-size: 8.5px; font-weight: 700; text-align: center; min-height: 12px;
+  max-width: 100px; line-height: 1.3; white-space: nowrap;
+}
+.gear-connector {
+  display: flex; align-items: center; padding-bottom: 58px; flex-shrink: 0;
+}
+.gear-conn-inner { display: flex; align-items: center; width: 28px; }
+.gear-conn-line { flex: 1; height: 1.5px; background: var(--border2); }
+.gear-conn-arrow {
+  width: 0; height: 0;
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  border-left: 6px solid var(--border2);
+}
+.car-section {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-end; overflow: hidden;
+}
+.perf-car-svg { display: block; max-width: 320px; width: 75%; transition: filter 0.6s ease; }
+.car-road-line { width: 100%; height: 2px; background: var(--border); position: relative; overflow: hidden; }
+.car-road-dashes {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(90deg, var(--border2) 0, var(--border2) 20px, transparent 20px, transparent 40px);
+  animation: roadMove 0.9s linear infinite;
+}
+@keyframes roadMove { to { transform: translateX(-40px); } }
+
+/* Right outputs */
+.perf-right {
+  width: 278px; flex-shrink: 0;
+  border-left: 1px solid var(--border);
+  padding: 22px 16px; display: flex; flex-direction: column; gap: 7px;
+  overflow: hidden; position: relative;
+}
+.output-item {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 11px 15px; flex: 1;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.output-item:last-child {
+  flex: 1.5; background: var(--surface3); border-color: rgba(155,109,255,0.2);
+}
+.output-label {
+  font-size: 8.5px; font-weight: 800; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text-3);
+  display: flex; align-items: center; gap: 6px;
+}
+.output-value {
+  font-size: 22px; font-weight: 900; color: var(--text);
+  letter-spacing: -0.5px; line-height: 1.1; transition: color 0.3s;
+}
+.output-item:last-child .output-value {
+  font-size: 26px;
+  background: linear-gradient(135deg, var(--c1), var(--c2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+
+/* Gear detail panel */
+.perf-detail {
+  position: absolute; top: 0; right: 0; bottom: 0; width: 100%;
+  background: var(--surface); border-left: 1px solid var(--border2);
+  transform: translateX(102%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  display: flex; flex-direction: column; overflow: hidden; z-index: 10;
+}
+.perf-detail.is-open { transform: translateX(0); }
+.detail-header {
+  padding: 16px 16px 13px; border-bottom: 1px solid var(--border);
+  flex-shrink: 0; position: relative;
+}
+.detail-gear-name {
+  font-size: 17px; font-weight: 800; margin-bottom: 5px;
+  display: flex; align-items: center; gap: 9px; padding-right: 36px;
+}
+.detail-health-badge {
+  font-size: 8.5px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 9px; border-radius: 99px; border: 1px solid; flex-shrink: 0;
+}
+.detail-close {
+  position: absolute; top: 12px; right: 12px;
+  width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  border-radius: 8px; background: var(--surface2); border: 1px solid var(--border);
+  cursor: pointer; color: var(--text-2); font-size: 13px; transition: all 0.15s;
+}
+.detail-close:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
+.detail-body { flex: 1; overflow-y: auto; padding: 14px 15px; display: flex; flex-direction: column; gap: 10px; }
+.detail-body::-webkit-scrollbar { width: 3px; }
+.detail-body::-webkit-scrollbar-thumb { background: var(--surface3); }
+.detail-block {
+  background: var(--surface2); border-radius: 10px; padding: 11px 13px; border: 1px solid var(--border);
+}
+.detail-block-label {
+  font-size: 8.5px; font-weight: 800; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--text-3); margin-bottom: 6px;
+}
+.detail-block-text { font-size: 12.5px; line-height: 1.65; color: var(--text-2); }
+.detail-diag { border-radius: 10px; padding: 11px 13px; border: 1px solid; }
+.detail-impact-val { font-size: 22px; font-weight: 900; margin-top: 5px; }
+.bench-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 5px 0; font-size: 11.5px; border-bottom: 1px solid var(--border);
+}
+.bench-row:last-child { border-bottom: none; }
+.bench-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; }
 }
@@ -1349,15 +1566,15 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 /* Name block */
 .apresentacao-name {
-  font-size: clamp(28px, 4vw, 46px);
+  font-size: clamp(22px, 3vw, 36px);
   font-weight: 900;
-  letter-spacing: -1.5px;
+  letter-spacing: -1px;
   line-height: 1.05;
   background: linear-gradient(140deg, #ffffff 30%, rgba(155,109,255,0.9) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .apresentacao-org {
@@ -1370,7 +1587,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-transform: uppercase;
   color: var(--c1);
   opacity: 0.65;
-  margin-bottom: 44px;
+  margin-bottom: 20px;
 }
 
 /* Roles */
@@ -2973,6 +3190,7 @@ function buildLinksHTML(links, color) {
 //  PANEL
 // ─────────────────────────────────────────────────
 function openPanel(nodeId) {
+  if (nodeId === 'trafego') { if (window.openPerfSimulator) window.openPerfSimulator(); return; }
   const node = getNode(nodeId);
   if (!node) return;
 
@@ -3506,11 +3724,351 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 })();
 
 // ─────────────────────────────────────────────────
+//  PERFORMANCE SIMULATOR
+// ─────────────────────────────────────────────────
+(function() {
+  'use strict';
+
+  const PERF = {
+    investment: 10000, ticket: 250,
+    ctr: 2.0, cpc: 2.50, addToCart: 5.0, checkoutStart: 60, conversion: 2.5,
+    activeGear: null,
+  };
+
+  const GDEFS = [
+    {
+      id:'ctr', label:'CTR', abbr:'CTR', unit:'%', min:0.1, max:10, step:0.1,
+      bench:{good:1.5,warn:1.0},
+      explain:'Taxa de Clique — mede quantas pessoas clicaram no anúncio em relação ao total que o viram. Reflete a qualidade do criativo e da segmentação.',
+      impactDirect: false,
+      benchRows:[{color:'#12d490',label:'Bom',val:'acima de 1,5%'},{color:'#ffa826',label:'Atenção',val:'1% – 1,5%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 1%'}],
+      msgs:{good:'✓ Seus anúncios estão gerando bom engajamento. As pessoas respondem bem à sua comunicação.',warn:'⚠ CTR na média. Teste criativos mais impactantes, headlines diretas e novos formatos.',bad:'✕ CTR baixo. Seu anúncio não desperta curiosidade. Revise criativo, copy e audiência com urgência.'},
+    },
+    {
+      id:'cpc', label:'CPC', abbr:'CPC', unit:'R$', min:0.10, max:20, step:0.10,
+      bench: null,
+      explain:'Custo por Clique — quanto você paga por cada visitante. Quanto menor, mais visitantes você consegue com o mesmo investimento.',
+      impactDirect: true, impactLabel:'−R$0,50 no CPC',
+      benchRows:[{color:'#12d490',label:'Bom',val:'quanto menor, melhor'},{color:'#ffa826',label:'Atenção',val:'alto em relação à margem'},{color:'#ef4444',label:'Crítico',val:'CPA inviável'}],
+      msgs:{good:'✓ Excelente eficiência de custo. Seu orçamento rende bem.',warn:'⚠ CPC dentro do aceitável, mas há espaço para otimizar segmentação e lances.',bad:'✕ CPC elevado. Você paga caro por visitante. Revise segmentação, palavras-chave e lances.'},
+    },
+    {
+      id:'addToCart', label:'Add to Cart', abbr:'ATC', unit:'%', min:0.1, max:30, step:0.1,
+      bench:{good:5.0,warn:3.0},
+      explain:'Taxa de Adição ao Carrinho — de cada 100 visitantes, quantos adicionaram um produto. Reflete a qualidade da oferta e da página de produto.',
+      impactDirect: true, impactLabel:'+1pp Add to Cart',
+      benchRows:[{color:'#12d490',label:'Bom',val:'5% – 10%'},{color:'#ffa826',label:'Atenção',val:'3% – 5%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 3%'}],
+      msgs:{good:'✓ Sua página de produto convence. Boa intenção de compra.',warn:'⚠ Abaixo do ideal. Revise oferta, imagens, preço e gatilhos de urgência.',bad:'✕ Taxa crítica. Sua página não convence. Revisão urgente: copy, fotos, proposta de valor, preço.'},
+    },
+    {
+      id:'checkoutStart', label:'Início Checkout', abbr:'CHK', unit:'%', min:1, max:100, step:1,
+      bench:{good:50,warn:40},
+      explain:'Início de Checkout — de quem adicionou ao carrinho, quantos avançaram para o checkout. Mede abandono de carrinho.',
+      impactDirect: true, impactLabel:'+1pp Checkout',
+      benchRows:[{color:'#12d490',label:'Bom',val:'50% – 70%'},{color:'#ffa826',label:'Atenção',val:'40% – 50%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 40%'}],
+      msgs:{good:'✓ Baixo abandono de carrinho. Boa fluidez até o checkout.',warn:'⚠ Abandono acima do ideal. O frete pode estar sendo surpresa — mostre antes.',bad:'✕ Alto abandono de carrinho. Possíveis causas: frete alto, cadastro obrigatório, checkout longo.'},
+    },
+    {
+      id:'conversion', label:'Conversão Final', abbr:'CVR', unit:'%', min:0.1, max:20, step:0.1,
+      bench:{good:2.0,warn:1.0},
+      explain:'Taxa de Conversão Final — de quem iniciou o checkout, quantos concluíram a compra. O momento decisivo: o cliente decide pagar ou não.',
+      impactDirect: true, impactLabel:'+1pp Conversão',
+      benchRows:[{color:'#12d490',label:'Bom',val:'2% – 4%'},{color:'#ffa826',label:'Atenção',val:'1% – 2%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 1%'}],
+      msgs:{good:'✓ Excelente conversão final. Sua experiência de compra é sólida.',warn:'⚠ Abaixo do potencial. Revise checkout, parcelamento e sinais de segurança.',bad:'✕ Conversão crítica. A maioria desiste na reta final. Simplifique o checkout, adicione confiança.'},
+    },
+  ];
+
+  function calcWith(s) {
+    const v  = s.cpc > 0 ? s.investment / s.cpc : 0;
+    const c  = v * s.addToCart / 100;
+    const ch = c * s.checkoutStart / 100;
+    const sa = ch * s.conversion / 100;
+    return { visitors:v, carts:c, checkouts:ch, sales:sa, revenue: sa * s.ticket };
+  }
+
+  function health(g, val) {
+    if (!g.bench) return 'neutral';
+    return val >= g.bench.good ? 'good' : val >= g.bench.warn ? 'warn' : 'bad';
+  }
+
+  function calcImpact(g) {
+    if (!g.impactDirect) return null;
+    const base = calcWith(PERF).revenue;
+    const next = {...PERF};
+    if (g.id === 'cpc') next.cpc = Math.max(0.01, PERF.cpc - 0.50);
+    else next[g.id] = PERF[g.id] + 1;
+    return calcWith(next).revenue - base;
+  }
+
+  function makeGearSVG(h, dir) {
+    const teeth = 10, outerR = 40, bodyR = 27, holeR = 11;
+    const step = Math.PI * 2 / teeth, tw = step * 0.44;
+    let d = '';
+    for (let i = 0; i < teeth; i++) {
+      const a = i * step - Math.PI / 2;
+      const P = (r, a2) => `${(r*Math.cos(a2)).toFixed(2)},${(r*Math.sin(a2)).toFixed(2)}`;
+      d += (i===0?'M':'L') + P(bodyR,a-tw/2);
+      d += ` L${P(outerR,a-tw*0.25)} L${P(outerR,a+tw*0.25)} L${P(bodyR,a+tw/2)}`;
+    }
+    d += ' Z';
+    const C = {good:'#12d490',warn:'#ffa826',bad:'#ef4444',neutral:'#4d8dff'}[h];
+    const animDir = dir === 'rev' ? 'reverse' : 'normal';
+    return `<svg viewBox="-50 -50 100 100" width="88" height="88" xmlns="http://www.w3.org/2000/svg" class="gear-spin" style="animation-direction:${animDir};animation-duration:${8+Math.random()*4}s">
+      <circle r="29" fill="${C}" opacity="0.09"/>
+      <path d="${d}" fill="${C}" opacity="0.88"/>
+      <circle r="${holeR}" fill="#07070f"/>
+      <circle r="${holeR-2.5}" fill="none" stroke="${C}" stroke-width="1.5" opacity="0.45"/>
+    </svg>`;
+  }
+
+  function fmtBRL(n) { return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); }
+  function fmtN(n)   { return Math.round(n).toLocaleString('pt-BR'); }
+
+  function render() {
+    const r = calcWith(PERF);
+    const map = [
+      ['perf-out-visitors', fmtN(r.visitors)],
+      ['perf-out-carts',    fmtN(r.carts)],
+      ['perf-out-checkouts',fmtN(r.checkouts)],
+      ['perf-out-sales',    fmtN(r.sales)],
+      ['perf-out-revenue',  fmtBRL(r.revenue)],
+    ];
+    map.forEach(([id,v]) => { const el=document.getElementById(id); if(el) el.textContent=v; });
+
+    const HC = {good:'#12d490',warn:'#ffa826',bad:'#ef4444',neutral:'#4d8dff'};
+    GDEFS.forEach((g,i) => {
+      const val = PERF[g.id], h = health(g,val), c = HC[h];
+      const svgW = document.getElementById(`gsvg-${g.id}`);
+      if (svgW) svgW.innerHTML = makeGearSVG(h, i%2===0?'normal':'rev');
+      const valEl = document.getElementById(`gval-${g.id}`);
+      if (valEl) { valEl.textContent = g.unit==='R$' ? `R$${val.toFixed(2)}` : `${val.toFixed(1)}%`; valEl.style.color = c; }
+      const sl = document.getElementById(`gslider-${g.id}`);
+      if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
+      const imp = calcImpact(g);
+      const impEl = document.getElementById(`gimp-${g.id}`);
+      if (impEl && imp !== null && Math.abs(imp) > 0.5) {
+        impEl.textContent = `${g.impactLabel} = ${imp>=0?'+':''}${fmtBRL(imp)}`;
+        impEl.style.color = imp >= 0 ? '#12d490' : '#ef4444';
+      } else if (impEl) impEl.textContent = '';
+    });
+
+    // Car glow
+    const carEl = document.getElementById('perf-car-svg');
+    if (carEl) {
+      const t = Math.min(r.revenue / 60000, 1);
+      const glow = 3 + t * 18;
+      const hue  = t > 0.55 ? 145 : t > 0.25 ? 38 : 0;
+      carEl.style.filter = `drop-shadow(0 0 ${glow}px hsl(${hue},80%,52%))`;
+    }
+
+    if (PERF.activeGear) renderDetail(PERF.activeGear);
+  }
+
+  function renderDetail(gid) {
+    const g = GDEFS.find(x=>x.id===gid); if(!g) return;
+    const val = PERF[gid], h = health(g,val);
+    const C = {good:'#12d490',warn:'#ffa826',bad:'#ef4444',neutral:'#4d8dff'}[h];
+    const L = {good:'Saudável',warn:'Atenção',bad:'Crítico',neutral:'Neutro'}[h];
+    const msg = g.msgs[h] || g.msgs.bad;
+    const imp = calcImpact(g);
+
+    const nameEl = document.getElementById('detail-gear-name');
+    const badgeEl = document.getElementById('detail-health-badge');
+    if (nameEl) nameEl.textContent = g.label;
+    if (badgeEl) {
+      badgeEl.textContent = L;
+      badgeEl.style.color = C;
+      badgeEl.style.borderColor = C+'55';
+      badgeEl.style.background = C+'12';
+    }
+
+    const benchHTML = g.benchRows.map(r=>`
+      <div class="bench-row">
+        <span style="display:flex;align-items:center;gap:7px">
+          <span class="bench-dot" style="background:${r.color}"></span>
+          <span style="font-weight:700;color:var(--text-2)">${r.label}</span>
+        </span>
+        <span style="color:var(--text-3);font-size:11px">${r.val}</span>
+      </div>`).join('');
+
+    const impHTML = imp !== null ? `<div class="detail-block">
+      <p class="detail-block-label">⚡ impacto estimado</p>
+      <p style="font-size:11px;color:var(--text-3);margin-bottom:4px">${g.impactLabel} nessa etapa equivale a:</p>
+      <p class="detail-impact-val" style="color:${imp>=0?'#12d490':'#ef4444'}">${imp>=0?'+':''}${fmtBRL(imp)}/mês</p>
+    </div>` : '';
+
+    const content = document.getElementById('detail-content');
+    if (content) content.innerHTML = `
+      <div class="detail-block">
+        <p class="detail-block-label">O que é</p>
+        <p class="detail-block-text">${g.explain}</p>
+      </div>
+      <div class="detail-diag" style="background:${C}0d;border-color:${C}33">
+        <p class="detail-block-label" style="color:${C}99">diagnóstico</p>
+        <p class="detail-block-text" style="color:${C}ee">${msg}</p>
+      </div>
+      <div class="detail-block">
+        <p class="detail-block-label">benchmarks</p>
+        ${benchHTML}
+      </div>
+      ${impHTML}`;
+  }
+
+  function openDetail(gid) {
+    PERF.activeGear = gid;
+    document.getElementById('perf-detail')?.classList.add('is-open');
+    renderDetail(gid);
+    document.querySelectorAll('.gear-item').forEach(el=>el.classList.toggle('is-active', el.dataset.gear===gid));
+  }
+
+  function closeDetail() {
+    PERF.activeGear = null;
+    document.getElementById('perf-detail')?.classList.remove('is-open');
+    document.querySelectorAll('.gear-item').forEach(el=>el.classList.remove('is-active'));
+  }
+
+  let built = false;
+  function buildOverlay() {
+    if (built) return;
+    built = true;
+    const overlay = document.getElementById('perf-overlay');
+    if (!overlay) return;
+
+    const gearsHTML = GDEFS.map((g,i) => {
+      const conn = i < GDEFS.length-1 ? `<div class="gear-connector"><div class="gear-conn-inner"><div class="gear-conn-line"></div><div class="gear-conn-arrow"></div></div></div>` : '';
+      const dispVal = g.unit==='R$' ? `R$${PERF[g.id].toFixed(2)}` : `${PERF[g.id].toFixed(1)}%`;
+      return `<div class="gear-item" id="gear-${g.id}" data-gear="${g.id}">
+        <div class="gear-svg-wrap">
+          <div id="gsvg-${g.id}"></div>
+          <div class="gear-center-label">
+            <span class="gear-center-abbr">${g.abbr}</span>
+            <span class="gear-center-val" id="gval-${g.id}">${dispVal}</span>
+          </div>
+        </div>
+        <div class="gear-slider-wrap">
+          <input type="range" class="gear-slider" id="gslider-${g.id}" min="${g.min}" max="${g.max}" step="${g.step}" value="${PERF[g.id]}">
+        </div>
+        <span class="gear-name-label">${g.label}</span>
+        <span class="gear-impact" id="gimp-${g.id}"></span>
+      </div>${conn}`;
+    }).join('');
+
+    overlay.innerHTML = `
+      <div class="perf-header">
+        <div class="perf-header-title">
+          ⚙️ Simulador de Performance
+          <span class="perf-header-sub">— ajuste as engrenagens e veja o impacto em tempo real</span>
+        </div>
+        <button class="perf-close" id="perf-close">✕</button>
+      </div>
+      <div class="perf-body">
+        <div class="perf-left">
+          <p class="perf-section-label">🔋 Combustível</p>
+          <div class="input-card">
+            <p class="input-card-label">💰 Investimento mensal</p>
+            <div class="input-card-row">
+              <span class="input-card-prefix">R$</span>
+              <input class="input-card-field" type="number" id="perf-investment" min="100" value="${PERF.investment}" placeholder="10000">
+            </div>
+            <p class="input-card-hint">Budget mensal em anúncios</p>
+          </div>
+          <div class="input-card">
+            <p class="input-card-label">🏷️ Ticket médio</p>
+            <div class="input-card-row">
+              <span class="input-card-prefix">R$</span>
+              <input class="input-card-field" type="number" id="perf-ticket" min="1" value="${PERF.ticket}" placeholder="250">
+            </div>
+            <p class="input-card-hint">Valor médio por pedido</p>
+          </div>
+          <div class="perf-tip">💡 <strong>Clique em qualquer engrenagem</strong> para ver benchmarks, diagnóstico e o impacto exato de cada ajuste no faturamento.</div>
+        </div>
+
+        <div class="perf-center">
+          <div class="gears-area">${gearsHTML}</div>
+          <div class="car-section">
+            <svg id="perf-car-svg" class="perf-car-svg" viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="140" cy="97" rx="112" ry="5" fill="rgba(0,0,0,0.45)"/>
+              <rect x="14" y="53" width="252" height="37" rx="8" fill="#0c0c1c"/>
+              <path d="M 62 53 Q 76 19 105 15 L 175 15 Q 206 15 222 53 Z" fill="#090912"/>
+              <path d="M 69 51 Q 82 26 107 21 L 173 21 Q 202 21 215 51 Z" fill="#101828" opacity="0.96"/>
+              <line x1="142" y1="21" x2="142" y2="51" stroke="#090912" stroke-width="4"/>
+              <circle cx="62" cy="89" r="19" fill="#0c0c18" stroke="#1a1a28" stroke-width="2"/>
+              <circle cx="62" cy="89" r="11" fill="#141420"/>
+              <circle cx="62" cy="89" r="4" fill="#202030"/>
+              <line x1="62" y1="78" x2="62" y2="100" stroke="#22223a" stroke-width="2"/>
+              <line x1="51" y1="89" x2="73" y2="89" stroke="#22223a" stroke-width="2"/>
+              <line x1="54" y1="81" x2="70" y2="97" stroke="#1c1c2e" stroke-width="1.5"/>
+              <line x1="54" y1="97" x2="70" y2="81" stroke="#1c1c2e" stroke-width="1.5"/>
+              <circle cx="218" cy="89" r="19" fill="#0c0c18" stroke="#1a1a28" stroke-width="2"/>
+              <circle cx="218" cy="89" r="11" fill="#141420"/>
+              <circle cx="218" cy="89" r="4" fill="#202030"/>
+              <line x1="218" y1="78" x2="218" y2="100" stroke="#22223a" stroke-width="2"/>
+              <line x1="207" y1="89" x2="229" y2="89" stroke="#22223a" stroke-width="2"/>
+              <line x1="210" y1="81" x2="226" y2="97" stroke="#1c1c2e" stroke-width="1.5"/>
+              <line x1="210" y1="97" x2="226" y2="81" stroke="#1c1c2e" stroke-width="1.5"/>
+              <rect x="15" y="59" width="18" height="8" rx="3" fill="#ffa826" opacity="0.7"/>
+              <rect x="247" y="59" width="18" height="8" rx="3" fill="#ef4444" opacity="0.6"/>
+              <rect x="16" y="67" width="250" height="1.5" fill="#14142a" opacity="0.7"/>
+            </svg>
+            <div class="car-road-line"><div class="car-road-dashes"></div></div>
+          </div>
+        </div>
+
+        <div class="perf-right">
+          <p class="perf-section-label">📊 Resultado</p>
+          <div class="output-item"><span class="output-label">👥 Visitantes</span><span class="output-value" id="perf-out-visitors">—</span></div>
+          <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="perf-out-carts">—</span></div>
+          <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="perf-out-checkouts">—</span></div>
+          <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="perf-out-sales">—</span></div>
+          <div class="output-item"><span class="output-label">💰 Faturamento</span><span class="output-value" id="perf-out-revenue">—</span></div>
+          <div class="perf-detail" id="perf-detail">
+            <div class="detail-header">
+              <div class="detail-gear-name"><span id="detail-gear-name">—</span><span class="detail-health-badge" id="detail-health-badge"></span></div>
+              <button class="detail-close" id="detail-close">✕</button>
+            </div>
+            <div class="detail-body" id="detail-content"></div>
+          </div>
+        </div>
+      </div>`;
+
+    document.getElementById('perf-close').addEventListener('click', closePerfSimulator);
+    document.getElementById('detail-close').addEventListener('click', closeDetail);
+    document.querySelectorAll('.gear-item').forEach(el => {
+      el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
+    });
+    GDEFS.forEach(g => {
+      const sl = document.getElementById(`gslider-${g.id}`);
+      if (sl) sl.addEventListener('input', () => { PERF[g.id] = parseFloat(sl.value); render(); });
+    });
+    document.getElementById('perf-investment').addEventListener('input', e => { PERF.investment = parseFloat(e.target.value)||0; render(); });
+    document.getElementById('perf-ticket').addEventListener('input', e => { PERF.ticket = parseFloat(e.target.value)||0; render(); });
+  }
+
+  function openPerfSimulator() {
+    buildOverlay();
+    document.getElementById('perf-overlay')?.classList.add('is-open');
+    render();
+  }
+
+  function closePerfSimulator() {
+    document.getElementById('perf-overlay')?.classList.remove('is-open');
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('perf-overlay')?.classList.contains('is-open'))
+      closePerfSimulator();
+  });
+
+  window.openPerfSimulator = openPerfSimulator;
+})();
+
+// ─────────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────────
 renderFlow();
 renderProgress();
 
 </script>
+<div id="perf-overlay" class="perf-overlay"></div>
 </body>
 </html>
