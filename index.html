@@ -1262,12 +1262,14 @@ body {
 [data-group="site"]      .gear-group-toggle:hover { background: rgba(18,212,144,0.15); border-color: rgba(18,212,144,0.4); color: #12d490; }
 .gear-group.is-collapsed .gear-group-toggle::after { content: '+'; }
 .gear-group:not(.is-collapsed) .gear-group-toggle::after { content: '−'; }
-/* collapsed = fixed square */
+/* collapsed = fixed square, whole card clickable */
 .gear-group.is-collapsed {
-  width: 172px; min-height: 170px; justify-content: flex-start;
-  padding: 0 10px 16px;
+  width: 230px; min-height: 220px; justify-content: flex-start;
+  padding: 0 14px 20px; cursor: pointer;
 }
-/* hide inline summary from header — info lives in the icon zone sublabel */
+.gear-group.is-collapsed:hover { filter: brightness(1.08); }
+/* hide toggle button and inline summary when collapsed */
+.gear-group.is-collapsed .gear-group-toggle { display: none; }
 .gear-group.is-collapsed .gear-group-summary { display: none; }
 /* gear group body */
 .gear-group-body {
@@ -1432,8 +1434,10 @@ body {
   border-radius: 12px; padding: 11px 15px; flex: 1;
   display: flex; flex-direction: column; justify-content: space-between;
 }
-.output-item:last-child {
-  flex: 1.5; background: var(--surface3); border-color: rgba(155,109,255,0.2);
+.output-item:last-child,
+.output-item.is-revenue {
+  flex: 1.5; background: rgba(18,212,144,0.07); border-color: rgba(18,212,144,0.28);
+  position: relative;
 }
 .output-label {
   font-size: 8.5px; font-weight: 800; letter-spacing: 2.5px;
@@ -1444,11 +1448,26 @@ body {
   font-size: 22px; font-weight: 900; color: var(--text);
   letter-spacing: -0.5px; line-height: 1.1; transition: color 0.3s;
 }
-.output-item:last-child .output-value {
-  font-size: 26px;
-  background: linear-gradient(135deg, var(--c1), var(--c2));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+.output-item:last-child .output-value,
+.output-item.is-revenue .output-value {
+  font-size: 26px; font-weight: 900;
+  color: #12d490; -webkit-text-fill-color: #12d490;
 }
+/* Revenue hover tooltip */
+.revenue-tooltip {
+  display: none;
+  position: absolute; bottom: calc(100% + 8px); left: 0; right: 0;
+  background: #12131f; border: 1px solid rgba(18,212,144,0.3);
+  border-radius: 10px; padding: 9px 12px;
+  font-size: 10px; color: var(--text-2); line-height: 1.5;
+  z-index: 20; pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.revenue-tooltip::after {
+  content: ''; position: absolute; top: 100%; left: 20px;
+  border: 6px solid transparent; border-top-color: rgba(18,212,144,0.3);
+}
+.output-item:last-child:hover .revenue-tooltip { display: block; }
 
 /* Gear detail panel */
 .perf-detail {
@@ -4204,7 +4223,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         <div class="gear-group-header" id="ggheader-marketing">
           <div class="gear-group-label">
             <span class="gear-group-icon">📣</span>
-            <span class="gear-group-title">Marketing</span>
+            <span class="gear-group-title">Marketing (Anúncios Online)</span>
             <span class="gear-group-summary" id="ggsum-marketing"></span>
             <div class="gear-group-dots">${mkDots}</div>
           </div>
@@ -4315,7 +4334,11 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="perf-out-carts">—</span></div>
           <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="perf-out-checkouts">—</span></div>
           <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="perf-out-sales">—</span></div>
-          <div class="output-item"><span class="output-label">💰 Faturamento</span><span class="output-value" id="perf-out-revenue">—</span></div>
+          <div class="output-item is-revenue">
+            <span class="output-label">💰 Faturamento</span>
+            <span class="output-value" id="perf-out-revenue">—</span>
+            <div class="revenue-tooltip">📌 Estimativa exclusiva de anúncios pagos. Vendas orgânicas — SEO, redes sociais, tráfego direto — <strong>não estão incluídas</strong> neste número.</div>
+          </div>
           <div class="perf-detail" id="perf-detail">
             <div class="detail-header">
               <div class="detail-gear-name"><span id="detail-gear-name">—</span><span class="detail-health-badge" id="detail-health-badge"></span></div>
@@ -4335,15 +4358,21 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       document.querySelector('.perf-center').classList.toggle('all-collapsed', mkC && sitC);
     }
     ['marketing', 'site'].forEach(grp => {
-      const header = document.getElementById(`ggheader-${grp}`);
-      const group  = document.getElementById(`ggroup-${grp}`);
-      if (header && group) header.addEventListener('click', e => {
-        if (e.target.closest('.gear-item')) return;
-        group.classList.toggle('is-collapsed');
+      const group = document.getElementById(`ggroup-${grp}`);
+      if (!group) return;
+      group.addEventListener('click', e => {
+        if (e.target.closest('.gear-item') || e.target.closest('.gear-slider')) return;
+        if (group.classList.contains('is-collapsed')) {
+          // whole card click → expand
+          group.classList.remove('is-collapsed');
+        } else if (e.target.closest('.gear-group-header')) {
+          // only header click → collapse
+          group.classList.add('is-collapsed');
+        }
         syncAllCollapsed();
       });
     });
-    syncAllCollapsed(); // set initial state (both start collapsed)
+    syncAllCollapsed();
     document.querySelectorAll('.gear-item').forEach(el => {
       el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
     });
