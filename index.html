@@ -1195,8 +1195,79 @@ body {
 /* Center */
 .perf-center { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .gears-area {
-  flex-shrink: 0; padding: 24px 16px 12px;
-  display: flex; align-items: flex-start; justify-content: center;
+  flex-shrink: 0; padding: 20px 16px 12px;
+  display: flex; align-items: flex-start; justify-content: center; gap: 0;
+}
+
+/* ── Gear groups (Marketing / Site) ── */
+.gear-group {
+  display: flex; flex-direction: column; align-items: center;
+  border-radius: 18px; padding: 0 10px 14px;
+  border: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s;
+}
+.gear-group[data-group="marketing"] {
+  background: rgba(77,141,255,0.055);
+  border-color: rgba(77,141,255,0.22);
+}
+.gear-group[data-group="site"] {
+  background: rgba(18,212,144,0.055);
+  border-color: rgba(18,212,144,0.22);
+}
+.gear-group-header {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 10px 6px 10px; gap: 10px; cursor: pointer;
+  user-select: none;
+}
+.gear-group-label { display: flex; align-items: center; gap: 6px; flex: 1; }
+.gear-group-icon  { font-size: 13px; }
+.gear-group-title {
+  font-size: 9px; font-weight: 900; letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+[data-group="marketing"] .gear-group-title { color: #4d8dff; }
+[data-group="site"]      .gear-group-title { color: #12d490; }
+/* health dots — always visible, show summary when collapsed */
+.gear-group-dots { display: flex; gap: 5px; align-items: center; margin-left: 4px; }
+.gear-health-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--surface3); transition: background 0.35s;
+  flex-shrink: 0;
+}
+/* toggle chevron */
+.gear-group-toggle {
+  width: 22px; height: 22px; border-radius: 7px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.2s, color 0.2s;
+  line-height: 1;
+}
+.gear-group-toggle:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+/* gear group body */
+.gear-group-body {
+  display: flex; align-items: flex-start; gap: 0;
+  overflow: hidden;
+  max-height: 400px; opacity: 1;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), opacity 0.28s;
+}
+.gear-group.is-collapsed .gear-group-body {
+  max-height: 0; opacity: 0; pointer-events: none;
+}
+.gear-group.is-collapsed .gear-group-toggle::after { content: '+'; }
+.gear-group:not(.is-collapsed) .gear-group-toggle::after { content: '−'; }
+
+/* bridge connector between the two groups */
+.group-bridge {
+  display: flex; align-items: center; flex-shrink: 0;
+  padding: 0 2px; margin-top: 44px; /* align with gear midpoint */
+}
+.group-bridge-inner { display: flex; align-items: center; }
+.group-bridge-line  { width: 18px; height: 2px; background: var(--border2); }
+.group-bridge-arrow {
+  width: 0; height: 0;
+  border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+  border-left: 6px solid var(--border2);
 }
 .gear-item {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -3910,6 +3981,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       if (valEl) { valEl.textContent = g.unit==='R$' ? `R$${val.toFixed(2)}` : `${val.toFixed(1)}%`; valEl.style.color = c; }
       const badge = document.getElementById(`gbadge-${g.id}`);
       if (badge) { badge.style.borderColor = `${c}40`; badge.style.background = `${c}12`; }
+      const dot = document.getElementById(`gdot-${g.id}`);
+      if (dot) dot.style.background = c;
       const sl = document.getElementById(`gslider-${g.id}`);
       if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
       const imp = calcImpact(g);
@@ -4002,13 +4075,11 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     const overlay = document.getElementById('perf-overlay');
     if (!overlay) return;
 
-    const gearsHTML = GDEFS.map((g,i) => {
-      const conn = i < GDEFS.length-1 ? `<div class="gear-connector"><div class="gear-conn-inner"><div class="gear-conn-line"></div><div class="gear-conn-arrow"></div></div></div>` : '';
+    const connHTML = `<div class="gear-connector"><div class="gear-conn-inner"><div class="gear-conn-line"></div><div class="gear-conn-arrow"></div></div></div>`;
+    function gearHTML(g) {
       const dispVal = g.unit==='R$' ? `R$${PERF[g.id].toFixed(2)}` : `${PERF[g.id].toFixed(1)}%`;
       return `<div class="gear-item" id="gear-${g.id}" data-gear="${g.id}">
-        <div class="gear-svg-wrap">
-          <div id="gsvg-${g.id}"></div>
-        </div>
+        <div class="gear-svg-wrap"><div id="gsvg-${g.id}"></div></div>
         <div class="gear-val-badge" id="gbadge-${g.id}">
           <span class="gear-val-abbr">${g.abbr}</span>
           <span class="gear-val-num" id="gval-${g.id}">${dispVal}</span>
@@ -4018,8 +4089,44 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         </div>
         <span class="gear-name-label">${g.label}</span>
         <span class="gear-impact" id="gimp-${g.id}"></span>
-      </div>${conn}`;
-    }).join('');
+      </div>`;
+    }
+    const mkDefs   = GDEFS.slice(0, 2);  // CTR, CPC
+    const siteDefs = GDEFS.slice(2);     // CNX, ATC, CHK, FCH
+    const mkBody   = mkDefs.map((g,i)   => gearHTML(g) + (i < mkDefs.length-1   ? connHTML : '')).join('');
+    const siteBody = siteDefs.map((g,i) => gearHTML(g) + (i < siteDefs.length-1 ? connHTML : '')).join('');
+    const mkDots   = mkDefs.map(g   => `<span class="gear-health-dot" id="gdot-${g.id}"></span>`).join('');
+    const siteDots = siteDefs.map(g => `<span class="gear-health-dot" id="gdot-${g.id}"></span>`).join('');
+
+    const gearsHTML = `
+      <div class="gear-group" id="ggroup-marketing" data-group="marketing">
+        <div class="gear-group-header" id="ggheader-marketing">
+          <div class="gear-group-label">
+            <span class="gear-group-icon">📢</span>
+            <span class="gear-group-title">Marketing</span>
+            <div class="gear-group-dots">${mkDots}</div>
+          </div>
+          <button class="gear-group-toggle" id="ggtoggle-marketing"></button>
+        </div>
+        <div class="gear-group-body" id="ggbody-marketing">${mkBody}</div>
+      </div>
+      <div class="group-bridge">
+        <div class="group-bridge-inner">
+          <div class="group-bridge-line"></div>
+          <div class="group-bridge-arrow"></div>
+        </div>
+      </div>
+      <div class="gear-group" id="ggroup-site" data-group="site">
+        <div class="gear-group-header" id="ggheader-site">
+          <div class="gear-group-label">
+            <span class="gear-group-icon">🌐</span>
+            <span class="gear-group-title">Site</span>
+            <div class="gear-group-dots">${siteDots}</div>
+          </div>
+          <button class="gear-group-toggle" id="ggtoggle-site"></button>
+        </div>
+        <div class="gear-group-body" id="ggbody-site">${siteBody}</div>
+      </div>`;
 
     overlay.innerHTML = `
       <div class="perf-header">
@@ -4102,6 +4209,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
     document.getElementById('perf-close').addEventListener('click', closePerfSimulator);
     document.getElementById('detail-close').addEventListener('click', closeDetail);
+    // Group collapse/expand
+    ['marketing', 'site'].forEach(grp => {
+      const header = document.getElementById(`ggheader-${grp}`);
+      const group  = document.getElementById(`ggroup-${grp}`);
+      if (header && group) header.addEventListener('click', e => {
+        if (e.target.closest('.gear-item')) return;
+        group.classList.toggle('is-collapsed');
+      });
+    });
     document.querySelectorAll('.gear-item').forEach(el => {
       el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
     });
