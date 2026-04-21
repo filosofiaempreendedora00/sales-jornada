@@ -22,6 +22,8 @@
   --c3: #0dcfe8;
   --c4: #ffa826;
   --c5: #12d490;
+
+  --muted: #8e93b0;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1418,11 +1420,21 @@ body {
 /* hide toggle button and inline summary when collapsed */
 .gear-group.is-collapsed .gear-group-toggle { display: none; }
 .gear-group.is-collapsed .gear-group-summary { display: none; }
-/* truncate long title inside collapsed card */
+/* 2-line title inside collapsed card */
 .gear-group.is-collapsed .gear-group-title {
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  max-width: 150px;
+  white-space: normal;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-width: 138px;
+  line-height: 1.35;
+  flex-shrink: 1;
 }
+/* top-align label row so icon & dots align to first line of title */
+.gear-group.is-collapsed .gear-group-label { align-items: flex-start; }
+.gear-group.is-collapsed .gear-group-icon  { margin-top: 1px; }
+.gear-group.is-collapsed .gear-group-dots  { margin-top: 2px; }
 /* dots must never shrink */
 .gear-group-dots { flex-shrink: 0; }
 /* gear group body */
@@ -1588,32 +1600,63 @@ body {
 .perf-right {
   width: 278px; flex-shrink: 0;
   border-left: 1px solid var(--border);
-  padding: 22px 16px; display: flex; flex-direction: column; gap: 7px;
+  padding: 22px 16px; display: flex; flex-direction: column; gap: 10px;
   overflow: hidden; position: relative;
 }
+
+/* ── Funnel steps container ── */
+.funnel-steps {
+  display: flex; flex-direction: column; gap: 0;
+  flex: 5;
+  background: var(--bg); /* shows between trapezoids as thin separator */
+  overflow: hidden;
+}
+.funnel-steps .output-item {
+  border: none; border-radius: 0; flex: 1;
+  background: var(--surface2);
+  padding: 8px 18px;
+  align-items: center; text-align: center;
+  margin-bottom: 2px;
+}
+/* Trapezoid shapes — each step narrows by 5% per side */
+.funnel-steps .output-item:nth-child(1) { clip-path: polygon(0%   0%, 100%  0%,  95%  100%,  5% 100%); }
+.funnel-steps .output-item:nth-child(2) { clip-path: polygon(5%   0%,  95%  0%,  90%  100%, 10% 100%); }
+.funnel-steps .output-item:nth-child(3) { clip-path: polygon(10%  0%,  90%  0%,  85%  100%, 15% 100%); }
+.funnel-steps .output-item:nth-child(4) { clip-path: polygon(15%  0%,  85%  0%,  80%  100%, 20% 100%); }
+.funnel-steps .output-item:nth-child(5) { clip-path: polygon(20%  0%,  80%  0%,  78%  100%, 22% 100%); margin-bottom: 0; }
+/* Subtle color tint per step */
+.funnel-steps .output-item:nth-child(1) { background: rgba(77,141,255,0.12); }
+.funnel-steps .output-item:nth-child(2) { background: rgba(77,141,255,0.09); }
+.funnel-steps .output-item:nth-child(3) { background: rgba(40,180,200,0.09); }
+.funnel-steps .output-item:nth-child(4) { background: rgba(18,212,144,0.08); }
+.funnel-steps .output-item:nth-child(5) { background: rgba(18,212,144,0.11); }
+
 .output-item {
   background: var(--surface2); border: 1px solid var(--border);
   border-radius: 12px; padding: 11px 15px; flex: 1;
   display: flex; flex-direction: column; justify-content: space-between;
 }
-.output-item:last-child,
 .output-item.is-revenue {
   flex: 1.5; background: rgba(18,212,144,0.07); border-color: rgba(18,212,144,0.28);
-  position: relative;
+  position: relative; border-radius: 12px;
 }
 .output-label {
   font-size: 8.5px; font-weight: 800; letter-spacing: 2.5px;
-  text-transform: uppercase; color: var(--text-3);
-  display: flex; align-items: center; gap: 6px;
+  text-transform: uppercase; color: var(--text-2);
+  display: flex; align-items: center; justify-content: center; gap: 5px;
 }
 .output-value {
-  font-size: 22px; font-weight: 900; color: var(--text);
+  font-size: 20px; font-weight: 900; color: var(--text);
   letter-spacing: -0.5px; line-height: 1.1; transition: color 0.3s;
+  text-align: center;
 }
-.output-item:last-child .output-value,
 .output-item.is-revenue .output-value {
   font-size: 26px; font-weight: 900;
   color: #12d490; -webkit-text-fill-color: #12d490;
+  text-align: left;
+}
+.output-item.is-revenue .output-label {
+  justify-content: flex-start;
 }
 /* Revenue hover tooltip */
 .revenue-tooltip {
@@ -1629,7 +1672,7 @@ body {
   content: ''; position: absolute; top: 100%; left: 20px;
   border: 6px solid transparent; border-top-color: rgba(18,212,144,0.3);
 }
-.output-item:last-child:hover .revenue-tooltip { display: block; }
+.output-item.is-revenue:hover .revenue-tooltip { display: block; }
 
 /* Gear detail panel */
 .perf-detail {
@@ -4494,11 +4537,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
         <div class="perf-right">
           <p class="perf-section-label">📊 Resultado</p>
-          <div class="output-item"><span class="output-label">👆 Cliques</span><span class="output-value" id="perf-out-clicks">—</span></div>
-          <div class="output-item"><span class="output-label">📄 Pageviews</span><span class="output-value" id="perf-out-pageviews">—</span></div>
-          <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="perf-out-carts">—</span></div>
-          <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="perf-out-checkouts">—</span></div>
-          <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="perf-out-sales">—</span></div>
+          <div class="funnel-steps">
+            <div class="output-item"><span class="output-label">👆 Cliques</span><span class="output-value" id="perf-out-clicks">—</span></div>
+            <div class="output-item"><span class="output-label">📄 Pageviews</span><span class="output-value" id="perf-out-pageviews">—</span></div>
+            <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="perf-out-carts">—</span></div>
+            <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="perf-out-checkouts">—</span></div>
+            <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="perf-out-sales">—</span></div>
+          </div>
           <div class="output-item is-revenue">
             <span class="output-label">💰 Faturamento</span>
             <span class="output-value" id="perf-out-revenue">—</span>
