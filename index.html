@@ -1195,8 +1195,8 @@ body {
 /* Center */
 .perf-center { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
 .gears-area {
-  flex-shrink: 0; padding: 20px 16px 12px;
-  display: flex; align-items: flex-start; justify-content: center; gap: 0;
+  flex: 1; padding: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 0;
 }
 
 /* ── Gear groups (Marketing / Site) ── */
@@ -1204,6 +1204,7 @@ body {
   display: flex; flex-direction: column; align-items: center;
   border-radius: 18px; padding: 0 12px 14px;
   border: 1px solid transparent;
+  transition: border-color 0.3s, background 0.3s, width 0.42s cubic-bezier(0.4,0,0.2,1), min-height 0.42s cubic-bezier(0.4,0,0.2,1), border-radius 0.3s;
   transition: border-color 0.3s, background 0.3s;
 }
 .gear-group[data-group="marketing"] {
@@ -1261,6 +1262,13 @@ body {
 [data-group="site"]      .gear-group-toggle:hover { background: rgba(18,212,144,0.15); border-color: rgba(18,212,144,0.4); color: #12d490; }
 .gear-group.is-collapsed .gear-group-toggle::after { content: '+'; }
 .gear-group:not(.is-collapsed) .gear-group-toggle::after { content: '−'; }
+/* collapsed = fixed square */
+.gear-group.is-collapsed {
+  width: 172px; min-height: 170px; justify-content: flex-start;
+  padding: 0 10px 16px;
+}
+/* hide inline summary from header — info lives in the icon zone sublabel */
+.gear-group.is-collapsed .gear-group-summary { display: none; }
 /* gear group body */
 .gear-group-body {
   display: flex; align-items: flex-start; gap: 0;
@@ -1276,8 +1284,7 @@ body {
 /* bridge connector between the two groups */
 .group-bridge {
   display: flex; align-items: center; flex-shrink: 0;
-  padding: 0 4px; margin-top: 54px; /* align with collapsed icon zone midpoint */
-  transition: margin-top 0.38s cubic-bezier(0.4,0,0.2,1);
+  padding: 0 6px; align-self: center;
 }
 .group-bridge-inner { display: flex; align-items: center; }
 .group-bridge-line  { width: 18px; height: 2px; background: var(--border2); }
@@ -1396,8 +1403,13 @@ body {
   border-left: 6px solid var(--border2);
 }
 .car-section {
-  flex: 1; display: flex; flex-direction: column;
+  flex-shrink: 0; display: flex; flex-direction: column;
   align-items: center; justify-content: flex-end; overflow: hidden;
+  max-height: 220px; opacity: 1;
+  transition: max-height 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.3s;
+}
+.perf-center.all-collapsed .car-section {
+  max-height: 0; opacity: 0;
 }
 .perf-car-svg { display: block; max-width: 320px; width: 75%; transition: filter 0.6s ease; }
 .car-road-line { width: 100%; height: 2px; background: var(--border); position: relative; overflow: hidden; }
@@ -4066,12 +4078,12 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       // impact preview removed from gear face (still available in detail panel)
     });
 
-    // Group summaries (shown when collapsed)
-    const mkSum = document.getElementById('ggsum-marketing');
-    if (mkSum) mkSum.textContent = `CTR ${fmtGearVal(GDEFS[0], PERF.ctr)}% · CPC R$${fmtGearVal(GDEFS[1], PERF.cpc)}`;
+    // Group summaries — sublabels in icon zone (live values)
     const siteConv = (PERF.connectRate/100) * (PERF.addToCart/100) * (PERF.checkoutStart/100) * (PERF.conversion/100) * 100;
-    const siteSum = document.getElementById('ggsum-site');
-    if (siteSum) siteSum.textContent = `Conv. geral ${siteConv.toFixed(2)}%`;
+    const mkSub = document.querySelector('#ggroup-marketing .group-anim-sublabel');
+    if (mkSub) mkSub.textContent = `CTR ${fmtGearVal(GDEFS[0], PERF.ctr)}% · CPC R$${fmtGearVal(GDEFS[1], PERF.cpc)}`;
+    const siteSub = document.querySelector('#ggroup-site .group-anim-sublabel');
+    if (siteSub) siteSub.textContent = `Conv. geral ${siteConv.toFixed(2)}%`;
 
     // Car glow
     const carEl = document.getElementById('perf-car-svg');
@@ -4317,14 +4329,21 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     document.getElementById('perf-close').addEventListener('click', closePerfSimulator);
     document.getElementById('detail-close').addEventListener('click', closeDetail);
     // Group collapse/expand
+    function syncAllCollapsed() {
+      const mkC  = document.getElementById('ggroup-marketing').classList.contains('is-collapsed');
+      const sitC = document.getElementById('ggroup-site').classList.contains('is-collapsed');
+      document.querySelector('.perf-center').classList.toggle('all-collapsed', mkC && sitC);
+    }
     ['marketing', 'site'].forEach(grp => {
       const header = document.getElementById(`ggheader-${grp}`);
       const group  = document.getElementById(`ggroup-${grp}`);
       if (header && group) header.addEventListener('click', e => {
         if (e.target.closest('.gear-item')) return;
         group.classList.toggle('is-collapsed');
+        syncAllCollapsed();
       });
     });
+    syncAllCollapsed(); // set initial state (both start collapsed)
     document.querySelectorAll('.gear-item').forEach(el => {
       el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
     });
