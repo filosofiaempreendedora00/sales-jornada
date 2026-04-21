@@ -3787,7 +3787,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
   const PERF = {
     investment: 10000, ticket: 250,
-    ctr: 2.0, cpc: 2.50, connectRate: 75, addToCart: 5.0, checkoutStart: 60, conversion: 2.5,
+    ctr: 2.0, cpc: 2.50, connectRate: 75, addToCart: 5.0, checkoutStart: 60, conversion: 40,
     activeGear: null,
   };
 
@@ -3833,12 +3833,12 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       msgs:{good:'✓ Baixo abandono de carrinho. Boa fluidez até o checkout.',warn:'⚠ Abandono acima do ideal. O frete pode estar sendo surpresa — mostre antes.',bad:'✕ Alto abandono de carrinho. Possíveis causas: frete alto, cadastro obrigatório, checkout longo.'},
     },
     {
-      id:'conversion', label:'Conversão Final', abbr:'CVR', unit:'%', min:0.1, max:20, step:0.1,
-      bench:{good:2.0,warn:1.0},
-      explain:'Taxa de Conversão Final — de quem iniciou o checkout, quantos concluíram a compra. O momento decisivo: o cliente decide pagar ou não.',
-      impactDirect: true, impactLabel:'+1pp Conversão',
-      benchRows:[{color:'#12d490',label:'Bom',val:'2% – 4%'},{color:'#ffa826',label:'Atenção',val:'1% – 2%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 1%'}],
-      msgs:{good:'✓ Excelente conversão final. Sua experiência de compra é sólida.',warn:'⚠ Abaixo do potencial. Revise checkout, parcelamento e sinais de segurança.',bad:'✕ Conversão crítica. A maioria desiste na reta final. Simplifique o checkout, adicione confiança.'},
+      id:'conversion', label:'Fechamento no Checkout', abbr:'FCH', unit:'%', min:1, max:100, step:1,
+      bench:{good:60,warn:35},
+      explain:'Fechamento no Checkout — de quem iniciou o checkout, quantos concluíram a compra de fato. É a última barreira: o cliente já demonstrou intenção máxima, mas ainda pode desistir no pagamento.',
+      impactDirect: true, impactLabel:'+1pp Fechamento',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 60%'},{color:'#ffa826',label:'Atenção',val:'35% – 60%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 35%'}],
+      msgs:{good:'✓ Excelente fechamento. A maioria de quem chega ao checkout conclui a compra.',warn:'⚠ Mais da metade abandona após iniciar o checkout. Revise formas de pagamento, parcelamento e segurança.',bad:'✕ Crítico: a maior parte desiste no último passo. Checkout longo, falta de confiança ou método de pagamento limitado.'},
     },
   ];
 
