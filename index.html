@@ -1086,9 +1086,871 @@ body {
   *, *::before, *::after { transition: none !important; }
 }
 
+/* ── SIDEBAR LAYOUT ─────────────────────────────── */
+body { display: flex; min-height: 100vh; overflow-x: hidden; }
+
+.sidebar {
+  width: 224px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 80;
+  transition: width 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.sidebar.is-collapsed { width: 56px; }
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 12px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  min-height: 64px;
+}
+
+.sidebar-brand img {
+  width: 30px; height: 30px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sidebar-brand-name {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  opacity: 0.6;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  transition: opacity 0.22s ease, max-width 0.32s cubic-bezier(0.4,0,0.2,1);
+  max-width: 160px;
+}
+
+.sidebar.is-collapsed .sidebar-brand-name {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+.sidebar.is-collapsed .sidebar-brand {
+  justify-content: center;
+  gap: 0;
+  cursor: pointer;
+}
+
+.sidebar.is-collapsed .sidebar-toggle {
+  display: none;
+}
+
+/* Toggle button — inline no brand */
+.sidebar-toggle {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text-3);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.sidebar-toggle:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+.sidebar-toggle-icon {
+  font-size: 13px;
+  line-height: 1;
+  display: inline-block;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.is-collapsed .sidebar-toggle-icon { transform: rotate(180deg); }
+
+.sidebar-nav {
+  flex: 1;
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+.nav-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  padding: 6px 12px 4px;
+  margin-top: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+}
+
+.sidebar.is-collapsed .nav-section-label { opacity: 0; pointer-events: none; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: var(--text-2);
+  transition: background 0.15s, color 0.15s, border-color 0.15s, padding 0.32s cubic-bezier(0.4,0,0.2,1);
+  user-select: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar.is-collapsed .nav-item {
+  padding: 10px 0;
+  justify-content: center;
+  gap: 0;
+}
+
+.nav-item:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+
+.nav-item.is-active {
+  background: rgba(155,109,255,0.1);
+  border-color: rgba(155,109,255,0.2);
+  color: var(--c1);
+}
+
+.nav-item-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+
+.nav-item-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  overflow: hidden;
+  transition: opacity 0.18s ease, max-width 0.32s cubic-bezier(0.4,0,0.2,1);
+  max-width: 160px;
+}
+
+.sidebar.is-collapsed .nav-item-label {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+/* ── MAIN AREA ───────────────────────────────────── */
+.main-content {
+  flex: 1;
+  margin-left: 224px;
+  min-width: 0;
+  min-height: 100vh;
+  transition: margin-left 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.is-collapsed ~ .main-content { margin-left: 56px; }
+
+/* ── VIEW SWITCHING ─────────────────────────────── */
+.view { display: none; }
+.view.is-active { display: block; }
+
+/* ── APRESENTAÇÃO ────────────────────────────────── */
+.apresentacao-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 56px 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+.apresentacao-wrap::before {
+  content: '';
+  position: absolute;
+  top: 40%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px; height: 600px;
+  background: radial-gradient(ellipse, rgba(155,109,255,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.apresentacao-card {
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Avatar */
+.avatar-ring {
+  width: 130px; height: 130px;
+  margin: 0 auto 30px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 50%, var(--c3) 100%);
+  position: relative;
+  animation: float 4s ease-in-out infinite;
+}
+
+.avatar-inner {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--surface2);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+#avatar-photo {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: none;
+}
+
+#avatar-photo.is-loaded { display: block; }
+
+.avatar-placeholder-icon {
+  font-size: 46px;
+  opacity: 0.22;
+  line-height: 1;
+}
+
+.avatar-add-btn {
+  position: absolute;
+  bottom: 2px; right: 0px;
+  width: 30px; height: 30px;
+  background: var(--surface3);
+  border: 2.5px solid var(--surface);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s;
+  z-index: 2;
+}
+
+.avatar-add-btn:hover { background: var(--border2); transform: scale(1.1); }
+
+#avatar-input { display: none; }
+
+/* Name block */
+.apresentacao-name {
+  font-size: clamp(28px, 4vw, 46px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  background: linear-gradient(140deg, #ffffff 30%, rgba(155,109,255,0.9) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 10px;
+}
+
+.apresentacao-org {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--c1);
+  opacity: 0.65;
+  margin-bottom: 44px;
+}
+
+/* Roles */
+.roles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
+
+.role-item::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--role-color, var(--c1));
+  border-radius: 13px 0 0 13px;
+}
+
+.role-item:hover {
+  border-color: var(--role-color, var(--c1));
+  transform: translateX(6px);
+  background: color-mix(in srgb, var(--role-color, var(--c1)) 5%, var(--surface));
+}
+
+.role-emoji { font-size: 24px; flex-shrink: 0; width: 30px; text-align: center; line-height: 1; }
+
+.role-info { flex: 1; min-width: 0; }
+
+.role-period {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--role-color, var(--text-3));
+  opacity: 0.6;
+  margin-bottom: 3px;
+}
+
+.role-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.role-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--role-color, var(--c1));
+  background: color-mix(in srgb, var(--role-color, var(--c1)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--role-color, var(--c1)) 25%, transparent);
+  border-radius: 99px;
+  padding: 3px 9px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── CALCULATOR ──────────────────────────────────── */
+.calc-wrap {
+  display: flex;
+  height: 100vh;
+}
+
+.calc-catalog {
+  width: 300px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 28px 16px 28px;
+}
+.calc-catalog::-webkit-scrollbar { width: 3px; }
+.calc-catalog::-webkit-scrollbar-thumb { background: var(--surface3); }
+
+.calc-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+.calc-section-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 16px;
+  padding: 0 2px;
+}
+
+/* Catalog groups */
+.catalog-group { margin-bottom: 22px; }
+
+.catalog-group-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+.catalog-group-num {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+.catalog-group-name {
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.catalog-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: 5px;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, opacity 0.18s;
+  user-select: none;
+}
+
+.catalog-chip:hover {
+  border-color: var(--chip-color, var(--c1));
+  background: color-mix(in srgb, var(--chip-color, var(--c1)) 7%, var(--surface));
+}
+
+.catalog-chip.is-added {
+  opacity: 0.55;
+  cursor: pointer;
+}
+
+.catalog-chip.is-added:hover {
+  opacity: 1;
+  border-color: rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.06);
+}
+
+.catalog-chip.is-added:hover .catalog-chip-plus {
+  color: #ef4444;
+}
+
+.catalog-chip-icon { font-size: 13px; flex-shrink: 0; }
+.catalog-chip-name { font-size: 11.5px; font-weight: 600; color: var(--text); flex: 1; line-height: 1.35; }
+.catalog-chip-plus { font-size: 17px; color: var(--chip-color, var(--text-3)); flex-shrink: 0; line-height: 1; font-weight: 300; }
+.catalog-chip.is-added .catalog-chip-plus { font-size: 13px; font-weight: 800; }
+
+/* Selected items list */
+.calc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 28px 12px;
+}
+.calc-list::-webkit-scrollbar { width: 3px; }
+.calc-list::-webkit-scrollbar-thumb { background: var(--surface3); }
+
+.calc-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 60px 0;
+  color: var(--text-3);
+  font-size: 13px;
+  text-align: center;
+}
+.calc-empty-icon { font-size: 32px; opacity: 0.3; }
+
+/* Item card */
+.calc-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 15px 17px;
+  margin-bottom: 10px;
+}
+
+.calc-item-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 13px;
+}
+
+.calc-item-icon { font-size: 16px; flex-shrink: 0; }
+
+.calc-item-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 0;
+}
+
+.calc-item-badge {
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 99px;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.calc-item-del {
+  width: 24px; height: 24px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 7px;
+  background: transparent;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 12px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.calc-item-del:hover { background: rgba(239,68,68,0.1); color: #ef4444; border-color: rgba(239,68,68,0.3); }
+
+/* Lines */
+.calc-lines-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.calc-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 9px 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+}
+
+.calc-line-del {
+  width: 22px; height: 22px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 11px;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.calc-line-del:hover { background: rgba(239,68,68,0.1); color: #ef4444; border-color: rgba(239,68,68,0.2); }
+
+.add-line-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  background: transparent;
+  border: 1px dashed var(--border2);
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+.add-line-btn:hover { border-color: var(--c1); color: var(--c1); background: rgba(155,109,255,0.05); }
+
+.calc-item-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Price field */
+.price-field {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  padding: 7px 11px;
+}
+
+.price-field-prefix {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-3);
+}
+
+.price-field input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+  width: 100px;
+  font-family: inherit;
+}
+.price-field input::placeholder { color: var(--text-3); }
+
+/* Type toggle */
+.type-toggle {
+  display: flex;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.type-btn {
+  padding: 5px 11px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-3);
+  transition: all 0.18s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.type-btn.is-active { background: var(--surface2); color: var(--text); }
+
+/* Installments */
+.parcelas-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.parcelas-label { font-size: 12px; color: var(--text-3); }
+
+.parcelas-input {
+  width: 48px;
+  padding: 6px 8px;
+  background: var(--bg);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  font-family: inherit;
+  outline: none;
+}
+.parcelas-input:focus { border-color: var(--c4); }
+
+.parcelas-result {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c4);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+/* Summary */
+.calc-summary {
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  padding: 18px 28px 24px;
+  flex-shrink: 0;
+}
+
+.summary-rows {
+  display: flex;
+  gap: 0;
+  flex-direction: column;
+  margin-bottom: 14px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+.summary-row:last-child { border-bottom: none; }
+
+.summary-row-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.summary-row-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.summary-total-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+}
+
+.summary-total-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.summary-total-value {
+  font-size: 22px;
+  font-weight: 900;
+  background: linear-gradient(90deg, var(--c1), var(--c2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── RESPONSIVE ─────────────────────────────── */
+@media (max-width: 760px) {
+  .sidebar {
+    width: 100%; height: auto;
+    position: relative;
+    flex-direction: row;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-brand { padding: 14px 16px; border-bottom: none; border-right: 1px solid var(--border); }
+  .sidebar-nav { flex-direction: row; padding: 8px 10px; gap: 4px; }
+  .nav-section-label { display: none; }
+  .main-content { margin-left: 0; }
+  body { flex-direction: column; }
+}
+
 </style>
 </head>
 <body>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  SIDEBAR                                       -->
+<!-- ══════════════════════════════════════════════ -->
+<nav class="sidebar">
+  <div class="sidebar-brand">
+    <img src="logo.png" alt="Turbo">
+    <span class="sidebar-brand-name">Turbo Partners</span>
+    <button class="sidebar-toggle" id="sidebar-toggle" title="Recolher menu">
+      <span class="sidebar-toggle-icon">‹</span>
+    </button>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-item is-active" data-view="apresentacao">
+      <span class="nav-item-icon">👤</span>
+      <span class="nav-item-label">Apresentação</span>
+    </div>
+    <div class="nav-item" data-view="jornada">
+      <span class="nav-item-icon">🗺️</span>
+      <span class="nav-item-label">Jornada E-commerce</span>
+    </div>
+    <div class="nav-item" data-view="calculadora">
+      <span class="nav-item-icon">🧮</span>
+      <span class="nav-item-label">Calculadora</span>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  MAIN CONTENT                                  -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="main-content">
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: APRESENTAÇÃO                            -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view is-active" id="view-apresentacao">
+  <div class="apresentacao-wrap">
+    <div class="apresentacao-card">
+
+      <!-- Avatar -->
+      <div class="avatar-ring">
+        <div class="avatar-inner">
+          <img id="avatar-photo" alt="Roberto Fachetti">
+          <span class="avatar-placeholder-icon">👤</span>
+        </div>
+        <div class="avatar-add-btn" title="Adicionar foto" onclick="document.getElementById('avatar-input').click()">📷</div>
+      </div>
+      <input type="file" id="avatar-input" accept="image/*">
+
+      <!-- Name -->
+      <h1 class="apresentacao-name">Roberto Fachetti</h1>
+      <p class="apresentacao-org">✦ &nbsp;Sócio · Turbo Partners</p>
+
+      <!-- Timeline de papéis -->
+      <div class="roles-list">
+
+        <div class="role-item" style="--role-color:#9b6dff">
+          <span class="role-emoji">🚀</span>
+          <div class="role-info">
+            <p class="role-title">Sócio da Turbo Partners</p>
+          </div>
+        </div>
+
+        <div class="role-item" style="--role-color:#4d8dff">
+          <span class="role-emoji">💻</span>
+          <div class="role-info">
+            <p class="role-period">2023 · 2024</p>
+            <p class="role-title">Head de Tech</p>
+          </div>
+        </div>
+
+        <div class="role-item" style="--role-color:#0dcfe8">
+          <span class="role-emoji">📈</span>
+          <div class="role-info">
+            <p class="role-period">2024 · 2025</p>
+            <p class="role-title">Head de Growth</p>
+          </div>
+        </div>
+
+        <div class="role-item" style="--role-color:#ffa826">
+          <span class="role-emoji">🎬</span>
+          <div class="role-info">
+            <p class="role-period">2025</p>
+            <p class="role-title">Head de Creators</p>
+          </div>
+        </div>
+
+        <div class="role-item" style="--role-color:#12d490">
+          <span class="role-emoji">💼</span>
+          <div class="role-info">
+            <p class="role-period">2026</p>
+            <p class="role-title">Especialista de Negócios</p>
+          </div>
+          <span class="role-badge">Atual</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: JORNADA                                 -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view" id="view-jornada">
 
 <!-- ══════════════════════════════════════════════ -->
 <!--  HEADER                                        -->
@@ -1133,6 +1995,34 @@ body {
 <footer class="footer">
   A ordem importa. Cada etapa que você pula cria um gargalo nas etapas seguintes.
 </footer>
+
+</div><!-- /view-jornada -->
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: CALCULADORA                             -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view" id="view-calculadora">
+  <div class="calc-wrap">
+    <!-- Catálogo de soluções -->
+    <div class="calc-catalog" id="calc-catalog"></div>
+    <!-- Área principal -->
+    <div class="calc-main">
+      <div class="calc-list" id="calc-list">
+        <p class="calc-section-label">Pacote selecionado</p>
+        <div id="calc-items-wrap"></div>
+      </div>
+      <div class="calc-summary">
+        <div class="summary-rows" id="summary-rows"></div>
+        <div class="summary-total-card">
+          <span class="summary-total-label">Investimento total mensal</span>
+          <span class="summary-total-value" id="summary-total-value">R$ 0</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-content -->
 
 <!-- ══════════════════════════════════════════════ -->
 <!--  PANEL                                         -->
@@ -1459,7 +2349,8 @@ const STAGES = [
         links: [
           { label: 'Monvitta', url: 'https://www.instagram.com/monvitta/' },
           { label: 'Bellamo',  url: 'https://www.instagram.com/bellamo.oficial/' },
-          { label: 'Proton',   url: 'https://www.instagram.com/proton.on/' }
+          { label: 'Proton',   url: 'https://www.instagram.com/proton.on/' },
+          { label: 'Aliviah',  url: 'https://www.instagram.com/aliviah.me/' }
         ]
       },
       {
@@ -2136,6 +3027,274 @@ document.getElementById('panel-body').addEventListener('click', e => {
     }
   }
 });
+
+// ─────────────────────────────────────────────────
+//  SIDEBAR COLLAPSE
+// ─────────────────────────────────────────────────
+(function() {
+  const sidebar = document.querySelector('.sidebar');
+  const btn     = document.getElementById('sidebar-toggle');
+  const STORAGE_KEY = 'sidebar-collapsed';
+
+  if (localStorage.getItem(STORAGE_KEY) === '1') sidebar.classList.add('is-collapsed');
+
+  function toggle() {
+    const collapsed = sidebar.classList.toggle('is-collapsed');
+    localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
+  }
+
+  btn.addEventListener('click', toggle);
+
+  document.querySelector('.sidebar-brand').addEventListener('click', (e) => {
+    if (sidebar.classList.contains('is-collapsed')) toggle();
+  });
+})();
+
+// ─────────────────────────────────────────────────
+//  NAV SWITCHING
+// ─────────────────────────────────────────────────
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const view = item.dataset.view;
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('is-active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
+    item.classList.add('is-active');
+    document.getElementById(`view-${view}`).classList.add('is-active');
+  });
+});
+
+// ─────────────────────────────────────────────────
+//  AVATAR UPLOAD
+// ─────────────────────────────────────────────────
+document.getElementById('avatar-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  const img = document.getElementById('avatar-photo');
+  img.src = url;
+  img.classList.add('is-loaded');
+  img.previousElementSibling && (img.previousElementSibling.style.display = 'none');
+  const placeholder = document.querySelector('.avatar-placeholder-icon');
+  if (placeholder) placeholder.style.display = 'none';
+});
+
+// ─────────────────────────────────────────────────
+//  CALCULATOR
+// ─────────────────────────────────────────────────
+(function() {
+  const SOLUTIONS = [];
+  STAGES.forEach(stage => {
+    stage.nodes.filter(n => !n.parentId).forEach(node => {
+      SOLUTIONS.push({ id: node.id, icon: node.icon, name: node.name,
+        stageId: stage.id, stageTitle: stage.title, stageColor: stage.color, stageNum: stage.num });
+    });
+  });
+
+  let items  = [];
+  let nextId = 1;
+
+  function uid() { return nextId++; }
+
+  function fmtBRL(v) {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency', currency: 'BRL', minimumFractionDigits: 0, maximumFractionDigits: 0
+    }).format(v);
+  }
+
+  function newLine() {
+    return { id: uid(), price: '', type: 'recorrente', parcelas: '' };
+  }
+
+  // ── Catalog ────────────────────────────────────
+  function renderCatalog() {
+    const el = document.getElementById('calc-catalog');
+    if (!el) return;
+    const added = new Set(items.map(i => i.solutionId));
+    const byStage = {};
+    STAGES.forEach(s => { byStage[s.id] = { stage: s, sols: [] }; });
+    SOLUTIONS.forEach(sol => { byStage[sol.stageId]?.sols.push(sol); });
+
+    let html = '<p class="calc-section-label">Soluções disponíveis</p>';
+    Object.values(byStage).forEach(({ stage, sols }) => {
+      if (!sols.length) return;
+      html += `<div class="catalog-group">
+        <div class="catalog-group-header">
+          <span class="catalog-group-num" style="color:${stage.color}">${stage.num}</span>
+          <span class="catalog-group-name" style="color:${stage.color}">${stage.title}</span>
+        </div>
+        ${sols.map(s => `
+          <div class="catalog-chip${added.has(s.id) ? ' is-added' : ''}" style="--chip-color:${s.stageColor}" data-sol="${s.id}">
+            <span class="catalog-chip-icon">${s.icon}</span>
+            <span class="catalog-chip-name">${s.name}</span>
+            <span class="catalog-chip-plus">${added.has(s.id) ? '−' : '+'}</span>
+          </div>`).join('')}
+      </div>`;
+    });
+    el.innerHTML = html;
+    el.querySelectorAll('.catalog-chip:not(.is-added)').forEach(chip => {
+      chip.addEventListener('click', () => addItem(chip.dataset.sol));
+    });
+    el.querySelectorAll('.catalog-chip.is-added').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const item = items.find(i => i.solutionId === chip.dataset.sol);
+        if (item) removeItem(item.id);
+      });
+    });
+  }
+
+  // ── Items ──────────────────────────────────────
+  function addItem(solutionId) {
+    if (items.find(i => i.solutionId === solutionId)) return;
+    items.push({ id: uid(), solutionId, lines: [newLine()] });
+    renderAll();
+  }
+
+  function removeItem(itemId) {
+    items = items.filter(i => i.id !== itemId);
+    renderAll();
+  }
+
+  function addLine(itemId) {
+    const item = items.find(i => i.id === itemId);
+    if (item) { item.lines.push(newLine()); renderItems(); updateSummary(); }
+  }
+
+  function removeLine(itemId, lineId) {
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
+    if (item.lines.length === 1) { removeItem(itemId); return; }
+    item.lines = item.lines.filter(l => l.id !== lineId);
+    renderItems();
+    updateSummary();
+  }
+
+  function lineHTML(itemId, line) {
+    const isPontual = line.type === 'pontual';
+    const price     = parseFloat(line.price) || 0;
+    const parcelas  = parseInt(line.parcelas) || 1;
+    const parcelaVal = isPontual && price ? fmtBRL(price / parcelas) : '';
+    return `<div class="calc-line" data-line="${line.id}">
+      <div class="price-field">
+        <span class="price-field-prefix">R$</span>
+        <input type="number" min="0" placeholder="0" value="${line.price}" data-price-item="${itemId}" data-price-line="${line.id}">
+      </div>
+      <div class="type-toggle">
+        <button class="type-btn${line.type === 'recorrente' ? ' is-active' : ''}" data-ttype="${itemId}" data-tline="${line.id}" data-val="recorrente">🔄 Recorrente</button>
+        <button class="type-btn${line.type === 'pontual' ? ' is-active' : ''}" data-ttype="${itemId}" data-tline="${line.id}" data-val="pontual">📦 Pontual</button>
+      </div>
+      ${isPontual ? `<div class="parcelas-wrap">
+        <span class="parcelas-label">÷</span>
+        <input class="parcelas-input" type="number" min="1" max="60" value="${line.parcelas}" data-parc-item="${itemId}" data-parc-line="${line.id}">
+        <span class="parcelas-label">x</span>
+        <span class="parcelas-result" data-result="${line.id}">${parcelaVal ? `= ${parcelaVal}/mês` : ''}</span>
+      </div>` : ''}
+      <button class="calc-line-del" data-ldel-item="${itemId}" data-ldel-line="${line.id}" title="Remover linha">✕</button>
+    </div>`;
+  }
+
+  function renderItems() {
+    const wrap = document.getElementById('calc-items-wrap');
+    if (!wrap) return;
+    if (!items.length) {
+      wrap.innerHTML = `<div class="calc-empty">
+        <span class="calc-empty-icon">←</span>
+        Selecione soluções ao lado para montar o pacote
+      </div>`;
+      return;
+    }
+    wrap.innerHTML = items.map(item => {
+      const sol = SOLUTIONS.find(s => s.id === item.solutionId);
+      if (!sol) return '';
+      return `<div class="calc-item" data-item="${item.id}">
+        <div class="calc-item-header">
+          <span class="calc-item-icon">${sol.icon}</span>
+          <span class="calc-item-name">${sol.name}</span>
+          <span class="calc-item-badge" style="color:${sol.stageColor};border-color:${sol.stageColor}44;background:${sol.stageColor}11">${sol.stageTitle}</span>
+          <button class="calc-item-del" data-del="${item.id}" title="Remover solução">✕</button>
+        </div>
+        <div class="calc-lines-wrap">
+          ${item.lines.map(l => lineHTML(item.id, l)).join('')}
+        </div>
+        <button class="add-line-btn" data-addline="${item.id}">+ linha</button>
+      </div>`;
+    }).join('');
+
+    // — delete whole item
+    wrap.querySelectorAll('[data-del]').forEach(btn =>
+      btn.addEventListener('click', () => removeItem(+btn.dataset.del)));
+
+    // — delete line
+    wrap.querySelectorAll('[data-ldel-item]').forEach(btn =>
+      btn.addEventListener('click', () => removeLine(+btn.dataset.ldelItem, +btn.dataset.ldelLine)));
+
+    // — add line
+    wrap.querySelectorAll('[data-addline]').forEach(btn =>
+      btn.addEventListener('click', () => addLine(+btn.dataset.addline)));
+
+    // — price input (no re-render, update in place)
+    wrap.querySelectorAll('[data-price-item]').forEach(input => {
+      input.addEventListener('input', () => {
+        const item = items.find(i => i.id === +input.dataset.priceItem);
+        const line = item?.lines.find(l => l.id === +input.dataset.priceLine);
+        if (line) { line.price = input.value; updateResultInPlace(line); updateSummary(); }
+      });
+    });
+
+    // — type toggle
+    wrap.querySelectorAll('[data-ttype]').forEach(btn =>
+      btn.addEventListener('click', () => {
+        const item = items.find(i => i.id === +btn.dataset.ttype);
+        const line = item?.lines.find(l => l.id === +btn.dataset.tline);
+        if (line) { line.type = btn.dataset.val; renderItems(); updateSummary(); }
+      }));
+
+    // — parcelas input
+    wrap.querySelectorAll('[data-parc-item]').forEach(input => {
+      input.addEventListener('input', () => {
+        const item = items.find(i => i.id === +input.dataset.parcItem);
+        const line = item?.lines.find(l => l.id === +input.dataset.parcLine);
+        if (line) { line.parcelas = parseInt(input.value) || 1; updateResultInPlace(line); updateSummary(); }
+      });
+    });
+  }
+
+  function updateResultInPlace(line) {
+    const el = document.querySelector(`[data-result="${line.id}"]`);
+    if (!el) return;
+    const price    = parseFloat(line.price) || 0;
+    const parcelas = parseInt(line.parcelas) || 1;
+    el.textContent = price ? `= ${fmtBRL(price / parcelas)}/mês` : '';
+  }
+
+  // ── Summary ────────────────────────────────────
+  function updateSummary() {
+    let recorrente = 0, pontual = 0;
+    items.forEach(item => {
+      item.lines.forEach(line => {
+        const price = parseFloat(line.price) || 0;
+        if (!price) return;
+        if (line.type === 'recorrente') recorrente += price;
+        else pontual += price / (parseInt(line.parcelas) || 1);
+      });
+    });
+    const rowsEl  = document.getElementById('summary-rows');
+    const totalEl = document.getElementById('summary-total-value');
+    if (!rowsEl || !totalEl) return;
+    rowsEl.innerHTML = `
+      <div class="summary-row">
+        <span class="summary-row-label">🔄 Serviços recorrentes</span>
+        <span class="summary-row-value">${recorrente ? fmtBRL(recorrente) + '/mês' : '—'}</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">📦 Parcelas de projetos</span>
+        <span class="summary-row-value">${pontual ? fmtBRL(Math.round(pontual)) + '/mês' : '—'}</span>
+      </div>`;
+    totalEl.textContent = (recorrente + pontual) ? fmtBRL(Math.round(recorrente + pontual)) + '/mês' : 'R$ 0';
+  }
+
+  function renderAll() { renderCatalog(); renderItems(); updateSummary(); }
+  renderAll();
+})();
 
 // ─────────────────────────────────────────────────
 //  INIT
