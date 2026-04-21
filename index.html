@@ -334,6 +334,72 @@ body {
   border-color: rgba(255, 168, 38, 0.28);
 }
 
+/* ── Flagship node (trafego — Carro-chefe) ── */
+.node.is-flagship {
+  background: linear-gradient(135deg,
+    rgba(155,109,255,0.13) 0%,
+    rgba(77,141,255,0.09) 45%,
+    rgba(13,207,232,0.07) 100%
+  );
+  border-color: rgba(155,109,255,0.40);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.14),
+    0 4px 20px rgba(155,109,255,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+}
+.node.is-flagship::before {
+  background: linear-gradient(180deg, #9b6dff 0%, #4d8dff 50%, #0dcfe8 100%);
+  width: 3px;
+}
+.node.is-flagship::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.07) 50%,
+    transparent 100%
+  );
+  animation: shimmerSlide 3.8s ease-in-out infinite;
+  pointer-events: none;
+}
+.node.is-flagship:hover {
+  border-color: rgba(155,109,255,0.62);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.30),
+    0 8px 28px rgba(155,109,255,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  transform: translateY(-2px);
+}
+.node.is-flagship.is-active {
+  border-color: rgba(155,109,255,0.68);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.35),
+    0 8px 28px rgba(155,109,255,0.22),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  background: linear-gradient(135deg,
+    rgba(155,109,255,0.19) 0%,
+    rgba(77,141,255,0.13) 45%,
+    rgba(13,207,232,0.10) 100%
+  );
+}
+.node-flagship-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(155,109,255,0.17);
+  border: 1px solid rgba(155,109,255,0.35);
+  border-radius: 99px;
+  padding: 2px 9px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: #c49bff;
+  margin-top: 6px;
+  width: fit-content;
+}
+
 /* ── SUBTASKS ────────────────────────────────────── */
 .node-subtasks {
   margin-top: 8px;
@@ -3266,6 +3332,7 @@ function renderFlow() {
       if (isDone) el.classList.add('is-done');
       else if (warn) el.classList.add('is-warn');
       if (state.active === node.id) el.classList.add('is-active');
+      if (node.id === 'trafego') el.classList.add('is-flagship');
 
       el.innerHTML = `
         <div class="node-row">
@@ -3274,6 +3341,7 @@ function renderFlow() {
           <span class="node-indicator"></span>
         </div>
         ${node.objective ? `<p class="node-obj">${node.objective}</p>` : ''}
+        ${node.id === 'trafego' ? `<span class="node-flagship-badge">✦ Carro-chefe</span>` : ''}
       `;
 
       el.addEventListener('click', (e) => { e.stopPropagation(); openPanel(node.id); });
