@@ -606,6 +606,48 @@ body {
   border-left: 3px solid var(--panel-color, var(--c1));
 }
 
+/* ── Simulator launch button (trafego panel) ── */
+.sim-launch-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  background: linear-gradient(135deg, rgba(13,207,232,0.10) 0%, rgba(13,207,232,0.04) 100%);
+  border: 1px solid rgba(13,207,232,0.30);
+  border-radius: 13px;
+  padding: 14px 16px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s, border-color 0.18s, transform 0.12s;
+}
+.sim-launch-btn:hover {
+  background: linear-gradient(135deg, rgba(13,207,232,0.18) 0%, rgba(13,207,232,0.08) 100%);
+  border-color: rgba(13,207,232,0.55);
+  transform: translateY(-1px);
+}
+.sim-launch-btn:active { transform: translateY(0); }
+.sim-launch-icon { font-size: 22px; flex-shrink: 0; }
+.sim-launch-text { display: flex; flex-direction: column; gap: 2px; flex: 1; }
+.sim-launch-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  color: #0dcfe8;
+  text-transform: uppercase;
+}
+.sim-launch-sub {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.sim-launch-arrow {
+  font-size: 18px;
+  color: rgba(13,207,232,0.5);
+  flex-shrink: 0;
+  transition: transform 0.18s;
+}
+.sim-launch-btn:hover .sim-launch-arrow { transform: translateX(4px); }
+
 .block-label {
   font-size: 9.5px;
   font-weight: 800;
@@ -3190,7 +3232,6 @@ function buildLinksHTML(links, color) {
 //  PANEL
 // ─────────────────────────────────────────────────
 function openPanel(nodeId) {
-  if (nodeId === 'trafego') { if (window.openPerfSimulator) window.openPerfSimulator(); return; }
   const node = getNode(nodeId);
   if (!node) return;
 
@@ -3211,6 +3252,16 @@ function openPanel(nodeId) {
       <p class="block-label">Por que importa</p>
       <p class="block-text">${node.why}</p>
     </div>
+    ${nodeId === 'trafego' ? `
+    <button class="sim-launch-btn" onclick="if(window.openPerfSimulator) window.openPerfSimulator()">
+      <span class="sim-launch-icon">⚙️</span>
+      <span class="sim-launch-text">
+        <span class="sim-launch-title">Simulador de Performance</span>
+        <span class="sim-launch-sub">Ajuste as engrenagens e veja o impacto no faturamento em tempo real</span>
+      </span>
+      <span class="sim-launch-arrow">→</span>
+    </button>
+    ` : ''}
     ${buildLinksHTML(node.links, color)}
     ${buildChecklistHTML(node)}
   `;
