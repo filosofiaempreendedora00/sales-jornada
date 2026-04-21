@@ -1761,6 +1761,140 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   min-width: 80px;
 }
 
+/* Months chart */
+.months-chart {
+  padding: 16px 0 8px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+}
+
+.chart-legend {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.chart-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.chart-legend-dot {
+  width: 8px; height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.chart-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 180px;
+}
+
+.chart-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  gap: 4px;
+}
+
+.chart-col-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.chart-col-bar {
+  width: 100%;
+  border-radius: 4px 4px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 3px;
+  transition: height 0.4s ease;
+}
+
+.chart-seg-pont {
+  background: var(--c4);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
+.chart-seg-rec {
+  background: var(--c1);
+  opacity: 0.7;
+  flex: 1;
+}
+
+.chart-col-val {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--text-2);
+  text-align: center;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-col-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.projecao-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0 2px;
+}
+
+.projecao-toggle-row::before,
+.projecao-toggle-row::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.chart-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255,168,38,0.06);
+  border: 1px solid rgba(255,168,38,0.2);
+  border-radius: 99px;
+  padding: 4px 13px;
+  cursor: pointer;
+  color: rgba(255,168,38,0.75);
+  font-size: 10.5px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+  transition: all 0.18s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.chart-toggle-btn:hover {
+  background: rgba(255,168,38,0.12);
+  border-color: rgba(255,168,38,0.45);
+  color: var(--c4);
+}
+
 /* Summary */
 .calc-summary {
   border-top: 1px solid var(--border);
@@ -2013,6 +2147,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
       </div>
       <div class="calc-summary">
         <div class="summary-rows" id="summary-rows"></div>
+        <div id="months-chart-wrap"></div>
         <div class="summary-total-card">
           <span class="summary-total-label">Investimento total mensal</span>
           <span class="summary-total-value" id="summary-total-value">R$ 0</span>
@@ -3090,8 +3225,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     });
   });
 
-  let items  = [];
-  let nextId = 1;
+  let items      = [];
+  let nextId     = 1;
+  let monthsOpen = false;
 
   function uid() { return nextId++; }
 
@@ -3266,20 +3402,38 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     el.textContent = price ? `= ${fmtBRL(price / parcelas)}/mês` : '';
   }
 
+  function fmtCompact(v) {
+    if (!v) return '';
+    if (v >= 1000) return 'R$' + (v / 1000 % 1 === 0 ? v/1000 : (v/1000).toFixed(1)) + 'k';
+    return 'R$' + Math.round(v);
+  }
+
   // ── Summary ────────────────────────────────────
-  function updateSummary() {
-    let recorrente = 0, pontual = 0;
+  function calcTotals() {
+    let recorrente = 0;
+    const pontuais = [];
     items.forEach(item => {
       item.lines.forEach(line => {
         const price = parseFloat(line.price) || 0;
         if (!price) return;
         if (line.type === 'recorrente') recorrente += price;
-        else pontual += price / (parseInt(line.parcelas) || 1);
+        else {
+          const parc = parseInt(line.parcelas) || 0;
+          if (parc > 0) pontuais.push({ monthly: price / parc, parcelas: parc });
+        }
       });
     });
+    return { recorrente, pontuais };
+  }
+
+  function updateSummary() {
+    const { recorrente, pontuais } = calcTotals();
+    const pontual = pontuais.reduce((s, p) => s + p.monthly, 0);
     const rowsEl  = document.getElementById('summary-rows');
     const totalEl = document.getElementById('summary-total-value');
     if (!rowsEl || !totalEl) return;
+
+    const hasPontual = pontual > 0;
     rowsEl.innerHTML = `
       <div class="summary-row">
         <span class="summary-row-label">🔄 Serviços recorrentes</span>
@@ -3287,9 +3441,64 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       </div>
       <div class="summary-row">
         <span class="summary-row-label">📦 Parcelas de projetos</span>
-        <span class="summary-row-value">${pontual ? fmtBRL(Math.round(pontual)) + '/mês' : '—'}</span>
-      </div>`;
+        <span class="summary-row-value">${hasPontual ? fmtBRL(Math.round(pontual)) + '/mês' : '—'}</span>
+      </div>
+      ${hasPontual ? `<div class="projecao-toggle-row">
+        <button class="chart-toggle-btn" id="chart-toggle">
+          ${monthsOpen ? '▲ fechar projeção' : '▼ ver projeção dos próximos 12 meses'}
+        </button>
+      </div>` : ''}`;
+
+    const btn = document.getElementById('chart-toggle');
+    if (btn) btn.addEventListener('click', () => { monthsOpen = !monthsOpen; updateSummary(); renderChart(); });
+
     totalEl.textContent = (recorrente + pontual) ? fmtBRL(Math.round(recorrente + pontual)) + '/mês' : 'R$ 0';
+    renderChart();
+  }
+
+  // ── 12-month chart ─────────────────────────────
+  function renderChart() {
+    const wrap = document.getElementById('months-chart-wrap');
+    if (!wrap) return;
+    if (!monthsOpen) { wrap.innerHTML = ''; return; }
+
+    const { recorrente, pontuais } = calcTotals();
+    const hasPontuais = pontuais.length > 0;
+    if (!hasPontuais && !recorrente) { wrap.innerHTML = ''; return; }
+
+    const MONTHS = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+    const data = MONTHS.map((m, i) => {
+      const month = i + 1;
+      const pont  = pontuais.filter(p => p.parcelas >= month).reduce((s, p) => s + p.monthly, 0);
+      return { m, rec: recorrente, pont, total: recorrente + pont };
+    });
+
+    const maxVal = Math.max(...data.map(d => d.total), 1);
+
+    const bars = data.map(d => {
+      const totalPct = (d.total / maxVal) * 96; // max 96% height
+      const pontPct  = d.total ? (d.pont / d.total) * 100 : 0;
+      const recPct   = 100 - pontPct;
+      return `<div class="chart-col">
+        <div class="chart-col-val">${d.total ? fmtCompact(Math.round(d.total)) : ''}</div>
+        <div class="chart-col-bar-wrap">
+          <div class="chart-col-bar" style="height:${totalPct}%">
+            <div class="chart-seg-pont" style="height:${pontPct}%"></div>
+            <div class="chart-seg-rec" style="height:${recPct}%"></div>
+          </div>
+        </div>
+        <div class="chart-col-label">${d.m}</div>
+      </div>`;
+    }).join('');
+
+    wrap.innerHTML = `<div class="months-chart">
+      <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--c1)"></span>Recorrente</span>
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--c4)"></span>Parcelas pontuais</span>
+      </div>
+      <div class="chart-area">${bars}</div>
+    </div>`;
   }
 
   function renderAll() { renderCatalog(); renderItems(); updateSummary(); }
