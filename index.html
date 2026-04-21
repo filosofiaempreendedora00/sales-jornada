@@ -3787,7 +3787,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
   const PERF = {
     investment: 10000, ticket: 250,
-    ctr: 2.0, cpc: 2.50, addToCart: 5.0, checkoutStart: 60, conversion: 2.5,
+    ctr: 2.0, cpc: 2.50, connectRate: 75, addToCart: 5.0, checkoutStart: 60, conversion: 2.5,
     activeGear: null,
   };
 
@@ -3807,6 +3807,14 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       impactDirect: true, impactLabel:'−R$0,50 no CPC',
       benchRows:[{color:'#12d490',label:'Bom',val:'quanto menor, melhor'},{color:'#ffa826',label:'Atenção',val:'alto em relação à margem'},{color:'#ef4444',label:'Crítico',val:'CPA inviável'}],
       msgs:{good:'✓ Excelente eficiência de custo. Seu orçamento rende bem.',warn:'⚠ CPC dentro do aceitável, mas há espaço para otimizar segmentação e lances.',bad:'✕ CPC elevado. Você paga caro por visitante. Revise segmentação, palavras-chave e lances.'},
+    },
+    {
+      id:'connectRate', label:'Connect Rate', abbr:'CNX', unit:'%', min:10, max:100, step:1,
+      bench:{good:80,warn:65},
+      explain:'Taxa de Conexão — de cada clique gerado pelo anúncio, qual percentual realmente carregou a página. Tráfego que não vira pageview representa investimento desperdiçado: pode indicar bot traffic, velocidade de carregamento crítica ou segmentação errada.',
+      impactDirect: true, impactLabel:'+1pp Connect Rate',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 80%'},{color:'#ffa826',label:'Atenção',val:'65% – 80%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 65%'}],
+      msgs:{good:'✓ Boa taxa de conexão. A maior parte do tráfego pago está virando pageviews reais.',warn:'⚠ Parte do tráfego se perde antes de carregar. Revise velocidade da página e qualidade do público.',bad:'✕ Crítico: mais de 35% do tráfego some antes de virar pageview. Bot traffic, velocidade ou segmentação errada.'},
     },
     {
       id:'addToCart', label:'Add to Cart', abbr:'ATC', unit:'%', min:0.1, max:30, step:0.1,
@@ -3835,11 +3843,12 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   ];
 
   function calcWith(s) {
-    const v  = s.cpc > 0 ? s.investment / s.cpc : 0;
-    const c  = v * s.addToCart / 100;
-    const ch = c * s.checkoutStart / 100;
-    const sa = ch * s.conversion / 100;
-    return { visitors:v, carts:c, checkouts:ch, sales:sa, revenue: sa * s.ticket };
+    const clicks = s.cpc > 0 ? s.investment / s.cpc : 0;
+    const pv  = clicks * s.connectRate / 100;
+    const c   = pv * s.addToCart / 100;
+    const ch  = c * s.checkoutStart / 100;
+    const sa  = ch * s.conversion / 100;
+    return { clicks, pageviews:pv, carts:c, checkouts:ch, sales:sa, revenue: sa * s.ticket };
   }
 
   function health(g, val) {
@@ -3883,11 +3892,12 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function render() {
     const r = calcWith(PERF);
     const map = [
-      ['perf-out-visitors', fmtN(r.visitors)],
-      ['perf-out-carts',    fmtN(r.carts)],
-      ['perf-out-checkouts',fmtN(r.checkouts)],
-      ['perf-out-sales',    fmtN(r.sales)],
-      ['perf-out-revenue',  fmtBRL(r.revenue)],
+      ['perf-out-clicks',     fmtN(r.clicks)],
+      ['perf-out-pageviews',  fmtN(r.pageviews)],
+      ['perf-out-carts',      fmtN(r.carts)],
+      ['perf-out-checkouts',  fmtN(r.checkouts)],
+      ['perf-out-sales',      fmtN(r.sales)],
+      ['perf-out-revenue',    fmtBRL(r.revenue)],
     ];
     map.forEach(([id,v]) => { const el=document.getElementById(id); if(el) el.textContent=v; });
 
@@ -4074,7 +4084,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
         <div class="perf-right">
           <p class="perf-section-label">📊 Resultado</p>
-          <div class="output-item"><span class="output-label">👥 Visitantes</span><span class="output-value" id="perf-out-visitors">—</span></div>
+          <div class="output-item"><span class="output-label">👆 Cliques</span><span class="output-value" id="perf-out-clicks">—</span></div>
+          <div class="output-item"><span class="output-label">📄 Pageviews</span><span class="output-value" id="perf-out-pageviews">—</span></div>
           <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="perf-out-carts">—</span></div>
           <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="perf-out-checkouts">—</span></div>
           <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="perf-out-sales">—</span></div>
