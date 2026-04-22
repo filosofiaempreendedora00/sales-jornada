@@ -4314,13 +4314,16 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
   function render() {
     const r = calcWith(PERF);
+    // Round each funnel step so displayed values are whole numbers;
+    // revenue = rounded sales × ticket to stay consistent with what the user sees.
+    const salesRounded = Math.round(r.sales);
     const map = [
       ['perf-out-clicks',     fmtN(r.clicks)],
       ['perf-out-pageviews',  fmtN(r.pageviews)],
       ['perf-out-carts',      fmtN(r.carts)],
       ['perf-out-checkouts',  fmtN(r.checkouts)],
       ['perf-out-sales',      fmtN(r.sales)],
-      ['perf-out-revenue',    fmtBRL(r.revenue)],
+      ['perf-out-revenue',    fmtBRL(salesRounded * PERF.ticket)],
     ];
     map.forEach(([id,v]) => { const el=document.getElementById(id); if(el) el.textContent=v; });
 
