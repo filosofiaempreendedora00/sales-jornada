@@ -1465,6 +1465,7 @@ body {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   cursor: pointer; padding: 8px 6px; border-radius: 14px;
   transition: background 0.2s; user-select: none;
+  flex: 1; min-width: 0;
 }
 .gear-item:hover { background: rgba(255,255,255,0.03); }
 .gear-item.is-active { background: rgba(255,255,255,0.05); }
@@ -1514,8 +1515,10 @@ body {
 .gear-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
 .gear-name-label {
   font-size: 9px; font-weight: 800; color: var(--text-2);
-  text-align: center; white-space: nowrap; letter-spacing: 0.5px;
+  text-align: center; white-space: normal; letter-spacing: 0.5px;
   text-transform: uppercase; order: -1; /* always first */
+  width: 100%; line-height: 1.4;
+  min-height: calc(9px * 1.4 * 2); /* reserve space for 2 lines so all gears align */
 }
 
 /* ── Collapsed icon zone ── */
