@@ -4291,12 +4291,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     }
     d += ' Z';
     const C = {good:'#12d490',warn:'#ffa826',bad:'#ef4444',neutral:'#4d8dff'}[h];
+    const GC = '#4d8dff'; /* all gears uniform blue */
     const animDir = dir === 'rev' ? 'reverse' : 'normal';
     return `<svg viewBox="-50 -50 100 100" width="88" height="88" xmlns="http://www.w3.org/2000/svg" class="gear-spin" style="animation-direction:${animDir};animation-duration:${8+Math.random()*4}s">
-      <circle r="29" fill="${C}" opacity="0.09"/>
-      <path d="${d}" fill="${C}" opacity="0.88"/>
+      <circle r="29" fill="${GC}" opacity="0.09"/>
+      <path d="${d}" fill="${GC}" opacity="0.88"/>
       <circle r="${holeR}" fill="#07070f"/>
-      <circle r="${holeR-2.5}" fill="none" stroke="${C}" stroke-width="1.5" opacity="0.45"/>
+      <circle r="${holeR-2.5}" fill="none" stroke="${GC}" stroke-width="1.5" opacity="0.45"/>
     </svg>`;
   }
 
@@ -4381,14 +4382,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       badgeEl.style.background = C+'12';
     }
 
-    const benchHTML = g.benchRows.map(r=>`
-      <div class="bench-row">
-        <span style="display:flex;align-items:center;gap:7px">
-          <span class="bench-dot" style="background:${r.color}"></span>
-          <span style="font-weight:700;color:var(--text-2)">${r.label}</span>
-        </span>
-        <span style="color:var(--text-3);font-size:11px">${r.val}</span>
-      </div>`).join('');
+    const benchHTML = ''; /* benchmarks hidden until further notice */
 
     const impHTML = imp !== null ? `<div class="detail-block">
       <p class="detail-block-label">⚡ impacto estimado</p>
@@ -4405,10 +4399,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       <div class="detail-diag" style="background:${C}0d;border-color:${C}33">
         <p class="detail-block-label" style="color:${C}99">diagnóstico</p>
         <p class="detail-block-text" style="color:${C}ee">${msg}</p>
-      </div>
-      <div class="detail-block">
-        <p class="detail-block-label">benchmarks</p>
-        ${benchHTML}
       </div>
       ${impHTML}`;
   }
