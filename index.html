@@ -1598,7 +1598,7 @@ body {
 
 /* Right outputs */
 .perf-right {
-  width: 278px; flex-shrink: 0;
+  width: 340px; flex-shrink: 0;
   border-left: 1px solid var(--border);
   padding: 22px 16px; display: flex; flex-direction: column; gap: 10px;
   overflow: hidden; position: relative;
@@ -1637,8 +1637,29 @@ body {
   display: flex; flex-direction: column; justify-content: space-between;
 }
 .output-item.is-revenue {
-  flex: 1.5; background: rgba(18,212,144,0.07); border-color: rgba(18,212,144,0.28);
+  flex: 1.5;
+  background: linear-gradient(135deg, rgba(18,212,144,0.11) 0%, rgba(18,212,144,0.05) 100%);
+  border-color: rgba(18,212,144,0.32);
+  box-shadow: 0 0 28px rgba(18,212,144,0.07), inset 0 1px 0 rgba(18,212,144,0.14);
   position: relative; border-radius: 12px;
+  overflow: hidden;
+  /* center everything */
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 2px;
+}
+/* Big watermark icon — decorative, low opacity */
+.output-item.is-revenue::before {
+  content: '💰';
+  position: absolute;
+  right: -6px; bottom: -14px;
+  font-size: 80px;
+  opacity: 0.10;
+  transform: rotate(-14deg);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
 }
 .output-label {
   font-size: 8.5px; font-weight: 800; letter-spacing: 2.5px;
@@ -1651,13 +1672,25 @@ body {
   text-align: center;
 }
 .output-item.is-revenue .output-value {
-  font-size: 26px; font-weight: 900;
+  font-size: 32px; font-weight: 900;
   color: #12d490; -webkit-text-fill-color: #12d490;
-  text-align: left;
+  text-align: center;
+  letter-spacing: -1px;
+  line-height: 1;
+  filter: drop-shadow(0 0 10px rgba(18,212,144,0.35));
 }
 .output-item.is-revenue .output-label {
-  justify-content: flex-start;
+  justify-content: center;
+  color: rgba(18,212,144,0.75);
+  margin-bottom: 2px;
 }
+/* Revenue subtle hint below value */
+.revenue-sub {
+  font-size: 8px; font-weight: 600; letter-spacing: 1px;
+  color: rgba(18,212,144,0.4); text-transform: uppercase;
+  margin-top: 4px; text-align: center;
+}
+
 /* Revenue hover tooltip */
 .revenue-tooltip {
   display: none;
@@ -4544,8 +4577,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="perf-out-sales">—</span></div>
           </div>
           <div class="output-item is-revenue">
-            <span class="output-label">💰 Faturamento</span>
+            <span class="output-label">✦ Faturamento estimado</span>
             <span class="output-value" id="perf-out-revenue">—</span>
+            <span class="revenue-sub">somente tráfego pago · passe o mouse</span>
             <div class="revenue-tooltip">📌 Estimativa exclusiva de anúncios pagos. Vendas orgânicas — SEO, redes sociais, tráfego direto — <strong>não estão incluídas</strong> neste número.</div>
           </div>
           <div class="perf-detail" id="perf-detail">
