@@ -1309,7 +1309,7 @@ body {
   width: 236px; flex-shrink: 0;
   border-right: 1px solid var(--border);
   padding: 22px 16px; display: flex; flex-direction: column; gap: 12px;
-  overflow-y: auto; background: var(--surface);
+  overflow: hidden; background: var(--surface);
 }
 .perf-section-label {
   font-size: 9px; font-weight: 800; letter-spacing: 2.5px;
@@ -1701,9 +1701,8 @@ body {
   cursor: pointer; color: var(--text-2); font-size: 13px; transition: all 0.15s;
 }
 .detail-close:hover { background: rgba(239,68,68,0.1); color: #ef4444; }
-.detail-body { flex: 1; overflow-y: auto; padding: 14px 15px; display: flex; flex-direction: column; gap: 10px; }
-.detail-body::-webkit-scrollbar { width: 3px; }
-.detail-body::-webkit-scrollbar-thumb { background: var(--surface3); }
+.detail-body { flex: 1; overflow-y: auto; padding: 14px 15px; display: flex; flex-direction: column; gap: 10px; scrollbar-width: none; }
+.detail-body::-webkit-scrollbar { display: none; }
 .detail-block {
   background: var(--surface2); border-radius: 10px; padding: 11px 13px; border: 1px solid var(--border);
 }
@@ -4616,11 +4615,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function openPerfSimulator() {
     buildOverlay();
     document.getElementById('perf-overlay')?.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
     render();
   }
 
   function closePerfSimulator() {
     document.getElementById('perf-overlay')?.classList.remove('is-open');
+    document.body.style.overflow = '';
   }
 
   document.addEventListener('keydown', e => {
