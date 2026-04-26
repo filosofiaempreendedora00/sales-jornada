@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111122;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 24px;
+    font-family: 'Inter', sans-serif;
+  }
+  canvas { max-width: 95vw; display: block; }
+  button {
+    background: #9b6dff; color: #fff; border: none; border-radius: 10px;
+    padding: 12px 28px; font-size: 15px; font-weight: 700; cursor: pointer;
+    box-shadow: 0 4px 20px rgba(155,109,255,0.4); font-family: 'Inter', sans-serif;
+  }
+  button:hover { background: #b589ff; }
+</style>
+</head>
+<body>
+<canvas id="c" width="1200" height="380"></canvas>
+<button onclick="download()">⬇ Baixar PNG</button>
+
+<script>
+const W = 1200, H = 380, R = 20;
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+function rr(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.arcTo(x + w, y, x + w, y + r, r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+  ctx.lineTo(x + r, y + h);
+  ctx.arcTo(x, y + h, x, y + h - r, r);
+  ctx.lineTo(x, y + r);
+  ctx.arcTo(x, y, x + r, y, r);
+  ctx.closePath();
+}
+
+async function draw() {
+  await document.fonts.ready;
+  ctx.clearRect(0, 0, W, H);
+
+  // Clip to rounded rect — garante cantos transparentes no PNG
+  rr(ctx, 0, 0, W, H, R);
+  ctx.clip();
+
+  // Fundo escuro
+  ctx.fillStyle = '#07070f';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grade
+  ctx.strokeStyle = 'rgba(155,109,255,0.13)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x <= W; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y <= H; y += 60) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+  // Vinheta sobre a grade — centro visível, bordas somem
+  const vig = ctx.createRadialGradient(W/2, H/2, 60, W/2, H/2, W * 0.62);
+  vig.addColorStop(0,    'rgba(7,7,15,0)');
+  vig.addColorStop(0.42, 'rgba(7,7,15,0.25)');
+  vig.addColorStop(1,    'rgba(7,7,15,0.88)');
+  ctx.fillStyle = vig;
+  ctx.fillRect(0, 0, W, H);
+
+  // Glow roxo no topo
+  const gt = ctx.createRadialGradient(W/2, -60, 0, W/2, -60, 480);
+  gt.addColorStop(0, 'rgba(155,109,255,0.20)');
+  gt.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gt;
+  ctx.fillRect(0, 0, W, H);
+
+  // Glow roxo central
+  const gc = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, 360);
+  gc.addColorStop(0,    'rgba(155,109,255,0.26)');
+  gc.addColorStop(0.42, 'rgba(77,141,255,0.08)');
+  gc.addColorStop(1,    'rgba(0,0,0,0)');
+  ctx.fillStyle = gc;
+  ctx.fillRect(0, 0, W, H);
+
+  // Linha decorativa no topo
+  const lg = ctx.createLinearGradient(W/2 - 160, 0, W/2 + 160, 0);
+  lg.addColorStop(0,   'transparent');
+  lg.addColorStop(0.3, '#9b6dff');
+  lg.addColorStop(0.7, '#4d8dff');
+  lg.addColorStop(1,   'transparent');
+  ctx.strokeStyle = lg;
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(W/2 - 160, 1); ctx.lineTo(W/2 + 160, 1); ctx.stroke();
+
+  // Ornamentos laterais
+  function drawOrn(x) {
+    const og = ctx.createLinearGradient(x, H/2 - 90, x, H/2 + 90);
+    og.addColorStop(0,   'transparent');
+    og.addColorStop(0.5, 'rgba(155,109,255,0.35)');
+    og.addColorStop(1,   'transparent');
+    ctx.strokeStyle = og;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, H/2 - 90); ctx.lineTo(x, H/2 + 90); ctx.stroke();
+  }
+  drawOrn(56); drawOrn(W - 56);
+
+  // Borda
+  rr(ctx, 0.75, 0.75, W - 1.5, H - 1.5, R);
+  ctx.strokeStyle = 'rgba(155,109,255,0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // Badge "Metodologia Turbo"
+  const badgeStr = 'METODOLOGIA TURBO';
+  ctx.font = '700 11px Inter, sans-serif';
+  ctx.letterSpacing = '2px';
+  const btw = ctx.measureText(badgeStr).width;
+  ctx.letterSpacing = '0px';
+  const bw = btw + 52, bh = 30;
+  const bx = W/2 - bw/2, by = H/2 - 112;
+
+  rr(ctx, bx, by, bw, bh, 15);
+  ctx.fillStyle = 'rgba(155,109,255,0.12)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(155,109,255,0.30)'; ctx.lineWidth = 1; ctx.stroke();
+
+  ctx.shadowColor = '#9b6dff'; ctx.shadowBlur = 8;
+  ctx.fillStyle = '#9b6dff';
+  ctx.beginPath(); ctx.arc(bx + 17, by + bh/2, 3, 0, Math.PI * 2); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = '#b89aff';
+  ctx.font = '700 11px Inter, sans-serif';
+  ctx.letterSpacing = '2px';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(badgeStr, bx + 28, by + bh/2 + 1);
+  ctx.letterSpacing = '0px';
+
+  // Título — "Protocolo Do Zero ao" branco + "Lucro" lilás
+  ctx.font = '900 68px Inter, sans-serif';
+  ctx.textBaseline = 'middle';
+  const p1 = 'Protocolo Do Zero ao\u00A0', p2 = 'Lucro';
+  const w1 = ctx.measureText(p1).width;
+  const w2 = ctx.measureText(p2).width;
+  const tx = W/2 - (w1 + w2) / 2;
+  const ty = H/2 + 6;
+
+  ctx.textAlign = 'left';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(p1, tx, ty);
+  ctx.fillStyle = '#c4a8ff';
+  ctx.fillText(p2, tx + w1, ty);
+
+  // Subtítulo
+  ctx.font = '400 22px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(255,255,255,0.72)';
+  ctx.textAlign = 'center';
+  ctx.fillText('Toda a estrutura que você precisa para escalar um e-commerce do zero', W/2, H/2 + 74);
+}
+
+draw();
+
+function download() {
+  const link = document.createElement('a');
+  link.download = 'protocolo-do-zero-ao-lucro.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+}
+</script>
+</body>
+</html>

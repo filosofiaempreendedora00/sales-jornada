@@ -974,6 +974,66 @@ body {
   color: #4d8dff;
 }
 
+.process-block {
+  background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.04) 100%);
+  border-radius: 12px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(16,185,129,0.28);
+  position: relative;
+}
+
+.process-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #10b981, rgba(16,185,129,0.2));
+  border-radius: 12px 12px 0 0;
+}
+
+.process-block .block-label {
+  color: rgba(16,185,129,0.75);
+  margin-bottom: 11px;
+}
+
+.process-block .link-row {
+  border-bottom-color: rgba(16,185,129,0.1);
+}
+
+.process-block .link-anchor {
+  color: #10b981;
+}
+
+.featured-block {
+  background: linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(168,85,247,0.04) 100%);
+  border-radius: 12px;
+  padding: 12px 14px 14px;
+  border: 1px solid rgba(168,85,247,0.28);
+  position: relative;
+}
+
+.featured-block::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #a855f7, rgba(168,85,247,0.2));
+  border-radius: 12px 12px 0 0;
+}
+
+.featured-block .block-label {
+  color: rgba(168,85,247,0.75);
+  margin-bottom: 11px;
+}
+
+.featured-block .link-row {
+  border-bottom-color: rgba(168,85,247,0.1);
+}
+
+.featured-block .link-anchor {
+  color: #a855f7;
+}
+
 /* Panel footer */
 .panel-footer {
   padding: 14px 24px 24px;
@@ -2647,6 +2707,943 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   body { flex-direction: column; }
 }
 
+
+/* ── PROTOCOLO DO ZERO AO TURBO ──────────────────────────────── */
+.proto-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, rgba(155,109,255,0.15) 0%, rgba(77,141,255,0.1) 100%);
+  border: 1px solid rgba(155,109,255,0.35);
+  border-radius: 10px;
+  color: #c4a8ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+.proto-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(155,109,255,0.18) 0%, rgba(77,141,255,0.12) 100%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+.proto-btn:hover { border-color: rgba(155,109,255,0.65); color: #d8c0ff; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(155,109,255,0.22); }
+.proto-btn:hover::before { opacity: 1; }
+.proto-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+/* Modal overlay */
+.xpto-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7,7,15,0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 3000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+.xpto-overlay.is-open { opacity: 1; pointer-events: all; }
+
+/* Modal shell */
+.xpto-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3001;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  display: block;
+  padding: 0;
+  background: var(--bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.38s cubic-bezier(0.4,0,0.2,1);
+}
+.xpto-modal.is-open { opacity: 1; pointer-events: all; }
+
+.xpto-inner { width: 100%; }
+
+/* Slides */
+.xpto-slide {
+  min-height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 20px 80px;
+  position: relative;
+}
+.xpto-slide-modules {
+  justify-content: flex-start;
+  padding-top: 80px;
+}
+.xpto-slide-inner {
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Hero slide — full-viewport glow */
+.xpto-slide-hero {
+  overflow: hidden;
+}
+.xpto-slide-hero::before {
+  content: '';
+  position: absolute;
+  top: -10%; left: 50%;
+  transform: translateX(-50%);
+  width: 120%; height: 110%;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 28%, rgba(7,7,15,0.80) 78%),
+    radial-gradient(ellipse at 50% 40%, rgba(155,109,255,0.22) 0%, rgba(155,109,255,0.07) 32%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+.xpto-slide-hero .xpto-slide-inner { position: relative; z-index: 1; }
+
+/* Modal scroll hint arrow */
+.xpto-scroll-hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3200;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+.xpto-scroll-hint.is-visible { display: flex; }
+.xpto-scroll-hint.is-faded   { opacity: 0; }
+.xpto-scroll-hint-chevron {
+  width: 16px; height: 16px;
+  border-right: 2px solid rgba(155,109,255,0.8);
+  border-bottom: 2px solid rgba(155,109,255,0.8);
+  transform: rotate(45deg);
+  animation: xpto-chevron 1.6s ease-in-out infinite;
+}
+.xpto-scroll-hint-chevron:nth-child(2) { margin-top: -9px; opacity: 0.45; animation-delay: 0.18s; }
+.xpto-scroll-hint-chevron:nth-child(3) { margin-top: -9px; opacity: 0.18; animation-delay: 0.36s; }
+@keyframes xpto-chevron {
+  0%, 100% { transform: rotate(45deg) translate(0,0); }
+  50%       { transform: rotate(45deg) translate(3px,3px); }
+}
+
+/* Close button */
+.xpto-close {
+  position: fixed;
+  top: 22px;
+  right: 26px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-2);
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+  z-index: 3002;
+}
+.xpto-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+
+/* Hero */
+.xpto-hero {
+  text-align: center;
+  padding: 32px 0 80px;
+  position: relative;
+}
+/* Hero glow is now handled at slide level */
+.xpto-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(155,109,255,0.1);
+  border: 1px solid rgba(155,109,255,0.22);
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #b89aff;
+  margin-bottom: 26px;
+  position: relative;
+  z-index: 1;
+}
+.xpto-eyebrow span { width: 5px; height: 5px; border-radius: 50%; background: #9b6dff; box-shadow: 0 0 7px #9b6dff; }
+.xpto-title {
+  font-size: clamp(34px, 5.5vw, 60px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  margin-bottom: 18px;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 28px rgba(155,109,255,0.38)) drop-shadow(0 -4px 16px rgba(155,109,255,0.22));
+  position: relative;
+  z-index: 1;
+}
+.xpto-subtitle {
+  font-size: 18px;
+  font-weight: 500;
+  color: #c4a8ff;
+  margin-bottom: 22px;
+  line-height: 1.6;
+  max-width: 580px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+.xpto-desc {
+  font-size: 15.5px;
+  color: var(--text-2);
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.8;
+  position: relative;
+  z-index: 1;
+}
+.xpto-hero-bullets {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.xpto-hero-bullets li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.78);
+  text-align: left;
+}
+.xpto-hb-icon {
+  color: #9b6dff;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+.xpto-hb-check {
+  font-size: 13px;
+  font-weight: 700;
+  color: #c4a8ff;
+  text-shadow: 0 0 10px rgba(155,109,255,0.5);
+}
+
+/* Stats bar */
+.xpto-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 60px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.xpto-stat {
+  flex: 1;
+  padding: 20px 16px;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+.xpto-stat:last-child { border-right: none; }
+.xpto-stat-num {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #c4a8ff, #7dafff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.xpto-stat-label {
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.5px;
+}
+
+/* Section label — badge com shimmer */
+.xpto-section-label {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #b89aff;
+  background: rgba(155,109,255,0.1);
+  border: 1px solid rgba(155,109,255,0.22);
+  border-radius: 99px;
+  padding: 5px 14px;
+  margin-bottom: 18px;
+}
+.xpto-section-label::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 45%; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.13) 50%, transparent 100%);
+  animation: shimmerSlide 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Modules grid */
+.xpto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 10px;
+  margin-bottom: 60px;
+}
+
+/* Module card */
+.xpto-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.22s ease, background 0.22s ease, box-shadow 0.22s ease;
+}
+.xpto-card:hover {
+  border-color: rgba(155,109,255,0.28);
+  background: rgba(155,109,255,0.05);
+  box-shadow: 0 4px 24px rgba(155,109,255,0.1);
+}
+.xpto-card.is-open {
+  border-color: rgba(155,109,255,0.35);
+  background: rgba(155,109,255,0.07);
+}
+.xpto-card-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 18px 16px;
+}
+.xpto-card-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(155,109,255,0.12);
+  border: 1px solid rgba(155,109,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+  transition: background 0.22s ease;
+}
+.xpto-card.is-open .xpto-card-icon,
+.xpto-card:hover .xpto-card-icon {
+  background: rgba(155,109,255,0.2);
+}
+.xpto-card-meta { flex: 1; min-width: 0; }
+.xpto-card-num {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #7b6aaa;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.xpto-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.xpto-card-micro {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.xpto-card-chevron {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-3);
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), color 0.2s ease;
+}
+.xpto-card.is-open .xpto-card-chevron {
+  transform: rotate(180deg);
+  color: #b89aff;
+}
+.xpto-card-chevron svg { width: 14px; height: 14px; }
+
+/* Expandable body */
+.xpto-card-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1);
+}
+.xpto-card-body-inner {
+  padding: 0 18px 18px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 16px;
+}
+/* Price tags */
+.xpto-card-price-tag {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 800;
+  color: #9b6dff;
+  background: rgba(155,109,255,0.10);
+  border: 1px solid rgba(155,109,255,0.22);
+  border-radius: 8px;
+  padding: 4px 9px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  margin-left: 8px;
+  align-self: flex-start;
+}
+.xpto-bonus-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 16px;
+}
+.xpto-bonus-price-tag {
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffa826;
+  background: rgba(255,168,38,0.10);
+  border: 1px solid rgba(255,168,38,0.22);
+  border-radius: 8px;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.xpto-card-note {
+  margin-top: 14px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  background: rgba(255,168,38,0.07);
+  border: 1px solid rgba(255,168,38,0.18);
+  font-size: 11.5px;
+  color: #c9a060;
+  line-height: 1.5;
+}
+.xpto-bullet-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.xpto-bullet-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+.xpto-bullet-list li::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #9b6dff;
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* ── Metodologia (pilares) ────────────────────────── */
+@keyframes xpto-spin  { to { transform: rotate(360deg); } }
+@keyframes xpto-pulse { 0%,100% { opacity:.15; } 50% { opacity:.55; } }
+@keyframes xpto-bar   { 0%,65%,100% { opacity:.22; } 32% { opacity:.9; } }
+
+.xpto-for-section { margin-bottom: 56px; }
+.xpto-for-header  { margin-bottom: 24px; }
+.xpto-for-heading {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.4px;
+  line-height: 1.3;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.xpto-for-subheading {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+.xpto-for-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 700px) { .xpto-for-grid { grid-template-columns: 1fr; } }
+
+.xpto-for-card {
+  border-radius: 16px;
+  padding: 24px 20px 22px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  transition: border-color .22s ease, background .22s ease, transform .22s ease, box-shadow .22s ease;
+}
+.xpto-for-card:hover {
+  border-color: rgba(155,109,255,0.3);
+  background: rgba(155,109,255,0.06);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 36px rgba(155,109,255,0.12);
+}
+.xpto-for-card::before {
+  content: '';
+  position: absolute;
+  top: -28px; right: -28px;
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(155,109,255,0.14) 0%, transparent 70%);
+  pointer-events: none;
+}
+.xpto-for-bg-num {
+  position: absolute;
+  bottom: -12px; right: 12px;
+  font-size: 76px;
+  font-weight: 900;
+  letter-spacing: -4px;
+  color: rgba(155,109,255,0.07);
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+.xpto-for-icon-wrap {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(155,109,255,0.1);
+  border: 1px solid rgba(155,109,255,0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.xpto-for-pillar {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #c4a8ff;
+}
+.xpto-for-hook {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.45;
+}
+.xpto-for-micro {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+
+/* ── Para quem é (ICP) ───────────────────────────── */
+.xpto-icp-section {
+  margin-bottom: 56px;
+}
+.xpto-icp-header {
+  margin-bottom: 32px;
+}
+.xpto-icp-heading {
+  font-size: clamp(24px, 3.5vw, 34px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #fff 40%, rgba(196,168,255,0.75));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.xpto-icp-sub {
+  font-size: 14px;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+.xpto-icp-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+@media (max-width: 640px) {
+  .xpto-icp-list { grid-template-columns: 1fr; }
+}
+.xpto-icp-item {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 20px;
+  border: 1px solid rgba(155,109,255,0.15);
+  border-radius: 16px;
+  background: rgba(155,109,255,0.04);
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+.xpto-icp-item:hover {
+  background: rgba(155,109,255,0.09);
+  border-color: rgba(155,109,255,0.28);
+  transform: translateY(-2px);
+}
+.xpto-icp-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: rgba(155,109,255,0.15);
+  border: 1px solid rgba(155,109,255,0.3);
+  color: #b89aff;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.xpto-icp-content { flex: 1; min-width: 0; }
+.xpto-icp-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.35;
+  margin-bottom: 4px;
+  letter-spacing: -0.1px;
+}
+.xpto-icp-sub2 {
+  font-size: 12.5px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.xpto-icp-body {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.65;
+}
+.xpto-icp-anchor {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 4px;
+}
+.xpto-icp-anchor-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(155,109,255,0.25), transparent);
+}
+.xpto-icp-anchor-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.xpto-icp-anchor-text em {
+  font-style: italic;
+  color: #b89aff;
+}
+@media (max-width: 560px) {
+  .xpto-icp-anchor-text { white-space: normal; text-align: center; }
+  .xpto-icp-anchor { flex-wrap: wrap; justify-content: center; }
+  .xpto-icp-anchor-line { display: none; }
+}
+
+/* ── Bonus section ───────────────────────────────── */
+.xpto-bonus-section {
+  margin-bottom: 60px;
+}
+.xpto-bonus-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.xpto-bonus-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,168,38,0.1);
+  border: 1px solid rgba(255,168,38,0.28);
+  border-radius: 99px;
+  padding: 5px 14px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffc453;
+  margin-bottom: 16px;
+}
+.xpto-bonus-heading {
+  font-size: clamp(22px, 3.5vw, 32px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #ffe08a 0%, #ffa826 60%, #ff7f00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.xpto-bonus-subheading {
+  font-size: 14px;
+  color: var(--text-3);
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.xpto-bonus-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .xpto-bonus-grid { grid-template-columns: 1fr; }
+}
+.xpto-bonus-card {
+  position: relative;
+  background: linear-gradient(160deg, rgba(255,168,38,0.1) 0%, rgba(255,100,0,0.06) 100%);
+  border: 1px solid rgba(255,168,38,0.3);
+  border-radius: 18px;
+  padding: 28px 22px 24px;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.xpto-bonus-card::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(255,168,38,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.xpto-bonus-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(255,140,0,0.2);
+  border-color: rgba(255,168,38,0.55);
+}
+.xpto-bonus-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ffa826;
+  background: rgba(255,168,38,0.12);
+  border: 1px solid rgba(255,168,38,0.22);
+  border-radius: 99px;
+  padding: 3px 10px;
+  margin-bottom: 0;
+}
+.xpto-bonus-icon {
+  font-size: 36px;
+  margin-bottom: 14px;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(255,168,38,0.4));
+}
+.xpto-bonus-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+  margin-bottom: 10px;
+  line-height: 1.25;
+}
+.xpto-bonus-desc {
+  font-size: 13px;
+  color: #c9b38a;
+  line-height: 1.65;
+  margin-bottom: 12px;
+}
+.xpto-bonus-detail {
+  font-size: 12px;
+  color: var(--text-3);
+  line-height: 1.6;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,168,38,0.12);
+}
+
+/* Bottom pricing */
+.xpto-pricing {
+  position: relative;
+  text-align: center;
+  padding: 56px 32px 52px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: rgba(155,109,255,0.06);
+  border: 1px solid rgba(155,109,255,0.18);
+}
+.xpto-pricing::before {
+  content: '';
+  position: absolute;
+  top: -80px; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 300px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(155,109,255,0.22) 0%, transparent 65%);
+  pointer-events: none;
+}
+.xpto-pricing-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #b89aff;
+  margin-bottom: 28px;
+  position: relative;
+}
+.xpto-pricing-main {
+  position: relative;
+  margin-bottom: 10px;
+}
+.xpto-pricing-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.70);
+  letter-spacing: 0;
+  padding-bottom: 10px;
+  white-space: nowrap;
+}
+.xpto-pricing-installments {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.xpto-pricing-currency {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 900;
+  color: #c4a8ff;
+  letter-spacing: -1px;
+  padding-bottom: 6px;
+}
+.xpto-pricing-amount {
+  font-size: clamp(72px, 11vw, 104px);
+  font-weight: 900;
+  letter-spacing: -5px;
+  background: linear-gradient(135deg, #fff 30%, #c4a8ff 85%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.xpto-pricing-or {
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 700;
+  margin: 18px 0 10px;
+}
+.xpto-pricing-cash {
+  font-size: 22px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: -0.5px;
+  margin-bottom: 36px;
+}
+.xpto-pricing-cash strong {
+  color: var(--text);
+}
+.xpto-pricing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 52px;
+  background: linear-gradient(135deg,
+    rgba(155,109,255,0.22) 0%,
+    rgba(77,141,255,0.18) 50%,
+    rgba(13,207,232,0.15) 100%
+  );
+  border: 1px solid rgba(155,109,255,0.45);
+  border-radius: 15px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.15),
+    0 6px 32px rgba(155,109,255,0.22),
+    0 1px 0 rgba(255,255,255,0.06) inset;
+}
+.xpto-pricing-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 45%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
+  animation: shimmerSlide 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.xpto-pricing-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28) 35%, rgba(13,207,232,0.55) 65%, transparent);
+  border-radius: 1px;
+  animation: borderPulse 3.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.xpto-pricing-btn:hover {
+  transform: translateY(-3px);
+  border-color: rgba(155,109,255,0.7);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.3),
+    0 12px 44px rgba(155,109,255,0.32),
+    0 1px 0 rgba(255,255,255,0.08) inset;
+}
+.xpto-pricing-btn:active { transform: translateY(0); }
+.xpto-pricing-guarantee {
+  margin-top: 18px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+}
+
+@media (max-width: 600px) {
+  .xpto-modal { padding: 20px 12px 60px; }
+  .xpto-stats { flex-wrap: wrap; }
+  .xpto-stat { min-width: 50%; }
+  .xpto-grid { grid-template-columns: 1fr; }
+}
+
 </style>
 </head>
 <body>
@@ -2853,6 +3850,20 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     </button>
   </div>
 </aside>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  PROTOCOLO DO ZERO AO TURBO MODAL                          -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="xpto-overlay"></div>
+<button class="xpto-close" id="xpto-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="xpto-modal">
+  <div class="xpto-inner" id="xpto-inner"></div>
+</div>
+<div class="xpto-scroll-hint" id="xpto-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
 
 <!-- ══════════════════════════════════════════════ -->
 <!--  SCRIPT                                        -->
@@ -3116,6 +4127,8 @@ const STAGES = [
         impact: 'CTR baixo, CPM alto, custo por aquisição elevado. Você gasta mais para adquirir cada cliente.',
         deps: ['definicoes'],
         links: [
+          { label: 'Processo UGC completo', url: 'https://sharing.clickup.com/31021986/wb/h/xjpx2-141553/93b429be61b7083', type: 'process' },
+          { label: 'Ocean Drop',  url: 'https://drive.google.com/drive/u/1/folders/1cugzfL_UohDiuPFh1HqgbllWNcenAY_r', type: 'featured' },
           { label: 'Sulmel',      url: 'https://drive.google.com/drive/u/1/folders/1lIRWpKfm_FPw_gDNdwEgy3tDGLiRV2zT' },
           { label: 'Vekka',       url: 'https://drive.google.com/drive/u/1/folders/1tZbBXg6xeCK2aTrEbrSaerIXFi-W539L' },
           { label: 'Minimal Club',url: 'https://drive.google.com/drive/u/1/folders/1w579OBMG3RG6x4StULmecFqMdnB9qstr' },
@@ -3427,7 +4440,7 @@ function renderFlow() {
     const topNodes   = stage.nodes.filter(n => !n.parentId);
     const childNodes = stage.nodes.filter(n => n.parentId);
 
-    topNodes.forEach(node => {
+    topNodes.forEach((node, ni) => {
       const el = buildNodeEl(node);
       const children = childNodes.filter(c => c.parentId === node.id);
       if (children.length) {
@@ -3437,6 +4450,14 @@ function renderFlow() {
         el.appendChild(sub);
       }
       wrap.appendChild(el);
+
+      if (stage.id === 'concepcao' && ni === 0) {
+        const btn = document.createElement('button');
+        btn.className = 'proto-btn';
+        btn.onclick = () => openXpto();
+        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Ver Protocolo Do Zero ao Lucro`;
+        wrap.appendChild(btn);
+      }
     });
 
     flow.appendChild(col);
@@ -3579,8 +4600,10 @@ function refreshChecklist(nodeId) {
 function buildLinksHTML(links, color) {
   if (!links || links.length === 0) return '';
 
-  const toolLinks = links.filter(l => l.type === 'tool');
-  const caseLinks = links.filter(l => l.type !== 'tool');
+  const toolLinks     = links.filter(l => l.type === 'tool');
+  const featuredLinks = links.filter(l => l.type === 'featured');
+  const processLinks  = links.filter(l => l.type === 'process');
+  const caseLinks     = links.filter(l => !l.type || (l.type !== 'tool' && l.type !== 'featured' && l.type !== 'process'));
   let html = '';
 
   // ── Cases block (amber) ──────────────────────────
@@ -3619,6 +4642,36 @@ function buildLinksHTML(links, color) {
 
     html += `<div class="links-block">
       <p class="block-label">✦ cases &amp; referências</p>
+      ${rows}
+    </div>`;
+  }
+
+  // ── Featured project block (purple) ─────────────
+  if (featuredLinks.length > 0) {
+    let rows = '';
+    featuredLinks.forEach(l => {
+      rows += `<div class="link-row">
+        <span class="link-name">${l.label}</span>
+        <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
+      </div>`;
+    });
+    html += `<div class="featured-block">
+      <p class="block-label">★ projeto destaque</p>
+      ${rows}
+    </div>`;
+  }
+
+  // ── Process block (green) ────────────────────────
+  if (processLinks.length > 0) {
+    let rows = '';
+    processLinks.forEach(l => {
+      rows += `<div class="link-row">
+        <span class="link-name">${l.label}</span>
+        <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
+      </div>`;
+    });
+    html += `<div class="process-block">
+      <p class="block-label">⟳ processo ponta a ponta</p>
       ${rows}
     </div>`;
   }
@@ -3862,7 +4915,7 @@ document.getElementById('panel-body').addEventListener('click', e => {
     localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0');
   }
 
-  btn.addEventListener('click', toggle);
+  btn.addEventListener('click', (e) => { e.stopPropagation(); toggle(); });
 
   document.querySelector('.sidebar-brand').addEventListener('click', (e) => {
     if (sidebar.classList.contains('is-collapsed')) toggle();
@@ -4654,6 +5707,351 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   });
 
   window.openPerfSimulator = openPerfSimulator;
+})();
+
+// ─────────────────────────────────────────────────
+//  PROTOCOLO DO ZERO AO TURBO
+// ─────────────────────────────────────────────────
+(function () {
+
+  const MODULES = [
+    {
+      icon: '🎯', title: 'Diagnóstico Estratégico', price: 'R$497',
+      micro: 'Entendemos de onde você parte — antes de qualquer movimento',
+      items: ['1h de diagnóstico aprofundado em call com especialista', 'Mapeamento de gargalos e identificação de oportunidades', 'Priorização das ações que são mais latentes no momento']
+    },
+    {
+      icon: '🔍', title: 'Análise SWOT da Marca', price: 'R$497',
+      micro: 'Uma visão clara de onde você está forte e onde está vulnerável',
+      items: ['Forças que podem ser amplificadas agora', 'Fraquezas que travam o crescimento', 'Oportunidades de mercado identificadas', 'Ameaças competitivas mapeadas']
+    },
+    {
+      icon: '🔧', title: 'Kit de ferramentas para cada estágio', price: 'R$497',
+      micro: 'Recomendações de ferramentas para nível básico, intermediário e avançado',
+      items: ['Plataformas de loja virtual recomendadas', 'Soluções de logística e fulfillment', 'Gateways de pagamento e parcelamento', 'ERPs e CRMs adequados ao seu porte', 'Plugins e features de conversão']
+    },
+    {
+      icon: '📊', title: 'Benchmarking', price: 'R$697',
+      micro: 'Mais inteligente que reinventar a roda é modelar os maiores',
+      items: ['Análise de social media dos concorrentes', 'Sugestões de features interessantes de lojas virtuais de concorrentes', 'Espionagem de anúncios escalados no Brasil e no mundo']
+    },
+    {
+      icon: '💎', title: 'Criação de Ofertas', price: 'R$697',
+      micro: 'Estruturas que facilitam a venda dos seus produtos',
+      items: ['Estratégia para aumentar ticket médio', 'Estrutura de picos de vendas planejados', 'Calendário de ofertas sazonais']
+    },
+    {
+      icon: '⚡', title: 'Réguas de Comunicação', price: 'R$497',
+      micro: 'Seu cliente continua comprando — no piloto automático',
+      items: ['Sugestão de fluxos de automação por e-mail e WhatsApp', 'Estratégias de retenção e recompra', 'Sequências de pós-venda e recuperação']
+    },
+    {
+      icon: '🎨', title: 'Manual visual da marca', price: 'R$2.997',
+      micro: 'Uma marca que é reconhecida antes de ser lida',
+      items: ['Definição de paleta de cores', 'Tipografia e hierarquia visual', 'Orientações de uso e consistência', 'Direito a 01 revisão do material', 'Entrega de arquivos editáveis'],
+      note: '⚠️ Este módulo não inclui criação de logotipo.'
+    },
+    {
+      icon: '📝', title: 'Manual de Comunicação', price: 'R$1.997',
+      micro: 'Para sua marca comunicar sempre do mesmo jeito, em qualquer canal',
+      items: ['Posicionamento de marca definido', 'Tom de voz e estilo de escrita', 'Narrativa central e pilares da marca', 'Ângulos e formatos de criativos', 'Guia prático de produção de conteúdo']
+    },
+    {
+      icon: '📡', title: 'Auditoria de Mídia', price: 'R$1.497',
+      micro: 'Antes de escalar, feche os buracos por onde o dinheiro está saindo',
+      items: ['Auditoria completa de Google Ads', 'Auditoria completa de Meta Ads', 'Diagnóstico de desperdício e oportunidade']
+    },
+    {
+      icon: '🏪', title: 'Google Meu Negócio', price: 'R$497',
+      micro: 'Para transmitir confiança quando alguém pesquisa pela sua marca',
+      items: ['Configuração e otimização completa do perfil', 'Estratégia para construção de avaliações e reputação', 'Presença profissional nas buscas pelo nome da marca']
+    },
+    {
+      icon: '🎬', title: 'Criativos de Venda', price: 'R$1.497',
+      micro: 'Peças feitas para converter — não só gerar clique, mas gerar receita',
+      items: ['2 criativos gráficos (estáticos)', '2 criativos em vídeo', 'Adaptados para os diferentes formatos — feed e stories']
+    },
+    {
+      icon: '🗺️', title: 'Estrutura de Campanhas', price: 'R$997',
+      micro: 'Para saber exatamente onde colocar cada real e o que esperar em troca',
+      items: ['Distribuição de verba por canal e objetivo', 'Estrutura completa de Meta Ads', 'Estrutura completa de Google Ads', 'Planejamento estratégico de 3 meses']
+    },
+    {
+      icon: '🤝', title: 'Apresentação Estratégica', price: 'R$297',
+      micro: 'Tudo explicado e entregue pessoalmente, sem deixar ponta solta',
+      items: ['01h de call com especialista para apresentação completa do material', 'Sessão de perguntas e respostas', 'Entrega do plano estratégico consolidado']
+    },
+  ];
+
+  const BONUSES = [
+    {
+      icon: '🚀', tag: 'Bônus 01', price: 'R$997',
+      title: 'Treinamento de Performance',
+      desc: 'Aprenda a operar e escalar tráfego pago do zero — com a metodologia que usamos nos nossos clientes.',
+      detail: 'Meta Ads, Google Ads, estrutura de campanhas, leitura de métricas e tomada de decisão baseada em dados.'
+    },
+    {
+      icon: '📊', tag: 'Bônus 02', price: 'R$297',
+      title: 'DRE Performance',
+      desc: 'A planilha financeira completa para você saber exatamente se está lucrando — ou só faturando.',
+      detail: 'Receita, custos, margem, CPA, ROAS e ponto de equilíbrio. Tudo em um dashboard prático e editável.'
+    },
+    {
+      icon: '💬', tag: 'Bônus 03', price: 'R$199',
+      title: '1 Mês de CRM',
+      desc: 'Um mês completo da melhor ferramenta de retenção e relacionamento — incluso na implantação.',
+      detail: 'Automações de e-mail, WhatsApp e SMS já configuradas para recuperar vendas e fidelizar clientes desde o dia 1.'
+    }
+  ];
+
+  function buildModal() {
+    const mods = MODULES.map((m, i) => `
+      <div class="xpto-card" data-xpto-idx="${i}">
+        <div class="xpto-card-head">
+          <div class="xpto-card-icon">${m.icon}</div>
+          <div class="xpto-card-meta">
+            <div class="xpto-card-num">Módulo ${String(i + 1).padStart(2, '0')}</div>
+            <div class="xpto-card-title">${m.title}</div>
+            <div class="xpto-card-micro">${m.micro}</div>
+          </div>
+          <div class="xpto-card-price-tag">${m.price}</div>
+          <div class="xpto-card-chevron">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="xpto-card-body">
+          <div class="xpto-card-body-inner">
+            <ul class="xpto-bullet-list">
+              ${m.items.map(it => `<li>${it}</li>`).join('')}
+            </ul>
+            ${m.note ? `<p class="xpto-card-note">${m.note}</p>` : ''}
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    const bonuses = BONUSES.map(b => `
+      <div class="xpto-bonus-card">
+        <div class="xpto-bonus-card-top">
+          <div class="xpto-bonus-tag">${b.tag}</div>
+          <div class="xpto-bonus-price-tag">${b.price}</div>
+        </div>
+        <div class="xpto-bonus-icon">${b.icon}</div>
+        <h3 class="xpto-bonus-title">${b.title}</h3>
+        <p class="xpto-bonus-desc">${b.desc}</p>
+        <p class="xpto-bonus-detail">${b.detail}</p>
+      </div>
+    `).join('');
+
+    return `
+      <section class="xpto-slide xpto-slide-hero">
+        <div class="xpto-slide-inner">
+          <div class="xpto-hero">
+            <div class="xpto-eyebrow"><span></span>Sistema Completo</div>
+            <h1 class="xpto-title">Protocolo Do Zero ao Lucro</h1>
+            <p class="xpto-subtitle">Encurte sua jornada: toda a estrutura que você precisa para tirar um&nbsp;e&#8209;commerce do absoluto zero, até ele se tornar lucrativo</p>
+            <ul class="xpto-hero-bullets">
+            <li><span class="xpto-hb-icon xpto-hb-check">✓</span>Com o máximo de segurança</li>
+            <li><span class="xpto-hb-icon xpto-hb-check">✓</span>No menor tempo possível</li>
+            <li><span class="xpto-hb-icon xpto-hb-check">✓</span>Sabendo exatamente o que priorizar em cada etapa</li>
+          </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-methodology">
+        <div class="xpto-slide-inner">
+      <div class="xpto-for-section">
+        <div class="xpto-for-header">
+          <p class="xpto-section-label">Metodologia</p>
+          <h2 class="xpto-for-heading">Três pilares. Um sistema.</h2>
+          <p class="xpto-for-subheading">O Protocolo Do Zero ao Lucro é construído em cima de três fundamentos — na ordem certa.</p>
+        </div>
+        <div class="xpto-for-grid">
+          <div class="xpto-for-card">
+            <div class="xpto-for-bg-num">01</div>
+            <div class="xpto-for-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="11" stroke="#9b6dff" stroke-width="1.2" opacity="0.35"/>
+                <circle cx="13" cy="13" r="11" stroke="#9b6dff" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.5"/>
+                <g style="transform-origin:13px 13px;animation:xpto-spin 10s linear infinite">
+                  <polygon points="13,3 14.4,13 13,11.6 11.6,13" fill="#9b6dff"/>
+                  <polygon points="13,23 14.4,13 13,14.4 11.6,13" fill="#9b6dff" opacity="0.25"/>
+                </g>
+                <circle cx="13" cy="13" r="2" fill="#9b6dff"/>
+              </svg>
+            </div>
+            <h3 class="xpto-for-pillar">Clareza</h3>
+            <p class="xpto-for-hook">Saber onde você está antes de sair correndo.</p>
+            <p class="xpto-for-micro">Sem diagnóstico real, você investe no chute. E chute é caro.</p>
+          </div>
+          <div class="xpto-for-card">
+            <div class="xpto-for-bg-num">02</div>
+            <div class="xpto-for-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <rect x="2" y="19" width="22" height="4" rx="1.5" fill="#9b6dff" style="animation:xpto-bar 2s 0s ease-in-out infinite"/>
+                <rect x="5" y="13" width="16" height="4" rx="1.5" fill="#9b6dff" style="animation:xpto-bar 2s .45s ease-in-out infinite"/>
+                <rect x="8" y="7"  width="10" height="4" rx="1.5" fill="#9b6dff" style="animation:xpto-bar 2s .9s ease-in-out infinite"/>
+              </svg>
+            </div>
+            <h3 class="xpto-for-pillar">Estrutura</h3>
+            <p class="xpto-for-hook">Uma base que aguenta quando o crescimento chegar.</p>
+            <p class="xpto-for-micro">Escalar sem estrutura é só aumentar o caos.</p>
+          </div>
+          <div class="xpto-for-card">
+            <div class="xpto-for-bg-num">03</div>
+            <div class="xpto-for-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="11" stroke="#9b6dff" stroke-width="1" style="animation:xpto-pulse 2.8s 0s ease-in-out infinite"/>
+                <circle cx="13" cy="13" r="7"  stroke="#9b6dff" stroke-width="1.2" style="animation:xpto-pulse 2.8s .4s ease-in-out infinite"/>
+                <circle cx="13" cy="13" r="3.5" stroke="#9b6dff" stroke-width="1.5" opacity="0.8"/>
+                <circle cx="13" cy="13" r="1.5" fill="#9b6dff"/>
+              </svg>
+            </div>
+            <h3 class="xpto-for-pillar">Direção</h3>
+            <p class="xpto-for-hook">Um plano claro — não mais tentativa e erro.</p>
+            <p class="xpto-for-micro">Quem sabe o próximo passo não precisa improvisar.</p>
+          </div>
+        </div>
+      </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-icp">
+        <div class="xpto-slide-inner">
+          <div class="xpto-icp-section">
+            <div class="xpto-icp-header">
+              <p class="xpto-section-label">Para quem é</p>
+              <h2 class="xpto-icp-heading">O Protocolo Do Zero ao Lucro é pra quem quer:</h2>
+            </div>
+            <div class="xpto-icp-list">
+              <div class="xpto-icp-item">
+                <div class="xpto-icp-check">✦</div>
+                <div class="xpto-icp-content">
+                  <h3 class="xpto-icp-title">Tirar uma marca do zero</h3>
+                  <p class="xpto-icp-sub2">pra viver dela ou vendê-la no futuro</p>
+                </div>
+              </div>
+              <div class="xpto-icp-item">
+                <div class="xpto-icp-check">✦</div>
+                <div class="xpto-icp-content">
+                  <h3 class="xpto-icp-title">Minimizar ao máximo os erros</h3>
+                  <p class="xpto-icp-sub2">ao criar e escalar um e-commerce no digital</p>
+                </div>
+              </div>
+              <div class="xpto-icp-item">
+                <div class="xpto-icp-check">✦</div>
+                <div class="xpto-icp-content">
+                  <h3 class="xpto-icp-title">Economizar tempo e dinheiro</h3>
+                  <p class="xpto-icp-sub2">absorvendo know-how de quem chegou lá</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-modules">
+        <div class="xpto-slide-inner">
+          <p class="xpto-section-label">O que está incluído</p>
+          <div class="xpto-grid">${mods}</div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-bonus">
+        <div class="xpto-slide-inner">
+          <div class="xpto-bonus-section">
+            <div class="xpto-bonus-header">
+              <div class="xpto-bonus-eyebrow">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ffa826"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Bônus exclusivos
+              </div>
+              <h2 class="xpto-bonus-heading">Três presentes que aceleram tudo</h2>
+              <p class="xpto-bonus-subheading">Incluídos sem custo adicional. Porque um protocolo de verdade vai além do básico.</p>
+            </div>
+            <div class="xpto-bonus-grid">${bonuses}</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-pricing">
+        <div class="xpto-slide-inner">
+          <div class="xpto-pricing">
+            <div class="xpto-pricing-eyebrow">✦ Investimento</div>
+            <div class="xpto-pricing-main">
+              <div class="xpto-pricing-installments">
+                <span class="xpto-pricing-label">12x de</span>
+                <span class="xpto-pricing-currency">R$</span>
+                <span class="xpto-pricing-amount">620,23</span>
+              </div>
+            </div>
+            <p class="xpto-pricing-or">ou</p>
+            <p class="xpto-pricing-cash"><strong>R$ 5.997</strong> à vista</p>
+            <button class="xpto-pricing-btn">Vamos com Turbo!</button>
+            <p class="xpto-pricing-guarantee">13 módulos + 3 bônus incluídos</p>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function openXpto() {
+    const inner  = document.getElementById('xpto-inner');
+    const modal  = document.getElementById('xpto-modal');
+    const hint   = document.getElementById('xpto-scroll-hint');
+
+    inner.innerHTML = buildModal();
+    modal.scrollTop = 0;
+
+    document.getElementById('xpto-overlay').classList.add('is-open');
+    modal.classList.add('is-open');
+    document.getElementById('xpto-close').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    inner.querySelectorAll('.xpto-card').forEach(card => {
+      card.addEventListener('click', () => toggleCard(card));
+    });
+
+    // Show scroll hint
+    hint.classList.add('is-visible');
+    hint.classList.remove('is-faded');
+
+    modal.addEventListener('scroll', function onScroll() {
+      const atBottom = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 60;
+      hint.classList.toggle('is-faded', atBottom);
+    });
+  }
+
+  function closeXpto() {
+    document.getElementById('xpto-overlay').classList.remove('is-open');
+    document.getElementById('xpto-modal').classList.remove('is-open');
+    document.getElementById('xpto-scroll-hint').classList.remove('is-visible');
+    document.body.style.overflow = '';
+  }
+
+  function toggleCard(card) {
+    const body = card.querySelector('.xpto-card-body');
+    const isOpen = card.classList.contains('is-open');
+
+    // Close all
+    document.querySelectorAll('.xpto-card.is-open').forEach(c => {
+      c.classList.remove('is-open');
+      c.querySelector('.xpto-card-body').style.maxHeight = '';
+    });
+
+    if (!isOpen) {
+      card.classList.add('is-open');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }
+
+  document.getElementById('xpto-overlay').addEventListener('click', closeXpto);
+  document.getElementById('xpto-close').addEventListener('click', closeXpto);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXpto(); });
+
+  window.openXpto = openXpto;
 })();
 
 // ─────────────────────────────────────────────────
