@@ -1823,7 +1823,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .sidebar {
   width: 224px;
   flex-shrink: 0;
-  background: var(--surface);
+  background: var(--bg);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -2007,13 +2007,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 
 .apresentacao-wrap::before {
-  content: '';
-  position: absolute;
-  top: 40%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 800px; height: 600px;
-  background: radial-gradient(ellipse, rgba(155,109,255,0.07) 0%, transparent 65%);
-  pointer-events: none;
+  display: none;
 }
 
 .apresentacao-card {
@@ -2050,6 +2044,9 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   width: 100%; height: 100%;
   object-fit: cover;
   display: none;
+  flex-shrink: 0;
+  transform: scale(1.1) translateX(12%);
+  transform-origin: center center;
 }
 
 #avatar-photo.is-loaded { display: block; }
@@ -2117,7 +2114,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   align-items: center;
   gap: 15px;
   padding: 15px 18px;
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 13px;
   transition: border-color 0.2s, transform 0.2s, background 0.2s;
@@ -2174,6 +2171,147 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   padding: 3px 9px;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* ── BREADY SOCIAL PROOF ──────────────────────────── */
+.beady-section {
+  padding: 64px 32px 72px;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+}
+
+.beady-section::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 25%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 400px;
+  background: radial-gradient(ellipse, rgba(232,160,32,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.beady-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.beady-logo-col {
+  flex-shrink: 0;
+  width: 240px;
+}
+
+.beady-logo-img {
+  width: 240px;
+  opacity: 0.95;
+  filter: drop-shadow(0 4px 40px rgba(232,160,32,0.18));
+}
+
+.beady-content-col {
+  flex: 1;
+  min-width: 0;
+}
+
+.beady-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(232,160,32,0.6);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.beady-journey {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-bottom: 20px;
+}
+
+.beady-node {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.beady-node-val {
+  font-size: clamp(17px, 2.4vw, 22px);
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.beady-node-val.is-peak {
+  color: #e8a020;
+}
+
+.beady-node-sub {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.beady-arrow {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0 10px;
+}
+
+.beady-arrow-line {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(232,160,32,0.2), rgba(232,160,32,0.6), rgba(232,160,32,0.2));
+  position: relative;
+}
+
+.beady-arrow-line::after {
+  content: '';
+  position: absolute;
+  right: -1px; top: 50%;
+  transform: translateY(-50%);
+  border: 4px solid transparent;
+  border-left: 6px solid rgba(232,160,32,0.7);
+}
+
+.beady-arrow-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(232,160,32,0.5);
+  white-space: nowrap;
+}
+
+.beady-footnote {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.5;
+  border-left: 2px solid rgba(232,160,32,0.3);
+  padding-left: 12px;
+}
+
+@media (max-width: 520px) {
+  .beady-inner {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+  }
+  .beady-logo-col { width: 100%; text-align: center; }
+  .beady-logo-img { width: 180px; }
+  .beady-footnote { border-left: none; padding-left: 0; text-align: center; }
+  .beady-eyebrow { text-align: center; }
 }
 
 /* ── CALCULATOR ──────────────────────────────────── */
@@ -2710,34 +2848,102 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 /* ── PROTOCOLO DO ZERO AO TURBO ──────────────────────────────── */
 .proto-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 14px;
+  width: 100%;
   margin-top: 14px;
-  padding: 9px 18px;
-  background: linear-gradient(135deg, rgba(155,109,255,0.15) 0%, rgba(77,141,255,0.1) 100%);
-  border: 1px solid rgba(155,109,255,0.35);
-  border-radius: 10px;
-  color: #c4a8ff;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all 0.22s ease;
   position: relative;
   overflow: hidden;
+  background: rgba(155,109,255,0.07);
+  border-radius: 14px;
+  padding: 16px 18px;
+  cursor: pointer;
+  text-align: left;
+  border: 1px solid rgba(155,109,255,0.2);
+  box-shadow:
+    0 2px 16px rgba(0,0,0,0.18),
+    0 1px 0 rgba(255,255,255,0.04) inset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 .proto-btn::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(155,109,255,0.18) 0%, rgba(77,141,255,0.12) 100%);
-  opacity: 0;
-  transition: opacity 0.22s ease;
+  top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.07) 50%,
+    transparent 100%
+  );
+  animation: shimmerSlide 3.6s ease-in-out infinite;
+  pointer-events: none;
 }
-.proto-btn:hover { border-color: rgba(155,109,255,0.65); color: #d8c0ff; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(155,109,255,0.22); }
-.proto-btn:hover::before { opacity: 1; }
-.proto-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.proto-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(155,109,255,0.5) 40%,
+    rgba(200,170,255,0.7) 55%,
+    transparent
+  );
+  animation: borderPulse 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.proto-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(155,109,255,0.11);
+  border-color: rgba(155,109,255,0.35);
+  box-shadow:
+    0 4px 24px rgba(155,109,255,0.12),
+    0 1px 0 rgba(255,255,255,0.05) inset;
+}
+.proto-btn:active { transform: translateY(0); }
+.proto-btn-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.proto-btn-text { display: flex; flex-direction: column; gap: 3px; flex: 1; }
+.proto-btn-title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.9);
+}
+.proto-btn-sub {
+  font-size: 11px;
+  color: rgba(200,210,240,0.5);
+  line-height: 1.45;
+  font-weight: 400;
+}
+.proto-btn-new {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 4px;
+  background: rgba(155,109,255,0.15);
+  border: 1px solid rgba(155,109,255,0.3);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(155,109,255,0.9);
+  position: static;
+  width: fit-content;
+}
+.proto-btn-arrow {
+  font-size: 16px;
+  flex-shrink: 0;
+  color: rgba(255,255,255,0.3);
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+.proto-btn:hover .proto-btn-arrow {
+  transform: translateX(4px);
+  color: rgba(255,255,255,0.6);
+}
 
 /* Modal overlay */
 .xpto-overlay {
@@ -2772,6 +2978,60 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 .xpto-inner { width: 100%; }
 
+/* ── Value bar (âncora de preço) ──────────────────── */
+#xpto-value-bar {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(-100% - 24px));
+  z-index: 3200;
+  opacity: 0;
+  transition: transform 0.48s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.32s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#xpto-value-bar.is-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+.xpto-vb-inner {
+  background: rgba(12, 8, 28, 0.88);
+  border: 1px solid rgba(155,109,255,0.42);
+  border-radius: 40px;
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  backdrop-filter: blur(18px);
+  box-shadow: 0 6px 32px rgba(155,109,255,0.22), 0 0 0 1px rgba(155,109,255,0.08);
+}
+.xpto-vb-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #9b6dff;
+}
+.xpto-vb-sep {
+  font-size: 13px;
+  color: rgba(255,255,255,0.25);
+  margin: 0 1px;
+}
+.xpto-vb-currency {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.55);
+}
+.xpto-vb-amount {
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+  min-width: 56px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 /* Slides */
 .xpto-slide {
   min-height: 100vh;
@@ -2787,6 +3047,334 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .xpto-slide-modules {
   justify-content: flex-start;
   padding-top: 80px;
+}
+
+/* ── Slides individuais por módulo ───────────────── */
+.xpto-slide-module-single {
+  justify-content: center;
+}
+.xpto-slide-module-single .xpto-slide-inner,
+.xpto-slide-bonus-single .xpto-slide-inner {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(155,109,255,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(13,207,232,0.07) 0%, transparent 55%),
+    rgba(255,255,255,0.025);
+  border: 1px solid rgba(155,109,255,0.18);
+  border-radius: 22px;
+  padding: 28px 26px;
+  box-shadow:
+    0 0 0 1px rgba(13,207,232,0.06),
+    0 8px 40px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.05) inset;
+  backdrop-filter: blur(6px);
+  position: relative;
+  overflow: hidden;
+}
+.xpto-slide-module-single .xpto-slide-inner::before,
+.xpto-slide-bonus-single .xpto-slide-inner::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(155,109,255,0.35) 40%, rgba(13,207,232,0.25) 60%, transparent);
+  border-radius: 1px;
+}
+.xpto-slide-bonus-single .xpto-slide-inner {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(255,168,38,0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(155,109,255,0.07) 0%, transparent 55%),
+    rgba(255,255,255,0.025);
+  border-color: rgba(255,168,38,0.20);
+  box-shadow:
+    0 0 0 1px rgba(255,168,38,0.07),
+    0 8px 40px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.05) inset;
+}
+.xpto-slide-bonus-single .xpto-slide-inner::before {
+  background: linear-gradient(90deg, transparent, rgba(255,168,38,0.30) 40%, rgba(155,109,255,0.20) 60%, transparent);
+}
+.xpto-mod-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  width: 100%;
+}
+.xpto-mod-counter {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #7b6aaa;
+  text-transform: uppercase;
+}
+.xpto-mod-hero {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 24px;
+  width: 100%;
+}
+.xpto-mod-icon-lg {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: rgba(155,109,255,0.12);
+  border: 1px solid rgba(155,109,255,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+.xpto-mod-title-group {
+  flex: 1;
+  min-width: 0;
+}
+.xpto-mod-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.25;
+  margin: 4px 0 8px;
+}
+.xpto-mod-price-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #d4b8ff;
+  background: rgba(155,109,255,0.18);
+  border: 1px solid rgba(155,109,255,0.45);
+  border-radius: 10px;
+  padding: 5px 14px;
+  margin: 8px 0 10px;
+  letter-spacing: 0.2px;
+}
+.xpto-mod-micro {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.xpto-mod-bullets-wrap {
+  width: 100%;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+.xpto-mod-bullets-wrap .xpto-bullet-list li {
+  font-size: 14px;
+}
+
+/* ── Slides individuais de bônus ──────────────────── */
+.xpto-bonus-eyebrow-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ffa826;
+  background: rgba(255,168,38,0.1);
+  border: 1px solid rgba(255,168,38,0.28);
+  border-radius: 20px;
+  padding: 6px 13px;
+}
+.xpto-bonus-counter {
+  color: #a07840;
+}
+.xpto-bonus-icon-lg {
+  background: rgba(255,168,38,0.1) !important;
+  border-color: rgba(255,168,38,0.28) !important;
+}
+.xpto-bonus-num {
+  color: #ffa826 !important;
+}
+.xpto-bonus-mod-price-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffc46a;
+  background: rgba(255,168,38,0.14);
+  border: 1px solid rgba(255,168,38,0.38);
+  border-radius: 10px;
+  padding: 5px 14px;
+  margin: 8px 0 10px;
+  letter-spacing: 0.2px;
+}
+.xpto-bonus-bullets-wrap {
+  background: rgba(255,168,38,0.04) !important;
+  border-color: rgba(255,168,38,0.14) !important;
+}
+.xpto-bonus-slide-desc {
+  font-size: 15px;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+.xpto-bonus-slide-detail {
+  font-size: 13px;
+  color: var(--text-3);
+  line-height: 1.6;
+}
+.xpto-bonus-link {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #ffa826;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255,168,38,0.35);
+  padding-bottom: 1px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.xpto-bonus-link:hover {
+  color: #ffc46a;
+  border-color: rgba(255,168,38,0.7);
+}
+
+/* ── Slides de ancoragem (riscado) ────────────────── */
+.xpto-slide-anchor {
+  justify-content: center;
+  text-align: center;
+}
+.xpto-anchor-eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 36px;
+}
+.xpto-anchor-value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  position: relative;
+  margin-bottom: 28px;
+}
+/* strike X — linhas injetadas via JS com dimensões em px */
+.xpto-anchor-num-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.xpto-strike-line {
+  position: absolute;
+  height: 5px;
+  background: #9b6dff;
+  border-radius: 3px;
+  opacity: 0.62;
+  pointer-events: none;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: none;
+}
+.xpto-strike-line.is-drawn {
+  transform: scaleX(1);
+}
+.xpto-anchor-currency {
+  font-size: 26px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.3);
+  line-height: 1;
+}
+.xpto-anchor-amount {
+  font-size: 76px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.28);
+  line-height: 1;
+  letter-spacing: -3px;
+  font-variant-numeric: tabular-nums;
+}
+.xpto-anchor-sub {
+  font-size: 13px;
+  color: var(--text-3);
+  max-width: 260px;
+  margin: 0 auto;
+  line-height: 1.55;
+}
+
+/* ── Bundle list (slide de pricing) ──────────────── */
+.xpto-slide-pricing {
+  justify-content: flex-start !important;
+  padding-top: 64px !important;
+  padding-bottom: 80px !important;
+}
+.xpto-bundle-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin: 14px 0 8px;
+  width: 100%;
+}
+.xpto-bundle-section-label:first-child { margin-top: 0; }
+.xpto-bundle-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 28px;
+}
+.xpto-bundle-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(155,109,255,0.1);
+}
+.xpto-bundle-item.is-bonus {
+  background: rgba(255,168,38,0.03);
+  border-color: rgba(255,168,38,0.14);
+}
+.xpto-bundle-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #9b6dff;
+  flex-shrink: 0;
+}
+.xpto-bundle-item.is-bonus .xpto-bundle-dot {
+  background: #ffa826;
+}
+.xpto-bundle-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.xpto-bundle-name {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.xpto-bundle-price {
+  font-size: 10px;
+  font-weight: 800;
+  color: #9b6dff;
+  background: rgba(155,109,255,0.1);
+  border: 1px solid rgba(155,109,255,0.2);
+  border-radius: 6px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.xpto-bundle-item.is-bonus .xpto-bundle-price {
+  color: #ffa826;
+  background: rgba(255,168,38,0.1);
+  border-color: rgba(255,168,38,0.22);
 }
 .xpto-slide-inner {
   width: 100%;
@@ -2810,6 +3398,228 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   z-index: 0;
 }
 .xpto-slide-hero .xpto-slide-inner { position: relative; z-index: 1; }
+
+/* Bready slide */
+.xpto-slide-bready { overflow: hidden; }
+
+.xpto-slide-bready::before {
+  content: '';
+  position: absolute;
+  top: 48%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 340px; height: 340px;
+  background: radial-gradient(ellipse, rgba(232,160,32,0.10) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.xpto-slide-bready .xpto-slide-inner { padding-bottom: 72px; }
+
+.xpto-bready-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.xpto-bready-logo {
+  width: 148px;
+  margin-bottom: -22px;
+  filter: drop-shadow(0 2px 16px rgba(232,160,32,0.10));
+  position: relative;
+  z-index: 2;
+}
+
+.xpto-bready-eyebrow {
+  display: none;
+}
+
+/* ── Premium amber card (touches logo) ── */
+.xpto-bready-card {
+  width: calc(100% - 32px);
+  max-width: 320px;
+  margin: 0 auto 22px;
+  text-align: center;
+  position: relative;
+  background: linear-gradient(150deg,
+    rgba(232,160,32,0.13) 0%,
+    rgba(232,160,32,0.06) 55%,
+    rgba(255,190,60,0.04) 100%
+  );
+  border-radius: 18px;
+  padding: 28px 24px 18px;
+  border: 1px solid rgba(232,160,32,0.26);
+  box-shadow:
+    0 0 0 1px rgba(232,160,32,0.07),
+    0 8px 48px rgba(232,160,32,0.16),
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 -1px 0 rgba(0,0,0,0.22) inset;
+}
+
+/* Top-edge highlight */
+.xpto-bready-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 8%; right: 8%; height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,210,90,0.3) 30%,
+    rgba(232,160,32,0.7) 55%,
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Shimmer via inner div so card doesn't need overflow:hidden */
+.xpto-bready-shimmer {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.xpto-bready-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 50%; height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,210,90,0.07) 50%,
+    transparent 100%
+  );
+  animation: shimmerSlide 4.2s ease-in-out infinite;
+}
+
+.xpto-bready-card > *:not(.xpto-bready-shimmer) { position: relative; z-index: 1; }
+
+/* Journey: vertical — R$0 → small arrow → big number */
+.xpto-bready-origin {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 8px;
+}
+
+.xpto-bready-origin-val {
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+  color: rgba(232,160,32,0.45);
+}
+
+.xpto-bready-origin-sub {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+}
+
+.xpto-bready-micro-arrow {
+  width: 1px;
+  height: 18px;
+  background: linear-gradient(to bottom, rgba(232,160,32,0.25), rgba(232,160,32,0.55));
+  margin: 0 auto 6px;
+  position: relative;
+}
+
+.xpto-bready-micro-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top: 5px solid rgba(232,160,32,0.6);
+}
+
+.xpto-bready-num-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-bottom: 10px;
+  line-height: 1;
+  width: 100%;
+}
+
+.xpto-bready-big {
+  font-size: clamp(58px, 17vw, 82px);
+  font-weight: 900;
+  letter-spacing: -4px;
+  line-height: 1;
+  color: #e8a020;
+  white-space: nowrap;
+  text-shadow:
+    0 0 40px rgba(232,160,32,0.55),
+    0 0 90px rgba(232,160,32,0.18);
+}
+
+.xpto-bready-unit {
+  font-size: clamp(14px, 4vw, 18px);
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(232,160,32,0.55);
+  padding-bottom: 0;
+}
+
+.xpto-bready-card-note {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  white-space: nowrap;
+}
+
+/* Brands row */
+.xpto-bready-brands-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 14px;
+}
+
+.xpto-bready-brands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding-bottom: 8px;
+}
+
+.xpto-bready-brand-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  min-width: 0;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.xpto-bready-brand-item:last-child { border-right: none; }
+
+.xpto-bready-brand-logo {
+  width: 100%;
+  height: 52px;
+  object-fit: contain;
+  opacity: 0.55;
+  filter: brightness(0) invert(1);
+}
+
+.xpto-bready-brand-logo.is-center {
+  opacity: 0.62;
+  height: 72px;
+}
 
 /* Modal scroll hint arrow */
 .xpto-scroll-hint {
@@ -2855,7 +3665,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: var(--text-2);
   font-size: 17px;
   cursor: pointer;
-  display: flex;
+  display: none;
   align-items: center;
   justify-content: center;
   transition: all 0.18s ease;
@@ -2866,7 +3676,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 /* Hero */
 .xpto-hero {
   text-align: center;
-  padding: 32px 0 80px;
+  padding: 0;
   position: relative;
 }
 /* Hero glow is now handled at slide level */
@@ -2936,11 +3746,16 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .xpto-hero-bullets li {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   font-size: 15px;
   font-weight: 500;
   color: rgba(255,255,255,0.78);
-  text-align: left;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(155,109,255,0.14);
+  border-radius: 10px;
+  padding: 11px 16px;
+  text-align: center;
 }
 .xpto-hb-icon {
   color: #9b6dff;
@@ -3631,10 +4446,114 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     0 1px 0 rgba(255,255,255,0.08) inset;
 }
 .xpto-pricing-btn:active { transform: translateY(0); }
+a.xpto-pricing-btn { text-decoration: none; }
 .xpto-pricing-guarantee {
   margin-top: 18px;
   font-size: 12px;
   color: rgba(255,255,255,0.55);
+}
+
+/* ── Countdown 48h ───────────────────────────────── */
+.xpto-countdown {
+  margin: 0 auto 28px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: cdReveal 0.4s ease;
+}
+.xpto-countdown.is-visible {
+  display: flex;
+}
+@keyframes cdReveal {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.xpto-think-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.35);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 6px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.15s;
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 10px;
+}
+.xpto-think-btn:hover { color: rgba(255,255,255,0.6); }
+.xpto-think-btn.is-hidden { display: none; }
+.xpto-countdown-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ff7b7b;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.xpto-countdown-label::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ff7b7b;
+  animation: cdPulse 1s ease-in-out infinite;
+}
+@keyframes cdPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+.xpto-countdown-digits {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.xpto-cd-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.xpto-cd-num {
+  font-size: clamp(28px, 6vw, 38px);
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
+  background: linear-gradient(135deg, #fff 30%, #ff9f9f 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  min-width: 2ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.xpto-cd-unit {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+}
+.xpto-cd-sep {
+  font-size: 28px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.25);
+  line-height: 1;
+  margin-bottom: 14px;
+}
+.xpto-countdown-expired {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ff7b7b;
+  letter-spacing: 0.5px;
 }
 
 @media (max-width: 600px) {
@@ -3688,12 +4607,11 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     <div class="apresentacao-card">
 
       <!-- Avatar (temporarily hidden) -->
-      <div class="avatar-ring" style="display:none">
+      <div class="avatar-ring">
         <div class="avatar-inner">
-          <img id="avatar-photo" alt="Roberto Fachetti">
+          <img id="avatar-photo" src="IMG_9262.JPG" alt="Roberto Fachetti" class="is-loaded">
           <span class="avatar-placeholder-icon">👤</span>
         </div>
-        <div class="avatar-add-btn" title="Adicionar foto" onclick="document.getElementById('avatar-input').click()">📷</div>
       </div>
       <input type="file" id="avatar-input" accept="image/*">
 
@@ -3856,6 +4774,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 <!-- ══════════════════════════════════════════════ -->
 <div class="xpto-overlay" id="xpto-overlay"></div>
 <button class="xpto-close" id="xpto-close" aria-label="Fechar">✕</button>
+<div id="xpto-value-bar" aria-hidden="true">
+  <div class="xpto-vb-inner">
+    <span class="xpto-vb-label">Valor recebido</span>
+    <span class="xpto-vb-sep">=</span>
+    <span class="xpto-vb-currency">R$</span>
+    <span class="xpto-vb-amount">0</span>
+  </div>
+</div>
 <div class="xpto-modal" id="xpto-modal">
   <div class="xpto-inner" id="xpto-inner"></div>
 </div>
@@ -4455,7 +5381,13 @@ function renderFlow() {
         const btn = document.createElement('button');
         btn.className = 'proto-btn';
         btn.onclick = () => openXpto();
-        btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Ver Protocolo Do Zero ao Lucro`;
+        btn.innerHTML = `
+          <span class="proto-btn-text">
+            <span class="proto-btn-new">NOVO</span>
+            <span class="proto-btn-title">Protocolo Do Zero ao Lucro</span>
+          </span>
+          <span class="proto-btn-arrow">→</span>
+        `;
         wrap.appendChild(btn);
       }
     });
@@ -5762,11 +6694,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       items: ['Auditoria completa de Google Ads', 'Auditoria completa de Meta Ads', 'Diagnóstico de desperdício e oportunidade']
     },
     {
-      icon: '🏪', title: 'Google Meu Negócio', price: 'R$497',
-      micro: 'Para transmitir confiança quando alguém pesquisa pela sua marca',
-      items: ['Configuração e otimização completa do perfil', 'Estratégia para construção de avaliações e reputação', 'Presença profissional nas buscas pelo nome da marca']
-    },
-    {
       icon: '🎬', title: 'Criativos de Venda', price: 'R$1.497',
       micro: 'Peças feitas para converter — não só gerar clique, mas gerar receita',
       items: ['2 criativos gráficos (estáticos)', '2 criativos em vídeo', 'Adaptados para os diferentes formatos — feed e stories']
@@ -5798,51 +6725,65 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     },
     {
       icon: '💬', tag: 'Bônus 03', price: 'R$199',
-      title: '1 Mês de CRM',
+      title: '1 Mês de flashCRM',
       desc: 'Um mês completo da melhor ferramenta de retenção e relacionamento — incluso na implantação.',
-      detail: 'Automações de e-mail, WhatsApp e SMS já configuradas para recuperar vendas e fidelizar clientes desde o dia 1.'
+      detail: 'Automações de e-mail, WhatsApp e SMS já configuradas para recuperar vendas e fidelizar clientes desde o dia 1.',
+      link: 'https://www.flashcrm.com.br/'
     }
   ];
 
   function buildModal() {
-    const mods = MODULES.map((m, i) => `
-      <div class="xpto-card" data-xpto-idx="${i}">
-        <div class="xpto-card-head">
-          <div class="xpto-card-icon">${m.icon}</div>
-          <div class="xpto-card-meta">
-            <div class="xpto-card-num">Módulo ${String(i + 1).padStart(2, '0')}</div>
-            <div class="xpto-card-title">${m.title}</div>
-            <div class="xpto-card-micro">${m.micro}</div>
+    const modSlides = MODULES.map((m, i) => `
+      <section class="xpto-slide xpto-slide-module-single">
+        <div class="xpto-slide-inner">
+          <div class="xpto-mod-top-bar">
+            <p class="xpto-section-label">O que está incluído</p>
+            <span class="xpto-mod-counter">Módulo ${String(i + 1).padStart(2, '0')} de ${MODULES.length}</span>
           </div>
-          <div class="xpto-card-price-tag">${m.price}</div>
-          <div class="xpto-card-chevron">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
+          <div class="xpto-mod-hero">
+            <div class="xpto-mod-icon-lg">${m.icon}</div>
+            <div class="xpto-mod-title-group">
+              <div class="xpto-card-num">Módulo ${String(i + 1).padStart(2, '0')}</div>
+              <h2 class="xpto-mod-title">${m.title}</h2>
+              <div class="xpto-mod-price-tag">${m.price}</div>
+              <p class="xpto-mod-micro">${m.micro}</p>
+            </div>
           </div>
-        </div>
-        <div class="xpto-card-body">
-          <div class="xpto-card-body-inner">
+          <div class="xpto-mod-bullets-wrap">
             <ul class="xpto-bullet-list">
               ${m.items.map(it => `<li>${it}</li>`).join('')}
             </ul>
             ${m.note ? `<p class="xpto-card-note">${m.note}</p>` : ''}
           </div>
         </div>
-      </div>
+      </section>
     `).join('');
 
-    const bonuses = BONUSES.map(b => `
-      <div class="xpto-bonus-card">
-        <div class="xpto-bonus-card-top">
-          <div class="xpto-bonus-tag">${b.tag}</div>
-          <div class="xpto-bonus-price-tag">${b.price}</div>
+    const bonusSlides = BONUSES.map((b, i) => `
+      <section class="xpto-slide xpto-slide-bonus-single">
+        <div class="xpto-slide-inner">
+          <div class="xpto-mod-top-bar">
+            <p class="xpto-bonus-eyebrow-label">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="#ffa826"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Bônus exclusivos
+            </p>
+            <span class="xpto-mod-counter xpto-bonus-counter">Bônus ${String(i + 1).padStart(2, '0')} de ${BONUSES.length}</span>
+          </div>
+          <div class="xpto-mod-hero">
+            <div class="xpto-mod-icon-lg xpto-bonus-icon-lg">${b.icon}</div>
+            <div class="xpto-mod-title-group">
+              <div class="xpto-card-num xpto-bonus-num">${b.tag}</div>
+              <h2 class="xpto-mod-title">${b.title}</h2>
+              <div class="xpto-bonus-mod-price-tag">${b.price}</div>
+            </div>
+          </div>
+          <div class="xpto-mod-bullets-wrap xpto-bonus-bullets-wrap">
+            <p class="xpto-bonus-slide-desc">${b.desc}</p>
+            <p class="xpto-bonus-slide-detail">${b.detail}</p>
+            ${b.link ? `<a class="xpto-bonus-link" href="${b.link}" target="_blank" rel="noopener">${b.link.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗</a>` : ''}
+          </div>
         </div>
-        <div class="xpto-bonus-icon">${b.icon}</div>
-        <h3 class="xpto-bonus-title">${b.title}</h3>
-        <p class="xpto-bonus-desc">${b.desc}</p>
-        <p class="xpto-bonus-detail">${b.detail}</p>
-      </div>
+      </section>
     `).join('');
 
     return `
@@ -5857,6 +6798,38 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             <li><span class="xpto-hb-icon xpto-hb-check">✓</span>No menor tempo possível</li>
             <li><span class="xpto-hb-icon xpto-hb-check">✓</span>Sabendo exatamente o que priorizar em cada etapa</li>
           </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-bready">
+        <div class="xpto-slide-inner xpto-bready-inner">
+          <img src="beady-logo.png" alt="Bready" class="xpto-bready-logo">
+
+          <div class="xpto-bready-card">
+            <div class="xpto-bready-shimmer"></div>
+            <div class="xpto-bready-origin">
+              <span class="xpto-bready-origin-val">R$0</span>
+              <span class="xpto-bready-origin-sub">início</span>
+            </div>
+            <div class="xpto-bready-micro-arrow"></div>
+            <div class="xpto-bready-num-row">
+              <span class="xpto-bready-big">R$1,5M</span><span class="xpto-bready-unit">/mês</span>
+            </div>
+            <span class="xpto-bready-card-note">em menos de 3 anos</span>
+          </div>
+
+          <span class="xpto-bready-brands-label">marcas que escalamos praticamente do zero</span>
+          <div class="xpto-bready-brands">
+            <div class="xpto-bready-brand-item">
+              <img src="noway.png" alt="Noway" class="xpto-bready-brand-logo">
+            </div>
+            <div class="xpto-bready-brand-item">
+              <img src="dot.png" alt="Dot" class="xpto-bready-brand-logo is-center">
+            </div>
+            <div class="xpto-bready-brand-item">
+              <img src="logo jui.png" alt="Jui" class="xpto-bready-brand-logo">
+            </div>
           </div>
         </div>
       </section>
@@ -5884,8 +6857,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               </svg>
             </div>
             <h3 class="xpto-for-pillar">Clareza</h3>
-            <p class="xpto-for-hook">Saber onde você está antes de sair correndo.</p>
-            <p class="xpto-for-micro">Sem diagnóstico real, você investe no chute. E chute é caro.</p>
+            <p class="xpto-for-hook">Ter segurança antes de pisar fundo no acelerador.</p>
           </div>
           <div class="xpto-for-card">
             <div class="xpto-for-bg-num">02</div>
@@ -5898,7 +6870,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             </div>
             <h3 class="xpto-for-pillar">Estrutura</h3>
             <p class="xpto-for-hook">Uma base que aguenta quando o crescimento chegar.</p>
-            <p class="xpto-for-micro">Escalar sem estrutura é só aumentar o caos.</p>
           </div>
           <div class="xpto-for-card">
             <div class="xpto-for-bg-num">03</div>
@@ -5912,7 +6883,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             </div>
             <h3 class="xpto-for-pillar">Direção</h3>
             <p class="xpto-for-hook">Um plano claro — não mais tentativa e erro.</p>
-            <p class="xpto-for-micro">Quem sabe o próximo passo não precisa improvisar.</p>
           </div>
         </div>
       </div>
@@ -5937,7 +6907,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="xpto-icp-item">
                 <div class="xpto-icp-check">✦</div>
                 <div class="xpto-icp-content">
-                  <h3 class="xpto-icp-title">Minimizar ao máximo os erros</h3>
+                  <h3 class="xpto-icp-title">Minimizar os erros</h3>
                   <p class="xpto-icp-sub2">ao criar e escalar um e-commerce no digital</p>
                 </div>
               </div>
@@ -5953,31 +6923,58 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         </div>
       </section>
 
-      <section class="xpto-slide xpto-slide-modules">
+      ${modSlides}
+
+      ${bonusSlides}
+
+      <section class="xpto-slide xpto-slide-anchor">
         <div class="xpto-slide-inner">
-          <p class="xpto-section-label">O que está incluído</p>
-          <div class="xpto-grid">${mods}</div>
+          <p class="xpto-anchor-eyebrow">Valor total se comprado separado</p>
+          <div class="xpto-anchor-value">
+            <span class="xpto-anchor-num-wrap">
+              <span class="xpto-anchor-currency">R$</span>
+              <span class="xpto-anchor-amount">${(MODULES.reduce((s,m)=>s+parseXptoPrice(m.price),0)+BONUSES.reduce((s,b)=>s+parseXptoPrice(b.price),0)).toLocaleString('pt-BR')}</span>
+            </span>
+          </div>
+          <p class="xpto-anchor-sub">12 módulos + 3 bônus contratados individualmente no mercado</p>
         </div>
       </section>
 
-      <section class="xpto-slide xpto-slide-bonus">
+      <section class="xpto-slide xpto-slide-anchor">
         <div class="xpto-slide-inner">
-          <div class="xpto-bonus-section">
-            <div class="xpto-bonus-header">
-              <div class="xpto-bonus-eyebrow">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="#ffa826"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Bônus exclusivos
-              </div>
-              <h2 class="xpto-bonus-heading">Três presentes que aceleram tudo</h2>
-              <p class="xpto-bonus-subheading">Incluídos sem custo adicional. Porque um protocolo de verdade vai além do básico.</p>
-            </div>
-            <div class="xpto-bonus-grid">${bonuses}</div>
+          <p class="xpto-anchor-eyebrow">Mesmo assim, uma oferta justa custaria</p>
+          <div class="xpto-anchor-value">
+            <span class="xpto-anchor-num-wrap">
+              <span class="xpto-anchor-currency">R$</span>
+              <span class="xpto-anchor-amount">10.000</span>
+            </span>
           </div>
+          <p class="xpto-anchor-sub">Isso já seria um preço especial pelo conjunto completo</p>
         </div>
       </section>
 
       <section class="xpto-slide xpto-slide-pricing">
         <div class="xpto-slide-inner">
+          <p class="xpto-bundle-section-label">O que está incluído</p>
+          <div class="xpto-bundle-list">
+            ${MODULES.map(m => `
+              <div class="xpto-bundle-item">
+                <div class="xpto-bundle-dot"></div>
+                <span class="xpto-bundle-icon">${m.icon}</span>
+                <span class="xpto-bundle-name">${m.title}</span>
+                <span class="xpto-bundle-price">${m.price}</span>
+              </div>
+            `).join('')}
+            <p class="xpto-bundle-section-label" style="margin-top:12px">Bônus exclusivos</p>
+            ${BONUSES.map(b => `
+              <div class="xpto-bundle-item is-bonus">
+                <div class="xpto-bundle-dot"></div>
+                <span class="xpto-bundle-icon">${b.icon}</span>
+                <span class="xpto-bundle-name">${b.title}</span>
+                <span class="xpto-bundle-price">${b.price}</span>
+              </div>
+            `).join('')}
+          </div>
           <div class="xpto-pricing">
             <div class="xpto-pricing-eyebrow">✦ Investimento</div>
             <div class="xpto-pricing-main">
@@ -5989,12 +6986,130 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             </div>
             <p class="xpto-pricing-or">ou</p>
             <p class="xpto-pricing-cash"><strong>R$ 5.997</strong> à vista</p>
-            <button class="xpto-pricing-btn">Vamos com Turbo!</button>
-            <p class="xpto-pricing-guarantee">13 módulos + 3 bônus incluídos</p>
+            <div class="xpto-countdown" id="xpto-countdown">
+              <div class="xpto-countdown-label">Oferta expira em</div>
+              <div class="xpto-countdown-digits">
+                <div class="xpto-cd-block">
+                  <span class="xpto-cd-num" id="xpto-cd-h">48</span>
+                  <span class="xpto-cd-unit">horas</span>
+                </div>
+                <span class="xpto-cd-sep">:</span>
+                <div class="xpto-cd-block">
+                  <span class="xpto-cd-num" id="xpto-cd-m">00</span>
+                  <span class="xpto-cd-unit">min</span>
+                </div>
+                <span class="xpto-cd-sep">:</span>
+                <div class="xpto-cd-block">
+                  <span class="xpto-cd-num" id="xpto-cd-s">00</span>
+                  <span class="xpto-cd-unit">seg</span>
+                </div>
+              </div>
+            </div>
+            <a href="https://pay.kiwify.com.br/Hk2p3mm" target="_blank" rel="noopener" class="xpto-pricing-btn">Vamos com Turbo!</a>
+            <p class="xpto-pricing-guarantee">12 módulos + 3 bônus incluídos</p>
+            <button class="xpto-think-btn" id="xpto-think-btn">Preciso pensar melhor</button>
           </div>
         </div>
       </section>
     `;
+  }
+
+  function parseXptoPrice(str) {
+    return parseInt(str.replace(/[R$.\s]/g, ''), 10) || 0;
+  }
+
+  function setupValueBar(inner, modal) {
+    const vb       = document.getElementById('xpto-value-bar');
+    const amountEl = vb.querySelector('.xpto-vb-amount');
+
+    // Pre-calculate offsetTop once (stable after DOM render, avoids BoundingClientRect
+    // flickering during snap-scroll animation)
+    const valuedSlides = [];
+    inner.querySelectorAll('.xpto-slide-module-single').forEach((el, i) => {
+      valuedSlides.push({ top: el.offsetTop, value: parseXptoPrice(MODULES[i].price) });
+    });
+    inner.querySelectorAll('.xpto-slide-bonus-single').forEach((el, i) => {
+      valuedSlides.push({ top: el.offsetTop, value: parseXptoPrice(BONUSES[i].price) });
+    });
+
+    let displayed = 0;
+    let target    = 0;
+    let rafId     = null;
+
+    function countTo(newTarget) {
+      if (newTarget === target) return;
+      target = newTarget;
+      if (rafId) cancelAnimationFrame(rafId);
+      const from     = displayed;
+      const diff     = target - from;
+      const duration = Math.min(500, Math.abs(diff) * 0.06 + 180);
+      const t0       = performance.now();
+      function tick(now) {
+        const p = Math.min((now - t0) / duration, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        displayed = Math.round(from + diff * e);
+        amountEl.textContent = displayed.toLocaleString('pt-BR');
+        if (p < 1) rafId = requestAnimationFrame(tick);
+        else { displayed = target; rafId = null; }
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function onScroll() {
+      const mid = modal.scrollTop + modal.clientHeight * 0.5;
+      let total = 0;
+      valuedSlides.forEach(({ top, value }) => {
+        if (top <= mid) total += value;
+      });
+      const firstReached = valuedSlides[0] && valuedSlides[0].top <= mid;
+      vb.classList.toggle('is-visible', firstReached);
+      countTo(total);
+    }
+
+    modal.addEventListener('scroll', onScroll, { passive: true });
+    modal._xptoVbCleanup = () => modal.removeEventListener('scroll', onScroll);
+  }
+
+  function setupCountdown() {
+    const DURATION = 48 * 60 * 60 * 1000;
+    const modal = document.getElementById('xpto-modal');
+    if (!modal) return;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    let tid = null;
+
+    window._xptoStartCountdown = function() {
+      if (tid) clearInterval(tid);
+      const deadline = Date.now() + DURATION;
+      function tick() {
+        const elH  = document.getElementById('xpto-cd-h');
+        const elM  = document.getElementById('xpto-cd-m');
+        const elS  = document.getElementById('xpto-cd-s');
+        const wrap = document.getElementById('xpto-countdown');
+        if (!wrap) { clearInterval(tid); return; }
+        const diff = deadline - Date.now();
+        if (diff <= 0) {
+          wrap.innerHTML = '<span class="xpto-countdown-expired">⏰ Oferta encerrada</span>';
+          clearInterval(tid); tid = null; return;
+        }
+        if (elH && elM && elS) {
+          elH.textContent = pad(Math.floor(diff / 3600000));
+          elM.textContent = pad(Math.floor((diff % 3600000) / 60000));
+          elS.textContent = pad(Math.floor((diff % 60000) / 1000));
+        }
+      }
+      tick();
+      tid = setInterval(tick, 1000);
+    };
+
+    const observer = new MutationObserver(() => {
+      if (!modal.classList.contains('is-open')) {
+        if (tid) clearInterval(tid);
+        observer.disconnect();
+        delete window._xptoStartCountdown;
+      }
+    });
+    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
   }
 
   function openXpto() {
@@ -6010,10 +7125,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     document.getElementById('xpto-close').style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    inner.querySelectorAll('.xpto-card').forEach(card => {
-      card.addEventListener('click', () => toggleCard(card));
-    });
-
     // Show scroll hint
     hint.classList.add('is-visible');
     hint.classList.remove('is-faded');
@@ -6022,29 +7133,73 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       const atBottom = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 60;
       hint.classList.toggle('is-faded', atBottom);
     });
+
+    setupValueBar(inner, modal);
+    setupCountdown();
+
+    const thinkBtn = inner.querySelector('#xpto-think-btn');
+    if (thinkBtn) {
+      thinkBtn.addEventListener('click', () => {
+        const cd = inner.querySelector('#xpto-countdown');
+        if (cd) cd.classList.add('is-visible');
+        thinkBtn.classList.add('is-hidden');
+        if (window._xptoStartCountdown) window._xptoStartCountdown();
+      });
+    }
+
+    inner.querySelectorAll('.xpto-slide-anchor').forEach(slide => {
+      const io = new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+
+        const wrap   = slide.querySelector('.xpto-anchor-num-wrap');
+        const amount = wrap.querySelector('.xpto-anchor-amount');
+        const w    = wrap.offsetWidth;
+        const h    = wrap.offsetHeight;
+        const diag = Math.round(Math.sqrt(w * w + h * h)) + 20;
+        const ang  = Math.atan2(h, w) * 180 / Math.PI;
+        // Center on the big number; subtract rotation offset so X crosses at midY
+        const midY      = Math.round(amount.offsetTop + amount.offsetHeight / 2);
+        const angRad    = ang * Math.PI / 180;
+        const rotOffset = Math.round((diag / 2) * Math.sin(angRad));
+
+        function makeLine(dir, delay) {
+          const ln = document.createElement('span');
+          ln.className = 'xpto-strike-line';
+          const left = Math.round((w - diag) / 2);
+          const top  = midY - rotOffset - 2;
+          ln.style.cssText = `
+            width:${diag}px;
+            left:${left}px;
+            top:${top}px;
+            transform-origin:${dir > 0 ? 'left' : 'right'} center;
+            transform:rotate(${dir * ang}deg) scaleX(0);
+          `;
+          wrap.appendChild(ln);
+          setTimeout(() => {
+            ln.style.transition = `transform 0.58s cubic-bezier(0.4,0,0.2,1)`;
+            ln.style.transform  = `rotate(${dir * ang}deg) scaleX(1)`;
+          }, delay);
+        }
+
+        setTimeout(() => {
+          makeLine(1,  0);    // top-left → bottom-right
+          makeLine(-1, 520);  // top-right → bottom-left
+        }, 120);
+      }, { root: modal, threshold: 0.5 });
+      io.observe(slide);
+    });
   }
 
   function closeXpto() {
+    const modal = document.getElementById('xpto-modal');
     document.getElementById('xpto-overlay').classList.remove('is-open');
-    document.getElementById('xpto-modal').classList.remove('is-open');
+    modal.classList.remove('is-open');
     document.getElementById('xpto-scroll-hint').classList.remove('is-visible');
+    document.getElementById('xpto-value-bar').classList.remove('is-visible');
+    document.getElementById('xpto-close').style.display = 'none';
     document.body.style.overflow = '';
-  }
-
-  function toggleCard(card) {
-    const body = card.querySelector('.xpto-card-body');
-    const isOpen = card.classList.contains('is-open');
-
-    // Close all
-    document.querySelectorAll('.xpto-card.is-open').forEach(c => {
-      c.classList.remove('is-open');
-      c.querySelector('.xpto-card-body').style.maxHeight = '';
-    });
-
-    if (!isOpen) {
-      card.classList.add('is-open');
-      body.style.maxHeight = body.scrollHeight + 'px';
-    }
+    if (modal._xptoVbCleanup) { modal._xptoVbCleanup(); modal._xptoVbCleanup = null; }
   }
 
   document.getElementById('xpto-overlay').addEventListener('click', closeXpto);
