@@ -38,6 +38,102 @@ body {
   overflow-x: hidden;
 }
 
+/* ── JOURNEY SWITCHER ────────────────────────────── */
+.journey-tabs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 32px 24px 0;
+  /* extends the purple radial glow into the black area above */
+  background: radial-gradient(ellipse at 50% 140%, rgba(155,109,255,0.13) 0%, transparent 65%);
+}
+.journey-track {
+  position: relative;
+  display: flex;
+  width: 260px;
+  background: rgba(255,255,255,0.035);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow:
+    0 4px 24px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.07),
+    inset 0 -1px 0 rgba(0,0,0,0.35);
+}
+/* sliding pill — moves behind buttons */
+.journey-slider {
+  position: absolute;
+  top: 4px; bottom: 4px; left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: linear-gradient(145deg, rgba(255,255,255,0.13) 0%, rgba(255,255,255,0.055) 100%);
+  border: 1px solid rgba(255,255,255,0.13);
+  box-shadow:
+    0 2px 10px rgba(0,0,0,0.45),
+    inset 0 1px 0 rgba(255,255,255,0.13);
+  transition: transform 0.32s cubic-bezier(0.34, 1.4, 0.64, 1);
+  pointer-events: none;
+}
+.journey-slider.at-lead { transform: translateX(100%); }
+
+.journey-tab {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 0;
+  white-space: nowrap;
+  border-radius: 999px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.38);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.25s;
+  user-select: none;
+}
+.journey-tab:hover { color: rgba(255,255,255,0.65); }
+.journey-tab.is-active { color: #fff; }
+
+/* amber dot on Lead tab — signals WIP without cluttering */
+.journey-tab-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 5px rgba(251,191,36,0.7);
+  flex-shrink: 0;
+  transition: opacity 0.25s;
+}
+
+.journey-wip-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px;
+  background: rgba(251,191,36,0.06);
+  border: 1px solid rgba(251,191,36,0.18);
+  border-radius: 10px;
+  color: rgba(251,191,36,0.85);
+  font-size: 12.5px;
+  max-width: 500px;
+}
+.journey-wip-banner::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #fbbf24;
+  box-shadow: 0 0 6px rgba(251,191,36,0.7);
+  flex-shrink: 0;
+}
+
 /* ── HEADER ─────────────────────────────────────── */
 .header {
   padding: 36px 24px 28px;
@@ -2944,6 +3040,18 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   transform: translateX(4px);
   color: rgba(255,255,255,0.6);
 }
+.proto-btn-wip {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(251,191,36,0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.3);
+  flex-shrink: 0;
+}
 
 /* Modal overlay */
 .xpto-overlay {
@@ -4673,12 +4781,29 @@ a.xpto-pricing-btn { text-decoration: none; }
 <div class="view" id="view-jornada">
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  JOURNEY TABS                                  -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="journey-tabs">
+  <div class="journey-track">
+    <div class="journey-slider" id="journey-slider"></div>
+    <button class="journey-tab is-active" data-journey="ecommerce">E-commerce</button>
+    <button class="journey-tab" data-journey="lead">
+      Lead
+      <span class="journey-tab-dot"></span>
+    </button>
+  </div>
+  <div class="journey-wip-banner" id="journey-wip-banner" style="display:none">
+    Esta jornada está em construção — os cards serão customizados em breve.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  HEADER                                        -->
 <!-- ══════════════════════════════════════════════ -->
 <header class="header">
   <img src="logo.png" alt="Turbo" class="header-logo">
   <div class="badge">Metodologia Turbo</div>
-  <h1>A Jornada do E-commerce Turbo</h1>
+  <h1 id="journey-title">A Jornada do E-commerce Turbo</h1>
   <div class="progress-wrap">
     <div class="progress-meta">
       <span id="prog-label"></span>
@@ -5277,9 +5402,119 @@ const STAGES = [
 ];
 
 // ─────────────────────────────────────────────────
-//  STATE
+//  STAGES_LEAD  ← Jornada do Lead ao Lucro
+//  Espelho do e-commerce com IDs prefixados "lead-".
+//  Customizações individuais aplicadas abaixo —
+//  edite apenas neste bloco, nunca em STAGES.
 // ─────────────────────────────────────────────────
-const state = {
+
+// IDs removidos da jornada Lead
+const LEAD_REMOVED_IDS = new Set([
+  'lead-embalagem',           // card de embalagem não se aplica a leads
+  'lead-comunidade',          // gestão de comunidade não se aplica
+  'lead-advertorial',         // Fine Tuning: subtask removida
+  'lead-listicle',            // Fine Tuning: subtask removida
+  'lead-funis-alternativos',  // Fine Tuning: não se aplica a leads
+]);
+
+const STAGES_LEAD = STAGES.map(stage => ({
+  ...stage,
+  id: 'lead-' + stage.id,
+  nodes: stage.nodes
+    .map(node => ({
+      ...node,
+      id: 'lead-' + node.id,
+      parentId: node.parentId ? 'lead-' + node.parentId : undefined,
+      deps: (node.deps || []).map(d => 'lead-' + d),
+      // ── Overrides individuais por ID ──────────────
+      ...(node.id === 'loja' ? {
+        name: 'Zona de Conversão',
+        objective: 'Estruturar os pontos de entrada digital que convertem visitantes em leads ou clientes'
+      } : {}),
+      ...(node.id === 'criativos' ? {
+        name: 'Criativos UGC (para reduzir CPMQL)',
+        objective: 'Reduzir o CPMQL e maximizar a qualidade dos leads gerados'
+      } : {})
+    }))
+    .filter(node => !LEAD_REMOVED_IDS.has(node.id))
+}));
+
+// ── Subcards da Zona de Conversão (lead-loja) ────
+// Adicionados ao stage lead-aquecimento como filhos de lead-loja
+;(() => {
+  const aq = STAGES_LEAD.find(s => s.id === 'lead-conversao');
+  if (!aq) return;
+  aq.nodes.push(
+    // ── Zona de Conversão (lead-loja) subcards ───
+    {
+      id: 'lead-site-institucional',
+      icon: '🌐',
+      name: 'Site institucional profissional',
+      parentId: 'lead-loja',
+      objective: 'Ter presença digital que transmite credibilidade e elimina objeções de confiança',
+      what: 'Um site bem estruturado que apresenta a empresa, sua proposta de valor, prova social e facilita o contato ou a próxima ação do lead.',
+      why: 'Leads pesquisam antes de qualquer decisão. Um site profissional é o que transforma "quem é essa empresa?" em "eu confio neles".',
+      mistake: 'Site genérico ou desatualizado que não comunica diferenciais nem facilita o contato.',
+      impact: 'O lead chega aquecido pelo tráfego ou indicação, mas abandona por falta de credibilidade visual.',
+      deps: [],
+      links: [
+        { label: 'Polpa Brasil',        url: 'https://polpabrasil.com.br/' },
+        { label: 'Colégio Cristo Rei',  url: 'https://cristoreieducacional.com.br/' },
+        { label: 'Cepemar',             url: 'https://cepemar.com.br/' },
+        { label: 'Fazenda das Antas',   url: 'https://fazenda-antas.com.br/' }
+      ]
+    },
+    {
+      id: 'lead-landing-page',
+      icon: '🎯',
+      name: 'Landing Page de alta conversão',
+      parentId: 'lead-loja',
+      objective: 'Converter tráfego em leads com foco total, sem distrações',
+      what: 'Página com um único objetivo — capturar o contato ou vender — com copy persuasivo, prova social, CTA claro e sem links de fuga.',
+      why: 'Landing pages convertem entre 3x e 5x mais que sites genéricos porque eliminam distrações e guiam o visitante para uma única ação.',
+      mistake: 'Colocar muitas informações ou múltiplos CTAs, dispersando a atenção do lead.',
+      impact: 'Tráfego caro sendo jogado em página que não converte — CAC explode, resultado some.',
+      deps: [],
+      links: [
+        { label: 'Turbo Creators',   url: 'https://lp.turbopartners.com.br/commerce/creators-lp' },
+        { label: 'Cubby Real State', url: 'https://cubbyrealestate.com/lp/' },
+        { label: 'Psi do Amor',      url: 'https://lp.psidoamor.com.br/comunidade/' }
+      ]
+    },
+    // ── Automações básicas (lead-automacoes) subcards ─
+    {
+      id: 'lead-automacoes-email',
+      icon: '✉️',
+      name: 'Automações de E-mail',
+      parentId: 'lead-automacoes',
+      objective: 'Nutrir e converter leads no piloto automático via e-mail',
+      what: 'Sequências automatizadas de e-mail disparadas por gatilhos de comportamento — cadastro, abandono, inatividade — que educam e empurram o lead para a próxima etapa.',
+      why: 'E-mail ainda entrega o maior ROI entre os canais digitais. Automações garantem que nenhum lead seja esquecido independente do volume.',
+      mistake: 'Enviar e-mails genéricos sem segmentação ou sem gatilho claro, matando o engajamento da lista.',
+      impact: 'Leads esfriando sem contato estruturado — oportunidades perdidas que custaram caro para adquirir.',
+      deps: []
+    },
+    {
+      id: 'lead-automacoes-whatsapp',
+      icon: '💬',
+      name: 'Automações de WhatsApp',
+      parentId: 'lead-automacoes',
+      objective: 'Activar e converter leads com altíssima taxa de abertura via WhatsApp',
+      what: 'Fluxos automatizados no WhatsApp para boas-vindas, qualificação, follow-up e reativação de leads — com mensagens curtas, diretas e personalizadas.',
+      why: 'WhatsApp tem taxa de abertura acima de 90%. Automações aqui chegam onde o e-mail não penetra mais, especialmente no mercado brasileiro.',
+      mistake: 'Spam de mensagens sem contexto ou sem opt-in, gerando bloqueios e destruindo a reputação do número.',
+      impact: 'Canal de altíssimo potencial desperdiçado ou, pior, banido por uso incorreto.',
+      deps: []
+    }
+  );
+})();
+
+// ─────────────────────────────────────────────────
+//  JOURNEY STATE
+// ─────────────────────────────────────────────────
+let activeJourney = 'ecommerce'; // 'ecommerce' | 'lead'
+
+const stateEcommerce = {
   done: new Set(),
   active: null,
   focusedStage: null,
@@ -5287,22 +5522,36 @@ const state = {
   checkOpen: new Set()
 };
 
+const stateLead = {
+  done: new Set(),
+  active: null,
+  focusedStage: null,
+  checkDone: new Set(),
+  checkOpen: new Set()
+};
+
+function activeState()  { return activeJourney === 'lead' ? stateLead : stateEcommerce; }
+function activeStages() { return activeJourney === 'lead' ? STAGES_LEAD : STAGES; }
+
+// Keep legacy alias so existing non-migrated code still works during transition
+const state = stateEcommerce;
+
 // ─────────────────────────────────────────────────
 //  HELPERS
 // ─────────────────────────────────────────────────
 function allNodes() {
-  return STAGES.flatMap(s =>
+  return activeStages().flatMap(s =>
     s.nodes.map(n => ({ ...n, stageId: s.id, stageColor: s.color, stageName: s.title, stageNum: s.num }))
   );
 }
 
 function getNode(id) { return allNodes().find(n => n.id === id); }
-function getStage(id) { return STAGES.find(s => s.id === id); }
+function getStage(id) { return activeStages().find(s => s.id === id); }
 function totalCount() { return allNodes().length; }
 
 function isWarn(nodeId) {
   const n = getNode(nodeId);
-  return n ? n.deps.some(d => !state.done.has(d)) : false;
+  return n ? n.deps.some(d => !activeState().done.has(d)) : false;
 }
 
 // ─────────────────────────────────────────────────
@@ -5311,9 +5560,12 @@ function isWarn(nodeId) {
 function renderFlow() {
   const flow = document.getElementById('flow');
   flow.innerHTML = '';
+  const stages = activeStages();
+  const st = activeState();
+  const flagshipId = activeJourney === 'lead' ? 'lead-trafego' : 'trafego';
 
-  STAGES.forEach((stage, si) => {
-    const doneCount = stage.nodes.filter(n => state.done.has(n.id)).length;
+  stages.forEach((stage, si) => {
+    const doneCount = stage.nodes.filter(n => st.done.has(n.id)).length;
 
     // Column
     const col = document.createElement('div');
@@ -5340,13 +5592,13 @@ function renderFlow() {
       el.style.setProperty('--nc', stage.color);
       el.dataset.id = node.id;
 
-      const isDone = state.done.has(node.id);
+      const isDone = st.done.has(node.id);
       const warn   = !isDone && isWarn(node.id);
 
       if (isDone) el.classList.add('is-done');
       else if (warn) el.classList.add('is-warn');
-      if (state.active === node.id) el.classList.add('is-active');
-      if (node.id === 'trafego') el.classList.add('is-flagship');
+      if (st.active === node.id) el.classList.add('is-active');
+      if (node.id === flagshipId) el.classList.add('is-flagship');
 
       el.innerHTML = `
         <div class="node-row">
@@ -5355,7 +5607,7 @@ function renderFlow() {
           <span class="node-indicator"></span>
         </div>
         ${node.objective ? `<p class="node-obj">${node.objective}</p>` : ''}
-        ${node.id === 'trafego' ? `<span class="node-flagship-badge">✦ Carro-chefe</span>` : ''}
+        ${node.id === flagshipId ? `<span class="node-flagship-badge">✦ Carro-chefe</span>` : ''}
       `;
 
       el.addEventListener('click', (e) => { e.stopPropagation(); openPanel(node.id); });
@@ -5377,7 +5629,8 @@ function renderFlow() {
       }
       wrap.appendChild(el);
 
-      if (stage.id === 'concepcao' && ni === 0) {
+      const concepcaoId = activeJourney === 'lead' ? 'lead-concepcao' : 'concepcao';
+      if (stage.id === concepcaoId && ni === 0) {
         const btn = document.createElement('button');
         btn.className = 'proto-btn';
         btn.onclick = () => openXpto();
@@ -5386,7 +5639,10 @@ function renderFlow() {
             <span class="proto-btn-new">NOVO</span>
             <span class="proto-btn-title">Protocolo Do Zero ao Lucro</span>
           </span>
-          <span class="proto-btn-arrow">→</span>
+          ${activeJourney === 'lead'
+            ? `<span class="proto-btn-wip">Em construção</span>`
+            : `<span class="proto-btn-arrow">→</span>`
+          }
         `;
         wrap.appendChild(btn);
       }
@@ -5395,8 +5651,8 @@ function renderFlow() {
     flow.appendChild(col);
 
     // Connector arrow between stages
-    if (si < STAGES.length - 1) {
-      const nc = STAGES[si + 1].color;
+    if (si < stages.length - 1) {
+      const nc = stages[si + 1].color;
       const conn = document.createElement('div');
       conn.className = 'connector';
       conn.innerHTML = `
@@ -5414,7 +5670,7 @@ function renderFlow() {
 //  PROGRESS
 // ─────────────────────────────────────────────────
 function renderProgress() {
-  const n = state.done.size;
+  const n = activeState().done.size;
   const t = totalCount();
   const pct = Math.round((n / t) * 100);
 
@@ -5438,10 +5694,13 @@ function renderProgress() {
 function renderDiagnosis() {
   const sec  = document.getElementById('diag-section');
   const list = document.getElementById('diag-list');
+  const st = activeState();
 
-  if (state.done.size === 0) { sec.style.display = 'none'; return; }
+  if (st.done.size === 0) { sec.style.display = 'none'; return; }
 
-  const d = id => state.done.has(id);
+  // Resolve IDs relative to active journey
+  const pfx = activeJourney === 'lead' ? 'lead-' : '';
+  const d = id => st.done.has(pfx + id);
   const alerts = [];
 
   if (d('trafego') && !d('validacao'))
@@ -5485,15 +5744,16 @@ function renderDiagnosis() {
 // ─────────────────────────────────────────────────
 function buildChecklistHTML(node) {
   if (!node.checklist || node.checklist.length === 0) return '';
+  const st = activeState();
 
   const sections = node.checklist.map(sec => {
     const key      = `${node.id}:${sec.id}`;
-    const isOpen   = state.checkOpen.has(key);
+    const isOpen   = st.checkOpen.has(key);
     const total    = sec.items.length;
-    const done     = sec.items.filter((_, i) => state.checkDone.has(`${key}:${i}`)).length;
+    const done     = sec.items.filter((_, i) => st.checkDone.has(`${key}:${i}`)).length;
 
     const items = sec.items.map((item, i) => {
-      const checked = state.checkDone.has(`${key}:${i}`);
+      const checked = st.checkDone.has(`${key}:${i}`);
       return `<div class="checklist-item${checked ? ' is-checked' : ''}" data-check="${key}:${i}">
         <div class="check-box"></div>
         <span class="check-label">${item}</span>
@@ -5634,9 +5894,11 @@ function openPanel(nodeId) {
   const node = getNode(nodeId);
   if (!node) return;
 
-  state.active = nodeId;
+  const st = activeState();
+  st.active = nodeId;
 
   const color = node.stageColor;
+  const isTrafego = nodeId === 'trafego' || nodeId === 'lead-trafego';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -5651,8 +5913,8 @@ function openPanel(nodeId) {
       <p class="block-label">Por que importa</p>
       <p class="block-text">${node.why}</p>
     </div>
-    ${nodeId === 'trafego' ? `
-    <button class="sim-launch-btn" onclick="if(window.openPerfSimulator) window.openPerfSimulator()">
+    ${isTrafego ? `
+    <button class="sim-launch-btn" onclick="${nodeId === 'lead-trafego' ? 'if(window.openLeadPerfSimulator) window.openLeadPerfSimulator()' : 'if(window.openPerfSimulator) window.openPerfSimulator()'}">
       <span class="sim-launch-icon">⚙️</span>
       <span class="sim-launch-text">
         <span class="sim-launch-title">Simulador de Performance</span>
@@ -5678,16 +5940,17 @@ function openPanel(nodeId) {
 }
 
 function closePanel() {
-  state.active = null;
+  activeState().active = null;
   document.getElementById('overlay').classList.remove('is-visible');
   document.getElementById('panel').classList.remove('is-open');
   document.querySelectorAll('.node').forEach(el => el.classList.remove('is-active'));
 }
 
 function syncToggleBtn() {
-  const id    = state.active;
+  const st = activeState();
+  const id = st.active;
   if (!id) return;
-  const done  = state.done.has(id);
+  const done  = st.done.has(id);
   const btn   = document.getElementById('toggle-btn');
   document.getElementById('toggle-icon').textContent  = '';
   document.getElementById('toggle-label').textContent = done ? 'Marcado como estruturado' : 'Marcar como estruturado';
@@ -5695,9 +5958,10 @@ function syncToggleBtn() {
 }
 
 function toggleDone() {
-  const id = state.active;
+  const st = activeState();
+  const id = st.active;
   if (!id) return;
-  state.done.has(id) ? state.done.delete(id) : state.done.add(id);
+  st.done.has(id) ? st.done.delete(id) : st.done.add(id);
   syncToggleBtn();
   renderFlow();
   renderProgress();
@@ -5714,7 +5978,7 @@ function toggleDone() {
 //  FOCUS MODE
 // ─────────────────────────────────────────────────
 function focusStage(stageId) {
-  state.focusedStage = stageId;
+  activeState().focusedStage = stageId;
   const flow = document.getElementById('flow');
   const wrap = document.getElementById('flow-wrap');
   flow.classList.add('has-focus');
@@ -5735,7 +5999,7 @@ function focusStage(stageId) {
 }
 
 function unfocusStage() {
-  state.focusedStage = null;
+  activeState().focusedStage = null;
   document.getElementById('flow').classList.remove('has-focus');
   document.getElementById('flow-wrap').classList.remove('has-focus');
   document.querySelectorAll('.stage').forEach(el => el.classList.remove('is-focused'));
@@ -5746,17 +6010,21 @@ function updateFocusNav() {
   const prev = document.getElementById('focus-prev');
   const next = document.getElementById('focus-next');
   const hint = document.getElementById('focus-hint');
-  const idx  = STAGES.findIndex(s => s.id === state.focusedStage);
-  const active = state.focusedStage !== null;
+  const st = activeState();
+  const stages = activeStages();
+  const idx  = stages.findIndex(s => s.id === st.focusedStage);
+  const active = st.focusedStage !== null;
 
   hint.classList.toggle('is-visible', active);
   prev.classList.toggle('is-visible', active && idx > 0);
-  next.classList.toggle('is-visible', active && idx < STAGES.length - 1);
+  next.classList.toggle('is-visible', active && idx < stages.length - 1);
 }
 
 function navigateFocus(dir) {
-  const idx = STAGES.findIndex(s => s.id === state.focusedStage);
-  const next = STAGES[idx + dir];
+  const st = activeState();
+  const stages = activeStages();
+  const idx = stages.findIndex(s => s.id === st.focusedStage);
+  const next = stages[idx + dir];
   if (next) focusStage(next.id);
 }
 
@@ -5767,7 +6035,7 @@ document.getElementById('flow').addEventListener('click', e => {
   const stageEl = nameEl.closest('.stage');
   if (!stageEl) return;
   e.stopPropagation();
-  if (state.focusedStage === stageEl.dataset.stageId) {
+  if (activeState().focusedStage === stageEl.dataset.stageId) {
     unfocusStage();
   } else {
     focusStage(stageEl.dataset.stageId);
@@ -5776,7 +6044,7 @@ document.getElementById('flow').addEventListener('click', e => {
 
 // Click outside stages to exit
 document.getElementById('flow-wrap').addEventListener('click', e => {
-  if (!state.focusedStage) return;
+  if (!activeState().focusedStage) return;
   if (!e.target.closest('.stage')) unfocusStage();
 });
 
@@ -5788,22 +6056,23 @@ document.getElementById('close-btn').addEventListener('click', closePanel);
 document.getElementById('toggle-btn').addEventListener('click', toggleDone);
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { closePanel(); unfocusStage(); }
-  if (e.key === 'ArrowLeft'  && state.focusedStage) navigateFocus(-1);
-  if (e.key === 'ArrowRight' && state.focusedStage) navigateFocus(+1);
+  if (e.key === 'ArrowLeft'  && activeState().focusedStage) navigateFocus(-1);
+  if (e.key === 'ArrowRight' && activeState().focusedStage) navigateFocus(+1);
 });
 
 // Checklist delegation
 document.getElementById('panel-body').addEventListener('click', e => {
+  const st = activeState();
   // Toggle section open/close
   const toggleEl = e.target.closest('[data-toggle]');
   if (toggleEl) {
     const key = toggleEl.dataset.toggle;
     const sec = toggleEl.closest('.checklist-section');
-    if (state.checkOpen.has(key)) {
-      state.checkOpen.delete(key);
+    if (st.checkOpen.has(key)) {
+      st.checkOpen.delete(key);
       sec.classList.remove('is-open');
     } else {
-      state.checkOpen.add(key);
+      st.checkOpen.add(key);
       sec.classList.add('is-open');
     }
     // Update meta count (no full re-render needed)
@@ -5814,11 +6083,11 @@ document.getElementById('panel-body').addEventListener('click', e => {
   const itemEl = e.target.closest('[data-check]');
   if (itemEl) {
     const key = itemEl.dataset.check;
-    if (state.checkDone.has(key)) {
-      state.checkDone.delete(key);
+    if (st.checkDone.has(key)) {
+      st.checkDone.delete(key);
       itemEl.classList.remove('is-checked');
     } else {
-      state.checkDone.add(key);
+      st.checkDone.add(key);
       itemEl.classList.add('is-checked');
     }
     // Update section meta counter
@@ -5864,6 +6133,43 @@ document.querySelectorAll('.nav-item').forEach(item => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
     item.classList.add('is-active');
     document.getElementById(`view-${view}`).classList.add('is-active');
+  });
+});
+
+// ─────────────────────────────────────────────────
+//  JOURNEY SWITCHING (E-commerce ↔ Lead ao Lucro)
+// ─────────────────────────────────────────────────
+document.querySelectorAll('.journey-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const journey = tab.dataset.journey;
+    if (journey === activeJourney) return;
+
+    // Close any open panel before switching
+    closePanel();
+    unfocusStage();
+
+    activeJourney = journey;
+
+    // Update tab active state + move slider
+    document.querySelectorAll('.journey-tab').forEach(t => t.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    const slider = document.getElementById('journey-slider');
+    if (slider) journey === 'lead' ? slider.classList.add('at-lead') : slider.classList.remove('at-lead');
+
+    // Update title
+    const titles = {
+      ecommerce: 'A Jornada do E-commerce Turbo',
+      lead: 'A Jornada do Lead ao Lucro'
+    };
+    document.getElementById('journey-title').textContent = titles[journey];
+
+    // Show/hide WIP banner
+    document.getElementById('journey-wip-banner').style.display = journey === 'lead' ? '' : 'none';
+
+    // Re-render
+    renderFlow();
+    renderProgress();
+    renderDiagnosis();
   });
 });
 
@@ -6642,6 +6948,466 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 })();
 
 // ─────────────────────────────────────────────────
+//  PERFORMANCE SIMULATOR — LEAD
+// ─────────────────────────────────────────────────
+(function() {
+  'use strict';
+
+  const PERF = {
+    investment: 3500, ticket: 350,
+    ctr: 2.0, cpc: 1.50, connectRate: 85, addToCart: 6.5, checkoutStart: 55, conversion: 70,
+    activeGear: null,
+  };
+
+  const GDEFS = [
+    {
+      id:'ctr', label:'CTR', abbr:'CTR', unit:'%', min:0.1, max:10, step:0.1,
+      bench:{good:1.5,warn:1.0},
+      explain:'Taxa de Clique — mede quantas pessoas clicaram no anúncio em relação ao total que o viram. Reflete a qualidade do criativo e da segmentação.',
+      impactDirect: false,
+      benchRows:[{color:'#12d490',label:'Bom',val:'acima de 1,5%'},{color:'#ffa826',label:'Atenção',val:'1% – 1,5%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 1%'}],
+      msgs:{good:'✓ Seus anúncios estão gerando bom engajamento. As pessoas respondem bem à sua comunicação.',warn:'⚠ CTR na média. Teste criativos mais impactantes, headlines diretas e novos formatos.',bad:'✕ CTR baixo. Seu anúncio não desperta curiosidade. Revise criativo, copy e audiência com urgência.'},
+    },
+    {
+      id:'cpc', label:'CPC', abbr:'CPC', unit:'R$', min:0.10, max:20, step:0.10, decimals:2,
+      bench: null,
+      explain:'Custo por Clique — quanto você paga por cada visitante. Quanto menor, mais visitantes você consegue com o mesmo investimento.',
+      impactDirect: true, impactLabel:'−R$0,50 no CPC',
+      benchRows:[{color:'#12d490',label:'Bom',val:'quanto menor, melhor'},{color:'#ffa826',label:'Atenção',val:'alto em relação à margem'},{color:'#ef4444',label:'Crítico',val:'CPA inviável'}],
+      msgs:{good:'✓ Excelente eficiência de custo. Seu orçamento rende bem.',warn:'⚠ CPC dentro do aceitável, mas há espaço para otimizar segmentação e lances.',bad:'✕ CPC elevado. Você paga caro por visitante. Revise segmentação, palavras-chave e lances.'},
+    },
+    {
+      id:'connectRate', label:'Connect Rate', abbr:'CNX', unit:'%', min:10, max:100, step:1,
+      bench:{good:80,warn:65},
+      explain:'Taxa de Conexão — de cada clique gerado pelo anúncio, qual percentual realmente carregou a página. Tráfego que não vira pageview representa investimento desperdiçado: pode indicar bot traffic, velocidade de carregamento crítica ou segmentação errada.',
+      impactDirect: true, impactLabel:'+1pp Connect Rate',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 80%'},{color:'#ffa826',label:'Atenção',val:'65% – 80%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 65%'}],
+      msgs:{good:'✓ Boa taxa de conexão. A maior parte do tráfego pago está virando pageviews reais.',warn:'⚠ Parte do tráfego se perde antes de carregar. Revise velocidade da página e qualidade do público.',bad:'✕ Crítico: mais de 35% do tráfego some antes de virar pageview. Bot traffic, velocidade ou segmentação errada.'},
+    },
+    {
+      id:'addToCart', label:'Add to Cart', abbr:'ATC', unit:'%', min:0.1, max:30, step:0.1,
+      bench:{good:5.0,warn:3.0},
+      explain:'Taxa de Adição ao Carrinho — de cada 100 visitantes, quantos adicionaram um produto. Reflete a qualidade da oferta e da página de produto.',
+      impactDirect: true, impactLabel:'+1pp Add to Cart',
+      benchRows:[{color:'#12d490',label:'Bom',val:'5% – 10%'},{color:'#ffa826',label:'Atenção',val:'3% – 5%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 3%'}],
+      msgs:{good:'✓ Sua página de produto convence. Boa intenção de compra.',warn:'⚠ Abaixo do ideal. Revise oferta, imagens, preço e gatilhos de urgência.',bad:'✕ Taxa crítica. Sua página não convence. Revisão urgente: copy, fotos, proposta de valor, preço.'},
+    },
+    {
+      id:'checkoutStart', label:'Início Checkout', abbr:'CHK', unit:'%', min:1, max:100, step:1,
+      bench:{good:50,warn:40},
+      explain:'Início de Checkout — de quem adicionou ao carrinho, quantos avançaram para o checkout. Mede abandono de carrinho.',
+      impactDirect: true, impactLabel:'+1pp Checkout',
+      benchRows:[{color:'#12d490',label:'Bom',val:'50% – 70%'},{color:'#ffa826',label:'Atenção',val:'40% – 50%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 40%'}],
+      msgs:{good:'✓ Baixo abandono de carrinho. Boa fluidez até o checkout.',warn:'⚠ Abandono acima do ideal. O frete pode estar sendo surpresa — mostre antes.',bad:'✕ Alto abandono de carrinho. Possíveis causas: frete alto, cadastro obrigatório, checkout longo.'},
+    },
+    {
+      id:'conversion', label:'Fechamento no Checkout', abbr:'FCH', unit:'%', min:1, max:100, step:1,
+      bench:{good:60,warn:35},
+      explain:'Fechamento no Checkout — de quem iniciou o checkout, quantos concluíram a compra de fato. É a última barreira: o cliente já demonstrou intenção máxima, mas ainda pode desistir no pagamento.',
+      impactDirect: true, impactLabel:'+1pp Fechamento',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 60%'},{color:'#ffa826',label:'Atenção',val:'35% – 60%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 35%'}],
+      msgs:{good:'✓ Excelente fechamento. A maioria de quem chega ao checkout conclui a compra.',warn:'⚠ Mais da metade abandona após iniciar o checkout. Revise formas de pagamento, parcelamento e segurança.',bad:'✕ Crítico: a maior parte desiste no último passo. Checkout longo, falta de confiança ou método de pagamento limitado.'},
+    },
+  ];
+
+  function calcWith(s) {
+    const clicks = s.cpc > 0 ? s.investment / s.cpc : 0;
+    const pv  = clicks * s.connectRate / 100;
+    const c   = pv * s.addToCart / 100;
+    const ch  = c * s.checkoutStart / 100;
+    const sa  = ch * s.conversion / 100;
+    return { clicks, pageviews:pv, carts:c, checkouts:ch, sales:sa, revenue: sa * s.ticket };
+  }
+
+  function health(g, val) {
+    if (!g.bench) return 'neutral';
+    return val >= g.bench.good ? 'good' : val >= g.bench.warn ? 'warn' : 'bad';
+  }
+
+  function calcImpact(g) {
+    if (!g.impactDirect) return null;
+    const base = calcWith(PERF).revenue;
+    const next = {...PERF};
+    if (g.id === 'cpc') next.cpc = Math.max(0.01, PERF.cpc - 0.50);
+    else next[g.id] = PERF[g.id] + 1;
+    return calcWith(next).revenue - base;
+  }
+
+  function makeGearSVG(h, dir) {
+    const teeth = 10, outerR = 40, bodyR = 27, holeR = 11;
+    const step = Math.PI * 2 / teeth, tw = step * 0.44;
+    let d = '';
+    for (let i = 0; i < teeth; i++) {
+      const a = i * step - Math.PI / 2;
+      const P = (r, a2) => `${(r*Math.cos(a2)).toFixed(2)},${(r*Math.sin(a2)).toFixed(2)}`;
+      d += (i===0?'M':'L') + P(bodyR,a-tw/2);
+      d += ` L${P(outerR,a-tw*0.25)} L${P(outerR,a+tw*0.25)} L${P(bodyR,a+tw/2)}`;
+    }
+    d += ' Z';
+    const C = {good:'#12d490',warn:'#ffa826',bad:'#ef4444',neutral:'#4d8dff'}[h];
+    const GC = '#4d8dff';
+    const animDir = dir === 'rev' ? 'reverse' : 'normal';
+    return `<svg viewBox="-50 -50 100 100" width="88" height="88" xmlns="http://www.w3.org/2000/svg" class="gear-spin" style="animation-direction:${animDir};animation-duration:${8+Math.random()*4}s">
+      <circle r="29" fill="${GC}" opacity="0.09"/>
+      <path d="${d}" fill="${GC}" opacity="0.88"/>
+      <circle r="${holeR}" fill="#07070f"/>
+      <circle r="${holeR-2.5}" fill="none" stroke="${GC}" stroke-width="1.5" opacity="0.45"/>
+    </svg>`;
+  }
+
+  function fmtBRL(n) { return 'R$ ' + Math.round(n).toLocaleString('pt-BR'); }
+  function fmtN(n)   { return Math.round(n).toLocaleString('pt-BR'); }
+
+  function gearDecimals(g) {
+    if (g.decimals !== undefined) return g.decimals;
+    const s = g.step.toString();
+    const dot = s.indexOf('.');
+    return dot === -1 ? 0 : s.length - dot - 1;
+  }
+  function fmtGearVal(g, val) { return val.toFixed(gearDecimals(g)); }
+
+  function render() {
+    const r = calcWith(PERF);
+    const map = [
+      ['lead-perf-out-clicks',     fmtN(r.clicks)],
+      ['lead-perf-out-pageviews',  fmtN(r.pageviews)],
+      ['lead-perf-out-carts',      fmtN(r.carts)],
+      ['lead-perf-out-checkouts',  fmtN(r.checkouts)],
+      ['lead-perf-out-sales',      fmtN(r.sales)],
+      ['lead-perf-out-revenue',    fmtBRL(r.revenue)],
+    ];
+    map.forEach(([id,v]) => { const el=document.getElementById(id); if(el) el.textContent=v; });
+
+    const GEAR_COLOR = '#4d8dff';
+    GDEFS.forEach((g,i) => {
+      const c = GEAR_COLOR;
+      const val = PERF[g.id];
+      const svgW = document.getElementById(`lead-gsvg-${g.id}`);
+      if (svgW) svgW.innerHTML = makeGearSVG('neutral', i%2===0?'normal':'rev');
+      const valEl = document.getElementById(`lead-gval-${g.id}`);
+      if (valEl && document.activeElement !== valEl) { valEl.value = fmtGearVal(g, val); valEl.style.color = c; }
+      else if (valEl) valEl.style.color = c;
+      const badge = document.getElementById(`lead-gbadge-${g.id}`);
+      if (badge) { badge.style.borderColor = `${c}40`; badge.style.background = `${c}12`; }
+      const dot = document.getElementById(`lead-gdot-${g.id}`);
+      if (dot) dot.style.background = c;
+      const sl = document.getElementById(`lead-gslider-${g.id}`);
+      if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
+    });
+
+    const siteConv = (PERF.connectRate/100) * (PERF.addToCart/100) * (PERF.checkoutStart/100) * (PERF.conversion/100) * 100;
+    const mkSub = document.querySelector('#lead-ggroup-marketing .group-anim-sublabel');
+    if (mkSub) mkSub.textContent = `CTR ${fmtGearVal(GDEFS[0], PERF.ctr)}% · CPC R$${fmtGearVal(GDEFS[1], PERF.cpc)}`;
+    const siteSub = document.querySelector('#lead-ggroup-site .group-anim-sublabel');
+    if (siteSub) siteSub.textContent = `Conv. geral ${siteConv.toFixed(2)}%`;
+
+    const carEl = document.getElementById('lead-perf-car-svg');
+    if (carEl) {
+      const t = Math.min(r.revenue / 60000, 1);
+      const glow = 3 + t * 18;
+      const hue  = t > 0.55 ? 145 : t > 0.25 ? 38 : 0;
+      carEl.style.filter = `drop-shadow(0 0 ${glow}px hsl(${hue},80%,52%))`;
+    }
+
+    if (PERF.activeGear) renderDetail(PERF.activeGear);
+  }
+
+  function renderDetail(gid) {
+    const g = GDEFS.find(x=>x.id===gid); if(!g) return;
+    const val = PERF[gid], h = health(g,val);
+    const C = {good:'#12d490',warn:'#ffa826',bad:'#ef4444',neutral:'#4d8dff'}[h];
+    const L = {good:'Saudável',warn:'Atenção',bad:'Crítico',neutral:'Neutro'}[h];
+    const msg = g.msgs[h] || g.msgs.bad;
+    const imp = calcImpact(g);
+
+    const nameEl = document.getElementById('lead-detail-gear-name');
+    const badgeEl = document.getElementById('lead-detail-health-badge');
+    if (nameEl) nameEl.textContent = g.label;
+    if (badgeEl) {
+      badgeEl.textContent = L;
+      badgeEl.style.color = C;
+      badgeEl.style.borderColor = C+'55';
+      badgeEl.style.background = C+'12';
+    }
+
+    const benchHTML = '';
+
+    const impHTML = imp !== null ? `<div class="detail-block">
+      <p class="detail-block-label">⚡ impacto estimado</p>
+      <p style="font-size:11px;color:var(--text-3);margin-bottom:4px">${g.impactLabel} nessa etapa equivale a:</p>
+      <p class="detail-impact-val" style="color:${imp>=0?'#12d490':'#ef4444'}">${imp>=0?'+':''}${fmtBRL(imp)}/mês</p>
+    </div>` : '';
+
+    const content = document.getElementById('lead-detail-content');
+    if (content) content.innerHTML = `
+      <div class="detail-block">
+        <p class="detail-block-label">O que é</p>
+        <p class="detail-block-text">${g.explain}</p>
+      </div>
+      <div class="detail-diag" style="background:${C}0d;border-color:${C}33">
+        <p class="detail-block-label" style="color:${C}99">diagnóstico</p>
+        <p class="detail-block-text" style="color:${C}ee">${msg}</p>
+      </div>
+      ${impHTML}`;
+  }
+
+  function openDetail(gid) {
+    PERF.activeGear = gid;
+    document.getElementById('lead-perf-detail')?.classList.add('is-open');
+    renderDetail(gid);
+    document.querySelectorAll('#lead-perf-overlay .gear-item').forEach(el=>el.classList.toggle('is-active', el.dataset.gear===gid));
+  }
+
+  function closeDetail() {
+    PERF.activeGear = null;
+    document.getElementById('lead-perf-detail')?.classList.remove('is-open');
+    document.querySelectorAll('#lead-perf-overlay .gear-item').forEach(el=>el.classList.remove('is-active'));
+  }
+
+  let built = false;
+  function buildOverlay() {
+    if (built) return;
+    built = true;
+    const overlay = document.getElementById('lead-perf-overlay');
+    if (!overlay) return;
+
+    const connHTML = `<div class="gear-connector"><div class="gear-conn-inner"><div class="gear-conn-line"></div><div class="gear-conn-arrow"></div></div></div>`;
+
+    function gearHTML(g) {
+      const rawVal = PERF[g.id];
+      const dispVal = fmtGearVal(g, rawVal);
+      const prefix = g.unit === 'R$' ? `<span class="gear-val-prefix">R$</span>` : '';
+      const suffix = g.unit === '%'  ? `<span class="gear-val-suffix">%</span>`  : '';
+      const inputW = g.unit === 'R$' ? '44px' : (gearDecimals(g) === 0 ? '34px' : '36px');
+      return `<div class="gear-item" id="lead-gear-${g.id}" data-gear="${g.id}">
+        <span class="gear-name-label">${g.label}</span>
+        <div class="gear-svg-wrap"><div id="lead-gsvg-${g.id}"></div></div>
+        <div class="gear-val-badge" id="lead-gbadge-${g.id}">
+          <span class="gear-val-abbr">${g.abbr}</span>
+          <div class="gear-val-row">
+            ${prefix}
+            <input class="gear-val-input" id="lead-gval-${g.id}" type="text" inputmode="decimal"
+              value="${dispVal}" style="width:${inputW}">
+            ${suffix}
+          </div>
+        </div>
+        <div class="gear-slider-wrap">
+          <input type="range" class="gear-slider" id="lead-gslider-${g.id}" min="${g.min}" max="${g.max}" step="${g.step}" value="${rawVal}">
+        </div>
+      </div>`;
+    }
+    const mkDefs   = GDEFS.slice(0, 2);
+    const siteDefs = GDEFS.slice(2);
+    const mkBody   = mkDefs.map((g,i)   => gearHTML(g) + (i < mkDefs.length-1   ? connHTML : '')).join('');
+    const siteBody = siteDefs.map((g,i) => gearHTML(g) + (i < siteDefs.length-1 ? connHTML : '')).join('');
+    const mkDots   = mkDefs.map(g   => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
+    const siteDots = siteDefs.map(g => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
+
+    const gearsHTML = `
+      <div class="gear-group is-collapsed" id="lead-ggroup-marketing" data-group="marketing">
+        <div class="gear-group-header" id="lead-ggheader-marketing">
+          <div class="gear-group-label">
+            <span class="gear-group-icon">📣</span>
+            <span class="gear-group-title">Marketing (Anúncios Online)</span>
+            <span class="gear-group-summary" id="lead-ggsum-marketing"></span>
+            <div class="gear-group-dots">${mkDots}</div>
+          </div>
+          <button class="gear-group-toggle" id="lead-ggtoggle-marketing"></button>
+        </div>
+        <div class="gear-group-icon-zone">
+          <div class="group-anim-icon">
+            <div class="group-anim-ring r1"></div>
+            <div class="group-anim-ring r2"></div>
+            <span class="group-anim-emoji">📣</span>
+          </div>
+          <span class="group-anim-sublabel">Clique para ver métricas de anúncio</span>
+        </div>
+        <div class="gear-group-body" id="lead-ggbody-marketing">${mkBody}</div>
+      </div>
+      <div class="group-bridge">
+        <div class="group-bridge-inner">
+          <div class="group-bridge-line"></div>
+          <div class="group-bridge-arrow"></div>
+        </div>
+      </div>
+      <div class="gear-group is-collapsed" id="lead-ggroup-site" data-group="site">
+        <div class="gear-group-header" id="lead-ggheader-site">
+          <div class="gear-group-label">
+            <span class="gear-group-icon">💰</span>
+            <span class="gear-group-title">VENDAS</span>
+            <span class="gear-group-summary" id="lead-ggsum-site"></span>
+            <div class="gear-group-dots">${siteDots}</div>
+          </div>
+          <button class="gear-group-toggle" id="lead-ggtoggle-site"></button>
+        </div>
+        <div class="gear-group-icon-zone">
+          <div class="group-anim-icon">
+            <div class="group-anim-ring r1"></div>
+            <div class="group-anim-ring r2"></div>
+            <span class="group-anim-emoji">💰</span>
+          </div>
+          <span class="group-anim-sublabel">Clique para ver métricas de vendas</span>
+        </div>
+        <div class="gear-group-body" id="lead-ggbody-site">${siteBody}</div>
+      </div>`;
+
+    overlay.innerHTML = `
+      <div class="perf-header">
+        <div class="perf-header-title">
+          ⚙️ Simulador de Performance
+          <span class="perf-header-sub">— ajuste as engrenagens e veja o impacto em tempo real</span>
+        </div>
+        <button class="perf-close" id="lead-perf-close">✕</button>
+      </div>
+      <div class="perf-body">
+        <div class="perf-left">
+          <p class="perf-section-label">🔋 Combustível</p>
+          <div class="input-card">
+            <p class="input-card-label">💰 Investimento mensal</p>
+            <div class="input-card-row">
+              <span class="input-card-prefix">R$</span>
+              <input class="input-card-field" type="number" id="lead-perf-investment" min="100" value="${PERF.investment}" placeholder="10000">
+            </div>
+            <p class="input-card-hint">Budget mensal em anúncios</p>
+          </div>
+          <div class="input-card">
+            <p class="input-card-label">🏷️ Ticket médio</p>
+            <div class="input-card-row">
+              <span class="input-card-prefix">R$</span>
+              <input class="input-card-field" type="number" id="lead-perf-ticket" min="1" value="${PERF.ticket}" placeholder="250">
+            </div>
+            <p class="input-card-hint">Valor médio por pedido</p>
+          </div>
+          <div class="perf-tip">💡 <strong>Clique em qualquer engrenagem</strong> para ver benchmarks, diagnóstico e o impacto exato de cada ajuste no faturamento.</div>
+        </div>
+
+        <div class="perf-center">
+          <div class="gears-area">${gearsHTML}</div>
+          <div class="car-section">
+            <svg id="lead-perf-car-svg" class="perf-car-svg" viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="140" cy="97" rx="112" ry="5" fill="rgba(0,0,0,0.45)"/>
+              <rect x="14" y="53" width="252" height="37" rx="8" fill="#0c0c1c"/>
+              <path d="M 62 53 Q 76 19 105 15 L 175 15 Q 206 15 222 53 Z" fill="#090912"/>
+              <path d="M 69 51 Q 82 26 107 21 L 173 21 Q 202 21 215 51 Z" fill="#101828" opacity="0.96"/>
+              <line x1="142" y1="21" x2="142" y2="51" stroke="#090912" stroke-width="4"/>
+              <circle cx="62" cy="89" r="19" fill="#0c0c18" stroke="#1a1a28" stroke-width="2"/>
+              <circle cx="62" cy="89" r="11" fill="#141420"/>
+              <circle cx="62" cy="89" r="4" fill="#202030"/>
+              <line x1="62" y1="78" x2="62" y2="100" stroke="#22223a" stroke-width="2"/>
+              <line x1="51" y1="89" x2="73" y2="89" stroke="#22223a" stroke-width="2"/>
+              <line x1="54" y1="81" x2="70" y2="97" stroke="#1c1c2e" stroke-width="1.5"/>
+              <line x1="54" y1="97" x2="70" y2="81" stroke="#1c1c2e" stroke-width="1.5"/>
+              <circle cx="218" cy="89" r="19" fill="#0c0c18" stroke="#1a1a28" stroke-width="2"/>
+              <circle cx="218" cy="89" r="11" fill="#141420"/>
+              <circle cx="218" cy="89" r="4" fill="#202030"/>
+              <line x1="218" y1="78" x2="218" y2="100" stroke="#22223a" stroke-width="2"/>
+              <line x1="207" y1="89" x2="229" y2="89" stroke="#22223a" stroke-width="2"/>
+              <line x1="210" y1="81" x2="226" y2="97" stroke="#1c1c2e" stroke-width="1.5"/>
+              <line x1="210" y1="97" x2="226" y2="81" stroke="#1c1c2e" stroke-width="1.5"/>
+              <rect x="15" y="59" width="18" height="8" rx="3" fill="#ffa826" opacity="0.7"/>
+              <rect x="247" y="59" width="18" height="8" rx="3" fill="#ef4444" opacity="0.6"/>
+              <rect x="16" y="67" width="250" height="1.5" fill="#14142a" opacity="0.7"/>
+            </svg>
+            <div class="car-road-line"><div class="car-road-dashes"></div></div>
+          </div>
+        </div>
+
+        <div class="perf-right">
+          <p class="perf-section-label">📊 Resultado</p>
+          <div class="funnel-steps">
+            <div class="output-item"><span class="output-label">👆 Cliques</span><span class="output-value" id="lead-perf-out-clicks">—</span></div>
+            <div class="output-item"><span class="output-label">📄 Pageviews</span><span class="output-value" id="lead-perf-out-pageviews">—</span></div>
+            <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="lead-perf-out-carts">—</span></div>
+            <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="lead-perf-out-checkouts">—</span></div>
+            <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="lead-perf-out-sales">—</span></div>
+          </div>
+          <div class="output-item is-revenue">
+            <span class="output-label">✦ Faturamento estimado</span>
+            <span class="output-value" id="lead-perf-out-revenue">—</span>
+            <div class="revenue-tooltip">📌 Estimativa exclusiva de anúncios pagos. Vendas orgânicas — SEO, redes sociais, tráfego direto — <strong>não estão incluídas</strong> neste número.</div>
+          </div>
+          <div class="perf-detail" id="lead-perf-detail">
+            <div class="detail-header">
+              <div class="detail-gear-name"><span id="lead-detail-gear-name">—</span><span class="detail-health-badge" id="lead-detail-health-badge"></span></div>
+              <button class="detail-close" id="lead-detail-close">✕</button>
+            </div>
+            <div class="detail-body" id="lead-detail-content"></div>
+          </div>
+        </div>
+      </div>`;
+
+    document.getElementById('lead-perf-close').addEventListener('click', closePerfSimulator);
+    document.getElementById('lead-detail-close').addEventListener('click', closeDetail);
+    function syncAllCollapsed() {
+      const mkC  = document.getElementById('lead-ggroup-marketing').classList.contains('is-collapsed');
+      const sitC = document.getElementById('lead-ggroup-site').classList.contains('is-collapsed');
+      overlay.querySelector('.perf-center').classList.toggle('all-collapsed', mkC && sitC);
+    }
+    ['marketing', 'site'].forEach(grp => {
+      const group = document.getElementById(`lead-ggroup-${grp}`);
+      if (!group) return;
+      group.addEventListener('click', e => {
+        if (e.target.closest('.gear-item') || e.target.closest('.gear-slider')) return;
+        if (group.classList.contains('is-collapsed')) {
+          group.classList.remove('is-collapsed');
+        } else if (e.target.closest('.gear-group-header')) {
+          group.classList.add('is-collapsed');
+        }
+        syncAllCollapsed();
+      });
+    });
+    syncAllCollapsed();
+    overlay.querySelectorAll('.gear-item').forEach(el => {
+      el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
+    });
+    GDEFS.forEach(g => {
+      const sl  = document.getElementById(`lead-gslider-${g.id}`);
+      const inp = document.getElementById(`lead-gval-${g.id}`);
+      if (sl) sl.addEventListener('input', () => {
+        PERF[g.id] = parseFloat(sl.value);
+        if (inp && document.activeElement !== inp) inp.value = parseFloat(sl.value);
+        render();
+      });
+      if (inp) {
+        inp.addEventListener('input', () => {
+          let v = parseFloat(inp.value.replace(',', '.'));
+          if (isNaN(v)) return;
+          v = Math.min(g.max, Math.max(g.min, v));
+          PERF[g.id] = v;
+          if (sl) sl.value = v;
+          render();
+        });
+        inp.addEventListener('blur', () => {
+          let v = parseFloat(inp.value.replace(',', '.'));
+          if (!isNaN(v)) inp.value = fmtGearVal(g, Math.min(g.max, Math.max(g.min, v)));
+        });
+      }
+    });
+    document.getElementById('lead-perf-investment').addEventListener('input', e => { PERF.investment = parseFloat(e.target.value)||0; render(); });
+    document.getElementById('lead-perf-ticket').addEventListener('input', e => { PERF.ticket = parseFloat(e.target.value)||0; render(); });
+  }
+
+  function openPerfSimulator() {
+    buildOverlay();
+    document.getElementById('lead-perf-overlay')?.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    render();
+  }
+
+  function closePerfSimulator() {
+    document.getElementById('lead-perf-overlay')?.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('lead-perf-overlay')?.classList.contains('is-open'))
+      closePerfSimulator();
+  });
+
+  window.openLeadPerfSimulator = openPerfSimulator;
+})();
+
+// ─────────────────────────────────────────────────
 //  PROTOCOLO DO ZERO AO TURBO
 // ─────────────────────────────────────────────────
 (function () {
@@ -7217,5 +7983,6 @@ renderProgress();
 
 </script>
 <div id="perf-overlay" class="perf-overlay"></div>
+<div id="lead-perf-overlay" class="perf-overlay"></div>
 </body>
 </html>
