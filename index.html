@@ -5028,6 +5028,16 @@ a.xpto-pricing-btn { text-decoration: none; }
 <!--  VIEW: CALCULADORA                             -->
 <!-- ══════════════════════════════════════════════ -->
 <div class="view" id="view-calculadora">
+  <div class="journey-tabs" style="padding-bottom: 20px;">
+    <div class="journey-track">
+      <div class="journey-slider"></div>
+      <button class="journey-tab is-active" data-journey="ecommerce">E-commerce</button>
+      <button class="journey-tab" data-journey="lead">Lead</button>
+    </div>
+    <div class="journey-wip-banner" style="display:none">
+      Esta jornada está em construção — os cards serão customizados em breve.
+    </div>
+  </div>
   <div class="calc-wrap">
     <!-- Catálogo de soluções -->
     <div class="calc-catalog" id="calc-catalog"></div>
@@ -6341,8 +6351,9 @@ document.querySelectorAll('.journey-tab').forEach(tab => {
     // Update tab active state + move slider
     document.querySelectorAll('.journey-tab').forEach(t => t.classList.remove('is-active'));
     tab.classList.add('is-active');
-    const slider = document.getElementById('journey-slider');
-    if (slider) journey === 'lead' ? slider.classList.add('at-lead') : slider.classList.remove('at-lead');
+    document.querySelectorAll('.journey-slider').forEach(slider => {
+      journey === 'lead' ? slider.classList.add('at-lead') : slider.classList.remove('at-lead');
+    });
 
     // Update title
     const titles = {
@@ -6352,12 +6363,15 @@ document.querySelectorAll('.journey-tab').forEach(tab => {
     document.getElementById('journey-title').textContent = titles[journey];
 
     // Show/hide WIP banner
-    document.getElementById('journey-wip-banner').style.display = journey === 'lead' ? '' : 'none';
+    document.querySelectorAll('.journey-wip-banner').forEach(b => {
+      b.style.display = journey === 'lead' ? '' : 'none';
+    });
 
     // Re-render
     renderFlow();
     renderProgress();
     renderDiagnosis();
+    if (window.calcBuildSolutions) { window.calcBuildSolutions(); window.calcRenderAll(); }
   });
 });
 
@@ -6380,13 +6394,17 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 //  CALCULATOR
 // ─────────────────────────────────────────────────
 (function() {
-  const SOLUTIONS = [];
-  STAGES.forEach(stage => {
-    stage.nodes.filter(n => !n.parentId).forEach(node => {
-      SOLUTIONS.push({ id: node.id, icon: node.icon, name: node.name,
-        stageId: stage.id, stageTitle: stage.title, stageColor: stage.color, stageNum: stage.num });
+  let SOLUTIONS = [];
+  function buildSolutions() {
+    SOLUTIONS = [];
+    activeStages().forEach(stage => {
+      stage.nodes.filter(n => !n.parentId).forEach(node => {
+        SOLUTIONS.push({ id: node.id, icon: node.icon, name: node.name,
+          stageId: stage.id, stageTitle: stage.title, stageColor: stage.color, stageNum: stage.num });
+      });
     });
-  });
+  }
+  buildSolutions();
 
   let items      = [];
   let nextId     = 1;
@@ -6410,7 +6428,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     if (!el) return;
     const added = new Set(items.map(i => i.solutionId));
     const byStage = {};
-    STAGES.forEach(s => { byStage[s.id] = { stage: s, sols: [] }; });
+    activeStages().forEach(s => { byStage[s.id] = { stage: s, sols: [] }; });
     SOLUTIONS.forEach(sol => { byStage[sol.stageId]?.sols.push(sol); });
 
     let html = '<p class="calc-section-label">Soluções disponíveis</p>';
@@ -6665,6 +6683,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   }
 
   function renderAll() { renderCatalog(); renderItems(); updateSummary(); }
+  window.calcBuildSolutions = buildSolutions;
+  window.calcRenderAll = renderAll;
   renderAll();
 })();
 
