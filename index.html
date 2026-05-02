@@ -45,8 +45,7 @@ body {
   align-items: center;
   gap: 14px;
   padding: 32px 24px 0;
-  /* extends the purple radial glow into the black area above */
-  background: radial-gradient(ellipse at 50% 140%, rgba(155,109,255,0.13) 0%, transparent 65%);
+  background: transparent;
 }
 .journey-track {
   position: relative;
@@ -139,7 +138,6 @@ body {
   padding: 36px 24px 28px;
   text-align: center;
   position: relative;
-  overflow: hidden;
 }
 
 @keyframes float {
@@ -159,9 +157,9 @@ body {
 .header::before {
   content: '';
   position: absolute;
-  top: -80px; left: 50%; transform: translateX(-50%);
-  width: 900px; height: 500px;
-  background: radial-gradient(ellipse at 50% 20%, rgba(155,109,255,0.14) 0%, transparent 60%);
+  top: -180px; left: 50%; transform: translateX(-50%);
+  width: 900px; height: 600px;
+  background: radial-gradient(ellipse at 50% 30%, rgba(155,109,255,0.14) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -1601,6 +1599,70 @@ body {
   max-height: 0; opacity: 0; pointer-events: none; padding-top: 0;
 }
 
+/* ── Deliverable output badges (below expanded gear-groups) ── */
+.perf-deliverable {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2px 0 10px; gap: 0;
+}
+/* deliverable visibility toggled via JS */
+.gear-group-wrap {
+  display: flex; flex-direction: column; align-items: center;
+}
+.perf-deliverable-arrow {
+  font-size: 14px; line-height: 1.2;
+  color: rgba(251,191,36,0.55);
+  animation: del-bounce 1.8s ease-in-out infinite;
+}
+@keyframes del-bounce {
+  0%,100% { opacity: 0.45; transform: translateY(0); }
+  50%      { opacity: 1;    transform: translateY(4px); }
+}
+.perf-deliverable-card {
+  background: linear-gradient(135deg, rgba(251,191,36,0.11) 0%, rgba(251,191,36,0.05) 100%);
+  border: 1px solid rgba(251,191,36,0.32);
+  border-radius: 10px; padding: 7px 22px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  box-shadow: 0 0 18px rgba(251,191,36,0.07), inset 0 1px 0 rgba(251,191,36,0.12);
+  min-width: 130px; text-align: center;
+}
+.perf-deliverable-label {
+  font-size: 7.5px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(251,191,36,0.65);
+  display: flex; align-items: center; gap: 4px;
+}
+.perf-deliverable-value {
+  font-size: 22px; font-weight: 900; color: #fbbf24;
+  letter-spacing: -0.5px; line-height: 1.15;
+  filter: drop-shadow(0 0 7px rgba(251,191,36,0.28));
+}
+.perf-deliverable-sep {
+  width: 60%; height: 1px;
+  background: rgba(251,191,36,0.15); margin: 6px 0 4px;
+}
+.perf-deliverable-meta {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.16) 0%, rgba(251,191,36,0.07) 100%);
+  border: 1px solid rgba(251,191,36,0.42);
+  border-radius: 8px; padding: 5px 18px;
+  box-shadow: 0 0 16px rgba(251,191,36,0.18), inset 0 1px 0 rgba(251,191,36,0.22);
+  min-width: 110px; text-align: center; position: relative; overflow: hidden;
+}
+.perf-deliverable-meta::before {
+  content: '💰';
+  position: absolute; right: -4px; bottom: -10px;
+  font-size: 38px; opacity: 0.08; transform: rotate(-12deg);
+  pointer-events: none; line-height: 1; user-select: none;
+}
+.perf-deliverable-meta-label {
+  font-size: 7.5px; font-weight: 800; letter-spacing: 2px;
+  text-transform: uppercase; color: rgba(251,191,36,0.62);
+}
+.perf-deliverable-meta-value {
+  font-size: 20px; font-weight: 900; color: #fbbf24;
+  letter-spacing: -0.5px; line-height: 1.1;
+  filter: drop-shadow(0 0 8px rgba(251,191,36,0.45));
+}
+
 /* bridge connector between the two groups */
 .group-bridge {
   display: flex; align-items: center; flex-shrink: 0;
@@ -1750,6 +1812,126 @@ body {
   animation: roadMove 0.9s linear infinite;
 }
 @keyframes roadMove { to { transform: translateX(-40px); } }
+
+/* Lead simulator sub-cards inside Marketing group */
+.lead-sub-cards {
+  display: flex; flex-direction: row; gap: 10px; width: 100%;
+}
+.lead-sub-card {
+  flex: 1; min-width: 0;
+  border: 1.5px solid rgba(77,141,255,0.22);
+  border-radius: 10px;
+  background: rgba(77,141,255,0.05);
+  overflow: hidden;
+}
+.lead-sub-card-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(77,141,255,0.13);
+  background: rgba(77,141,255,0.06);
+}
+.lead-sub-card-icon { font-size: 13px; flex-shrink: 0; }
+.lead-sub-card-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: #4d8dff;
+}
+.lead-sub-card-body {
+  padding: 8px 6px;
+  display: flex; flex-direction: column; gap: 6px; align-items: stretch;
+}
+
+/* Compact gear-item layout inside lead sub-cards */
+.lead-sub-card-body .gear-item {
+  width: 100%; padding: 6px 8px; gap: 4px;
+  border-radius: 8px;
+}
+.lead-sub-card-body .gear-svg-wrap { display: none; }
+.lead-sub-card-body .gear-name-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .05em;
+  text-align: left; text-transform: uppercase; color: var(--text-2);
+}
+.lead-sub-card-body .gear-val-badge {
+  width: 100%; padding: 4px 7px; border-radius: 6px;
+  flex-direction: row; align-items: center; justify-content: space-between; gap: 4px;
+}
+.lead-sub-card-body .gear-val-abbr { font-size: 9px; }
+.lead-sub-card-body .gear-val-row { gap: 2px; }
+.lead-sub-card-body .gear-val-prefix,
+.lead-sub-card-body .gear-val-suffix { font-size: 9px; }
+.lead-sub-card-body .gear-val-input { font-size: 12px; width: auto !important; max-width: 42px; }
+.lead-sub-card-body .gear-slider-wrap { width: 100%; padding: 0; }
+.lead-sub-card-body .gear-slider { width: 100%; }
+.lead-sub-card-body .gear-connector { display: none; }
+
+.lead-zona-total {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; margin-top: 4px;
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: rgba(77,141,255,0.08);
+  border: 1px solid rgba(77,141,255,0.2);
+}
+.lead-zona-total-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--text-3);
+}
+.lead-zona-total-val {
+  font-size: 13px; font-weight: 800; color: #4d8dff;
+}
+
+/* Sub-card collapse/expand */
+.lead-sub-card-header {
+  cursor: pointer; user-select: none;
+}
+.lead-sub-card-toggle {
+  margin-left: auto; flex-shrink: 0;
+  width: 18px; height: 18px;
+  border: 1px solid rgba(77,141,255,0.35); border-radius: 4px;
+  background: transparent; color: rgba(77,141,255,0.8);
+  font-size: 13px; line-height: 1; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.lead-sub-card-toggle:hover { background: rgba(77,141,255,0.15); }
+.lead-sub-card:not(.is-collapsed) .lead-sub-card-toggle::after { content: '−'; }
+.lead-sub-card.is-collapsed .lead-sub-card-toggle { display: none; }
+.lead-sub-card.is-collapsed .lead-sub-card-body { display: none; }
+.lead-sub-card.is-collapsed { cursor: pointer; }
+.lead-sub-card.is-collapsed:hover { filter: brightness(1.1); }
+
+/* Sub-card icon zone (shown when collapsed, mirrors parent gear-group-icon-zone) */
+.lead-sub-icon-zone {
+  display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  padding: 10px 0 16px; gap: 8px; overflow: visible;
+}
+.lead-sub-card.is-collapsed .lead-sub-icon-zone {
+  display: flex;
+  animation: iconZoneFadeIn 0.35s ease forwards;
+}
+.lead-sub-anim-icon {
+  position: relative; display: flex; align-items: center; justify-content: center;
+  width: 58px; height: 58px;
+}
+.lead-sub-anim-emoji {
+  font-size: 32px; position: relative; z-index: 2;
+  animation: subCardIconAnim 2.6s ease-in-out infinite;
+}
+@keyframes subCardIconAnim {
+  0%,100% { transform: scale(1); filter: drop-shadow(0 0 7px rgba(77,141,255,0.5)); }
+  50%     { transform: scale(1.14); filter: drop-shadow(0 0 18px rgba(77,141,255,0.9)); }
+}
+.lead-sub-anim-ring {
+  position: absolute; border-radius: 50%;
+  width: 44px; height: 44px;
+  border: 1.5px solid rgba(77,141,255,0.55);
+  animation: ringExpand 2.6s ease-out infinite;
+}
+.lead-sub-anim-ring.r2 { animation-delay: 1.3s; }
+.lead-sub-icon-label {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.3px;
+  color: var(--muted); text-align: center; white-space: nowrap;
+}
 
 /* Right outputs */
 .perf-right {
@@ -4789,7 +4971,6 @@ a.xpto-pricing-btn { text-decoration: none; }
     <button class="journey-tab is-active" data-journey="ecommerce">E-commerce</button>
     <button class="journey-tab" data-journey="lead">
       Lead
-      <span class="journey-tab-dot"></span>
     </button>
   </div>
   <div class="journey-wip-banner" id="journey-wip-banner" style="display:none">
@@ -5633,7 +5814,14 @@ function renderFlow() {
       if (stage.id === concepcaoId && ni === 0) {
         const btn = document.createElement('button');
         btn.className = 'proto-btn';
-        btn.onclick = () => openXpto();
+        if (activeJourney === 'lead') {
+          btn.disabled = true;
+          btn.style.cursor = 'not-allowed';
+          btn.style.opacity = '0.5';
+          btn.style.pointerEvents = 'none';
+        } else {
+          btn.onclick = () => openXpto();
+        }
         btn.innerHTML = `
           <span class="proto-btn-text">
             <span class="proto-btn-new">NOVO</span>
@@ -6937,6 +7125,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function closePerfSimulator() {
     document.getElementById('perf-overlay')?.classList.remove('is-open');
     document.body.style.overflow = '';
+    if (typeof closePanel === 'function') closePanel();
   }
 
   document.addEventListener('keydown', e => {
@@ -6954,8 +7143,10 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   'use strict';
 
   const PERF = {
-    investment: 3500, ticket: 350,
-    ctr: 2.0, cpc: 1.50, connectRate: 85, addToCart: 6.5, checkoutStart: 55, conversion: 70,
+    investment: 3500, ticket: 1000,
+    ctr: 2.0, cpc: 1.50,
+    landingConnect: 85, formConversion: 15,
+    meetingRate: 20, salesConversion: 30,
     activeGear: null,
   };
 
@@ -6977,46 +7168,46 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       msgs:{good:'✓ Excelente eficiência de custo. Seu orçamento rende bem.',warn:'⚠ CPC dentro do aceitável, mas há espaço para otimizar segmentação e lances.',bad:'✕ CPC elevado. Você paga caro por visitante. Revise segmentação, palavras-chave e lances.'},
     },
     {
-      id:'connectRate', label:'Connect Rate', abbr:'CNX', unit:'%', min:10, max:100, step:1,
+      id:'landingConnect', label:'Connect Rate', abbr:'CNX', unit:'%', min:10, max:100, step:1,
       bench:{good:80,warn:65},
-      explain:'Taxa de Conexão — de cada clique gerado pelo anúncio, qual percentual realmente carregou a página. Tráfego que não vira pageview representa investimento desperdiçado: pode indicar bot traffic, velocidade de carregamento crítica ou segmentação errada.',
+      explain:'Taxa de Conexão da Landing Page — de cada clique gerado pelo anúncio, qual percentual realmente carregou a página. Perdas aqui indicam velocidade lenta, bot traffic ou segmentação errada.',
       impactDirect: true, impactLabel:'+1pp Connect Rate',
       benchRows:[{color:'#12d490',label:'Bom',val:'≥ 80%'},{color:'#ffa826',label:'Atenção',val:'65% – 80%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 65%'}],
-      msgs:{good:'✓ Boa taxa de conexão. A maior parte do tráfego pago está virando pageviews reais.',warn:'⚠ Parte do tráfego se perde antes de carregar. Revise velocidade da página e qualidade do público.',bad:'✕ Crítico: mais de 35% do tráfego some antes de virar pageview. Bot traffic, velocidade ou segmentação errada.'},
+      msgs:{good:'✓ Boa conexão. A maioria do tráfego pago está virando pageview real.',warn:'⚠ Parte do tráfego se perde antes de carregar. Revise velocidade e qualidade do público.',bad:'✕ Crítico: mais de 35% some antes de carregar. Verifique velocidade, bot traffic ou segmentação.'},
     },
     {
-      id:'addToCart', label:'Add to Cart', abbr:'ATC', unit:'%', min:0.1, max:30, step:0.1,
-      bench:{good:5.0,warn:3.0},
-      explain:'Taxa de Adição ao Carrinho — de cada 100 visitantes, quantos adicionaram um produto. Reflete a qualidade da oferta e da página de produto.',
-      impactDirect: true, impactLabel:'+1pp Add to Cart',
-      benchRows:[{color:'#12d490',label:'Bom',val:'5% – 10%'},{color:'#ffa826',label:'Atenção',val:'3% – 5%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 3%'}],
-      msgs:{good:'✓ Sua página de produto convence. Boa intenção de compra.',warn:'⚠ Abaixo do ideal. Revise oferta, imagens, preço e gatilhos de urgência.',bad:'✕ Taxa crítica. Sua página não convence. Revisão urgente: copy, fotos, proposta de valor, preço.'},
+      id:'formConversion', label:'Conv. Formulário', abbr:'FORM', unit:'%', min:0.1, max:50, step:0.1,
+      bench:{good:15,warn:8},
+      explain:'Taxa de Conversão do Formulário — de cada visitante que carregou a landing page, quantos preencheram e enviaram o formulário. Reflete a qualidade da oferta, do copy e da fricção do formulário.',
+      impactDirect: true, impactLabel:'+1pp Conv. Formulário',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 15%'},{color:'#ffa826',label:'Atenção',val:'8% – 15%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 8%'}],
+      msgs:{good:'✓ Boa conversão. Sua landing page convence e o formulário tem pouca fricção.',warn:'⚠ Conversão abaixo do ideal. Revise headline, benefícios e quantidade de campos.',bad:'✕ Crítico. Simplifique o formulário, melhore o copy e adicione prova social.'},
     },
     {
-      id:'checkoutStart', label:'Início Checkout', abbr:'CHK', unit:'%', min:1, max:100, step:1,
-      bench:{good:50,warn:40},
-      explain:'Início de Checkout — de quem adicionou ao carrinho, quantos avançaram para o checkout. Mede abandono de carrinho.',
-      impactDirect: true, impactLabel:'+1pp Checkout',
-      benchRows:[{color:'#12d490',label:'Bom',val:'50% – 70%'},{color:'#ffa826',label:'Atenção',val:'40% – 50%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 40%'}],
-      msgs:{good:'✓ Baixo abandono de carrinho. Boa fluidez até o checkout.',warn:'⚠ Abandono acima do ideal. O frete pode estar sendo surpresa — mostre antes.',bad:'✕ Alto abandono de carrinho. Possíveis causas: frete alto, cadastro obrigatório, checkout longo.'},
+      id:'meetingRate', label:'Tx. Reunião Agendada', abbr:'RNT', unit:'%', min:0.1, max:80, step:0.1,
+      bench:{good:25,warn:12},
+      explain:'Taxa de Reunião Agendada — de cada lead que preencheu o formulário, quantos agendaram uma reunião de vendas. Reflete a qualidade do follow-up e do processo de pré-vendas.',
+      impactDirect: true, impactLabel:'+1pp Tx. Reunião',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 25%'},{color:'#ffa826',label:'Atenção',val:'12% – 25%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 12%'}],
+      msgs:{good:'✓ Boa taxa de agendamento. Seu follow-up está convertendo bem.',warn:'⚠ Agendamento abaixo do ideal. Revise o processo de follow-up e a proposta de valor da reunião.',bad:'✕ Crítico. Poucos leads viram reuniões. Melhore a cadência de contato e o pitch de agendamento.'},
     },
     {
-      id:'conversion', label:'Fechamento no Checkout', abbr:'FCH', unit:'%', min:1, max:100, step:1,
-      bench:{good:60,warn:35},
-      explain:'Fechamento no Checkout — de quem iniciou o checkout, quantos concluíram a compra de fato. É a última barreira: o cliente já demonstrou intenção máxima, mas ainda pode desistir no pagamento.',
-      impactDirect: true, impactLabel:'+1pp Fechamento',
-      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 60%'},{color:'#ffa826',label:'Atenção',val:'35% – 60%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 35%'}],
-      msgs:{good:'✓ Excelente fechamento. A maioria de quem chega ao checkout conclui a compra.',warn:'⚠ Mais da metade abandona após iniciar o checkout. Revise formas de pagamento, parcelamento e segurança.',bad:'✕ Crítico: a maior parte desiste no último passo. Checkout longo, falta de confiança ou método de pagamento limitado.'},
+      id:'salesConversion', label:'Conversão', abbr:'CVS', unit:'%', min:0.1, max:100, step:0.1,
+      bench:{good:35,warn:20},
+      explain:'Taxa de Conversão em Vendas — de cada reunião realizada, quantas se tornaram clientes. Reflete a qualidade do processo comercial, da oferta e do vendedor.',
+      impactDirect: true, impactLabel:'+1pp Conversão',
+      benchRows:[{color:'#12d490',label:'Bom',val:'≥ 35%'},{color:'#ffa826',label:'Atenção',val:'20% – 35%'},{color:'#ef4444',label:'Crítico',val:'abaixo de 20%'}],
+      msgs:{good:'✓ Alta conversão. Seu processo comercial é eficiente.',warn:'⚠ Conversão mediana. Revise objeções frequentes e ajuste o pitch ou a proposta.',bad:'✕ Crítico. A maioria das reuniões não fecha. Revise oferta, preço, concorrência e habilidade de vendas.'},
     },
   ];
 
   function calcWith(s) {
-    const clicks = s.cpc > 0 ? s.investment / s.cpc : 0;
-    const pv  = clicks * s.connectRate / 100;
-    const c   = pv * s.addToCart / 100;
-    const ch  = c * s.checkoutStart / 100;
-    const sa  = ch * s.conversion / 100;
-    return { clicks, pageviews:pv, carts:c, checkouts:ch, sales:sa, revenue: sa * s.ticket };
+    const clicks   = s.cpc > 0 ? s.investment / s.cpc : 0;
+    const pv       = clicks * s.landingConnect / 100;
+    const leads    = pv * s.formConversion / 100;
+    const meetings = leads * s.meetingRate / 100;
+    const sales    = meetings * s.salesConversion / 100;
+    return { clicks, pageviews:pv, leads, meetings, sales, revenue: sales * s.ticket };
   }
 
   function health(g, val) {
@@ -7071,10 +7262,14 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     const map = [
       ['lead-perf-out-clicks',     fmtN(r.clicks)],
       ['lead-perf-out-pageviews',  fmtN(r.pageviews)],
-      ['lead-perf-out-carts',      fmtN(r.carts)],
-      ['lead-perf-out-checkouts',  fmtN(r.checkouts)],
+      ['lead-perf-out-leads',      fmtN(r.leads)],
+      ['lead-perf-out-meetings',   fmtN(r.meetings)],
       ['lead-perf-out-sales',      fmtN(r.sales)],
       ['lead-perf-out-revenue',    fmtBRL(r.revenue)],
+      ['lead-mk-del-val',          fmtN(r.leads)],
+      ['lead-site-del-val',        fmtN(r.sales)],
+      ['lead-mk-cpl-val',          r.leads > 0 ? fmtBRL(PERF.investment / r.leads) : '—'],
+      ['lead-site-cac-val',        r.sales > 0 ? fmtBRL(PERF.investment / r.sales) : '—'],
     ];
     map.forEach(([id,v]) => { const el=document.getElementById(id); if(el) el.textContent=v; });
 
@@ -7095,7 +7290,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       if (sl) { sl.style.accentColor = c; sl.style.setProperty('--gear-color', c); }
     });
 
-    const siteConv = (PERF.connectRate/100) * (PERF.addToCart/100) * (PERF.checkoutStart/100) * (PERF.conversion/100) * 100;
+    const siteConv = (PERF.landingConnect/100) * (PERF.formConversion/100) * (PERF.meetingRate/100) * (PERF.salesConversion/100) * 100;
     const mkSub = document.querySelector('#lead-ggroup-marketing .group-anim-sublabel');
     if (mkSub) mkSub.textContent = `CTR ${fmtGearVal(GDEFS[0], PERF.ctr)}% · CPC R$${fmtGearVal(GDEFS[1], PERF.cpc)}`;
     const siteSub = document.querySelector('#lead-ggroup-site .group-anim-sublabel');
@@ -7109,6 +7304,10 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       carEl.style.filter = `drop-shadow(0 0 ${glow}px hsl(${hue},80%,52%))`;
     }
 
+
+    const zonaTotal = (PERF.landingConnect / 100) * (PERF.formConversion / 100) * 100;
+    const ztEl = document.getElementById('lead-zona-total-val');
+    if (ztEl) ztEl.textContent = zonaTotal.toFixed(2) + '%';
     if (PERF.activeGear) renderDetail(PERF.activeGear);
   }
 
@@ -7196,19 +7395,24 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         </div>
       </div>`;
     }
-    const mkDefs   = GDEFS.slice(0, 2);
-    const siteDefs = GDEFS.slice(2);
-    const mkBody   = mkDefs.map((g,i)   => gearHTML(g) + (i < mkDefs.length-1   ? connHTML : '')).join('');
-    const siteBody = siteDefs.map((g,i) => gearHTML(g) + (i < siteDefs.length-1 ? connHTML : '')).join('');
-    const mkDots   = mkDefs.map(g   => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
-    const siteDots = siteDefs.map(g => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
+    const mkDefs         = GDEFS.filter(g => ['ctr','cpc'].includes(g.id));
+    const zonaDefs       = GDEFS.filter(g => ['landingConnect','formConversion'].includes(g.id));
+    const preVendasDefs  = GDEFS.filter(g => ['meetingRate'].includes(g.id));
+    const vendasDefs     = GDEFS.filter(g => ['salesConversion'].includes(g.id));
+    const mkBody         = mkDefs.map((g,i)        => gearHTML(g) + (i < mkDefs.length-1        ? connHTML : '')).join('');
+    const zonaBody       = zonaDefs.map((g,i)      => gearHTML(g) + (i < zonaDefs.length-1      ? connHTML : '')).join('');
+    const preVendasBody  = preVendasDefs.map((g,i) => gearHTML(g) + (i < preVendasDefs.length-1 ? connHTML : '')).join('');
+    const vendasBody     = vendasDefs.map((g,i)    => gearHTML(g) + (i < vendasDefs.length-1    ? connHTML : '')).join('');
+    const mkDots         = mkDefs.map(g       => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
+    const siteDots       = [...preVendasDefs, ...vendasDefs].map(g => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
 
     const gearsHTML = `
+      <div class="gear-group-wrap">
       <div class="gear-group is-collapsed" id="lead-ggroup-marketing" data-group="marketing">
         <div class="gear-group-header" id="lead-ggheader-marketing">
           <div class="gear-group-label">
             <span class="gear-group-icon">📣</span>
-            <span class="gear-group-title">Marketing (Anúncios Online)</span>
+            <span class="gear-group-title">Marketing</span>
             <span class="gear-group-summary" id="lead-ggsum-marketing"></span>
             <div class="gear-group-dots">${mkDots}</div>
           </div>
@@ -7222,7 +7426,61 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           </div>
           <span class="group-anim-sublabel">Clique para ver métricas de anúncio</span>
         </div>
-        <div class="gear-group-body" id="lead-ggbody-marketing">${mkBody}</div>
+        <div class="gear-group-body" id="lead-ggbody-marketing">
+          <div class="lead-sub-cards">
+            <div class="lead-sub-card is-collapsed">
+              <div class="lead-sub-card-header">
+                <span class="lead-sub-card-icon">📡</span>
+                <span class="lead-sub-card-title">Anúncios online</span>
+                <button class="lead-sub-card-toggle"></button>
+              </div>
+              <div class="lead-sub-icon-zone">
+                <div class="lead-sub-anim-icon">
+                  <div class="lead-sub-anim-ring r1"></div>
+                  <div class="lead-sub-anim-ring r2"></div>
+                  <span class="lead-sub-anim-emoji">📡</span>
+                </div>
+                <span class="lead-sub-icon-label">Anúncios</span>
+              </div>
+              <div class="lead-sub-card-body">${mkBody}</div>
+            </div>
+            <div class="lead-sub-card is-collapsed">
+              <div class="lead-sub-card-header">
+                <span class="lead-sub-card-icon">🎯</span>
+                <span class="lead-sub-card-title">Zona de Conversão</span>
+                <button class="lead-sub-card-toggle"></button>
+              </div>
+              <div class="lead-sub-icon-zone">
+                <div class="lead-sub-anim-icon">
+                  <div class="lead-sub-anim-ring r1"></div>
+                  <div class="lead-sub-anim-ring r2"></div>
+                  <span class="lead-sub-anim-emoji">🎯</span>
+                </div>
+                <span class="lead-sub-icon-label">Conversão</span>
+              </div>
+              <div class="lead-sub-card-body">
+                ${zonaBody}
+                <div class="lead-zona-total">
+                  <span class="lead-zona-total-label">Conv. total</span>
+                  <span class="lead-zona-total-val" id="lead-zona-total-val">—</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="perf-deliverable" id="lead-mk-deliverable" style="display:none">
+        <div class="perf-deliverable-arrow">▼</div>
+        <div class="perf-deliverable-card">
+          <span class="perf-deliverable-label">🎯 Leads gerados</span>
+          <span class="perf-deliverable-value" id="lead-mk-del-val">—</span>
+          <div class="perf-deliverable-sep"></div>
+          <div class="perf-deliverable-meta">
+            <span class="perf-deliverable-meta-label">CPL</span>
+            <span class="perf-deliverable-meta-value" id="lead-mk-cpl-val">—</span>
+          </div>
+        </div>
+      </div>
       </div>
       <div class="group-bridge">
         <div class="group-bridge-inner">
@@ -7230,6 +7488,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           <div class="group-bridge-arrow"></div>
         </div>
       </div>
+      <div class="gear-group-wrap">
       <div class="gear-group is-collapsed" id="lead-ggroup-site" data-group="site">
         <div class="gear-group-header" id="lead-ggheader-site">
           <div class="gear-group-label">
@@ -7248,7 +7507,55 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           </div>
           <span class="group-anim-sublabel">Clique para ver métricas de vendas</span>
         </div>
-        <div class="gear-group-body" id="lead-ggbody-site">${siteBody}</div>
+        <div class="gear-group-body" id="lead-ggbody-site">
+          <div class="lead-sub-cards">
+            <div class="lead-sub-card is-collapsed">
+              <div class="lead-sub-card-header">
+                <span class="lead-sub-card-icon">📅</span>
+                <span class="lead-sub-card-title">Pré-vendas</span>
+                <button class="lead-sub-card-toggle"></button>
+              </div>
+              <div class="lead-sub-icon-zone">
+                <div class="lead-sub-anim-icon">
+                  <div class="lead-sub-anim-ring r1"></div>
+                  <div class="lead-sub-anim-ring r2"></div>
+                  <span class="lead-sub-anim-emoji">📅</span>
+                </div>
+                <span class="lead-sub-icon-label">Pré-vendas</span>
+              </div>
+              <div class="lead-sub-card-body">${preVendasBody}</div>
+            </div>
+            <div class="lead-sub-card is-collapsed">
+              <div class="lead-sub-card-header">
+                <span class="lead-sub-card-icon">🤝</span>
+                <span class="lead-sub-card-title">Vendas</span>
+                <button class="lead-sub-card-toggle"></button>
+              </div>
+              <div class="lead-sub-icon-zone">
+                <div class="lead-sub-anim-icon">
+                  <div class="lead-sub-anim-ring r1"></div>
+                  <div class="lead-sub-anim-ring r2"></div>
+                  <span class="lead-sub-anim-emoji">🤝</span>
+                </div>
+                <span class="lead-sub-icon-label">Vendas</span>
+              </div>
+              <div class="lead-sub-card-body">${vendasBody}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="perf-deliverable" id="lead-site-deliverable" style="display:none">
+        <div class="perf-deliverable-arrow">▼</div>
+        <div class="perf-deliverable-card">
+          <span class="perf-deliverable-label">🤝 Clientes</span>
+          <span class="perf-deliverable-value" id="lead-site-del-val">—</span>
+          <div class="perf-deliverable-sep"></div>
+          <div class="perf-deliverable-meta">
+            <span class="perf-deliverable-meta-label">CAC</span>
+            <span class="perf-deliverable-meta-value" id="lead-site-cac-val">—</span>
+          </div>
+        </div>
+      </div>
       </div>`;
 
     overlay.innerHTML = `
@@ -7271,12 +7578,12 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             <p class="input-card-hint">Budget mensal em anúncios</p>
           </div>
           <div class="input-card">
-            <p class="input-card-label">🏷️ Ticket médio</p>
+            <p class="input-card-label">🏷️ Ticket médio do serviço/produto</p>
             <div class="input-card-row">
               <span class="input-card-prefix">R$</span>
               <input class="input-card-field" type="number" id="lead-perf-ticket" min="1" value="${PERF.ticket}" placeholder="250">
             </div>
-            <p class="input-card-hint">Valor médio por pedido</p>
+            <p class="input-card-hint">Valor médio por venda</p>
           </div>
           <div class="perf-tip">💡 <strong>Clique em qualquer engrenagem</strong> para ver benchmarks, diagnóstico e o impacto exato de cada ajuste no faturamento.</div>
         </div>
@@ -7317,9 +7624,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           <div class="funnel-steps">
             <div class="output-item"><span class="output-label">👆 Cliques</span><span class="output-value" id="lead-perf-out-clicks">—</span></div>
             <div class="output-item"><span class="output-label">📄 Pageviews</span><span class="output-value" id="lead-perf-out-pageviews">—</span></div>
-            <div class="output-item"><span class="output-label">🛒 Carrinhos</span><span class="output-value" id="lead-perf-out-carts">—</span></div>
-            <div class="output-item"><span class="output-label">💳 Checkouts</span><span class="output-value" id="lead-perf-out-checkouts">—</span></div>
-            <div class="output-item"><span class="output-label">📦 Vendas</span><span class="output-value" id="lead-perf-out-sales">—</span></div>
+            <div class="output-item"><span class="output-label">🎯 Leads gerados</span><span class="output-value" id="lead-perf-out-leads">—</span></div>
+            <div class="output-item"><span class="output-label">📅 Reuniões agendadas</span><span class="output-value" id="lead-perf-out-meetings">—</span></div>
+            <div class="output-item"><span class="output-label">🤝 Vendas realizadas</span><span class="output-value" id="lead-perf-out-sales">—</span></div>
           </div>
           <div class="output-item is-revenue">
             <span class="output-label">✦ Faturamento estimado</span>
@@ -7343,6 +7650,14 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       const sitC = document.getElementById('lead-ggroup-site').classList.contains('is-collapsed');
       overlay.querySelector('.perf-center').classList.toggle('all-collapsed', mkC && sitC);
     }
+    function syncBadges() {
+      const mkC  = document.getElementById('lead-ggroup-marketing').classList.contains('is-collapsed');
+      const sitC = document.getElementById('lead-ggroup-site').classList.contains('is-collapsed');
+      const mkB  = document.getElementById('lead-mk-deliverable');
+      const sitB = document.getElementById('lead-site-deliverable');
+      if (mkB)  mkB.style.display  = mkC  ? 'none' : 'flex';
+      if (sitB) sitB.style.display = sitC ? 'none' : 'flex';
+    }
     ['marketing', 'site'].forEach(grp => {
       const group = document.getElementById(`lead-ggroup-${grp}`);
       if (!group) return;
@@ -7354,9 +7669,22 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           group.classList.add('is-collapsed');
         }
         syncAllCollapsed();
+        syncBadges();
       });
     });
     syncAllCollapsed();
+    syncBadges();
+    overlay.querySelectorAll('.lead-sub-card').forEach(card => {
+      card.addEventListener('click', e => {
+        if (e.target.closest('.gear-slider') || e.target.closest('.gear-val-input')) return;
+        const isCollapsed = card.classList.contains('is-collapsed');
+        if (isCollapsed) {
+          card.classList.remove('is-collapsed');
+        } else if (e.target.closest('.lead-sub-card-header')) {
+          card.classList.add('is-collapsed');
+        }
+      });
+    });
     overlay.querySelectorAll('.gear-item').forEach(el => {
       el.addEventListener('click', e => { if (e.target.closest('.gear-slider')) return; openDetail(el.dataset.gear); });
     });
@@ -7397,6 +7725,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function closePerfSimulator() {
     document.getElementById('lead-perf-overlay')?.classList.remove('is-open');
     document.body.style.overflow = '';
+    if (typeof closePanel === 'function') closePanel();
   }
 
   document.addEventListener('keydown', e => {
