@@ -792,7 +792,7 @@ body {
       rgba(13,207,232,0.13) 100%
     );
   border-radius: 15px;
-  padding: 17px 18px;
+  padding: 14px 18px;
   cursor: pointer;
   text-align: left;
   border: 1px solid rgba(155,109,255,0.35);
@@ -889,6 +889,75 @@ body {
   transition: transform 0.2s ease;
 }
 .sim-launch-btn:hover .sim-launch-arrow { transform: translateX(5px); }
+
+/* ── PRESENTATION LAUNCH BUTTON — mesma estética do simulador ── */
+.pres-launch-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    rgba(155,109,255,0.18) 0%,
+    rgba(77,141,255,0.15) 40%,
+    rgba(13,207,232,0.13) 100%
+  );
+  border-radius: 15px;
+  padding: 14px 18px;
+  cursor: pointer;
+  text-align: left;
+  border: 1px solid rgba(155,109,255,0.35);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.15),
+    0 4px 28px rgba(155,109,255,0.14),
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 -1px 0 rgba(0,0,0,0.25) inset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.pres-launch-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.09) 50%, transparent 100%);
+  animation: shimmerSlide 3.6s ease-in-out infinite 1.8s;
+  pointer-events: none;
+}
+.pres-launch-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25) 30%, rgba(13,207,232,0.5) 60%, transparent);
+  border-radius: 1px;
+  pointer-events: none;
+}
+.pres-launch-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(155,109,255,0.6);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.3),
+    0 8px 36px rgba(155,109,255,0.22),
+    0 1px 0 rgba(255,255,255,0.07) inset,
+    0 -1px 0 rgba(0,0,0,0.25) inset;
+}
+.pres-launch-btn:active { transform: translateY(0); }
+.pres-launch-icon {
+  font-size: 26px; flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(13,207,232,0.6));
+}
+.pres-launch-title {
+  flex: 1;
+  font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase;
+  background: linear-gradient(90deg, #c49bff 0%, #4d8dff 50%, #0dcfe8 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.pres-launch-arrow {
+  font-size: 20px; flex-shrink: 0;
+  background: linear-gradient(135deg, #9b6dff, #0dcfe8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  transition: transform 0.2s ease;
+}
+.pres-launch-btn:hover .pres-launch-arrow { transform: translateX(5px); }
 
 .block-label {
   font-size: 9.5px;
@@ -1605,8 +1674,16 @@ body {
   padding: 2px 0 10px; gap: 0;
 }
 /* deliverable visibility toggled via JS */
+.gears-row {
+  display: flex; align-items: center;
+  align-self: stretch;
+}
 .gear-group-wrap {
   display: flex; flex-direction: column; align-items: center;
+  position: relative;
+}
+#lead-site-deliverable {
+  position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
 }
 .perf-deliverable-arrow {
   font-size: 14px; line-height: 1.2;
@@ -1662,6 +1739,62 @@ body {
   letter-spacing: -0.5px; line-height: 1.1;
   filter: drop-shadow(0 0 8px rgba(251,191,36,0.45));
 }
+
+/* Leads waypoint card — always visible in horizontal flow */
+.perf-deliverable--waypoint {
+  padding: 0;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* Leads card expand/collapse */
+.lead-card-expandable {
+  display: none; width: 100%;
+  flex-direction: column; align-items: center; gap: 0;
+}
+.perf-deliverable-card.is-expanded .lead-card-expandable {
+  display: flex;
+}
+.lead-card-toggle {
+  font-size: 11px; color: rgba(251,191,36,0.5);
+  margin-top: 4px; cursor: pointer; user-select: none;
+  transition: transform 0.2s, color 0.2s; display: block;
+  line-height: 1;
+}
+.perf-deliverable-card.is-expanded .lead-card-toggle {
+  transform: rotate(180deg); color: rgba(251,191,36,0.8);
+}
+.perf-deliverable-card { cursor: pointer; }
+
+/* Mini MQL gear inside the Leads waypoint card */
+.mql-gear-zone {
+  margin-top: 7px; width: 100%;
+  background: rgba(77,141,255,0.07);
+  border: 1px solid rgba(77,141,255,0.22);
+  border-radius: 7px; padding: 5px 9px 6px;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.mql-gear-label {
+  font-size: 7px; font-weight: 800; letter-spacing: 1.5px;
+  text-transform: uppercase; color: rgba(77,141,255,0.65);
+}
+.mql-gear-control {
+  width: 100%; display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.mql-gear-val {
+  font-size: 12px; font-weight: 900; color: #4d8dff; letter-spacing: -0.3px; line-height: 1.1;
+  filter: drop-shadow(0 0 5px rgba(77,141,255,0.3));
+}
+.mql-gear-slider {
+  -webkit-appearance: none; width: 100%; height: 3px;
+  border-radius: 2px; background: rgba(77,141,255,0.2); outline: none; cursor: pointer;
+}
+.mql-gear-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 11px; height: 11px; border-radius: 50%;
+  background: #4d8dff; cursor: pointer; transition: transform 0.15s;
+  box-shadow: 0 0 5px rgba(77,141,255,0.45);
+}
+.mql-gear-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
 
 /* bridge connector between the two groups */
 .group-bridge {
@@ -3239,6 +3372,322 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: #fbbf24;
   border: 1px solid rgba(251,191,36,0.3);
   flex-shrink: 0;
+}
+
+/* ── PERF PRESENTATION BUTTON ────────────────── */
+.pp-btn {
+  display: flex; align-items: center; gap: 14px;
+  width: 100%; margin-top: 16px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(77,141,255,0.08) 0%, rgba(0,212,170,0.06) 100%);
+  border: 1px solid rgba(77,141,255,0.22);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.22s;
+  position: relative;
+  overflow: hidden;
+}
+.pp-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(77,141,255,0.1) 0%, rgba(0,212,170,0.07) 100%);
+  opacity: 0;
+  transition: opacity 0.22s;
+}
+.pp-btn:hover { border-color: rgba(77,141,255,0.45); transform: translateY(-1px); box-shadow: 0 6px 22px rgba(77,141,255,0.14); }
+.pp-btn:hover::before { opacity: 1; }
+.pp-btn:active { transform: translateY(0); }
+.pp-btn-icon { font-size: 18px; flex-shrink: 0; position: relative; z-index: 1; }
+.pp-btn-text { display: flex; flex-direction: column; gap: 2px; flex: 1; position: relative; z-index: 1; }
+.pp-btn-label {
+  font-size: 12px; font-weight: 800; letter-spacing: 0.2px;
+  background: linear-gradient(90deg, #4d8dff, #00d4aa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.pp-btn-sub { font-size: 10px; color: var(--text-3); font-weight: 500; }
+.pp-btn-arrow {
+  font-size: 14px; color: rgba(77,141,255,0.6);
+  transition: transform 0.2s, color 0.2s;
+  position: relative; z-index: 1;
+}
+.pp-btn:hover .pp-btn-arrow { transform: translateX(4px); color: rgba(77,141,255,0.9); }
+
+/* ── PP COMPARISON SLIDE ────────────────────────── */
+.pp-slide-compare { position: relative; overflow: hidden; }
+.pp-slide-compare::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 70% at 82% 50%, rgba(77,141,255,0.14) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 60% at 78% 50%, rgba(0,212,170,0.07) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-compare .xpto-slide-inner { max-width: 1020px; position: relative; z-index: 1; }
+.pp-compare-wrap {
+  display: flex; align-items: stretch; gap: 0; width: 100%;
+}
+.pp-compare-col { flex: 1; display: flex; flex-direction: column; gap: 22px; }
+.pp-compare-divider {
+  width: 96px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.pp-compare-symbol {
+  font-size: 66px; font-weight: 900; line-height: 1;
+  color: rgba(255,255,255,0.13);
+  text-shadow: 0 0 32px rgba(255,255,255,0.06);
+  letter-spacing: -3px;
+}
+.pp-compare-title {
+  font-size: clamp(24px, 3vw, 38px);
+  font-weight: 900; letter-spacing: -1px; line-height: 1.1;
+}
+.pp-compare-title--pro {
+  background: linear-gradient(135deg, #6aaaff 0%, #00d4aa 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 18px rgba(77,141,255,0.45));
+}
+.pp-compare-title--neg { color: rgba(255,255,255,0.35); }
+.pp-compare-card {
+  width: 100%; border-radius: 18px; padding: 30px 28px; flex: 1;
+}
+.pp-compare-card--pro {
+  background: linear-gradient(145deg, rgba(77,141,255,0.09) 0%, rgba(0,212,170,0.05) 100%);
+  border: 1px solid rgba(77,141,255,0.28);
+  box-shadow: 0 0 48px rgba(77,141,255,0.11), 0 0 0 1px rgba(0,212,170,0.06) inset, 0 1px 0 rgba(255,255,255,0.07) inset;
+}
+.pp-compare-card--neg {
+  background: rgba(255,255,255,0.018);
+  border: 1px solid rgba(255,255,255,0.07);
+}
+.pp-compare-list { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+.pp-compare-list li {
+  display: flex; align-items: flex-start; gap: 13px;
+  font-size: 15px; line-height: 1.55; font-weight: 500;
+  color: rgba(255,255,255,0.84);
+}
+.pp-compare-card--neg .pp-compare-list li { color: rgba(255,255,255,0.36); }
+.pp-compare-icon {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; margin-top: 1px;
+}
+.pp-compare-icon--pro {
+  background: rgba(0,212,170,0.16); border: 1px solid rgba(0,212,170,0.45); color: #00d4aa;
+}
+.pp-compare-icon--neg {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); color: rgba(255,255,255,0.22);
+}
+
+/* ── PP RESULT SLIDE ────────────────────────────── */
+.pp-slide-result { overflow: hidden; }
+.pp-slide-result::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 65% at 50% 38%, rgba(77,141,255,0.11) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-result .xpto-slide-inner { max-width: 680px; position: relative; z-index: 1; }
+.pp-result-wrap { display: flex; flex-direction: column; align-items: center; gap: 26px; width: 100%; }
+.pp-result-card {
+  width: 100%;
+  background: rgba(255,255,255,0.032);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 34px 38px;
+  box-shadow: 0 0 60px rgba(77,141,255,0.07);
+}
+.pp-result-heading {
+  font-size: 21px; font-weight: 700; color: rgba(255,255,255,0.9);
+  margin-bottom: 26px; letter-spacing: -0.3px;
+}
+.pp-result-list { list-style: none; display: flex; flex-direction: column; gap: 13px; }
+.pp-result-list li {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.82);
+}
+.pp-result-num {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 7px;
+  background: rgba(77,141,255,0.16); border: 1px solid rgba(77,141,255,0.32);
+  color: #7ab8ff; font-size: 11px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.pp-result-footnote {
+  font-size: 15px; font-weight: 500;
+  color: rgba(255,255,255,0.52);
+  letter-spacing: 0.1px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── PP CRIATIVOS SLIDE ─────────────────────────── */
+.pp-slide-criativos { overflow: hidden; }
+.pp-slide-criativos::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 50% 65% at 5% 40%, rgba(77,141,255,0.10) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-criativos .xpto-slide-inner { max-width: 1020px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
+.pp-criativos-wrap { display: flex; gap: 52px; align-items: flex-start; }
+.pp-criativos-left { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+.pp-criativos-right { width: 340px; flex-shrink: 0; }
+.pp-criativos-title {
+  font-size: clamp(38px, 5vw, 54px); font-weight: 900;
+  letter-spacing: -1.5px; line-height: 1.05; color: #fff;
+}
+.pp-criativos-sub {
+  font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.35);
+  margin-top: 5px;
+}
+.pp-criativos-divider { width: 100%; height: 1px; background: rgba(255,255,255,0.07); }
+.pp-criativos-section { font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.88); }
+.pp-criativos-list { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+.pp-criativos-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 13.5px; font-weight: 500; line-height: 1.45; color: rgba(255,255,255,0.78);
+}
+.pp-criativos-num {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px; margin-top: 1px;
+  background: rgba(77,141,255,0.16); border: 1px solid rgba(77,141,255,0.32);
+  color: #7ab8ff; font-size: 10px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.pp-criativos-obs {
+  font-size: 12px; color: rgba(255,255,255,0.54);
+  font-style: italic; line-height: 1.55;
+}
+/* Ad placeholder grid */
+.pp-criativos-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.pp-criativos-ad {
+  background: rgba(255,255,255,0.026);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; overflow: hidden;
+  display: flex; flex-direction: column;
+  aspect-ratio: 4/5;
+}
+.pp-criativos-ad-bar {
+  height: 26px; flex-shrink: 0;
+  background: rgba(255,255,255,0.035);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  display: flex; align-items: center; padding: 0 10px; gap: 5px;
+}
+.pp-criativos-ad-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+.pp-criativos-ad-dot:first-child { background: rgba(77,141,255,0.4); }
+.pp-criativos-ad-body { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+.pp-criativos-ad-img { flex: 1; border-radius: 6px; background: rgba(255,255,255,0.035); }
+.pp-criativos-ad-line { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.07); }
+.pp-criativos-ad-line.short { width: 55%; }
+
+/* ── PP GAMEPLAN SLIDE ──────────────────────────── */
+.pp-slide-gameplan { overflow: hidden; }
+.pp-slide-gameplan::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 75% 55% at 50% 5%, rgba(77,141,255,0.11) 0%, transparent 65%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-gameplan .xpto-slide-inner { max-width: 980px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
+.pp-gameplan-header { text-align: center; margin-bottom: 30px; }
+.pp-gameplan-eyebrow {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(77,141,255,0.1); border: 1px solid rgba(77,141,255,0.22);
+  border-radius: 99px; padding: 4px 14px; margin-bottom: 14px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(130,180,255,0.85);
+}
+.pp-gameplan-eyebrow span { width: 5px; height: 5px; border-radius: 50%; background: #4d8dff; box-shadow: 0 0 6px #4d8dff; }
+.pp-gameplan-title {
+  font-size: clamp(28px, 3.8vw, 44px); font-weight: 900;
+  letter-spacing: -1px; color: #fff;
+}
+.pp-gameplan-rows { display: flex; flex-direction: column; gap: 12px; }
+.pp-gameplan-row { display: grid; gap: 12px; }
+.pp-gameplan-row--3 { grid-template-columns: repeat(3, 1fr); }
+.pp-gameplan-row--2 { display: flex; gap: 12px; justify-content: center; }
+.pp-gameplan-row--2 .pp-gameplan-card { flex: 0 0 calc(33.33% - 6px); }
+.pp-gameplan-card {
+  position: relative; overflow: hidden;
+  background: rgba(255,255,255,0.028);
+  border: 1px solid rgba(77,141,255,0.16);
+  border-radius: 14px;
+  padding: 22px 20px 20px;
+  min-height: 158px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pp-gameplan-card:hover {
+  border-color: rgba(77,141,255,0.35);
+  background: rgba(77,141,255,0.05);
+}
+.pp-gameplan-card-num {
+  position: absolute;
+  top: -14px; left: -4px;
+  font-size: 118px; font-weight: 900; font-style: italic;
+  color: rgba(77,141,255,0.07);
+  line-height: 1; pointer-events: none; user-select: none;
+  letter-spacing: -4px;
+}
+.pp-gameplan-card-title {
+  font-size: 13px; font-weight: 800;
+  color: rgba(255,255,255,0.9);
+  text-transform: uppercase; letter-spacing: 0.6px;
+  line-height: 1.3; position: relative; z-index: 1;
+}
+
+/* ── PP STRATEGY SLIDE ──────────────────────────── */
+.pp-slide-strategy { overflow: hidden; }
+.pp-slide-strategy::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 70% at 90% 10%, rgba(77,141,255,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 30% 40% at 88% 8%, rgba(0,140,255,0.10) 0%, transparent 50%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-strategy .xpto-slide-inner { max-width: 980px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
+.pp-strategy-header { margin-bottom: 36px; }
+.pp-strategy-title {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 900; letter-spacing: -1.5px; line-height: 1.05;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.pp-strategy-sub {
+  font-size: 11px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: rgba(255,255,255,0.38);
+}
+.pp-strategy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.pp-strategy-card {
+  background: rgba(255,255,255,0.032);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 22px 20px 24px;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pp-strategy-card:hover {
+  background: rgba(77,141,255,0.06);
+  border-color: rgba(77,141,255,0.22);
+}
+.pp-strategy-num {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: rgba(77,141,255,0.16); border: 1px solid rgba(77,141,255,0.32);
+  color: #7ab8ff; font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.pp-strategy-card-title {
+  font-size: 15px; font-weight: 700; line-height: 1.25;
+  color: rgba(255,255,255,0.92); letter-spacing: -0.2px;
+}
+.pp-strategy-card-desc {
+  font-size: 12.5px; font-weight: 400; line-height: 1.55;
+  color: rgba(255,255,255,0.48);
 }
 
 /* Modal overlay */
@@ -5114,6 +5563,216 @@ a.xpto-pricing-btn { text-decoration: none; }
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  PERF PRESENTATION MODAL                       -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="pp-overlay"></div>
+<button class="xpto-close" id="pp-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="pp-modal">
+  <div class="xpto-inner" id="pp-inner">
+
+    <!-- SLIDE 01 — CAPA -->
+    <section class="xpto-slide xpto-slide-hero">
+      <div class="xpto-slide-inner">
+        <div class="xpto-hero">
+          <div class="xpto-eyebrow"><span></span>Turbo Partners</div>
+          <h1 class="xpto-title">Gestão de Performance</h1>
+          <p class="xpto-subtitle">Uma visão que vai além do gerenciador de anúncios.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 — GESTÃO DE PERFORMANCE ≠ TRÁFEGO PAGO -->
+    <section class="xpto-slide pp-slide-compare">
+      <div class="xpto-slide-inner">
+        <div class="pp-compare-wrap">
+
+          <!-- LADO ESQUERDO -->
+          <div class="pp-compare-col">
+            <h2 class="pp-compare-title pp-compare-title--neg">Tráfego pago</h2>
+            <div class="pp-compare-card pp-compare-card--neg">
+              <ul class="pp-compare-list">
+                <li><span class="pp-compare-icon pp-compare-icon--neg">✕</span>Olhar exclusivo para o gerenciador de anúncios</li>
+                <li><span class="pp-compare-icon pp-compare-icon--neg">✕</span>Subir anúncios – Criativos por sua responsabilidade</li>
+                <li><span class="pp-compare-icon pp-compare-icon--neg">✕</span>Falta de análise de dados para tomada de decisão</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SÍMBOLO ≠ -->
+          <div class="pp-compare-divider">
+            <span class="pp-compare-symbol">≠</span>
+          </div>
+
+          <!-- LADO DIREITO -->
+          <div class="pp-compare-col">
+            <h2 class="pp-compare-title pp-compare-title--pro">Gestão de<br>performance</h2>
+            <div class="pp-compare-card pp-compare-card--pro">
+              <ul class="pp-compare-list">
+                <li><span class="pp-compare-icon pp-compare-icon--pro">✓</span>Olhar holístico do funil de vendas</li>
+                <li><span class="pp-compare-icon pp-compare-icon--pro">✓</span>Estratégia e otimização de criativos constante</li>
+                <li><span class="pp-compare-icon pp-compare-icon--pro">✓</span>Estudo da jornada do cliente e identificação de oportunidades de crescimento</li>
+                <li><span class="pp-compare-icon pp-compare-icon--pro">✓</span>Guiado por dados</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 — O RESULTADO VEM DE -->
+    <section class="xpto-slide pp-slide-result">
+      <div class="xpto-slide-inner">
+        <div class="pp-result-wrap">
+          <div class="pp-result-card">
+            <p class="pp-result-heading">O resultado vem de:</p>
+            <ol class="pp-result-list">
+              <li><span class="pp-result-num">1</span>Definição de ICP</li>
+              <li><span class="pp-result-num">2</span>Proposta de valor bem definida</li>
+              <li><span class="pp-result-num">3</span>Criativos conversivos</li>
+              <li><span class="pp-result-num">4</span>Testes contínuos</li>
+              <li><span class="pp-result-num">5</span>Análise de dados e métricas</li>
+              <li><span class="pp-result-num">6</span>Canal de conversão</li>
+              <li><span class="pp-result-num">7</span>Recorrência</li>
+            </ol>
+          </div>
+          <p class="pp-result-footnote">E a falta de resultados também…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 — ESTRATÉGIA -->
+    <section class="xpto-slide pp-slide-strategy">
+      <div class="xpto-slide-inner">
+        <div class="pp-strategy-header">
+          <h2 class="pp-strategy-title">Estratégia</h2>
+          <p class="pp-strategy-sub">Quem não planeja está planejando falhar</p>
+        </div>
+        <div class="pp-strategy-grid">
+          <div class="pp-strategy-card">
+            <span class="pp-strategy-num">1</span>
+            <p class="pp-strategy-card-title">História e características da empresa</p>
+            <p class="pp-strategy-card-desc">Entender a trajetória, categorias, produtos e público-alvo da empresa.</p>
+          </div>
+          <div class="pp-strategy-card">
+            <span class="pp-strategy-num">2</span>
+            <p class="pp-strategy-card-title">Propostas de Valor e Diferenciais</p>
+            <p class="pp-strategy-card-desc">Identificar soluções, benefícios e diferenciais competitivos.</p>
+          </div>
+          <div class="pp-strategy-card">
+            <span class="pp-strategy-num">3</span>
+            <p class="pp-strategy-card-title">Posicionamento e Competitividade</p>
+            <p class="pp-strategy-card-desc">Conhecer o posicionamento de preço, oferta e concorrência no mercado.</p>
+          </div>
+          <div class="pp-strategy-card">
+            <span class="pp-strategy-num">4</span>
+            <p class="pp-strategy-card-title">Aquisição e Gestão de Clientes</p>
+            <p class="pp-strategy-card-desc">Investigar métodos de aquisição de clientes, gestão de feedbacks e satisfação.</p>
+          </div>
+          <div class="pp-strategy-card">
+            <span class="pp-strategy-num">5</span>
+            <p class="pp-strategy-card-title">Estrutura e Operações</p>
+            <p class="pp-strategy-card-desc">Analisar tamanho da equipe, automação, gestão de estoque e sustentabilidade.</p>
+          </div>
+          <div class="pp-strategy-card">
+            <span class="pp-strategy-num">6</span>
+            <p class="pp-strategy-card-title">Objetivos e Desafios</p>
+            <p class="pp-strategy-card-desc">Entender os principais desafios, objetivos de crescimento e expectativas em relação ao nosso serviço.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 — GAMEPLAN -->
+    <section class="xpto-slide pp-slide-gameplan">
+      <div class="xpto-slide-inner">
+        <div class="pp-gameplan-header">
+          <div class="pp-gameplan-eyebrow"><span></span>Gameplan · Entregável do 1º mês</div>
+          <h2 class="pp-gameplan-title">Estruturação Estratégica</h2>
+        </div>
+        <div class="pp-gameplan-rows">
+          <div class="pp-gameplan-row pp-gameplan-row--3">
+            <div class="pp-gameplan-card">
+              <span class="pp-gameplan-card-num">1</span>
+              <p class="pp-gameplan-card-title">Feedbacks das<br>Redes Sociais</p>
+            </div>
+            <div class="pp-gameplan-card">
+              <span class="pp-gameplan-card-num">2</span>
+              <p class="pp-gameplan-card-title">Feedbacks<br>do Site</p>
+            </div>
+            <div class="pp-gameplan-card">
+              <span class="pp-gameplan-card-num">3</span>
+              <p class="pp-gameplan-card-title">Feedbacks das<br>Campanhas</p>
+            </div>
+          </div>
+          <div class="pp-gameplan-row pp-gameplan-row--2">
+            <div class="pp-gameplan-card">
+              <span class="pp-gameplan-card-num">4</span>
+              <p class="pp-gameplan-card-title">Guia e Pedido<br>de Criativos</p>
+            </div>
+            <div class="pp-gameplan-card">
+              <span class="pp-gameplan-card-num">5</span>
+              <p class="pp-gameplan-card-title">Próximos<br>Passos</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 — CRIATIVOS -->
+    <section class="xpto-slide pp-slide-criativos">
+      <div class="xpto-slide-inner">
+        <div class="pp-criativos-wrap">
+          <div class="pp-criativos-left">
+            <div>
+              <h2 class="pp-criativos-title">Criativos</h2>
+              <p class="pp-criativos-sub">Pra vender é necessário chamar atenção</p>
+            </div>
+            <div class="pp-criativos-divider"></div>
+            <p class="pp-criativos-section">Processo de produção dos criativos de venda</p>
+            <ul class="pp-criativos-list">
+              <li><span class="pp-criativos-num">1</span>Definição de estratégia por trás do criativo</li>
+              <li><span class="pp-criativos-num">2</span>Briefing do criativo e solicitação para os designers e/ou editores de vídeo</li>
+              <li><span class="pp-criativos-num">3</span>Funil de vendas</li>
+              <li><span class="pp-criativos-num">4</span>Configuração das campanhas</li>
+              <li><span class="pp-criativos-num">5</span>Metrificação dos resultados</li>
+              <li><span class="pp-criativos-num">6</span>Otimização</li>
+            </ul>
+            <p class="pp-criativos-obs">Obs: São menosprezados, mas têm um papel fundamental nos resultados.</p>
+          </div>
+          <div class="pp-criativos-right">
+            <div class="pp-criativos-grid">
+              <div class="pp-criativos-ad">
+                <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
+                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+              </div>
+              <div class="pp-criativos-ad">
+                <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
+                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+              </div>
+              <div class="pp-criativos-ad">
+                <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
+                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+              </div>
+              <div class="pp-criativos-ad">
+                <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
+                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div class="xpto-scroll-hint" id="pp-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  SCRIPT                                        -->
 <!-- ══════════════════════════════════════════════ -->
 <script>
@@ -6120,12 +6779,13 @@ function openPanel(nodeId) {
     ${isTrafego ? `
     <button class="sim-launch-btn" onclick="${nodeId === 'lead-trafego' ? 'if(window.openLeadPerfSimulator) window.openLeadPerfSimulator()' : 'if(window.openPerfSimulator) window.openPerfSimulator()'}">
       <span class="sim-launch-icon">⚙️</span>
-      <span class="sim-launch-text">
-        <span class="sim-launch-title">Simulador de Performance</span>
-        <span class="sim-launch-sub">Ajuste as engrenagens e veja o impacto no faturamento em tempo real</span>
-        <span class="sim-launch-badge">✦ Ferramenta exclusiva</span>
-      </span>
+      <span class="sim-launch-title" style="flex:1">Simulador de Performance</span>
       <span class="sim-launch-arrow">→</span>
+    </button>
+    <button class="pres-launch-btn" onclick="if(window.openPerfPres) window.openPerfPres()">
+      <span class="pres-launch-icon">📋</span>
+      <span class="pres-launch-title">Apresentação de Performance</span>
+      <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
     ${buildLinksHTML(node.links, color)}
@@ -7029,7 +7689,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             </div>
             <p class="input-card-hint">Valor médio por pedido</p>
           </div>
-          <div class="perf-tip">💡 <strong>Clique em qualquer engrenagem</strong> para ver benchmarks, diagnóstico e o impacto exato de cada ajuste no faturamento.</div>
         </div>
 
         <div class="perf-center">
@@ -7171,8 +7830,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   const PERF = {
     investment: 3500, ticket: 1000,
     ctr: 2.0, cpc: 1.50,
-    landingConnect: 85, formConversion: 15,
+    landingConnect: 85, formConversion: 20,
     meetingRate: 20, salesConversion: 30,
+    mqlRate: 20,
     activeGear: null,
   };
 
@@ -7218,7 +7878,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       msgs:{good:'✓ Boa taxa de agendamento. Seu follow-up está convertendo bem.',warn:'⚠ Agendamento abaixo do ideal. Revise o processo de follow-up e a proposta de valor da reunião.',bad:'✕ Crítico. Poucos leads viram reuniões. Melhore a cadência de contato e o pitch de agendamento.'},
     },
     {
-      id:'salesConversion', label:'Conversão', abbr:'CVS', unit:'%', min:0.1, max:100, step:0.1,
+      id:'salesConversion', label:'Tx. Conversão Reunião', abbr:'CVS', unit:'%', min:0.1, max:100, step:0.1,
       bench:{good:35,warn:20},
       explain:'Taxa de Conversão em Vendas — de cada reunião realizada, quantas se tornaram clientes. Reflete a qualidade do processo comercial, da oferta e do vendedor.',
       impactDirect: true, impactLabel:'+1pp Conversão',
@@ -7231,9 +7891,10 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     const clicks   = s.cpc > 0 ? s.investment / s.cpc : 0;
     const pv       = clicks * s.landingConnect / 100;
     const leads    = pv * s.formConversion / 100;
+    const mqls     = leads * s.mqlRate / 100;
     const meetings = leads * s.meetingRate / 100;
     const sales    = meetings * s.salesConversion / 100;
-    return { clicks, pageviews:pv, leads, meetings, sales, revenue: sales * s.ticket };
+    return { clicks, pageviews:pv, leads, mqls, meetings, sales, revenue: sales * s.ticket };
   }
 
   function health(g, val) {
@@ -7295,8 +7956,11 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       ['lead-mk-del-val',          fmtN(r.leads)],
       ['lead-site-del-val',        fmtN(r.sales)],
       ['lead-mk-cpl-val',          r.leads > 0 ? fmtBRL(PERF.investment / r.leads) : '—'],
+      ['lead-mk-cpqml-val',        r.mqls  > 0 ? fmtBRL(PERF.investment / r.mqls)  : '—'],
       ['lead-site-cac-val',        r.sales > 0 ? fmtBRL(PERF.investment / r.sales) : '—'],
     ];
+    const mqlValEl = document.getElementById('lead-mql-val');
+    if (mqlValEl) mqlValEl.textContent = PERF.mqlRate + '%';
     map.forEach(([id,v]) => { const el=document.getElementById(id); if(el) el.textContent=v; });
 
     const GEAR_COLOR = '#4d8dff';
@@ -7433,6 +8097,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     const siteDots       = [...preVendasDefs, ...vendasDefs].map(g => `<span class="gear-health-dot" id="lead-gdot-${g.id}"></span>`).join('');
 
     const gearsHTML = `
+      <div class="gears-row">
       <div class="gear-group-wrap">
       <div class="gear-group is-collapsed" id="lead-ggroup-marketing" data-group="marketing">
         <div class="gear-group-header" id="lead-ggheader-marketing">
@@ -7495,18 +8160,38 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           </div>
         </div>
       </div>
-      <div class="perf-deliverable" id="lead-mk-deliverable" style="display:none">
-        <div class="perf-deliverable-arrow">▼</div>
+      </div>
+      <div class="group-bridge">
+        <div class="group-bridge-inner">
+          <div class="group-bridge-line"></div>
+          <div class="group-bridge-arrow"></div>
+        </div>
+      </div>
+      <div class="perf-deliverable perf-deliverable--waypoint" id="lead-mk-deliverable">
         <div class="perf-deliverable-card">
           <span class="perf-deliverable-label">🎯 Leads gerados</span>
           <span class="perf-deliverable-value" id="lead-mk-del-val">—</span>
-          <div class="perf-deliverable-sep"></div>
-          <div class="perf-deliverable-meta">
-            <span class="perf-deliverable-meta-label">CPL</span>
-            <span class="perf-deliverable-meta-value" id="lead-mk-cpl-val">—</span>
+          <div class="lead-card-expandable">
+            <div class="perf-deliverable-sep"></div>
+            <div class="perf-deliverable-meta">
+              <span class="perf-deliverable-meta-label">CPL</span>
+              <span class="perf-deliverable-meta-value" id="lead-mk-cpl-val">—</span>
+            </div>
+            <div class="perf-deliverable-sep"></div>
+            <div class="perf-deliverable-meta">
+              <span class="perf-deliverable-meta-label">CPMQL</span>
+              <span class="perf-deliverable-meta-value" id="lead-mk-cpqml-val">—</span>
+            </div>
+            <div class="mql-gear-zone">
+              <span class="mql-gear-label">% MQL</span>
+              <div class="mql-gear-control">
+                <span class="mql-gear-val" id="lead-mql-val">${PERF.mqlRate}%</span>
+                <input type="range" class="mql-gear-slider" id="lead-mql-slider" min="1" max="100" step="1" value="${PERF.mqlRate}">
+              </div>
+            </div>
           </div>
+          <span class="lead-card-toggle">▾</span>
         </div>
-      </div>
       </div>
       <div class="group-bridge">
         <div class="group-bridge-inner">
@@ -7582,6 +8267,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           </div>
         </div>
       </div>
+      </div>
       </div>`;
 
     overlay.innerHTML = `
@@ -7611,7 +8297,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             </div>
             <p class="input-card-hint">Valor médio por venda</p>
           </div>
-          <div class="perf-tip">💡 <strong>Clique em qualquer engrenagem</strong> para ver benchmarks, diagnóstico e o impacto exato de cada ajuste no faturamento.</div>
         </div>
 
         <div class="perf-center">
@@ -7655,7 +8340,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
             <div class="output-item"><span class="output-label">🤝 Vendas realizadas</span><span class="output-value" id="lead-perf-out-sales">—</span></div>
           </div>
           <div class="output-item is-revenue">
-            <span class="output-label">✦ Faturamento estimado</span>
+            <span class="output-label">✦ Receita nova estimada</span>
             <span class="output-value" id="lead-perf-out-revenue">—</span>
             <div class="revenue-tooltip">📌 Estimativa exclusiva de anúncios pagos. Vendas orgânicas — SEO, redes sociais, tráfego direto — <strong>não estão incluídas</strong> neste número.</div>
           </div>
@@ -7677,11 +8362,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       overlay.querySelector('.perf-center').classList.toggle('all-collapsed', mkC && sitC);
     }
     function syncBadges() {
-      const mkC  = document.getElementById('lead-ggroup-marketing').classList.contains('is-collapsed');
       const sitC = document.getElementById('lead-ggroup-site').classList.contains('is-collapsed');
-      const mkB  = document.getElementById('lead-mk-deliverable');
       const sitB = document.getElementById('lead-site-deliverable');
-      if (mkB)  mkB.style.display  = mkC  ? 'none' : 'flex';
       if (sitB) sitB.style.display = sitC ? 'none' : 'flex';
     }
     ['marketing', 'site'].forEach(grp => {
@@ -7739,6 +8421,19 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     });
     document.getElementById('lead-perf-investment').addEventListener('input', e => { PERF.investment = parseFloat(e.target.value)||0; render(); });
     document.getElementById('lead-perf-ticket').addEventListener('input', e => { PERF.ticket = parseFloat(e.target.value)||0; render(); });
+    const mqlSlider = document.getElementById('lead-mql-slider');
+    if (mqlSlider) {
+      mqlSlider.addEventListener('input', e => { PERF.mqlRate = parseInt(e.target.value); render(); });
+      mqlSlider.addEventListener('click', e => e.stopPropagation());
+      mqlSlider.addEventListener('mousedown', e => e.stopPropagation());
+    }
+    const leadsCard = document.querySelector('#lead-mk-deliverable .perf-deliverable-card');
+    if (leadsCard) {
+      leadsCard.addEventListener('click', e => {
+        if (e.target.closest('.mql-gear-slider')) return;
+        leadsCard.classList.toggle('is-expanded');
+      });
+    }
   }
 
   function openPerfSimulator() {
@@ -8328,6 +9023,40 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXpto(); });
 
   window.openXpto = openXpto;
+})();
+
+// ─────────────────────────────────────────────────
+//  PERF PRESENTATION
+// ─────────────────────────────────────────────────
+(function() {
+  function openPerfPres() {
+    document.getElementById('pp-overlay').classList.add('is-open');
+    document.getElementById('pp-modal').classList.add('is-open');
+    document.getElementById('pp-close').style.display = 'flex';
+    document.getElementById('pp-scroll-hint').style.display = 'flex';
+    document.getElementById('pp-modal').scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closePerfPres() {
+    document.getElementById('pp-overlay').classList.remove('is-open');
+    document.getElementById('pp-modal').classList.remove('is-open');
+    document.getElementById('pp-close').style.display = 'none';
+    document.getElementById('pp-scroll-hint').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('pp-close').style.display = 'none';
+  document.getElementById('pp-scroll-hint').style.display = 'none';
+
+  document.getElementById('pp-overlay').addEventListener('click', closePerfPres);
+  document.getElementById('pp-close').addEventListener('click', closePerfPres);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('pp-modal').classList.contains('is-open'))
+      closePerfPres();
+  });
+
+  window.openPerfPres = openPerfPres;
 })();
 
 // ─────────────────────────────────────────────────
