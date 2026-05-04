@@ -2589,6 +2589,319 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   white-space: nowrap;
 }
 
+/* ── APRESENTAÇÃO SUB-TABS ───────────────────────── */
+.apres-subnav {
+  position: fixed;
+  top: 0; bottom: 0;
+  left: 224px;
+  width: 152px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 56px 8px 16px;
+  background: rgba(6, 7, 14, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(255,255,255,0.05);
+  transition: left 0.32s cubic-bezier(0.4,0,0.2,1),
+              width 0.32s cubic-bezier(0.4,0,0.2,1),
+              opacity 0.18s;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.apres-subnav.is-visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.apres-subnav.is-mini {
+  width: 48px;
+}
+.sidebar.is-collapsed ~ .main-content .apres-subnav {
+  left: 56px;
+}
+
+/* Botão minimizar */
+.apres-subnav-toggle {
+  position: absolute;
+  top: 16px;
+  right: 8px;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-2);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s, transform 0.3s;
+  flex-shrink: 0;
+}
+.apres-subnav-toggle:hover { background: rgba(255,255,255,0.09); color: var(--text); }
+.apres-subnav.is-mini .apres-subnav-toggle { transform: rotate(180deg); }
+
+.apres-subtab {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-2);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  text-align: left;
+  width: 100%;
+  overflow: hidden;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  user-select: none;
+  flex-shrink: 0;
+}
+.apres-subtab-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+.apres-subtab-label {
+  overflow: hidden;
+  transition: opacity 0.2s, max-width 0.32s cubic-bezier(0.4,0,0.2,1);
+  max-width: 120px;
+}
+.apres-subnav.is-mini .apres-subtab-label { opacity: 0; max-width: 0; }
+.apres-subnav.is-mini .apres-subtab { justify-content: center; padding: 9px 0; gap: 0; }
+.apres-subnav.is-mini .apres-subtab-icon { width: auto; }
+.apres-subtab:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.apres-subtab.is-active {
+  background: rgba(155,109,255,0.07);
+  border-color: rgba(155,109,255,0.14);
+  color: var(--c1);
+}
+
+/* Sub-views inside apresentação — empurra conteúdo além do subnav */
+.apres-subview { display: none; }
+.apres-subview.is-active { display: block; }
+#view-apresentacao { padding-left: 152px; transition: padding-left 0.32s cubic-bezier(0.4,0,0.2,1); }
+#view-apresentacao.subnav-mini { padding-left: 48px; }
+
+/* ── SOBRE A TURBO (slides) ──────────────────────── */
+#apres-sub-turbo {
+  height: 100vh;
+  overflow: hidden;
+}
+.turbo-slides {
+  height: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+.turbo-slides::-webkit-scrollbar { display: none; }
+.turbo-slide {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 72px 48px;
+  position: relative;
+  overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.turbo-slide-inner {
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── TURBO SLIDE: CAPA ───────────────────────────── */
+.turbo-slide--cover {
+  background: var(--bg);
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+.turbo-cover-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 50% 60%, rgba(77,141,255,0.13) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 50% at 30% 40%, rgba(155,109,255,0.09) 0%, transparent 65%);
+  pointer-events: none;
+}
+.turbo-cover-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.turbo-slide--cover { padding-left: 16px; padding-right: 16px; }
+.turbo-cover-logo {
+  width: 62%; height: auto;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 12px;
+}
+.turbo-cover-logoimg { width: 100%; height: auto; object-fit: contain; filter: brightness(1.2) drop-shadow(0 0 32px rgba(77,141,255,0.3)); }
+.turbo-cover-divider {
+  width: 48px; height: 2px;
+  background: linear-gradient(90deg, var(--c1), var(--c3));
+  border-radius: 2px;
+  margin: 4px auto;
+}
+.turbo-cover-sub {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+.turbo-cover-tags {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 8px;
+}
+.turbo-cover-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.75);
+  padding: 6px 12px;
+  border-radius: 100px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 12px rgba(77,141,255,0.12), inset 0 1px 0 rgba(255,255,255,0.07);
+  white-space: nowrap;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.turbo-cover-tag:hover {
+  border-color: rgba(77,141,255,0.45);
+  box-shadow: 0 0 20px rgba(77,141,255,0.22), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* ── TURBO SCROLL HINT ───────────────────────────── */
+.turbo-scroll-hint {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+.turbo-scroll-hint.is-visible { display: flex; }
+.turbo-scroll-hint.is-faded   { opacity: 0; }
+.turbo-scroll-hint-chevron {
+  width: 14px; height: 14px;
+  border-right: 2px solid rgba(77,141,255,0.75);
+  border-bottom: 2px solid rgba(77,141,255,0.75);
+  transform: rotate(45deg);
+  animation: turbo-chevron 1.6s ease-in-out infinite;
+}
+.turbo-scroll-hint-chevron:nth-child(2) { margin-top: -8px; opacity: 0.45; animation-delay: 0.18s; }
+.turbo-scroll-hint-chevron:nth-child(3) { margin-top: -8px; opacity: 0.18; animation-delay: 0.36s; }
+@keyframes turbo-chevron {
+  0%, 100% { transform: rotate(45deg) translate(0,0); }
+  50%       { transform: rotate(45deg) translate(3px,3px); }
+}
+
+/* ── TURBO SLIDE: CRESCIMENTO ────────────────────── */
+.turbo-slide--growth {
+  background: #050810;
+  position: relative;
+  align-items: stretch;
+  justify-content: center;
+  padding: 48px 72px 32px;
+}
+.turbo-slide--growth .turbo-slide-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.turbo-slide--growth .turbo-growth-chart {
+  flex: 1;
+  min-height: 200px;
+  display: flex;
+  align-items: stretch;
+}
+.turbo-slide--growth .turbo-chart-area {
+  flex: 1;
+  position: relative;
+}
+.turbo-slide--growth .turbo-chart-svg {
+  width: 100%;
+  height: 100%;
+}
+.turbo-growth-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 70% at 85% 30%, rgba(13,80,200,0.35) 0%, transparent 65%);
+  pointer-events: none;
+}
+.turbo-growth-header {
+  position: relative; z-index: 1;
+  margin-bottom: 36px;
+}
+.turbo-growth-title {
+  font-size: clamp(28px, 4vw, 54px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.05;
+  margin: 0;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 28px rgba(155,109,255,0.3));
+}
+.turbo-growth-chart {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  position: relative; z-index: 1;
+}
+.turbo-chart-yaxis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  flex-shrink: 0;
+  position: relative;
+}
+.turbo-chart-ylabel {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.turbo-chart-area {
+  flex: 1;
+  position: relative;
+}
+.turbo-chart-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  font-family: inherit;
+  overflow: visible;
+}
+
 /* ── BREADY SOCIAL PROOF ──────────────────────────── */
 .beady-section {
   padding: 64px 32px 72px;
@@ -3497,8 +3810,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   box-shadow: 0 0 60px rgba(77,141,255,0.07);
 }
 .pp-result-heading {
-  font-size: 21px; font-weight: 700; color: rgba(255,255,255,0.9);
-  margin-bottom: 26px; letter-spacing: -0.3px;
+  font-size: clamp(32px, 4.5vw, 48px); font-weight: 900;
+  color: #fff; letter-spacing: -1px; line-height: 1.1;
 }
 .pp-result-list { list-style: none; display: flex; flex-direction: column; gap: 13px; }
 .pp-result-list li {
@@ -3518,6 +3831,137 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-align: center;
   font-style: italic;
 }
+
+/* ── PP ESCOPO SLIDE ────────────────────────────── */
+.pp-slide-escopo { overflow: hidden; }
+.pp-slide-escopo::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 55% 60% at 85% 10%, rgba(77,141,255,0.14) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-escopo .xpto-slide-inner { max-width: 960px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
+.pp-escopo-wrap { display: flex; flex-direction: column; gap: 20px; }
+.pp-escopo-title {
+  text-align: center;
+  font-size: clamp(36px, 5vw, 54px); font-weight: 900;
+  letter-spacing: -1px; color: #fff;
+  margin-bottom: 4px;
+}
+.pp-escopo-main { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pp-escopo-item {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(77,141,255,0.14);
+  border-radius: 12px; padding: 14px 16px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.pp-escopo-item:hover { border-color: rgba(77,141,255,0.28); background: rgba(77,141,255,0.05); }
+.pp-escopo-check {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 6px; margin-top: 1px;
+  background: rgba(77,141,255,0.15); border: 1px solid rgba(77,141,255,0.38);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #6aaaff; font-size: 11px; font-weight: 900;
+}
+.pp-escopo-item-text { font-size: 13.5px; font-weight: 500; color: rgba(255,255,255,0.85); line-height: 1.4; }
+
+/* Bottom card */
+.pp-escopo-bottom {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 14px; overflow: hidden;
+}
+.pp-escopo-extra, .pp-escopo-nolist { padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.pp-escopo-extra { background: rgba(245,185,50,0.05); border-right: 1px solid rgba(255,255,255,0.07); }
+.pp-escopo-nolist { background: rgba(255,255,255,0.02); }
+.pp-escopo-section-label {
+  font-size: 9.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+}
+.pp-escopo-extra .pp-escopo-section-label { color: #f5c842; }
+.pp-escopo-nolist .pp-escopo-section-label { color: rgba(255,255,255,0.4); }
+.pp-escopo-sub-list { display: flex; flex-direction: column; gap: 8px; }
+.pp-escopo-sub-item { display: flex; align-items: flex-start; gap: 10px; }
+.pp-escopo-check--extra {
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 5px; margin-top: 1px;
+  background: rgba(245,185,50,0.13); border: 1px solid rgba(245,185,50,0.35);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #f5c842; font-size: 9px; font-weight: 900;
+}
+.pp-escopo-check--out {
+  flex-shrink: 0; width: 18px; height: 18px; border-radius: 5px; margin-top: 1px;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.13);
+  display: inline-flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.3); font-size: 9px; font-weight: 900;
+}
+.pp-escopo-sub-text { font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.65); line-height: 1.4; }
+
+/* ── PP ROTINAS SLIDE ───────────────────────────── */
+.pp-slide-rotinas { overflow: hidden; }
+.pp-slide-rotinas::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(77,141,255,0.10) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+.pp-slide-rotinas .xpto-slide-inner { max-width: 960px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
+.pp-rotinas-header { text-align: center; margin-bottom: 32px; }
+.pp-rotinas-title {
+  font-size: clamp(34px, 4.5vw, 50px); font-weight: 900;
+  letter-spacing: -1px; color: #fff;
+}
+.pp-rotinas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+.pp-rotinas-card {
+  border-radius: 18px; padding: 28px 26px;
+  display: flex; flex-direction: column; gap: 20px;
+  position: relative; overflow: hidden;
+}
+.pp-rotinas-card--nos {
+  background: linear-gradient(145deg, rgba(0,212,170,0.07) 0%, rgba(77,141,255,0.05) 100%);
+  border: 1px solid rgba(0,212,170,0.22);
+  box-shadow: 0 0 40px rgba(0,212,170,0.06);
+}
+.pp-rotinas-card--internal {
+  background: linear-gradient(145deg, rgba(155,109,255,0.07) 0%, rgba(77,141,255,0.05) 100%);
+  border: 1px solid rgba(155,109,255,0.2);
+  box-shadow: 0 0 40px rgba(155,109,255,0.06);
+}
+.pp-rotinas-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15) 40%, rgba(255,255,255,0.08) 70%, transparent);
+}
+.pp-rotinas-card-title {
+  font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
+  color: rgba(255,255,255,0.95);
+}
+.pp-rotinas-list { display: flex; flex-direction: column; gap: 10px; }
+.pp-rotinas-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+.pp-rotinas-item-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.pp-rotinas-card--nos .pp-rotinas-item-dot { background: #00d4aa; box-shadow: 0 0 6px rgba(0,212,170,0.6); }
+.pp-rotinas-card--internal .pp-rotinas-item-dot { background: #b89aff; box-shadow: 0 0 6px rgba(155,109,255,0.5); }
+.pp-rotinas-item-text {
+  flex: 1; font-size: 13px; font-weight: 500;
+  color: rgba(255,255,255,0.8); line-height: 1.35;
+}
+.pp-rotinas-badge {
+  flex-shrink: 0;
+  font-size: 9px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 99px;
+}
+.pp-rotinas-badge--daily   { background: rgba(0,212,170,0.14); border: 1px solid rgba(0,212,170,0.3); color: #00d4aa; }
+.pp-rotinas-badge--weekly  { background: rgba(77,141,255,0.14); border: 1px solid rgba(77,141,255,0.3); color: #7ab8ff; }
+.pp-rotinas-badge--biweekly{ background: rgba(250,200,80,0.12); border: 1px solid rgba(250,200,80,0.28); color: #f5c842; }
+.pp-rotinas-badge--monthly { background: rgba(255,160,80,0.12); border: 1px solid rgba(255,160,80,0.28); color: #ffaa55; }
+.pp-rotinas-badge--quarterly{ background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14); color: rgba(255,255,255,0.5); }
 
 /* ── PP CRIATIVOS SLIDE ─────────────────────────── */
 .pp-slide-criativos { overflow: hidden; }
@@ -3564,7 +4008,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: 10px; overflow: hidden;
   display: flex; flex-direction: column;
-  aspect-ratio: 4/5;
+  aspect-ratio: 9/16;
 }
 .pp-criativos-ad-bar {
   height: 26px; flex-shrink: 0;
@@ -3575,7 +4019,9 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .pp-criativos-ad-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(255,255,255,0.12); }
 .pp-criativos-ad-dot:first-child { background: rgba(77,141,255,0.4); }
 .pp-criativos-ad-body { flex: 1; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
-.pp-criativos-ad-img { flex: 1; border-radius: 6px; background: rgba(255,255,255,0.035); }
+.pp-criativos-ad-img { flex: 1; border-radius: 6px; background: rgba(255,255,255,0.035); overflow: hidden; }
+.pp-criativos-ad-img img,
+.pp-criativos-ad-img video { width: 100%; height: 100%; object-fit: contain; display: block; border-radius: 0; background: #000; }
 .pp-criativos-ad-line { height: 3px; border-radius: 2px; background: rgba(255,255,255,0.07); }
 .pp-criativos-ad-line.short { width: 55%; }
 
@@ -5348,6 +5794,22 @@ a.xpto-pricing-btn { text-decoration: none; }
 <!--  VIEW: APRESENTAÇÃO                            -->
 <!-- ══════════════════════════════════════════════ -->
 <div class="view is-active" id="view-apresentacao">
+
+  <!-- Sub-nav lateral full-height -->
+  <div class="apres-subnav is-visible" id="apres-subnav">
+    <button class="apres-subtab is-active" data-sub="especialista">
+      <span class="apres-subtab-icon">✦</span>
+      <span class="apres-subtab-label">Especialista</span>
+    </button>
+    <button class="apres-subtab" data-sub="turbo">
+      <span class="apres-subtab-icon">🚀</span>
+      <span class="apres-subtab-label">Sobre a Turbo</span>
+    </button>
+    <button class="apres-subnav-toggle" id="apres-subnav-toggle" title="Minimizar">‹</button>
+  </div>
+
+  <!-- SUB-VIEW: Especialista (conteúdo atual) -->
+  <div class="apres-subview is-active" id="apres-sub-especialista">
   <div class="apresentacao-wrap">
     <div class="apresentacao-card">
 
@@ -5410,6 +5872,98 @@ a.xpto-pricing-btn { text-decoration: none; }
       </div>
     </div>
   </div>
+  </div><!-- /apres-sub-especialista -->
+
+  <!-- SUB-VIEW: Sobre a Turbo -->
+  <div class="apres-subview" id="apres-sub-turbo">
+    <div class="turbo-slides" id="turbo-slides">
+
+      <!-- SLIDE 01 — CAPA -->
+      <div class="turbo-slide turbo-slide--cover">
+        <div class="turbo-cover-bg"></div>
+        <div class="turbo-slide-inner turbo-cover-inner">
+          <div class="turbo-cover-logo">
+            <img src="Logo-Turbo-branca (4).png" alt="Turbo Partners" class="turbo-cover-logoimg">
+          </div>
+          <div class="turbo-cover-divider"></div>
+          <div class="turbo-cover-tags">
+            <span class="turbo-cover-tag">E-commerce</span>
+            <span class="turbo-cover-tag">Lead Generation</span>
+            <span class="turbo-cover-tag">Growth</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 02 — CRESCIMENTO DE CLIENTES -->
+      <div class="turbo-slide turbo-slide--growth">
+        <div class="turbo-growth-bg"></div>
+        <div class="turbo-slide-inner">
+          <div class="turbo-growth-header">
+            <div class="xpto-eyebrow"><span></span>Crescimento</div>
+            <h2 class="turbo-growth-title">Somos obcecados<br>por resultado.</h2>
+          </div>
+          <div class="turbo-growth-chart">
+            <!-- Eixo Y -->
+            <div class="turbo-chart-yaxis">
+              <span class="turbo-chart-ylabel">C l i e n t e s</span>
+            </div>
+            <!-- Área do gráfico -->
+            <div class="turbo-chart-area">
+              <svg class="turbo-chart-svg" viewBox="0 0 500 650" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%"   stop-color="rgba(155,109,255,0)"/>
+                    <stop offset="55%"  stop-color="rgba(77,141,255,0.45)"/>
+                    <stop offset="85%"  stop-color="rgba(13,207,232,0.9)"/>
+                    <stop offset="100%" stop-color="rgba(255,255,255,1)"/>
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <!-- Escala linear proporcional: y = 610 - 580*(v/1300) -->
+                <!-- 2022=0→610  2023=100→565  2024=300→476  2025=1000→164  2026=1300→30 -->
+                <path d="M 30 610 C 62 608, 93 569, 115 565 C 155 557, 184 483, 215 476 C 275 465, 318 178, 372 164 C 408 147, 436 48, 462 30"
+                      fill="none" stroke="url(#curveGrad)" stroke-width="3" filter="url(#glow)"/>
+                <!-- Linhas verticais tracejadas -->
+                <line x1="30"  y1="610" x2="30"  y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="115" y1="565" x2="115" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="215" y1="476" x2="215" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="372" y1="164" x2="372" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="462" y1="30"  x2="462" y2="628" stroke="rgba(13,207,232,0.3)"   stroke-width="1" stroke-dasharray="3,4"/>
+                <!-- Pontos -->
+                <circle cx="30"  cy="610" r="5" fill="rgba(255,255,255,0.5)" filter="url(#glow)"/>
+                <circle cx="115" cy="565" r="5" fill="rgba(255,255,255,0.6)" filter="url(#glow)"/>
+                <circle cx="215" cy="476" r="6" fill="rgba(255,255,255,0.75)" filter="url(#glow)"/>
+                <circle cx="372" cy="164" r="7" fill="white" filter="url(#glow)"/>
+                <circle cx="462" cy="30"  r="9" fill="rgba(13,207,232,1)"    filter="url(#glow)"/>
+                <!-- Labels dos valores -->
+                <text x="42"  y="604" fill="rgba(255,255,255,0.45)" font-size="16" font-weight="600" font-family="inherit">0</text>
+                <text x="127" y="557" fill="rgba(255,255,255,0.6)"  font-size="16" font-weight="600" font-family="inherit">100</text>
+                <text x="227" y="468" fill="rgba(255,255,255,0.75)" font-size="17" font-weight="700" font-family="inherit">300</text>
+                <text x="316" y="156" fill="white"                  font-size="18" font-weight="700" font-family="inherit">1.000</text>
+                <text x="432" y="22"  fill="rgba(13,207,232,1)"     font-size="18" font-weight="800" font-family="inherit">1.300</text>
+                <!-- Eixo X -->
+                <text x="30"  y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2022</text>
+                <text x="115" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2023</text>
+                <text x="215" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2024</text>
+                <text x="372" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2025</text>
+                <text x="462" y="646" fill="rgba(13,207,232,0.75)"  font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2026</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /apres-sub-turbo -->
+<div class="turbo-scroll-hint" id="turbo-scroll-hint">
+  <div class="turbo-scroll-hint-chevron"></div>
+  <div class="turbo-scroll-hint-chevron"></div>
+  <div class="turbo-scroll-hint-chevron"></div>
+</div>
+
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
@@ -5624,8 +6178,8 @@ a.xpto-pricing-btn { text-decoration: none; }
     <section class="xpto-slide pp-slide-result">
       <div class="xpto-slide-inner">
         <div class="pp-result-wrap">
+          <h2 class="pp-result-heading">O resultado vem de:</h2>
           <div class="pp-result-card">
-            <p class="pp-result-heading">O resultado vem de:</p>
             <ol class="pp-result-list">
               <li><span class="pp-result-num">1</span>Definição de ICP</li>
               <li><span class="pp-result-num">2</span>Proposta de valor bem definida</li>
@@ -5742,24 +6296,155 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
           <div class="pp-criativos-right">
             <div class="pp-criativos-grid">
+              <!-- vídeo 1 -->
               <div class="pp-criativos-ad">
                 <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
-                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+                <div class="pp-criativos-ad-body">
+                  <div class="pp-criativos-ad-img">
+                    <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
+                  </div>
+                  <div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div>
+                </div>
               </div>
+              <!-- imagem 1 -->
               <div class="pp-criativos-ad">
                 <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
-                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+                <div class="pp-criativos-ad-body">
+                  <div class="pp-criativos-ad-img">
+                    <img src="Criativos/C%C3%B3pia%20de%20WhatsApp%20Image%202025-06-05%20at%2014.42.36%20(1).jpeg" alt="criativo">
+                  </div>
+                  <div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div>
+                </div>
               </div>
+              <!-- imagem 2 -->
               <div class="pp-criativos-ad">
                 <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
-                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+                <div class="pp-criativos-ad-body">
+                  <div class="pp-criativos-ad-img">
+                    <img src="Criativos/WhatsApp%20Image%202025-09-23%20at%2009.56.57%20(1).jpeg" alt="criativo">
+                  </div>
+                  <div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div>
+                </div>
               </div>
+              <!-- vídeo 2 -->
               <div class="pp-criativos-ad">
                 <div class="pp-criativos-ad-bar"><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span><span class="pp-criativos-ad-dot"></span></div>
-                <div class="pp-criativos-ad-body"><div class="pp-criativos-ad-img"></div><div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div></div>
+                <div class="pp-criativos-ad-body">
+                  <div class="pp-criativos-ad-img">
+                    <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+                  </div>
+                  <div class="pp-criativos-ad-line"></div><div class="pp-criativos-ad-line short"></div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 — ROTINAS -->
+    <section class="xpto-slide pp-slide-rotinas">
+      <div class="xpto-slide-inner">
+        <div class="pp-rotinas-header">
+          <h2 class="pp-rotinas-title">Rotinas</h2>
+        </div>
+        <div class="pp-rotinas-grid">
+
+          <!-- NOSSAS ROTINAS -->
+          <div class="pp-rotinas-card pp-rotinas-card--nos">
+            <p class="pp-rotinas-card-title">Nossas rotinas</p>
+            <div class="pp-rotinas-list">
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Contato no WhatsApp</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--daily">Diário</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Relatórios</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--weekly">Semanal</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Reuniões</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--biweekly">Quinzenal</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Healthscore e NPS</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--monthly">Mensal</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Revisão do plano de ação</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--quarterly">Trimestral</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ROTINAS INTERNAS -->
+          <div class="pp-rotinas-card pp-rotinas-card--internal">
+            <p class="pp-rotinas-card-title">Rotinas internas</p>
+            <div class="pp-rotinas-list">
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Acompanhamento de métricas</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--daily">Diário</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Revisão e otimização de campanhas</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--weekly">Semanal</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Estudo de tendências</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--monthly">Mensal</span>
+              </div>
+              <div class="pp-rotinas-item">
+                <span class="pp-rotinas-item-dot"></span>
+                <span class="pp-rotinas-item-text">Planejamento</span>
+                <span class="pp-rotinas-badge pp-rotinas-badge--monthly">Mensal</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 08 — ESCOPO -->
+    <section class="xpto-slide pp-slide-escopo">
+      <div class="xpto-slide-inner">
+        <div class="pp-escopo-wrap">
+          <h2 class="pp-escopo-title">Escopo</h2>
+
+          <div class="pp-escopo-main">
+            <div class="pp-escopo-item"><span class="pp-escopo-check">✓</span><span class="pp-escopo-item-text">Planejamento, gestão e estratégia dos anúncios online</span></div>
+            <div class="pp-escopo-item"><span class="pp-escopo-check">✓</span><span class="pp-escopo-item-text">Direção e produção dos criativos de venda</span></div>
+            <div class="pp-escopo-item"><span class="pp-escopo-check">✓</span><span class="pp-escopo-item-text">Trackeamento dos resultados</span></div>
+            <div class="pp-escopo-item"><span class="pp-escopo-check">✓</span><span class="pp-escopo-item-text">Plataforma Meta ADs (Atenção)</span></div>
+            <div class="pp-escopo-item"><span class="pp-escopo-check">✓</span><span class="pp-escopo-item-text">Acompanhamento e otimização semanal</span></div>
+            <div class="pp-escopo-item"><span class="pp-escopo-check">✓</span><span class="pp-escopo-item-text">Plataforma Google ADs (Intenção)</span></div>
+          </div>
+
+          <div class="pp-escopo-bottom">
+            <div class="pp-escopo-extra">
+              <p class="pp-escopo-section-label">Entregável Extra</p>
+              <div class="pp-escopo-sub-list">
+                <div class="pp-escopo-sub-item"><span class="pp-escopo-check--extra">✓</span><span class="pp-escopo-sub-text">Painel de controle (Métricas)</span></div>
+                <div class="pp-escopo-sub-item"><span class="pp-escopo-check--extra">✓</span><span class="pp-escopo-sub-text">Estruturação estratégica (Diagnóstico, estudo de mercado e concorrentes)</span></div>
+              </div>
+            </div>
+            <div class="pp-escopo-nolist">
+              <p class="pp-escopo-section-label">O que não fazemos</p>
+              <div class="pp-escopo-sub-list">
+                <div class="pp-escopo-sub-item"><span class="pp-escopo-check--out">✕</span><span class="pp-escopo-sub-text">Captação de conteúdo</span></div>
+                <div class="pp-escopo-sub-item"><span class="pp-escopo-check--out">✕</span><span class="pp-escopo-sub-text">Anúncios em Marketplaces (Extra)</span></div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -5793,7 +6478,7 @@ const STAGES = [
       {
         id: 'definicoes',
         icon: '🧠',
-        name: 'Definições estratégicas',
+        name: 'Protocolo Do Zero ao Lucro',
         objective: 'Estruturar a base estratégica do negócio',
         what: 'O conjunto de decisões que formam a base de tudo: validar se o mercado quer o produto, construir a oferta certa e definir para quem e como você vai vender.',
         why: 'Sem isso resolvido, você está apenas gastando dinheiro mais rápido. Tráfego, página e conteúdo sem base estratégica não vendem — só custam.',
@@ -6290,6 +6975,9 @@ const STAGES_LEAD = STAGES.map(stage => ({
       ...(node.id === 'criativos' ? {
         name: 'Criativos UGC (para reduzir CPMQL)',
         objective: 'Reduzir o CPMQL e maximizar a qualidade dos leads gerados'
+      } : {}),
+      ...(node.id === 'definicoes' ? {
+        name: 'Protocolo Lead ao Lucro'
       } : {})
     }))
     .filter(node => !LEAD_REMOVED_IDS.has(node.id))
@@ -6924,6 +7612,74 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight' && activeState().focusedStage) navigateFocus(+1);
 });
 
+// ── Navegação por teclado nos slides Turbo ────────
+;(() => {
+  function isTurboActive() {
+    return document.getElementById('view-apresentacao')?.classList.contains('is-active')
+        && document.getElementById('apres-sub-turbo')?.classList.contains('is-active');
+  }
+
+  function turboNavigate(dir) {
+    if (!isTurboActive()) return;
+    const container = document.querySelector('.turbo-slides');
+    const slides    = [...document.querySelectorAll('.turbo-slide')];
+    if (!container || !slides.length) return;
+
+    // Determina slide atual pelo scroll position
+    const scrollTop = container.scrollTop;
+    const slideH    = slides[0].offsetHeight;
+    const current   = Math.round(scrollTop / slideH);
+    const next      = Math.max(0, Math.min(slides.length - 1, current + dir));
+
+    container.scrollTo({ top: next * slideH, behavior: 'smooth' });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (!isTurboActive()) return;
+    if (e.key === 'ArrowDown'  || e.key === 'ArrowRight') { e.preventDefault(); turboNavigate(+1); }
+    if (e.key === 'ArrowUp'    || e.key === 'ArrowLeft')  { e.preventDefault(); turboNavigate(-1); }
+  });
+
+  // Scroll hint visibility + position
+  const turboHint = document.getElementById('turbo-scroll-hint');
+  const turboContainer = document.querySelector('.turbo-slides');
+
+  function positionTurboHint() {
+    if (!turboHint) return;
+    const subview = document.getElementById('apres-sub-turbo');
+    if (!subview) return;
+    const r = subview.getBoundingClientRect();
+    turboHint.style.left = Math.round(r.left + r.width / 2) + 'px';
+  }
+
+  function updateTurboHint() {
+    if (!turboContainer || !turboHint) return;
+    const slides = turboContainer.querySelectorAll('.turbo-slide');
+    const current = Math.round(turboContainer.scrollTop / (slides[0]?.offsetHeight || 1));
+    turboHint.classList.toggle('is-faded', current >= slides.length - 1);
+  }
+
+  if (turboContainer) {
+    turboContainer.addEventListener('scroll', updateTurboHint, { passive: true });
+  }
+
+  window.addEventListener('resize', positionTurboHint);
+
+  document.querySelectorAll('.apres-subtab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (!turboHint) return;
+      if (tab.dataset.sub === 'turbo') {
+        turboHint.classList.add('is-visible');
+        turboHint.classList.remove('is-faded');
+        turboContainer?.scrollTo({ top: 0 });
+        requestAnimationFrame(positionTurboHint);
+      } else {
+        turboHint.classList.remove('is-visible');
+      }
+    });
+  });
+})();
+
 // Checklist delegation
 document.getElementById('panel-body').addEventListener('click', e => {
   const st = activeState();
@@ -6997,7 +7753,30 @@ document.querySelectorAll('.nav-item').forEach(item => {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
     item.classList.add('is-active');
     document.getElementById(`view-${view}`).classList.add('is-active');
+    // mostrar/ocultar subnav da apresentação
+    const subnav = document.getElementById('apres-subnav');
+    if (subnav) subnav.classList.toggle('is-visible', view === 'apresentacao');
   });
+});
+
+// ── Sub-tabs da Apresentação ──────────────────────
+document.querySelectorAll('.apres-subtab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const sub = tab.dataset.sub;
+    if (!sub) return;
+    document.querySelectorAll('.apres-subtab').forEach(t => t.classList.remove('is-active'));
+    document.querySelectorAll('.apres-subview').forEach(v => v.classList.remove('is-active'));
+    tab.classList.add('is-active');
+    document.getElementById(`apres-sub-${sub}`).classList.add('is-active');
+  });
+});
+
+// ── Minimizar subnav ──────────────────────────────
+document.getElementById('apres-subnav-toggle')?.addEventListener('click', () => {
+  const nav  = document.getElementById('apres-subnav');
+  const view = document.getElementById('view-apresentacao');
+  const mini = nav.classList.toggle('is-mini');
+  view.classList.toggle('subnav-mini', mini);
 });
 
 // ─────────────────────────────────────────────────
