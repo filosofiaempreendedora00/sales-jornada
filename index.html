@@ -2890,9 +2890,10 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   max-height: 680px;
   min-height: 280px;
   display: flex;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 0;
   position: relative; z-index: 1;
+  overflow: hidden;
 }
 .turbo-chart-yaxis { display: none; }
 .turbo-chart-ylabel { display: none; }
@@ -2901,6 +2902,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: flex;
   align-items: flex-end;
   min-width: 0;
+  height: 100%;
+  overflow: hidden;
 }
 .turbo-chart-svg {
   width: 100%;
