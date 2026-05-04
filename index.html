@@ -6582,6 +6582,7 @@ const STAGES = [
         id: 'definicoes',
         icon: '🧠',
         name: 'Protocolo Do Zero ao Lucro',
+        displayName: 'Definições estratégicas',
         objective: 'Estruturar a base estratégica do negócio',
         what: 'O conjunto de decisões que formam a base de tudo: validar se o mercado quer o produto, construir a oferta certa e definir para quem e como você vai vender.',
         why: 'Sem isso resolvido, você está apenas gastando dinheiro mais rápido. Tráfego, página e conteúdo sem base estratégica não vendem — só custam.',
@@ -7250,7 +7251,7 @@ function renderFlow() {
       el.innerHTML = `
         <div class="node-row">
           <span class="node-emoji">${node.icon}</span>
-          <span class="node-label">${node.name}</span>
+          <span class="node-label">${node.displayName || node.name}</span>
           <span class="node-indicator"></span>
         </div>
         ${node.objective ? `<p class="node-obj">${node.objective}</p>` : ''}
@@ -7556,7 +7557,7 @@ function openPanel(nodeId) {
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
-  document.getElementById('panel-title').textContent  = `${node.icon} ${node.name}`;
+  document.getElementById('panel-title').textContent  = `${node.icon} ${node.displayName || node.name}`;
 
   document.getElementById('panel-body').innerHTML = `
     <div class="info-block" style="border-left-color:${color}">
