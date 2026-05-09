@@ -9692,8 +9692,9 @@ function turboFindSlideIdx(container, slides) {
       (mR.width  * 0.60) / fR.width,
       (mR.height * 0.60) / fR.height
     );
-    tx = window.innerWidth  / 2 - (fR.left + fR.width  / 2);
-    ty = window.innerHeight / 2 - (fR.top  + fR.height / 2);
+    // Target: fácil's center aligns with the slide's own center (sidebar-agnostic)
+    tx = (mR.left + mR.width  / 2) - (fR.left + fR.width  / 2);
+    ty = (mR.top  + mR.height / 2) - (fR.top  + fR.height / 2);
     missaoSlide.style.transform = savedT;
   }
 
@@ -9730,12 +9731,19 @@ function turboFindSlideIdx(container, slides) {
       : '1';
   }
 
-  window.addEventListener('resize', () => {
+  function resetCalibration() {
     sectionTop = null; targetScale = null;
     missaoSlide.style.transform = '';
     missaoSlide.style.transformOrigin = '';
     missaoSlide.style.opacity   = '';
-  });
+  }
+
+  window.addEventListener('resize', resetCalibration);
+
+  // Re-calibrate when sidebar toggling changes slide dimensions
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(resetCalibration).observe(missaoSlide);
+  }
 
   container.addEventListener('scroll', update, { passive: true });
 })();
