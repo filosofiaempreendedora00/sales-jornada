@@ -9454,11 +9454,11 @@ document.addEventListener('keydown', e => {
   }
 
   container.addEventListener('scroll', () => {
-    const slides  = container.querySelectorAll('.turbo-slide');
+    const slides  = [...container.querySelectorAll('.turbo-slide')];
     const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
     if (current === lastSlide) return;
     lastSlide = current;
-    if (current === 2) {
+    if (slides[current]?.classList.contains('turbo-slide--growth')) {
       resetChart();
       setTimeout(animateChart, 350);
     }
