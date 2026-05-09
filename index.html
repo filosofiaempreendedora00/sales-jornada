@@ -3188,7 +3188,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 /* ── Zoom "fácil" — sticky section ── */
 .turbo-missao-zoom-section {
-  height: 300vh;
+  height: 200vh;
   position: relative;
 }
 .turbo-missao-zoom-section .turbo-slide--missao-text {
@@ -3196,18 +3196,16 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   top: 0;
   z-index: 2;
 }
-/* Durante o zoom: troca filter (3 passes CPU) por text-shadow (shader GPU barato)
-   — mantém o brilho visualmente equivalente, sem pixelação e sem travar */
+/* Durante o zoom: troca o filter (3 drop-shadows = offscreen raster por
+   shadow) por UM text-shadow simples — mantém brilho visualmente equivalente,
+   reduz custo de render por frame. JS faz re-raster por frame (texto vetorial,
+   nítido em qualquer escala). */
 #turbo-missao-text-slide.is-zooming .turbo-missao-text-big {
   filter: none;
-  text-shadow:
-    0 0 24px rgba(155,109,255,0.55),
-    0 0 64px rgba(77,141,255,0.30),
-    0 6px 28px rgba(0,0,0,0.45);
+  text-shadow: 0 0 24px rgba(155,109,255,0.45);
 }
 #turbo-missao-text-slide.is-zooming .turbo-missao-text-highlight {
   filter: none;
-  text-shadow: 0 0 12px rgba(13,207,232,0.22);
 }
 .turbo-missao-zoom-stop {
   height: 0;
@@ -3229,11 +3227,6 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .turbo-missao-logo-overlay .turbo-missao-bg {
   position: absolute;
   inset: 0;
-}
-.turbo-missao-crossfade-stop {
-  height: 100vh;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
 }
 .turbo-missao-bg {
   position: absolute; inset: 0;
@@ -7143,13 +7136,11 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <!-- Snap marker rawP=1: fácil zoomed (zero height, só ponto de snap) -->
         <div class="turbo-missao-zoom-stop"></div>
-        <!-- Crossfade overlay: logo entra enquanto slide some -->
+        <!-- Crossfade overlay: logo entra enquanto fácil some — leva direto ao orbit-slide -->
         <div class="turbo-missao-logo-overlay" id="turbo-missao-logo-overlay">
           <div class="turbo-missao-bg"></div>
           <img src="Logo-Turbo-branca (4).png" class="turbo-orbit-intro-mark" alt="">
         </div>
-        <!-- Snap stop rawP=2: crossfade completo, orbit slide a seguir -->
-        <div class="turbo-missao-crossfade-stop"></div>
       </div>
 
       <!-- SLIDE 04 — MISSÃO + ÓRBITA -->
@@ -9703,11 +9694,25 @@ function turboFindSlideIdx(container, slides) {
   const logoOverlay = document.getElementById('turbo-missao-logo-overlay');
   if (!container || !section || !missaoSlide || !facil || !logoOverlay) return;
 
-  let sectionTop  = null;
-  let targetScale = null;
+  let sectionTop   = null;
+  let targetScale  = null;
   let tx = 0, ty = 0;
+  let currentState = -1;
 
-  // sectionTop: scroll-invariant, safe to compute anytime.
+  // Animação por frame com timer fixo (não scroll-driven) — re-rasteriza
+  // o texto a cada frame na sua escala atual, mantendo nitidez vetorial.
+  const ZOOM_DURATION = 1200;   // ms — transform (zoom in/out)
+  const FADE_DURATION = 1400;   // ms — opacity (crossfade fácil ↔ logo)
+
+  let animRafId = null;
+  let animStart = 0;
+  let animDuration = 0;
+  let fromScale = 1, toScale = 1;
+  let fromTx = 0, toTx = 0;
+  let fromTy = 0, toTy = 0;
+  let fromOp = 1, toOp = 1;
+  let fromLogoOp = 0, toLogoOp = 0;
+
   function calibrateSectionTop() {
     const cR = container.getBoundingClientRect();
     const mR = missaoSlide.getBoundingClientRect();
@@ -9716,8 +9721,6 @@ function turboFindSlideIdx(container, slides) {
     sectionTop = sR.top - cR.top + container.scrollTop;
   }
 
-  // targetScale/tx/ty/transformOrigin: MUST be computed while slide is sticky
-  // (rawP > 0), otherwise fácil's BCR reflects wrong non-sticky position.
   function calibrateZoom() {
     const savedT = missaoSlide.style.transform;
     missaoSlide.style.transform = '';
@@ -9734,13 +9737,80 @@ function turboFindSlideIdx(container, slides) {
       (mR.width  * 0.60) / fR.width,
       (mR.height * 0.60) / fR.height
     );
-    // Target: fácil's center aligns with the slide's own center (sidebar-agnostic)
     tx = (mR.left + mR.width  / 2) - (fR.left + fR.width  / 2);
     ty = (mR.top  + mR.height / 2) - (fR.top  + fR.height / 2);
     missaoSlide.style.transform = savedT;
   }
 
   function easeInOutSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  // Lê o transform inline atual (ou identidade se nao seteado) — pra
+  // permitir interromper uma animação em curso e continuar suavemente.
+  function readCurrentTransform() {
+    const m = /translate3d\(([-\d.]+)px,\s*([-\d.]+)px,\s*[-\d.]+px\)\s*scale\(([\d.]+)\)/.exec(missaoSlide.style.transform || '');
+    if (!m) return { tx: 0, ty: 0, scale: 1 };
+    return { tx: +m[1], ty: +m[2], scale: +m[3] };
+  }
+
+  function applyTransform(scale, tx_, ty_, op, logoOp) {
+    missaoSlide.style.transform = `translate3d(${tx_.toFixed(2)}px, ${ty_.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+    missaoSlide.style.opacity   = op.toFixed(4);
+    logoOverlay.style.opacity   = logoOp.toFixed(4);
+  }
+
+  // Define os alvos por estado. State 0 = inicial, 1 = zoomado, 2 = logo.
+  function targetsForState(state) {
+    if (state <= 0) return { scale: 1, tx: 0, ty: 0, op: 1, logoOp: 0 };
+    if (state === 1) return { scale: targetScale, tx, ty, op: 1, logoOp: 0 };
+    return                   { scale: targetScale, tx, ty, op: 0, logoOp: 1 };
+  }
+
+  function tickAnim(now) {
+    const t = Math.min((now - animStart) / animDuration, 1);
+    const e = easeInOutSine(t);
+    const sc = lerp(fromScale, toScale, e);
+    const tx_ = lerp(fromTx, toTx, e);
+    const ty_ = lerp(fromTy, toTy, e);
+    const op = lerp(fromOp, toOp, e);
+    const lop = lerp(fromLogoOp, toLogoOp, e);
+    applyTransform(sc, tx_, ty_, op, lop);
+    if (t < 1) animRafId = requestAnimationFrame(tickAnim);
+    else       animRafId = null;
+  }
+
+  function startTransition(toState, instant) {
+    if (animRafId) { cancelAnimationFrame(animRafId); animRafId = null; }
+
+    const cur = readCurrentTransform();
+    fromScale = cur.scale;
+    fromTx    = cur.tx;
+    fromTy    = cur.ty;
+    fromOp    = parseFloat(missaoSlide.style.opacity || '1');
+    fromLogoOp = parseFloat(logoOverlay.style.opacity || '0');
+
+    const tgt = targetsForState(toState);
+    toScale = tgt.scale; toTx = tgt.tx; toTy = tgt.ty;
+    toOp = tgt.op; toLogoOp = tgt.logoOp;
+
+    if (instant) {
+      applyTransform(toScale, toTx, toTy, toOp, toLogoOp);
+      return;
+    }
+
+    // Duration heurística: zoom (mudança de scale) é mais lento; só fade é rápido.
+    animDuration = (Math.abs(toScale - fromScale) > 0.05) ? ZOOM_DURATION : FADE_DURATION;
+    animStart = performance.now();
+    animRafId = requestAnimationFrame(tickAnim);
+  }
+
+  function applyState(state, instant) {
+    if (state === currentState) return;
+    if (state > 0) missaoSlide.classList.add('is-zooming');
+    else           missaoSlide.classList.remove('is-zooming');
+    currentState = state;
+    startTransition(state, instant);
+  }
 
   function update() {
     if (sectionTop === null) {
@@ -9748,45 +9818,24 @@ function turboFindSlideIdx(container, slides) {
       if (sectionTop === null) return;
     }
 
-    const rawP = (container.scrollTop - sectionTop) / window.innerHeight;
+    const sectionRel = container.scrollTop - sectionTop;
+    const vh = window.innerHeight;
+    let state;
+    if      (sectionRel < vh * 0.5) state = 0;
+    else if (sectionRel < vh * 1.5) state = 1;
+    else                            state = 2;
 
-    if (rawP <= 0) {
-      missaoSlide.style.transform = '';
-      missaoSlide.style.opacity   = '1';
-      missaoSlide.classList.remove('is-zooming');
-      logoOverlay.style.opacity   = '0';
-      targetScale = null;
-      return;
-    }
-
-    // Slide is now sticky — safe to calibrate zoom params
-    if (targetScale === null) {
+    if (state > 0 && targetScale === null) {
       calibrateZoom();
       if (targetScale === null) return;
     }
 
-    missaoSlide.classList.add('is-zooming');
-
-    if (rawP <= 1) {
-      // Phase 1: zoom in "fácil"
-      const ease  = easeInOutSine(rawP);
-      const scale = 1 + ease * (targetScale - 1);
-      missaoSlide.style.transform = `translate3d(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
-      missaoSlide.style.opacity   = '1';
-      logoOverlay.style.opacity   = '0';
-    } else {
-      // Phase 2: crossfade "fácil" → logo da Turbo (rawP 1→2)
-      const p2   = Math.min(rawP - 1, 1);
-      const ease2 = easeInOutSine(p2);
-      // Zoom stays at maximum while content fades
-      missaoSlide.style.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) scale(${targetScale.toFixed(4)})`;
-      missaoSlide.style.opacity   = (1 - ease2).toFixed(4);
-      logoOverlay.style.opacity   = ease2.toFixed(4);
-    }
+    applyState(state, false);
   }
 
   function resetCalibration() {
-    sectionTop = null; targetScale = null;
+    sectionTop = null; targetScale = null; currentState = -1;
+    if (animRafId) { cancelAnimationFrame(animRafId); animRafId = null; }
     missaoSlide.classList.remove('is-zooming');
     missaoSlide.style.transform = '';
     missaoSlide.style.transformOrigin = '';
@@ -9802,9 +9851,124 @@ function turboFindSlideIdx(container, slides) {
   }
 
   let rafId = null;
-  container.addEventListener('scroll', () => {
+  let lastScrollTop = container.scrollTop;
+  let lockedToSectionTop = false;
+  let crossfadeLockActive = false;
+  const CROSSFADE_LOCK_MS = 1500; // 1.4s do fade + 100ms buffer
+
+  function scheduleUpdate() {
     if (rafId !== null) return;
     rafId = requestAnimationFrame(() => { update(); rafId = null; });
+  }
+
+  function triggerCrossfade() {
+    if (crossfadeLockActive) return;
+    if (sectionTop === null) calibrateSectionTop();
+    if (sectionTop === null) return;
+    const sectionEnd     = sectionTop + section.offsetHeight;
+    const zoomStopScroll = sectionTop + window.innerHeight;
+    crossfadeLockActive = true;
+    container.scrollTo({ top: zoomStopScroll, behavior: 'instant' });
+    container.style.overflowY = 'hidden';
+    lastScrollTop = zoomStopScroll;
+    applyState(2, false); // dispara fade animado (1.4s)
+    setTimeout(() => {
+      container.style.overflowY = '';
+      crossfadeLockActive = false;
+      container.scrollTo({ top: sectionEnd, behavior: 'instant' });
+      lastScrollTop = sectionEnd;
+    }, CROSSFADE_LOCK_MS);
+  }
+
+  // Wheel listener PREEMPTIVO: intercepta antes do browser scrollar.
+  // Sem ele, o scroll listener seria reativo (browser já moveu scrollTop)
+  // e o usuário veria um leve "rising" do orbit-slide antes do yank-back.
+  // Gatilho exige NOVA gesture (pausa desde o último wheel) — assim o swipe
+  // que trouxe o usuário ao zoom-stop não dispara o crossfade no embalo.
+  let lastWheelTime = -Infinity;
+  const NEW_GESTURE_GAP_MS = 120;
+  container.addEventListener('wheel', (e) => {
+    const now = performance.now();
+    const isNewGesture = (now - lastWheelTime) > NEW_GESTURE_GAP_MS;
+    lastWheelTime = now;
+
+    if (crossfadeLockActive) { e.preventDefault(); return; }
+    if (!isNewGesture) return; // mesmo gesture do zoom — deixa rolar pro browser
+    if (currentState !== 1) return;
+    if (sectionTop === null) return;
+    if (e.deltaY <= 0) return;
+    const zoomStopScroll = sectionTop + window.innerHeight;
+    if (container.scrollTop < zoomStopScroll - 5) return;
+    e.preventDefault();
+    triggerCrossfade();
+  }, { passive: false });
+
+  // Keyboard fallback: PageDown / ArrowDown / Space disparam o crossfade
+  // apenas quando o usuário JÁ está parado no zoom-stop (state=1).
+  document.addEventListener('keydown', (e) => {
+    if (crossfadeLockActive) return;
+    if (currentState !== 1) return;
+    if (sectionTop === null) return;
+    const zoomStopScroll = sectionTop + window.innerHeight;
+    if (container.scrollTop < zoomStopScroll - 5) return;
+    const isForwardKey = e.key === 'PageDown' || e.key === 'ArrowDown' || e.key === ' ';
+    if (!isForwardKey) return;
+    e.preventDefault();
+    triggerCrossfade();
+  });
+
+  container.addEventListener('scroll', () => {
+    // Lock ativo: scroll congelado via overflow:hidden.
+    if (crossfadeLockActive) return;
+
+    const cur = container.scrollTop;
+    if (sectionTop === null) calibrateSectionTop();
+
+    if (sectionTop !== null) {
+      const sectionEnd = sectionTop + section.offsetHeight;
+
+      // Gatilho: usuário ENTROU na zoom-section vindo de baixo (orbit → missão).
+      // Tolerância de 2px ignora overshoot do snap descendente.
+      if (!lockedToSectionTop) {
+        const enteringFromBelow =
+          lastScrollTop >= sectionEnd - 2 &&
+          cur < sectionEnd - 2 &&
+          cur > sectionTop;
+        if (enteringFromBelow) {
+          lockedToSectionTop = true;
+          container.scrollTo({ top: sectionTop, behavior: 'instant' });
+          lastScrollTop = sectionTop;
+          if (currentState !== 0) applyState(0, true);
+          return;
+        }
+
+        // Fallback (teclado / scroll programático): se o usuário avançar do
+        // zoom-stop por outro meio que não wheel, ainda dispara o crossfade.
+        const zoomStopScroll = sectionTop + window.innerHeight;
+        const advancingFromZoomStop =
+          currentState === 1 &&
+          cur > zoomStopScroll &&
+          lastScrollTop <= zoomStopScroll + 2;
+        if (advancingFromZoomStop) {
+          triggerCrossfade();
+          return;
+        }
+      } else if (cur !== sectionTop) {
+        container.scrollTo({ top: sectionTop, behavior: 'instant' });
+        lastScrollTop = sectionTop;
+        scheduleUpdate();
+        return;
+      }
+    }
+
+    lastScrollTop = cur;
+    scheduleUpdate();
+  }, { passive: true });
+
+  // Solta o lock quando a gesture termina — usuário pode scrollar de novo
+  // (a partir do estado inicial do missão) pra ir pro cover slide.
+  container.addEventListener('scrollend', () => {
+    lockedToSectionTop = false;
   }, { passive: true });
 })();
 
