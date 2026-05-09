@@ -2983,12 +2983,42 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   align-self: center;
   background: #0a0c16;
 }
-/* founders 6000×4000 = 3:2 — grows in 17:15 ratio vs team, capped by available height
-   buffer 350px = top pad (72) + header (~128) + drop shadow (~64) + chevron clearance (~86) */
-.turbo-dna-photos > .turbo-dna-photo-wrap:first-child {
+/* founders column wraps the photo + tag list below it, and carries the flex sizing
+   (flex 17:15 vs team, capped by available vh so shadow doesn't crowd the chevron) */
+.turbo-dna-founders-col {
   flex: 17 1 0;
+  min-width: 0;
   max-width: min(900px, calc((100vh - 350px) * 0.8 * 17 / 15));
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.turbo-dna-founders-col .turbo-dna-photo-wrap {
+  width: 100%;
   aspect-ratio: 3 / 2;
+}
+/* DNA tag list below founders photo */
+.turbo-dna-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+.turbo-dna-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 99px;
+  background: rgba(155,109,255,0.08);
+  border: 1px solid rgba(155,109,255,0.22);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #d6c5ff;
+  white-space: nowrap;
 }
 /* team 1080×1350 = 4:5 — taller, more prominent, sized so its shadow doesn't crowd the scroll chevron */
 .turbo-dna-photo-wrap--team {
@@ -3015,10 +3045,13 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-transform: uppercase;
   color: rgba(255,255,255,0.6);
 }
-/* hélice DNA animada entre as fotos — gap visível, responsivo */
+/* hélice DNA animada entre as fotos — gap visível, responsivo
+   margin-bottom = founders col gap (18) + tags wrap height (~76) so the helix
+   center aligns with the founders photo center, not the team photo center */
 .turbo-dna-helix {
   position: relative;
   flex: 0 0 clamp(40px, 4vw, 72px);
+  margin-bottom: 98px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3026,29 +3059,29 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .turbo-dna-helix-svg {
   width: 100%;
-  height: 80px;
+  height: 110px;
   overflow: visible;
 }
 .helix-s1 {
   fill: none;
   stroke: rgba(155,109,255,0.92);
-  stroke-width: 2.5;
+  stroke-width: 7;
   stroke-linecap: round;
-  stroke-dasharray: 6 4;
+  stroke-dasharray: 8 18;
   animation: helix-flow 0.9s linear infinite;
 }
 .helix-s2 {
   fill: none;
   stroke: rgba(106,170,255,0.65);
-  stroke-width: 2.5;
+  stroke-width: 7;
   stroke-linecap: round;
-  stroke-dasharray: 6 4;
+  stroke-dasharray: 8 18;
   animation: helix-flow 0.9s linear infinite;
   animation-delay: -0.45s;
 }
 .helix-rung {
   stroke: rgba(155,109,255,0.22);
-  stroke-width: 1.5;
+  stroke-width: 6;
   stroke-linecap: round;
 }
 .helix-dot {
@@ -3057,7 +3090,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 @keyframes helix-flow {
   from { stroke-dashoffset: 0; }
-  to   { stroke-dashoffset: -10; }
+  to   { stroke-dashoffset: -26; }
 }
 
 /* ── TURBO SLIDE: MISSÃO ─────────────────────────── */
@@ -6635,33 +6668,35 @@ a.xpto-pricing-btn { text-decoration: none; }
             <h2 class="turbo-dna-title">DNA de negócios</h2>
           </div>
           <div class="turbo-dna-photos">
-            <div class="turbo-dna-photo-wrap">
-              <img src="fotos%20turbo/founders.JPG" alt="Founders Turbo Partners" class="turbo-dna-photo">
-              <div class="turbo-dna-caption">Os fundadores</div>
+            <div class="turbo-dna-founders-col">
+              <div class="turbo-dna-photo-wrap">
+                <img src="fotos%20turbo/founders.JPG" alt="Founders Turbo Partners" class="turbo-dna-photo">
+                <div class="turbo-dna-caption">Os fundadores</div>
+              </div>
+              <div class="turbo-dna-tags">
+                <span class="turbo-dna-tag">🧬 CAC</span>
+                <span class="turbo-dna-tag">🧬 LTV</span>
+                <span class="turbo-dna-tag">🧬 Ticket Médio</span>
+                <span class="turbo-dna-tag">🧬 ROAS</span>
+                <span class="turbo-dna-tag">🧬 Taxa de Recompra</span>
+                <span class="turbo-dna-tag">🧬 Margem líquida</span>
+              </div>
             </div>
             <div class="turbo-dna-helix">
-              <svg class="turbo-dna-helix-svg" viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
-                <!-- Rungs (vertical, at each half-period center) -->
-                <line class="helix-rung" x1="12"  y1="15" x2="12"  y2="65"/>
-                <line class="helix-rung" x1="36"  y1="15" x2="36"  y2="65"/>
-                <line class="helix-rung" x1="60"  y1="15" x2="60"  y2="65"/>
-                <line class="helix-rung" x1="84"  y1="15" x2="84"  y2="65"/>
-                <line class="helix-rung" x1="108" y1="15" x2="108" y2="65"/>
+              <svg class="turbo-dna-helix-svg" viewBox="0 0 120 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                <!-- Rungs: 1 in each half-elipse + 3 in the full elipse (middle one full-height, side ones shortened to stay inside strands) -->
+                <line class="helix-rung" x1="15"  y1="37" x2="15"  y2="123"/>
+                <line class="helix-rung" x1="45"  y1="37" x2="45"  y2="123"/>
+                <line class="helix-rung" x1="60"  y1="25" x2="60"  y2="135"/>
+                <line class="helix-rung" x1="75"  y1="37" x2="75"  y2="123"/>
+                <line class="helix-rung" x1="105" y1="37" x2="105" y2="123"/>
                 <!-- Strand 1 (purple, starts top) -->
-                <path class="helix-s1" d="M 0 15 C 6 15, 6 65, 12 65 C 18 65, 18 15, 24 15 C 30 15, 30 65, 36 65 C 42 65, 42 15, 48 15 C 54 15, 54 65, 60 65 C 66 65, 66 15, 72 15 C 78 15, 78 65, 84 65 C 90 65, 90 15, 96 15 C 102 15, 102 65, 108 65 C 114 65, 114 15, 120 15"/>
+                <path class="helix-s1" d="M 0 20 C 30 20, 30 140, 60 140 C 90 140, 90 20, 120 20"/>
                 <!-- Strand 2 (blue, starts bottom) -->
-                <path class="helix-s2" d="M 0 65 C 6 65, 6 15, 12 15 C 18 15, 18 65, 24 65 C 30 65, 30 15, 36 15 C 42 15, 42 65, 48 65 C 54 65, 54 15, 60 15 C 66 15, 66 65, 72 65 C 78 65, 78 15, 84 15 C 90 15, 90 65, 96 65 C 102 65, 102 15, 108 15 C 114 15, 114 65, 120 65"/>
+                <path class="helix-s2" d="M 0 140 C 30 140, 30 20, 60 20 C 90 20, 90 140, 120 140"/>
                 <!-- Crossing dots -->
-                <circle class="helix-dot" cx="6"   cy="40"/>
-                <circle class="helix-dot" cx="18"  cy="40"/>
-                <circle class="helix-dot" cx="30"  cy="40"/>
-                <circle class="helix-dot" cx="42"  cy="40"/>
-                <circle class="helix-dot" cx="54"  cy="40"/>
-                <circle class="helix-dot" cx="66"  cy="40"/>
-                <circle class="helix-dot" cx="78"  cy="40"/>
-                <circle class="helix-dot" cx="90"  cy="40"/>
-                <circle class="helix-dot" cx="102" cy="40"/>
-                <circle class="helix-dot" cx="114" cy="40"/>
+                <circle class="helix-dot" cx="30" cy="80"/>
+                <circle class="helix-dot" cx="90" cy="80"/>
               </svg>
             </div>
             <div class="turbo-dna-photo-wrap turbo-dna-photo-wrap--team">
