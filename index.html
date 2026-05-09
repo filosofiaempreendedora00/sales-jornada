@@ -3339,6 +3339,13 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 /* ── TURBO SLIDE: MISSÃO + ÓRBITA ────────────────── */
 @keyframes turbo-orbit-spin    { to { transform: rotate(360deg);  } }
 @keyframes turbo-orbit-counter { to { transform: rotate(-360deg); } }
+@keyframes turbo-orbit-pulse   {
+  0%, 100% { transform: scale(1);    }
+  50%      { transform: scale(1.07); }
+}
+.turbo-orbit-center--pulsing {
+  animation: turbo-orbit-pulse 2.6s ease-in-out infinite;
+}
 
 .turbo-orbit-wrap {
   flex-shrink: 0;
@@ -3353,6 +3360,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   height: min(56vh, 548px);
   flex-shrink: 0;
   overflow: visible;
+  --bubble-scale: 0;
 }
 .turbo-orbit-center {
   position: absolute;
@@ -3392,7 +3400,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-direction: column;
   align-items: center;
   gap: 7px;
-  transform: rotate(calc(-1 * var(--a)));
+  transform: rotate(calc(-1 * var(--a))) scale(var(--bubble-scale, 0));
 }
 .turbo-orbit-bubble-circle {
   width: 64px; height: 64px;
@@ -9514,6 +9522,7 @@ document.addEventListener('keydown', e => {
     const c1 = 1.5, c3 = c1 + 1;
     return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
   }
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
 
   function resetOrbit() {
     // Cancel all pending timers and RAF
@@ -9530,7 +9539,10 @@ document.addEventListener('keydown', e => {
     wrap.style.opacity       = '0';
     center.style.transition  = 'none';
     center.style.opacity     = '0';
+    center.style.transform   = 'scale(0)';
+    center.classList.remove('turbo-orbit-center--pulsing');
     ring.style.setProperty('--r', '0px');
+    ring.style.setProperty('--bubble-scale', '0');
     track.style.animationPlayState = 'paused';
     counters.forEach(el => el.style.animationPlayState = 'paused');
     orbitPlayed = false;
@@ -9548,12 +9560,15 @@ document.addEventListener('keydown', e => {
       intro.style.transform  = 'scale(0.08)';
       intro.style.opacity    = '0';
 
-      // fade in orbit-wrap slightly after shrink starts
+      // fade in orbit-wrap + center logo (nasce pequeno e cresce rápido)
       t(() => {
         wrap.style.transition   = 'opacity 0.35s ease';
         wrap.style.opacity      = '1';
-        center.style.transition = 'opacity 0.35s ease';
+        center.style.transition = 'opacity 0.22s ease, transform 0.38s cubic-bezier(0.34,1.56,0.64,1)';
         center.style.opacity    = '1';
+        center.style.transform  = 'scale(1)';
+        // Inicia pulse suave após o crescimento completar
+        t(() => center.classList.add('turbo-orbit-center--pulsing'), 420);
       }, 350);
 
       // ── Phase 3: bubbles burst from center ──
@@ -9567,11 +9582,17 @@ document.addEventListener('keydown', e => {
         const duration = 950;
 
         function frame(now) {
-          const t2    = Math.min((now - start) / duration, 1);
-          const eased = Math.max(0, easeOutBack(t2));
+          const t2     = Math.min((now - start) / duration, 1);
+          const eased  = Math.max(0, easeOutBack(t2));   // radius: spring
+          const scaleE = easeOutCubic(t2);               // bubble size: smooth
           ring.style.setProperty('--r', (eased * R_MAX) + 'px');
+          ring.style.setProperty('--bubble-scale', scaleE.toFixed(4));
           if (t2 < 1) { orbitRafId = requestAnimationFrame(frame); }
-          else { ring.style.setProperty('--r', R_MAX + 'px'); orbitRafId = null; }
+          else {
+            ring.style.setProperty('--r', R_MAX + 'px');
+            ring.style.setProperty('--bubble-scale', '1');
+            orbitRafId = null;
+          }
         }
         orbitRafId = requestAnimationFrame(frame);
       }, 700);
