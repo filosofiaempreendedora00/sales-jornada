@@ -3195,6 +3195,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   position: sticky;
   top: 0;
   z-index: 2;
+  will-change: transform;
 }
 .turbo-missao-zoom-stop {
   height: 100vh;
@@ -9724,7 +9725,7 @@ function turboFindSlideIdx(container, slides) {
     const p     = Math.min(rawP, 1);
     const ease  = easeInOutSine(p);
     const scale = 1 + ease * (targetScale - 1);
-    missaoSlide.style.transform = `translate(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px) scale(${scale.toFixed(4)})`;
+    missaoSlide.style.transform = `translate3d(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
 
     missaoSlide.style.opacity = rawP > 1
       ? Math.max(0, 1 - (rawP - 1) * 2.5).toFixed(4)
@@ -9745,7 +9746,11 @@ function turboFindSlideIdx(container, slides) {
     new ResizeObserver(resetCalibration).observe(missaoSlide);
   }
 
-  container.addEventListener('scroll', update, { passive: true });
+  let rafId = null;
+  container.addEventListener('scroll', () => {
+    if (rafId !== null) return;
+    rafId = requestAnimationFrame(() => { update(); rafId = null; });
+  }, { passive: true });
 })();
 
 // Checklist delegation
