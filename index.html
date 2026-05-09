@@ -9604,20 +9604,25 @@ document.addEventListener('keydown', e => {
     }, 500);
   }
 
-  // Trigger when orbit slide scrolls into view
+  // Reset ao SAIR do slide de órbita — garante que não há flash ao voltar
   let lastSlide = -1;
   container.addEventListener('scroll', () => {
     const slides  = [...container.querySelectorAll('.turbo-slide')];
     const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
     if (current === lastSlide) return;
-    lastSlide = current;
-    if (slides[current]?.classList.contains('turbo-slide--missao-orbit')) {
+    const prev = lastSlide;
+    lastSlide  = current;
+    // Resetar imediatamente ao sair
+    if (slides[prev]?.classList.contains('turbo-slide--missao-orbit')) {
       resetOrbit();
+    }
+    // Disparar animação ao chegar
+    if (slides[current]?.classList.contains('turbo-slide--missao-orbit')) {
       playOrbit();
     }
   }, { passive: true });
 
-  resetOrbit(); // initial state on load
+  resetOrbit(); // estado inicial colapsado
 })();
 
 // Checklist delegation
