@@ -3372,42 +3372,33 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  gap: 7px;
   transform: rotate(calc(-1 * var(--a)));
 }
 .turbo-orbit-bubble-circle {
-  width: 64px; height: 64px;
+  width: 50px; height: 50px;
   border-radius: 50%;
-  background: radial-gradient(circle at 33% 28%,
-    rgba(255,255,255,0.32) 0%,
-    rgba(60,110,230,0.20) 42%,
-    rgba(0,5,30,0.60) 100%);
-  border: 1px solid rgba(255,255,255,0.24);
+  background: linear-gradient(140deg,
+    rgba(155,109,255,0.22) 0%,
+    rgba(30,55,140,0.18) 55%,
+    rgba(5,8,20,0.82) 100%);
+  border: 1px solid rgba(155,109,255,0.42);
   box-shadow:
-    0 6px 24px rgba(77,141,255,0.40),
-    inset 0 2px 6px rgba(255,255,255,0.22),
-    inset 0 -2px 5px rgba(0,0,40,0.35);
+    0 0 0 1px rgba(77,141,255,0.12),
+    0 4px 20px rgba(155,109,255,0.20),
+    inset 0 1px 0 rgba(255,255,255,0.09);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26px;
+  font-size: 17px;
   position: relative;
-  backdrop-filter: blur(6px);
-}
-.turbo-orbit-bubble-circle::after {
-  content: '';
-  position: absolute;
-  top: 16%; left: 20%;
-  width: 32%; height: 18%;
-  background: rgba(255,255,255,0.40);
-  border-radius: 50%;
-  filter: blur(2px);
+  backdrop-filter: blur(10px);
 }
 .turbo-orbit-bubble-label {
-  font-size: 9px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 0.3px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.80);
+  letter-spacing: 0.4px;
   white-space: nowrap;
   text-align: center;
 }
