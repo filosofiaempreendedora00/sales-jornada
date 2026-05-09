@@ -3188,7 +3188,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 /* ── Zoom "fácil" — sticky section ── */
 .turbo-missao-zoom-section {
-  height: 200vh;
+  height: 300vh;
   position: relative;
 }
 .turbo-missao-zoom-section .turbo-slide--missao-text {
@@ -3210,6 +3210,27 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-shadow: 0 0 12px rgba(13,207,232,0.22);
 }
 .turbo-missao-zoom-stop {
+  height: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.turbo-missao-logo-overlay {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #050810;
+  opacity: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+.turbo-missao-logo-overlay .turbo-missao-bg {
+  position: absolute;
+  inset: 0;
+}
+.turbo-missao-crossfade-stop {
   height: 100vh;
   scroll-snap-align: start;
   scroll-snap-stop: always;
@@ -7120,8 +7141,15 @@ a.xpto-pricing-btn { text-decoration: none; }
             Tornar a vida de quem vende online mais <span class="turbo-missao-text-highlight" id="turbo-facil-span">fácil</span> e mais <span class="turbo-missao-text-highlight">rentável</span>
           </h2>
         </div>
-        <!-- Segundo snap stop: usuário pausa aqui com "fácil" preenchendo a tela -->
+        <!-- Snap marker rawP=1: fácil zoomed (zero height, só ponto de snap) -->
         <div class="turbo-missao-zoom-stop"></div>
+        <!-- Crossfade overlay: logo entra enquanto slide some -->
+        <div class="turbo-missao-logo-overlay" id="turbo-missao-logo-overlay">
+          <div class="turbo-missao-bg"></div>
+          <img src="Logo-Turbo-branca (4).png" class="turbo-orbit-intro-mark" alt="">
+        </div>
+        <!-- Snap stop rawP=2: crossfade completo, orbit slide a seguir -->
+        <div class="turbo-missao-crossfade-stop"></div>
       </div>
 
       <!-- SLIDE 04 — MISSÃO + ÓRBITA -->
@@ -9672,7 +9700,8 @@ function turboFindSlideIdx(container, slides) {
   const section     = document.getElementById('turbo-missao-section');
   const missaoSlide = document.getElementById('turbo-missao-text-slide');
   const facil       = document.getElementById('turbo-facil-span');
-  if (!container || !section || !missaoSlide || !facil) return;
+  const logoOverlay = document.getElementById('turbo-missao-logo-overlay');
+  if (!container || !section || !missaoSlide || !facil || !logoOverlay) return;
 
   let sectionTop  = null;
   let targetScale = null;
@@ -9725,7 +9754,8 @@ function turboFindSlideIdx(container, slides) {
       missaoSlide.style.transform = '';
       missaoSlide.style.opacity   = '1';
       missaoSlide.classList.remove('is-zooming');
-      targetScale = null;  // force fresh zoom calibration on next entry
+      logoOverlay.style.opacity   = '0';
+      targetScale = null;
       return;
     }
 
@@ -9737,14 +9767,22 @@ function turboFindSlideIdx(container, slides) {
 
     missaoSlide.classList.add('is-zooming');
 
-    const p     = Math.min(rawP, 1);
-    const ease  = easeInOutSine(p);
-    const scale = 1 + ease * (targetScale - 1);
-    missaoSlide.style.transform = `translate3d(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
-
-    missaoSlide.style.opacity = rawP > 1
-      ? Math.max(0, 1 - (rawP - 1) * 2.5).toFixed(4)
-      : '1';
+    if (rawP <= 1) {
+      // Phase 1: zoom in "fácil"
+      const ease  = easeInOutSine(rawP);
+      const scale = 1 + ease * (targetScale - 1);
+      missaoSlide.style.transform = `translate3d(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+      missaoSlide.style.opacity   = '1';
+      logoOverlay.style.opacity   = '0';
+    } else {
+      // Phase 2: crossfade "fácil" → logo da Turbo (rawP 1→2)
+      const p2   = Math.min(rawP - 1, 1);
+      const ease2 = easeInOutSine(p2);
+      // Zoom stays at maximum while content fades
+      missaoSlide.style.transform = `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) scale(${targetScale.toFixed(4)})`;
+      missaoSlide.style.opacity   = (1 - ease2).toFixed(4);
+      logoOverlay.style.opacity   = ease2.toFixed(4);
+    }
   }
 
   function resetCalibration() {
@@ -9753,6 +9791,7 @@ function turboFindSlideIdx(container, slides) {
     missaoSlide.style.transform = '';
     missaoSlide.style.transformOrigin = '';
     missaoSlide.style.opacity   = '';
+    logoOverlay.style.opacity   = '0';
   }
 
   window.addEventListener('resize', resetCalibration);
