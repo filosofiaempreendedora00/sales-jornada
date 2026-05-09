@@ -3343,7 +3343,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   0%, 100% { transform: scale(1);    }
   50%      { transform: scale(1.07); }
 }
-.turbo-orbit-center--pulsing {
+.turbo-orbit-center-logo--pulsing {
   animation: turbo-orbit-pulse 2.6s ease-in-out infinite;
 }
 
@@ -9507,10 +9507,11 @@ document.addEventListener('keydown', e => {
 
   const intro  = document.getElementById('turbo-orbit-intro');
   const wrap   = document.getElementById('turbo-orbit-wrap');
-  const ring   = document.getElementById('turbo-orbit-ring');
-  const center = document.getElementById('turbo-orbit-center');
-  const track  = ring?.querySelector('.turbo-orbit-track');
-  const counters = ring ? [...ring.querySelectorAll('.turbo-orbit-bubble-counter')] : [];
+  const ring      = document.getElementById('turbo-orbit-ring');
+  const center    = document.getElementById('turbo-orbit-center');
+  const centerImg = center?.querySelector('img');
+  const track     = ring?.querySelector('.turbo-orbit-track');
+  const counters  = ring ? [...ring.querySelectorAll('.turbo-orbit-bubble-counter')] : [];
   if (!intro || !wrap || !ring || !track) return;
 
   const R_MAX = 260;
@@ -9539,8 +9540,8 @@ document.addEventListener('keydown', e => {
     wrap.style.opacity       = '0';
     center.style.transition  = 'none';
     center.style.opacity     = '0';
-    center.style.transform   = 'scale(0)';
-    center.classList.remove('turbo-orbit-center--pulsing');
+    if (centerImg) { centerImg.style.transition = 'none'; centerImg.style.transform = 'scale(0)'; }
+    centerImg?.classList.remove('turbo-orbit-center-logo--pulsing');
     ring.style.setProperty('--r', '0px');
     ring.style.setProperty('--bubble-scale', '0');
     track.style.animationPlayState = 'paused';
@@ -9564,11 +9565,14 @@ document.addEventListener('keydown', e => {
       t(() => {
         wrap.style.transition   = 'opacity 0.35s ease';
         wrap.style.opacity      = '1';
-        center.style.transition = 'opacity 0.22s ease, transform 0.38s cubic-bezier(0.34,1.56,0.64,1)';
+        center.style.transition = 'opacity 0.22s ease';
         center.style.opacity    = '1';
-        center.style.transform  = 'scale(1)';
+        if (centerImg) {
+          centerImg.style.transition = 'transform 0.38s cubic-bezier(0.34,1.56,0.64,1)';
+          centerImg.style.transform  = 'scale(1)';
+        }
         // Inicia pulse suave após o crescimento completar
-        t(() => center.classList.add('turbo-orbit-center--pulsing'), 420);
+        t(() => centerImg?.classList.add('turbo-orbit-center-logo--pulsing'), 420);
       }, 350);
 
       // ── Phase 3: bubbles burst from center ──
