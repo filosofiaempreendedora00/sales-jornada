@@ -3186,6 +3186,33 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   z-index: 1;
   margin: 0;
 }
+/* ── Zoom intermediário: "fácil" gigante ── */
+.turbo-slide--missao-zoom {
+  background: #050810;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.turbo-missao-zoom-word {
+  font-size: clamp(130px, 23vw, 360px);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  background: linear-gradient(135deg, #9b6dff 0%, #0dcfe8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter:
+    drop-shadow(0 0 60px rgba(13,207,232,0.38))
+    drop-shadow(0 0 140px rgba(155,109,255,0.22));
+  transform-origin: center center;
+  will-change: transform, opacity;
+  padding-bottom: 0.12em;
+  position: relative;
+  z-index: 1;
+}
 .turbo-missao-bg {
   position: absolute; inset: 0;
   background:
@@ -7092,6 +7119,12 @@ a.xpto-pricing-btn { text-decoration: none; }
         </h2>
       </div>
 
+      <!-- SLIDE: zoom de "fácil" — intermediário antes da órbita -->
+      <div class="turbo-slide turbo-slide--missao-zoom" id="turbo-zoom-slide">
+        <div class="turbo-missao-bg"></div>
+        <span class="turbo-missao-zoom-word" id="turbo-zoom-word">fácil</span>
+      </div>
+
       <!-- SLIDE 04 — MISSÃO + ÓRBITA -->
       <!-- Slide: órbita (logo + bubbles) -->
       <div class="turbo-slide turbo-slide--missao-orbit" id="turbo-orbit-slide">
@@ -9623,6 +9656,86 @@ document.addEventListener('keydown', e => {
   }, { passive: true });
 
   resetOrbit(); // estado inicial colapsado
+})();
+
+// ── "fácil" zoom slide animation ─────────────────────
+;(() => {
+  const container = document.querySelector('.turbo-slides');
+  if (!container) return;
+  const zoomSlide = document.getElementById('turbo-zoom-slide');
+  const zoomWord  = document.getElementById('turbo-zoom-word');
+  if (!zoomSlide || !zoomWord) return;
+
+  let zoomPlayed = false;
+  let zoomRafId  = null;
+
+  function easeOutBack(t) {
+    const c1 = 1.5, c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  }
+
+  function resetZoom() {
+    if (zoomRafId) { cancelAnimationFrame(zoomRafId); zoomRafId = null; }
+    zoomWord.style.transition = 'none';
+    zoomWord.style.transform  = 'scale(0.06)';
+    zoomWord.style.opacity    = '0';
+    zoomPlayed = false;
+  }
+
+  function playZoom() {
+    if (zoomPlayed) return;
+    zoomPlayed = true;
+    const start    = performance.now();
+    const duration = 680;
+    function frame(now) {
+      const p     = Math.min((now - start) / duration, 1);
+      const eased = Math.max(0, easeOutBack(p));
+      zoomWord.style.transform = `scale(${eased})`;
+      zoomWord.style.opacity   = Math.min(p * 6, 1).toFixed(4);
+      if (p < 1) { zoomRafId = requestAnimationFrame(frame); }
+      else { zoomWord.style.transform = 'scale(1)'; zoomWord.style.opacity = '1'; zoomRafId = null; }
+    }
+    zoomRafId = requestAnimationFrame(frame);
+  }
+
+  // Scroll-driven morph: "fácil" fades+scales as user scrolls away
+  function updateScrollMorph() {
+    if (!zoomPlayed) return;
+    const slides  = [...container.querySelectorAll('.turbo-slide')];
+    const zoomIdx = slides.indexOf(zoomSlide);
+    const slideH  = slides[0]?.offsetHeight || window.innerHeight;
+    const progress = (container.scrollTop - zoomIdx * slideH) / slideH; // 0 = at zoom, 1 = at next, -1 = at prev
+
+    if (progress > 0 && progress <= 1) {
+      // Scrolling forward → orbit: fácil scales up and dissolves
+      const fade  = Math.max(0, 1 - progress * 2.2);
+      const scale = 1 + progress * 0.55;
+      zoomWord.style.transform = `scale(${scale})`;
+      zoomWord.style.opacity   = fade.toFixed(4);
+    } else if (progress < 0 && progress >= -1) {
+      // Scrolling backward → missão text: fácil shrinks and dissolves
+      const fade  = Math.max(0, 1 + progress * 2.2);
+      const scale = Math.max(0.06, 1 + progress * 0.25);
+      zoomWord.style.transform = `scale(${scale})`;
+      zoomWord.style.opacity   = fade.toFixed(4);
+    }
+  }
+
+  let lastSlide = -1;
+  container.addEventListener('scroll', () => {
+    updateScrollMorph();
+
+    const slides  = [...container.querySelectorAll('.turbo-slide')];
+    const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
+    if (current === lastSlide) return;
+    const prev = lastSlide;
+    lastSlide  = current;
+
+    if (slides[prev]?.id === 'turbo-zoom-slide') resetZoom();
+    if (slides[current]?.id === 'turbo-zoom-slide') playZoom();
+  }, { passive: true });
+
+  resetZoom();
 })();
 
 // Checklist delegation
