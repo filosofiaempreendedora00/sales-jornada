@@ -3196,15 +3196,6 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   top: 0;
   z-index: 2;
 }
-.turbo-missao-text-zoom-layer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 36px;
-  position: relative;
-  width: 100%;
-  will-change: transform;
-}
 .turbo-missao-zoom-stop {
   height: 100vh;
   scroll-snap-align: start;
@@ -7111,12 +7102,10 @@ a.xpto-pricing-btn { text-decoration: none; }
       <div class="turbo-missao-zoom-section" id="turbo-missao-section">
         <div class="turbo-slide turbo-slide--missao-text" id="turbo-missao-text-slide">
           <div class="turbo-missao-bg"></div>
-          <div class="turbo-missao-text-zoom-layer" id="turbo-missao-zoom-layer">
-            <div class="xpto-eyebrow" id="turbo-missao-eyebrow"><span></span>Nossa Missão</div>
-            <h2 class="turbo-missao-text-big" id="turbo-missao-h2">
-              Tornar a vida de quem vende online mais <span class="turbo-missao-text-highlight" id="turbo-facil-span">fácil</span> e mais <span class="turbo-missao-text-highlight">rentável</span>
-            </h2>
-          </div>
+          <div class="xpto-eyebrow" id="turbo-missao-eyebrow"><span></span>Nossa Missão</div>
+          <h2 class="turbo-missao-text-big" id="turbo-missao-h2">
+            Tornar a vida de quem vende online mais <span class="turbo-missao-text-highlight" id="turbo-facil-span">fácil</span> e mais <span class="turbo-missao-text-highlight">rentável</span>
+          </h2>
         </div>
         <!-- Segundo snap stop: usuário pausa aqui com "fácil" preenchendo a tela -->
         <div class="turbo-missao-zoom-stop"></div>
@@ -9669,51 +9658,50 @@ function turboFindSlideIdx(container, slides) {
   const container   = document.querySelector('.turbo-slides');
   const section     = document.getElementById('turbo-missao-section');
   const missaoSlide = document.getElementById('turbo-missao-text-slide');
-  const zoomLayer   = document.getElementById('turbo-missao-zoom-layer');
   const facil       = document.getElementById('turbo-facil-span');
-  if (!container || !section || !missaoSlide || !zoomLayer || !facil) return;
+  if (!container || !section || !missaoSlide || !facil) return;
 
   let sectionTop  = null;
   let targetScale = null;
-  let tx = 0, ty = 0;   // translate needed to center "fácil" at full zoom
+  let tx = 0, ty = 0;
 
   function calibrate() {
-    const savedT = zoomLayer.style.transform;
-    zoomLayer.style.transform = '';
+    const savedT = missaoSlide.style.transform;
+    missaoSlide.style.transform = '';
 
     const cR = container.getBoundingClientRect();
     const mR = missaoSlide.getBoundingClientRect();
     const fR = facil.getBoundingClientRect();
 
     if (mR.width <= 0 || fR.width <= 0) {
-      zoomLayer.style.transform = savedT;
+      missaoSlide.style.transform = savedT;
       return;
     }
 
     const sR = section.getBoundingClientRect();
     sectionTop = sR.top - cR.top + container.scrollTop;
 
-    // center of "fácil" relative to the zoom-layer's own top-left
-    const lR = zoomLayer.getBoundingClientRect();
-    const ox = fR.left + fR.width  / 2 - lR.left;
-    const oy = fR.top  + fR.height / 2 - lR.top;
-    zoomLayer.style.transformOrigin = `${ox}px ${oy}px`;
+    // transform-origin: center of "fácil" in the slide's local coordinate space
+    const ox = fR.left + fR.width  / 2 - mR.left;
+    const oy = fR.top  + fR.height / 2 - mR.top;
+    missaoSlide.style.transformOrigin = `${ox}px ${oy}px`;
 
     targetScale = Math.min(
       (mR.width  * 0.60) / fR.width,
       (mR.height * 0.60) / fR.height
     );
 
-    // translate that moves "fácil" to viewport center (applied at p=1)
+    // screen-space offset needed to bring fácil to viewport center
+    // Using translate(tx, ty) scale(s): the translate is applied AFTER scale,
+    // so values are in screen space — no division by scale needed.
     const facilVpX = fR.left + fR.width  / 2;
     const facilVpY = fR.top  + fR.height / 2;
     tx = window.innerWidth  / 2 - facilVpX;
     ty = window.innerHeight / 2 - facilVpY;
 
-    zoomLayer.style.transform = savedT;
+    missaoSlide.style.transform = savedT;
   }
 
-  // smooth sine ease — gentler than quadratic for a slow camera pull
   function easeInOutSine(t) { return -(Math.cos(Math.PI * t) - 1) / 2; }
 
   function update() {
@@ -9722,22 +9710,20 @@ function turboFindSlideIdx(container, slides) {
       if (sectionTop === null) return;
     }
 
-    const slideH = window.innerHeight;
-    const rawP   = (container.scrollTop - sectionTop) / slideH;
+    const rawP = (container.scrollTop - sectionTop) / window.innerHeight;
 
     if (rawP <= 0) {
-      zoomLayer.style.transform = '';
-      missaoSlide.style.opacity = '1';
+      missaoSlide.style.transform = '';
+      missaoSlide.style.opacity   = '1';
       return;
     }
 
     const p     = Math.min(rawP, 1);
     const ease  = easeInOutSine(p);
     const scale = 1 + ease * (targetScale - 1);
-    // translate is divided by scale so screen-space movement is correct
-    const stx = (tx * ease) / scale;
-    const sty = (ty * ease) / scale;
-    zoomLayer.style.transform = `scale(${scale.toFixed(4)}) translate(${stx.toFixed(2)}px, ${sty.toFixed(2)}px)`;
+    // translate(tx,ty) scale(s): translate is in screen space (post-scale),
+    // so the origin point stays fixed and fácil drifts to viewport center.
+    missaoSlide.style.transform = `translate(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px) scale(${scale.toFixed(4)})`;
 
     missaoSlide.style.opacity = rawP > 1
       ? Math.max(0, 1 - (rawP - 1) * 2.5).toFixed(4)
@@ -9746,9 +9732,9 @@ function turboFindSlideIdx(container, slides) {
 
   window.addEventListener('resize', () => {
     sectionTop = null; targetScale = null;
-    zoomLayer.style.transform = '';
-    zoomLayer.style.transformOrigin = '';
-    missaoSlide.style.opacity = '';
+    missaoSlide.style.transform = '';
+    missaoSlide.style.transformOrigin = '';
+    missaoSlide.style.opacity   = '';
   });
 
   container.addEventListener('scroll', update, { passive: true });
