@@ -3094,16 +3094,32 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 
 /* ── TURBO SLIDE: MISSÃO ─────────────────────────── */
-.turbo-slide--missao {
+.turbo-slide--missao-orbit {
   background: #050810;
   position: relative;
-  padding: 56px 72px;
-  align-items: stretch;
   flex-direction: column !important;
   align-items: center !important;
-  justify-content: flex-start !important;
-  padding: 32px 64px 60px !important;
+  justify-content: center !important;
   gap: 0;
+}
+.turbo-slide--missao-orbit .turbo-orbit-ring {
+  width: min(74vh, 700px);
+  height: min(74vh, 700px);
+}
+.turbo-slide--missao-orbit .turbo-orbit-center-logo {
+  width: clamp(160px, 14vw, 230px);
+}
+.turbo-slide--missao-brands {
+  background: #050810;
+  position: relative;
+  padding: 56px 72px !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 44px;
+}
+.turbo-slide--missao-brands .turbo-missao-text-big {
+  font-size: clamp(28px, 4.2vw, 62px);
 }
 /* ── MISSÃO TEXT SLIDE (giant statement) ────────── */
 .turbo-slide--missao-text {
@@ -7056,11 +7072,11 @@ a.xpto-pricing-btn { text-decoration: none; }
       </div>
 
       <!-- SLIDE 04 — MISSÃO + ÓRBITA -->
-      <div class="turbo-slide turbo-slide--missao">
+      <!-- Slide: órbita (logo + bubbles) -->
+      <div class="turbo-slide turbo-slide--missao-orbit">
         <div class="turbo-missao-bg"></div>
-
         <div class="turbo-orbit-wrap">
-          <div class="turbo-orbit-ring" style="--r:190px">
+          <div class="turbo-orbit-ring" style="--r:260px">
             <div class="turbo-orbit-guide"></div>
             <div class="turbo-orbit-center">
               <img src="Logo-Turbo-branca (4).png" alt="Turbo" class="turbo-orbit-center-logo">
@@ -7081,11 +7097,12 @@ a.xpto-pricing-btn { text-decoration: none; }
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="turbo-missao-spacer"></div>
-        <p class="turbo-missao-text">...e aproveitamos desse know-how para criar as marcas da próxima geração.</p>
-        <div class="turbo-missao-spacer"></div>
-
+      <!-- Slide: marcas próprias (texto grande + 3 cards) -->
+      <div class="turbo-slide turbo-slide--missao-brands">
+        <div class="turbo-missao-bg"></div>
+        <h2 class="turbo-missao-text-big">...e aproveitamos desse know-how para criar as marcas da próxima geração.</h2>
         <div class="turbo-missao-brands">
           <!-- Bready -->
           <div class="turbo-brand-card">
