@@ -9661,65 +9661,72 @@ function turboFindSlideIdx(container, slides) {
   const facil       = document.getElementById('turbo-facil-span');
   if (!container || !section || !missaoSlide || !facil) return;
 
-  // Posição da seção dentro do scroll container (coordenada fixa, scroll-independente)
-  // Usa getBoundingClientRect para ser relativo ao container, não ao offset parent do DOM
-  let sectionTop  = null;
-  let targetScale = null;
+  let sectionTop  = null;   // posição da seção no espaço de scroll do container
+  let targetScale = null;   // quanto precisa escalar para "fácil" preencher ~85%
 
+  // Calibra apenas quando o slide está visível (BCR com dimensões reais).
+  // Se o pai estiver hidden (display:none), todos os BCR são 0 → bail out.
   function calibrate() {
-    const wasTransform = missaoSlide.style.transform;
-    missaoSlide.style.transform = '';          // garante medição com scale=1
+    const saved = missaoSlide.style.transform;
+    missaoSlide.style.transform = '';   // mede em escala 1
 
     const cR = container.getBoundingClientRect();
-    const sR = section.getBoundingClientRect();
     const mR = missaoSlide.getBoundingClientRect();
     const fR = facil.getBoundingClientRect();
 
-    // Posição absoluta da seção dentro do container (invariante ao scroll)
+    if (mR.width <= 0 || fR.width <= 0) {
+      // Elemento não renderizado — deixa null e tenta de novo no próximo scroll
+      missaoSlide.style.transform = saved;
+      return;
+    }
+
+    const sR = section.getBoundingClientRect();
     sectionTop = sR.top - cR.top + container.scrollTop;
 
-    // transform-origin: centro de "fácil" relativo ao slide
     const ox = fR.left + fR.width  / 2 - mR.left;
     const oy = fR.top  + fR.height / 2 - mR.top;
     missaoSlide.style.transformOrigin = `${ox}px ${oy}px`;
 
-    // Escala alvo: "fácil" ocupa ~85 % da tela
     targetScale = Math.min(
       (mR.width  * 0.85) / fR.width,
       (mR.height * 0.85) / fR.height
     );
 
-    missaoSlide.style.transform = wasTransform; // restaura
+    missaoSlide.style.transform = saved;
   }
 
   function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2; }
 
   function update() {
-    if (sectionTop === null || targetScale === null) return;
+    // Calibra preguiçosamente na primeira vez em que o slide está visível
+    if (sectionTop === null) {
+      calibrate();
+      if (sectionTop === null) return;  // ainda oculto — não faz nada
+    }
+
     const slideH = window.innerHeight;
     const rawP   = (container.scrollTop - sectionTop) / slideH;
-    const p      = Math.max(0, Math.min(1, rawP));
-    const scale  = 1 + easeInOut(p) * (targetScale - 1);
 
+    // Fora do intervalo de zoom: garante estado limpo
+    if (rawP <= 0) {
+      missaoSlide.style.transform = 'scale(1)';
+      missaoSlide.style.opacity   = '1';
+      return;
+    }
+
+    const p     = Math.min(rawP, 1);
+    const scale = 1 + easeInOut(p) * (targetScale - 1);
     missaoSlide.style.transform = `scale(${scale.toFixed(4)})`;
     missaoSlide.style.opacity   = rawP > 1
       ? Math.max(0, 1 - (rawP - 1) * 2.5).toFixed(4)
       : '1';
   }
 
-  function init() {
-    calibrate();
-    update();
-  }
-
-  if (document.readyState === 'complete') { init(); }
-  else { window.addEventListener('load', init, { once: true }); }
-
   window.addEventListener('resize', () => {
+    sectionTop = null; targetScale = null;
     missaoSlide.style.transform = '';
-    targetScale = null; sectionTop = null;
-    calibrate();
-    update();
+    missaoSlide.style.opacity   = '';
+    missaoSlide.style.transformOrigin = '';
   });
 
   container.addEventListener('scroll', update, { passive: true });
