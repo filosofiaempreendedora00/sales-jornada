@@ -7169,7 +7169,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             </div>
             <!-- Área do gráfico -->
             <div class="turbo-chart-area">
-              <svg class="turbo-chart-svg" viewBox="0 -70 500 720" preserveAspectRatio="xMidYMax meet">
+              <svg class="turbo-chart-svg" viewBox="0 -110 500 760" preserveAspectRatio="xMidYMax meet">
                 <defs>
                   <!-- Espaçamento igual: 2022=30 2023=138 2024=246 2025=354 2026=462 (108px cada) -->
                   <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
@@ -9285,6 +9285,11 @@ document.addEventListener('keydown', e => {
   let lastSlide = -1;
   let rafId = null;
 
+  // Logo scaling constants (accessible by both resetChart and animateChart)
+  const LOGO_SZ_MIN  = 26;   // size at eased=0 (matches current static size)
+  const LOGO_SZ_MAX  = 82;   // size at eased=1 (2026 peak)
+  const LOGO_NUM_GAP = 75;   // fixed gap: logo bottom → number baseline
+
   function fmtBR(n) {
     if (n >= 1000) return Math.floor(n / 1000) + '.' + String(n % 1000).padStart(3, '0');
     return String(n);
@@ -9312,6 +9317,9 @@ document.addEventListener('keydown', e => {
     const sb = document.getElementById('stat-colab');
     if (sc) sc.textContent = '0';
     if (sb) sb.textContent = '0';
+    // Reset logo size
+    const logoEl = svg.querySelector('#growth-dot-logo');
+    if (logoEl) { logoEl.setAttribute('width', LOGO_SZ_MIN); logoEl.setAttribute('height', LOGO_SZ_MIN); }
   }
 
   function animateChart() {
@@ -9360,10 +9368,8 @@ document.addEventListener('keydown', e => {
       pathPts[i] = { x: p.x, y: p.y };
     }
 
-    const DOT_R   = 9;
-    const LOGO_SZ = 26;
-    const LOGO_GAP_TOP = 40;   // gap entre topo do dot e base da logo
-    const NUM_GAP_BOT  = 10;   // gap entre base do dot e topo do número
+    const DOT_R       = 9;
+    const NUM_GAP_BOT = 10;   // gap entre base do dot e topo do número
 
     // Fade: counter+logo somem, gml-1300 aparece nos últimos 4%
     const FADE_START = 0.96;
@@ -9403,18 +9409,22 @@ document.addEventListener('keydown', e => {
       if (statClientes) statClientes.textContent = fmtBR(val) + '+';
       if (statColab)    statColab.textContent    = Math.round(eased * 120) + '+';
 
-      // Logo: centralizada ACIMA do dot (mesmo eixo x)
-      const logoX = pt.x - LOGO_SZ / 2;
-      const logoY = Math.max(-60, pt.y - DOT_R - LOGO_GAP_TOP - LOGO_SZ);
-      if (logo) {
-        logo.setAttribute('x', logoX);
-        logo.setAttribute('y', logoY);
-      }
-
       // Contador: centralizado ABAIXO do dot (mesmo eixo x), separado pelo dot
       const numY = Math.min(pt.y + DOT_R + NUM_GAP_BOT + 16, 636);
       counter.setAttribute('x', pt.x);
       counter.setAttribute('y', numY);
+
+      // Logo: cresce com o progresso; borda inferior fica a LOGO_NUM_GAP do número
+      const logoSz  = LOGO_SZ_MIN + (LOGO_SZ_MAX - LOGO_SZ_MIN) * eased;
+      const logoBtm = numY - LOGO_NUM_GAP;
+      const logoY   = Math.max(-105, logoBtm - logoSz);
+      const logoX   = Math.min(Math.max(pt.x - logoSz / 2, 0), 500 - logoSz);
+      if (logo) {
+        logo.setAttribute('width',  logoSz);
+        logo.setAttribute('height', logoSz);
+        logo.setAttribute('x', logoX);
+        logo.setAttribute('y', logoY);
+      }
 
       // Fade out counter / fade in gml-1300 nos últimos 4% (logo permanece visível)
       const aAlpha = eased < FADE_START
