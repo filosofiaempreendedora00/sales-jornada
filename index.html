@@ -3105,6 +3105,51 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   padding: 32px 64px 60px !important;
   gap: 0;
 }
+/* ── MISSÃO TEXT SLIDE (giant statement) ────────── */
+.turbo-slide--missao-text {
+  background: #050810;
+  position: relative;
+  padding: 56px 72px;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 36px;
+}
+.turbo-missao-text-big {
+  font-size: clamp(36px, 5.6vw, 80px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1.05;
+  text-align: center;
+  margin: 0;
+  max-width: 1100px;
+  background: linear-gradient(170deg,
+    #ffffff 0%,
+    #f3eeff 28%,
+    #d8c8ff 62%,
+    #a98cff 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter:
+    drop-shadow(0 0 24px rgba(155,109,255,0.55))
+    drop-shadow(0 0 64px rgba(77,141,255,0.30))
+    drop-shadow(0 6px 28px rgba(0,0,0,0.45));
+  position: relative; z-index: 1;
+}
+.turbo-missao-text-highlight {
+  background: linear-gradient(135deg, #9b6dff 0%, #0dcfe8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(13,207,232,0.22));
+}
+.turbo-slide--missao-text .xpto-eyebrow {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
 .turbo-missao-bg {
   position: absolute; inset: 0;
   background:
@@ -3362,62 +3407,6 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: block !important;
   max-width: 100%;
   max-height: 100%;
-}
-
-/* ── TURBO SLIDE: CULTURA ────────────────────────── */
-.turbo-slide--cultura {
-  background: #050810;
-  position: relative;
-  align-items: stretch;
-  padding: 64px 72px;
-}
-.turbo-culture-bg {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 70% 80% at 88% 65%, rgba(13,80,200,0.38) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 40% at 92% 15%, rgba(77,141,255,0.12) 0%, transparent 55%);
-  pointer-events: none;
-}
-.turbo-slide--cultura .turbo-slide-inner {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 28px;
-  position: relative; z-index: 1;
-  max-width: 700px;
-}
-.turbo-culture-quote {
-  font-size: clamp(90px, 12vw, 140px);
-  line-height: 0.75;
-  color: #fff;
-  font-family: Georgia, 'Times New Roman', serif;
-  position: absolute;
-  user-select: none;
-  pointer-events: none;
-}
-.turbo-culture-quote--open  { top: 44px;  left: 60px;  }
-.turbo-culture-quote--close { bottom: 32px; right: 56px; }
-.turbo-culture-title {
-  font-size: clamp(26px, 3vw, 44px);
-  font-weight: 900;
-  font-style: italic;
-  letter-spacing: -0.5px;
-  line-height: 1.1;
-  color: #fff;
-  margin: 0;
-  text-transform: uppercase;
-}
-.turbo-culture-body {
-  font-size: clamp(15px, 1.55vw, 20px);
-  line-height: 1.7;
-  color: rgba(255,255,255,0.82);
-  margin: 0;
-}
-.turbo-culture-author {
-  font-size: clamp(13px, 1.2vw, 15px);
-  color: rgba(255,255,255,0.52);
-  margin: 0;
-  letter-spacing: 0.3px;
 }
 
 /* ── BREADY SOCIAL PROOF ──────────────────────────── */
@@ -4673,6 +4662,569 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .pp-strategy-card-desc {
   font-size: 13px; font-weight: 400; line-height: 1.58;
   color: rgba(255,255,255,0.50);
+}
+
+/* ══════════════════════════════════════════════════ */
+/*  CREATORS PRESENTATION SLIDES (cp-*)               */
+/* ══════════════════════════════════════════════════ */
+
+/* shared phone frame used across cover, clients, case slides */
+.cp-phone-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 32px;
+  background: #000;
+  border: 3px solid rgba(255,255,255,0.18);
+  box-shadow:
+    0 0 0 1px rgba(155,109,255,0.18),
+    0 30px 80px rgba(0,0,0,0.65),
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+  overflow: hidden;
+}
+.cp-phone-frame::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36%;
+  height: 18px;
+  background: #000;
+  border-radius: 0 0 14px 14px;
+  z-index: 2;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+}
+.cp-phone-frame video,
+.cp-phone-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── CP SLIDE 01: COVER ──────────────────────────── */
+.cp-slide-cover { overflow: hidden; }
+.cp-slide-cover::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 75% 50%, rgba(13,80,200,0.30) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 15% 30%, rgba(155,109,255,0.18) 0%, transparent 65%);
+  pointer-events: none;
+}
+.cp-slide-cover .xpto-slide-inner {
+  max-width: 1100px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.cp-cover-grid {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 64px;
+  align-items: center;
+}
+.cp-cover-text {
+  display: flex; flex-direction: column; gap: 22px;
+}
+.cp-cover-title {
+  font-size: clamp(64px, 9vw, 120px);
+  font-weight: 900;
+  letter-spacing: -3px;
+  line-height: 0.95;
+  margin: 0;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cp-cover-subtitle {
+  font-size: clamp(15px, 1.4vw, 19px);
+  line-height: 1.55;
+  color: rgba(255,255,255,0.78);
+  max-width: 460px;
+  margin: 0;
+}
+.cp-cover-phone { width: 100%; }
+
+/* ── CP SLIDE 02: PORQUE UGC? ───────────────────── */
+.cp-slide-why { overflow: hidden; }
+.cp-slide-why::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, rgba(13,80,200,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cp-slide-why .xpto-slide-inner {
+  max-width: 1080px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.cp-why-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 360px) 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.cp-why-title {
+  font-size: clamp(40px, 5.2vw, 72px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin: 0;
+  text-transform: uppercase;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cp-why-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 22px;
+}
+.cp-why-list li {
+  position: relative;
+  padding-left: 22px;
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.6;
+  color: rgba(255,255,255,0.82);
+}
+.cp-why-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 9px;
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: #9b6dff;
+  box-shadow: 0 0 8px #9b6dff;
+}
+.cp-why-list li strong {
+  color: #fff; font-weight: 700;
+}
+
+/* ── CP SLIDE 03: UGC FRAMEWORK ─────────────────── */
+.cp-slide-framework { overflow: hidden; }
+.cp-slide-framework::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(155,109,255,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cp-slide-framework .xpto-slide-inner {
+  max-width: 1100px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 36px;
+}
+.cp-framework-header { text-align: left; }
+.cp-framework-title {
+  font-size: clamp(48px, 6vw, 84px);
+  font-weight: 900;
+  letter-spacing: -2px;
+  margin: 0;
+  text-transform: uppercase;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cp-framework-sub {
+  font-size: clamp(14px, 1.15vw, 16px);
+  color: rgba(255,255,255,0.65);
+  margin: 8px 0 0;
+}
+.cp-framework-flow {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 14px;
+  position: relative;
+}
+.cp-framework-flow::before {
+  content: '';
+  position: absolute;
+  top: 22px;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(155,109,255,0.32), transparent);
+  z-index: 0;
+}
+.cp-framework-step {
+  display: flex; flex-direction: column; gap: 10px;
+  align-items: center; text-align: center;
+  position: relative; z-index: 1;
+}
+.cp-framework-pill {
+  background: rgba(155,109,255,0.14);
+  border: 1px solid rgba(155,109,255,0.32);
+  border-radius: 99px;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #d6c5ff;
+  white-space: nowrap;
+}
+.cp-framework-quote {
+  font-size: 13px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+  margin: 0;
+  padding: 0 4px;
+}
+
+/* ── CP SLIDE 04: TURBO VS DIY ──────────────────── */
+.cp-slide-vs { overflow: hidden; }
+.cp-slide-vs::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 50% 60% at 25% 50%, rgba(155,109,255,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 75% 50%, rgba(13,80,200,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cp-slide-vs .xpto-slide-inner {
+  max-width: 1100px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.cp-vs-wrap {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+  gap: 16px;
+}
+.cp-vs-col { display: flex; flex-direction: column; gap: 18px; }
+.cp-vs-col--alt { padding-top: 44px; }
+.cp-vs-title {
+  font-size: clamp(20px, 2vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  text-align: center;
+  color: #fff;
+  margin: 0;
+}
+.cp-vs-card {
+  border-radius: 18px;
+  padding: 26px 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.025);
+}
+.cp-vs-card--turbo {
+  border-color: rgba(155,109,255,0.32);
+  background: rgba(155,109,255,0.08);
+}
+.cp-vs-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.cp-vs-list li {
+  display: flex; gap: 10px;
+  align-items: flex-start;
+  font-size: clamp(13px, 1vw, 15px);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+}
+.cp-vs-icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800;
+  margin-top: 1px;
+}
+.cp-vs-icon--pro {
+  background: rgba(18,212,144,0.16);
+  color: #6fe5b1;
+}
+.cp-vs-icon--neg {
+  background: rgba(255,107,107,0.14);
+  color: #ff8a8a;
+}
+.cp-vs-divider {
+  display: flex; align-items: center; justify-content: center;
+}
+.cp-vs-symbol {
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 900;
+  color: rgba(255,255,255,0.32);
+  letter-spacing: 1px;
+}
+
+/* ── CP SLIDE 05: CRONOGRAMA ────────────────────── */
+.cp-slide-timeline { overflow: hidden; }
+.cp-slide-timeline::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 80% 30%, rgba(13,80,200,0.22) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cp-slide-timeline .xpto-slide-inner {
+  max-width: 1100px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 40px;
+}
+.cp-timeline-header { text-align: center; }
+.cp-timeline-title {
+  font-size: clamp(36px, 4.5vw, 56px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0;
+}
+.cp-timeline {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  min-height: 320px;
+  align-items: stretch;
+}
+.cp-timeline-line {
+  position: absolute;
+  left: 5%; right: 5%;
+  top: 50%;
+  height: 1px;
+  border-top: 2px dashed rgba(255,255,255,0.18);
+  z-index: 0;
+}
+.cp-timeline-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1;
+}
+.cp-timeline-step--up { justify-content: flex-end; padding-bottom: calc(50% - 8px); }
+.cp-timeline-step--down { justify-content: flex-start; padding-top: calc(50% - 8px); }
+.cp-timeline-step--up .cp-timeline-stem,
+.cp-timeline-step--down .cp-timeline-stem {
+  width: 1px;
+  height: 32px;
+  background: rgba(255,255,255,0.22);
+}
+.cp-timeline-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 16px 18px;
+  text-align: center;
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+}
+.cp-timeline-card--end {
+  background: rgba(155,109,255,0.12);
+  border-color: rgba(155,109,255,0.36);
+}
+.cp-timeline-tag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(8,8,18,0.95);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 99px;
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.78);
+  white-space: nowrap;
+}
+.cp-timeline-text {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #fff;
+  margin: 0;
+  margin-top: 6px;
+}
+.cp-timeline-dot {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
+}
+.cp-timeline-dot--end {
+  background: #9b6dff;
+  box-shadow: 0 0 0 4px rgba(155,109,255,0.18);
+}
+
+/* ── CP SLIDE 06: CLIENTES ──────────────────────── */
+.cp-slide-clients { overflow: hidden; }
+.cp-slide-clients::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% 100%, rgba(13,80,200,0.20) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cp-slide-clients .xpto-slide-inner {
+  max-width: 1100px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; gap: 40px;
+}
+.cp-clients-header { text-align: center; }
+.cp-clients-title {
+  font-size: clamp(22px, 2.4vw, 32px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+  margin: 0;
+}
+.cp-clients-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  align-items: end;
+}
+.cp-client {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.cp-client-logo {
+  font-size: clamp(13px, 1.1vw, 16px);
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.88);
+  text-align: center;
+}
+.cp-client .cp-phone-frame {
+  max-width: 180px;
+}
+
+/* ── CP SLIDE 07: CASE MINIMAL CLUB ─────────────── */
+.cp-slide-case { overflow: hidden; }
+.cp-slide-case::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 70% at 75% 50%, rgba(13,80,200,0.28) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 15% 100%, rgba(155,109,255,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cp-slide-case .xpto-slide-inner {
+  max-width: 1100px; width: 100%; margin: 0 auto;
+  position: relative; z-index: 1;
+}
+.cp-case-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 56px;
+  align-items: center;
+}
+.cp-case-left { display: flex; flex-direction: column; gap: 26px; }
+.cp-case-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(155,109,255,0.12);
+  border: 1px solid rgba(155,109,255,0.28);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #b89aff;
+}
+.cp-case-title {
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin: 8px 0 0;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cp-case-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.cp-case-list li {
+  display: flex; gap: 14px; align-items: flex-start;
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+}
+.cp-case-num {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: rgba(255,255,255,0.78);
+  font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.cp-case-metrics-wrap { display: flex; flex-direction: column; gap: 12px; }
+.cp-case-metrics-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+}
+.cp-case-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+  gap: 28px;
+}
+.cp-case-metric {
+  display: flex; flex-direction: column;
+  border-left: 2px solid rgba(155,109,255,0.5);
+  padding-left: 16px;
+}
+.cp-case-metric-value {
+  font-size: clamp(22px, 2.2vw, 28px);
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+  line-height: 1.05;
+}
+.cp-case-metric-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  margin-top: 4px;
+}
+.cp-case-right {
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+.cp-case-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── CP RESPONSIVE (under 720px) ────────────────── */
+@media (max-width: 720px) {
+  .cp-cover-grid,
+  .cp-why-grid,
+  .cp-case-grid { grid-template-columns: 1fr; gap: 32px; }
+  .cp-cover-phone,
+  .cp-case-right { max-width: 240px; margin: 0 auto; }
+  .cp-vs-wrap { grid-template-columns: 1fr; gap: 16px; }
+  .cp-vs-col--alt { padding-top: 0; }
+  .cp-framework-flow { grid-template-columns: 1fr 1fr; }
+  .cp-framework-flow::before { display: none; }
+  .cp-timeline { grid-template-columns: 1fr; min-height: auto; gap: 14px; }
+  .cp-timeline-line { display: none; }
+  .cp-timeline-step--up,
+  .cp-timeline-step--down { padding: 0; justify-content: flex-start; }
+  .cp-timeline-step--up .cp-timeline-stem,
+  .cp-timeline-step--down .cp-timeline-stem,
+  .cp-timeline-dot { display: none; }
+  .cp-clients-row { grid-template-columns: 1fr 1fr; }
 }
 
 /* Modal overlay */
@@ -6494,18 +7046,18 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
 
-      <!-- SLIDE 03 — MISSÃO + ÓRBITA -->
+      <!-- SLIDE 03 — MISSÃO (texto garrafal) -->
+      <div class="turbo-slide turbo-slide--missao-text">
+        <div class="turbo-missao-bg"></div>
+        <div class="xpto-eyebrow"><span></span>Nossa Missão</div>
+        <h2 class="turbo-missao-text-big">
+          Tornar a vida de quem vende online mais <span class="turbo-missao-text-highlight">fácil</span> e mais <span class="turbo-missao-text-highlight">rentável</span>
+        </h2>
+      </div>
+
+      <!-- SLIDE 04 — MISSÃO + ÓRBITA -->
       <div class="turbo-slide turbo-slide--missao">
         <div class="turbo-missao-bg"></div>
-
-        <div class="xpto-eyebrow"><span></span>Nossa Missão</div>
-        <div class="turbo-missao-spacer"></div>
-        <p class="turbo-missao-text">
-          Tornamos a vida de quem vende online mais
-          <span class="turbo-missao-tag">FÁCIL</span>
-          e <span class="turbo-missao-tag">RENTÁVEL</span>...
-        </p>
-        <div class="turbo-missao-spacer"></div>
 
         <div class="turbo-orbit-wrap">
           <div class="turbo-orbit-ring" style="--r:190px">
@@ -6715,18 +7267,6 @@ a.xpto-pricing-btn { text-decoration: none; }
       <!-- SLIDE 05 — CASES LEAD -->
       <div class="turbo-slide turbo-slide--cases">
         <img src="fotos%20turbo/cases%20leads%40sharp.png" alt="Cases Lead Generation Turbo" class="turbo-cases-img">
-      </div>
-
-      <!-- SLIDE 06 — CULTURA -->
-      <div class="turbo-slide turbo-slide--cultura">
-        <div class="turbo-culture-bg"></div>
-        <span class="turbo-culture-quote turbo-culture-quote--open">"</span>
-        <span class="turbo-culture-quote turbo-culture-quote--close">"</span>
-        <div class="turbo-slide-inner">
-          <h2 class="turbo-culture-title">Cultura Forte<br>com Foco em Resultados</h2>
-          <p class="turbo-culture-body">Você sonha grande, é inconformado e por isso melhora todos os dias. Pensando como dono, fazendo o que tem que ser feito, você terá o que você merece!</p>
-          <p class="turbo-culture-author">– Musso, Quieroz</p>
-        </div>
       </div>
 
     </div>
@@ -7225,6 +7765,260 @@ a.xpto-pricing-btn { text-decoration: none; }
   </div>
 </div>
 <div class="xpto-scroll-hint" id="pp-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  CREATORS PRESENTATION MODAL (cp-*)            -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="cp-overlay"></div>
+<button class="xpto-close" id="cp-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="cp-modal">
+  <div class="xpto-inner" id="cp-inner">
+
+    <!-- SLIDE 01 — CAPA -->
+    <section class="xpto-slide cp-slide-cover">
+      <div class="xpto-slide-inner">
+        <div class="cp-cover-grid">
+          <div class="cp-cover-text">
+            <div class="xpto-eyebrow"><span></span>Turbo Partners</div>
+            <h1 class="cp-cover-title">CREATORS</h1>
+            <p class="cp-cover-subtitle">Aumentamos as vendas da sua empresa a partir de anúncios que não se parecem com anúncios.</p>
+          </div>
+          <div class="cp-cover-phone">
+            <div class="cp-phone-frame">
+              <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 — PORQUE UGC? -->
+    <section class="xpto-slide cp-slide-why">
+      <div class="xpto-slide-inner">
+        <div class="cp-why-grid">
+          <div class="cp-why-heading">
+            <h2 class="cp-why-title">Porque<br>conteúdos<br>UGC?</h2>
+          </div>
+          <ul class="cp-why-list">
+            <li><strong>Confiança:</strong> 80% dos consumidores confiam mais em Conteúdo Gerado por Usuário (UGC) do que em anúncios tradicionais da marca.</li>
+            <li><strong>Conversão:</strong> Páginas de produto com UGC podem gerar um aumento de até 10% nas conversões.</li>
+            <li><strong>Desempenho em Ads:</strong> Anúncios com UGC podem ter até 4× mais cliques (CTR) do que os tradicionais e reduzir o Custo por Clique (CPC) em até 50%.</li>
+            <li><strong>Custo-Benefício:</strong> O UGC é, em média, 85% mais eficiente em custo do que os conteúdos produzidos por influenciadores profissionais.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 — UGC FRAMEWORK -->
+    <section class="xpto-slide cp-slide-framework">
+      <div class="xpto-slide-inner">
+        <div class="cp-framework-header">
+          <h2 class="cp-framework-title">UGC</h2>
+          <p class="cp-framework-sub">A estrutura de roteiro que converte</p>
+        </div>
+        <div class="cp-framework-flow">
+          <div class="cp-framework-step">
+            <div class="cp-framework-pill">Hook / End Result</div>
+            <p class="cp-framework-quote">"Even my husband noticed that…"</p>
+          </div>
+          <div class="cp-framework-step">
+            <div class="cp-framework-pill">Problem</div>
+            <p class="cp-framework-quote">"Can we talk about how difficult…?"</p>
+          </div>
+          <div class="cp-framework-step">
+            <div class="cp-framework-pill">Agitate Problem</div>
+            <p class="cp-framework-quote">"I've been struggling with…"</p>
+          </div>
+          <div class="cp-framework-step">
+            <div class="cp-framework-pill">Product Intro / Solution</div>
+            <p class="cp-framework-quote">"I was really hopeless until…"</p>
+          </div>
+          <div class="cp-framework-step">
+            <div class="cp-framework-pill">Outcome</div>
+            <p class="cp-framework-quote">"I've been taking it for… it's been a life saver."</p>
+          </div>
+          <div class="cp-framework-step">
+            <div class="cp-framework-pill">Product Benefits</div>
+            <p class="cp-framework-quote">"It's a powerful…"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 — TURBO VS DIY -->
+    <section class="xpto-slide cp-slide-vs">
+      <div class="xpto-slide-inner">
+        <div class="cp-vs-wrap">
+
+          <div class="cp-vs-col cp-vs-col--turbo">
+            <h2 class="cp-vs-title">UGC com a Turbo</h2>
+            <div class="cp-vs-card cp-vs-card--turbo">
+              <ul class="cp-vs-list">
+                <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Resultados e método validados</li>
+                <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Curadoria de criadores de acordo com a persona da sua marca</li>
+                <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Roteiros e edição personalizados focados em venda (Guia de conteúdo)</li>
+                <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Gestão dos criadores feita pela Turbo</li>
+                <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>+500 criadores na base</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="cp-vs-divider">
+            <span class="cp-vs-symbol">VS</span>
+          </div>
+
+          <div class="cp-vs-col cp-vs-col--alt">
+            <h2 class="cp-vs-title">Contratar plataforma ou<br>fazer por conta própria</h2>
+            <div class="cp-vs-card cp-vs-card--alt">
+              <ul class="cp-vs-list">
+                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Falta de controle do conteúdo, prazo e estratégias</li>
+                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Custo por vídeo menor, mas ROI também menor…</li>
+                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Tempo gasto gerindo os criadores</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 — CRONOGRAMA -->
+    <section class="xpto-slide cp-slide-timeline">
+      <div class="xpto-slide-inner">
+        <div class="cp-timeline-header">
+          <h2 class="cp-timeline-title">Cronograma</h2>
+        </div>
+        <div class="cp-timeline">
+          <div class="cp-timeline-line"></div>
+
+          <div class="cp-timeline-step cp-timeline-step--up">
+            <div class="cp-timeline-card">
+              <span class="cp-timeline-tag">PASSO 1</span>
+              <p class="cp-timeline-text">Analisamos a marca</p>
+            </div>
+            <div class="cp-timeline-stem"></div>
+            <div class="cp-timeline-dot"></div>
+          </div>
+
+          <div class="cp-timeline-step cp-timeline-step--down">
+            <div class="cp-timeline-dot"></div>
+            <div class="cp-timeline-stem"></div>
+            <div class="cp-timeline-card">
+              <span class="cp-timeline-tag">PASSO 2</span>
+              <p class="cp-timeline-text">Achamos o criador perfeito para você</p>
+            </div>
+          </div>
+
+          <div class="cp-timeline-step cp-timeline-step--up">
+            <div class="cp-timeline-card">
+              <span class="cp-timeline-tag">PASSO 3</span>
+              <p class="cp-timeline-text">Criamos uma estratégia e produzimos 100% do conteúdo</p>
+            </div>
+            <div class="cp-timeline-stem"></div>
+            <div class="cp-timeline-dot"></div>
+          </div>
+
+          <div class="cp-timeline-step cp-timeline-step--down">
+            <div class="cp-timeline-dot"></div>
+            <div class="cp-timeline-stem"></div>
+            <div class="cp-timeline-card">
+              <span class="cp-timeline-tag">PASSO 4</span>
+              <p class="cp-timeline-text">Revise e aprove a proposta</p>
+            </div>
+          </div>
+
+          <div class="cp-timeline-step cp-timeline-step--up cp-timeline-step--end">
+            <div class="cp-timeline-card cp-timeline-card--end">
+              <p class="cp-timeline-text">Seu anúncio está pronto!</p>
+            </div>
+            <div class="cp-timeline-stem"></div>
+            <div class="cp-timeline-dot cp-timeline-dot--end"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 — QUEM TRABALHA COM CREATORS -->
+    <section class="xpto-slide cp-slide-clients">
+      <div class="xpto-slide-inner">
+        <div class="cp-clients-header">
+          <h2 class="cp-clients-title">Quem está trabalhando com Creators?</h2>
+        </div>
+        <div class="cp-clients-row">
+          <div class="cp-client">
+            <div class="cp-client-logo">PARIS</div>
+            <div class="cp-phone-frame">
+              <img src="Criativos/C%C3%B3pia%20de%20WhatsApp%20Image%202025-06-05%20at%2014.42.36%20(1).jpeg" alt="">
+            </div>
+          </div>
+          <div class="cp-client">
+            <div class="cp-client-logo">LE LIS BLANC</div>
+            <div class="cp-phone-frame">
+              <img src="Criativos/WhatsApp%20Image%202025-09-23%20at%2009.56.57%20(1).jpeg" alt="">
+            </div>
+          </div>
+          <div class="cp-client">
+            <div class="cp-client-logo">winstage</div>
+            <div class="cp-phone-frame">
+              <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
+            </div>
+          </div>
+          <div class="cp-client">
+            <div class="cp-client-logo">Jui</div>
+            <div class="cp-phone-frame">
+              <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 — CASE MINIMAL CLUB -->
+    <section class="xpto-slide cp-slide-case">
+      <div class="xpto-slide-inner">
+        <div class="cp-case-grid">
+          <div class="cp-case-left">
+            <div>
+              <span class="cp-case-eyebrow">CASE</span>
+              <h2 class="cp-case-title">Minimal Club</h2>
+            </div>
+            <ol class="cp-case-list">
+              <li><span class="cp-case-num">1</span>Estratégias detalhadas e específicas para cada parte do funil</li>
+              <li><span class="cp-case-num">2</span>Desenvolvimento de campanhas sazonais com Creators</li>
+              <li><span class="cp-case-num">3</span>Foram mais de 200 criativos testados</li>
+            </ol>
+            <div class="cp-case-metrics-wrap">
+              <p class="cp-case-metrics-label">MÉTRICAS</p>
+              <div class="cp-case-metrics">
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">+ R$1 milhão</span>
+                  <span class="cp-case-metric-label">de receita gerada</span>
+                </div>
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">13</span>
+                  <span class="cp-case-metric-label">ROAS</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cp-case-right">
+            <div class="cp-phone-frame">
+              <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+            </div>
+            <span class="cp-case-tag">Exemplo Creators</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div class="xpto-scroll-hint" id="cp-scroll-hint">
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
@@ -8225,6 +9019,7 @@ function openPanel(nodeId) {
 
   const color = node.stageColor;
   const isTrafego = nodeId === 'trafego' || nodeId === 'lead-trafego';
+  const isCreators = nodeId === 'criativos';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -8248,6 +9043,13 @@ function openPanel(nodeId) {
     <button class="pres-launch-btn" onclick="if(window.openPerfPres) window.openPerfPres()">
       <span class="pres-launch-icon">📋</span>
       <span class="pres-launch-title">Apresentação de Performance</span>
+      <span class="pres-launch-arrow">→</span>
+    </button>
+    ` : ''}
+    ${isCreators ? `
+    <button class="pres-launch-btn" onclick="if(window.openCreatorsPres) window.openCreatorsPres()">
+      <span class="pres-launch-icon">🎬</span>
+      <span class="pres-launch-title">Apresentação de Creators</span>
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
@@ -8553,7 +9355,7 @@ document.addEventListener('keydown', e => {
     counter.setAttribute('opacity', '1');
     if (logo) logo.setAttribute('opacity', '1');
 
-    const duration = 3100;
+    const duration = 2400;
     let startTime = null;
     const statClientes = document.getElementById('stat-clientes');
     const statColab    = document.getElementById('stat-colab');
@@ -10797,6 +11599,40 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   });
 
   window.openPerfPres = openPerfPres;
+})();
+
+// ─────────────────────────────────────────────────
+//  CREATORS PRESENTATION
+// ─────────────────────────────────────────────────
+(function() {
+  function openCreatorsPres() {
+    document.getElementById('cp-overlay').classList.add('is-open');
+    document.getElementById('cp-modal').classList.add('is-open');
+    document.getElementById('cp-close').style.display = 'flex';
+    document.getElementById('cp-scroll-hint').style.display = 'flex';
+    document.getElementById('cp-modal').scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCreatorsPres() {
+    document.getElementById('cp-overlay').classList.remove('is-open');
+    document.getElementById('cp-modal').classList.remove('is-open');
+    document.getElementById('cp-close').style.display = 'none';
+    document.getElementById('cp-scroll-hint').style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cp-close').style.display = 'none';
+  document.getElementById('cp-scroll-hint').style.display = 'none';
+
+  document.getElementById('cp-overlay').addEventListener('click', closeCreatorsPres);
+  document.getElementById('cp-close').addEventListener('click', closeCreatorsPres);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('cp-modal').classList.contains('is-open'))
+      closeCreatorsPres();
+  });
+
+  window.openCreatorsPres = openCreatorsPres;
 })();
 
 // ─────────────────────────────────────────────────
