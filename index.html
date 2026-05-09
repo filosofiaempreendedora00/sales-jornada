@@ -2860,13 +2860,13 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 5px;
   padding: 16px 18px;
   background: rgba(255,255,255,0.032);
-  border: 1px solid rgba(77,141,255,0.18);
+  border: 1px solid rgba(77,141,255,0.22);
   border-radius: 14px;
   transition: border-color 0.2s, background 0.2s;
 }
 .turbo-growth-stat:hover {
-  border-color: rgba(77,141,255,0.35);
-  background: rgba(77,141,255,0.06);
+  border-color: rgba(77,141,255,0.42);
+  background: rgba(77,141,255,0.07);
 }
 .turbo-growth-stat-value {
   font-size: clamp(28px, 3vw, 40px);
@@ -2911,6 +2911,333 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: block;
   font-family: inherit;
   overflow: visible;
+}
+
+/* ── TURBO SLIDE: MISSÃO ─────────────────────────── */
+.turbo-slide--missao {
+  background: #050810;
+  position: relative;
+  padding: 56px 72px;
+  align-items: stretch;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  padding: 32px 64px 60px !important;
+  gap: 0;
+}
+.turbo-missao-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 75% 85% at 90% 55%, rgba(13,80,200,0.38) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 88% 10%, rgba(77,141,255,0.12) 0%, transparent 55%);
+  pointer-events: none;
+}
+.turbo-missao-eyebrow {
+  font-size: clamp(11px, 1.1vw, 14px);
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.42);
+  text-transform: uppercase;
+}
+.turbo-missao-spacer {
+  flex: 1;
+  min-height: 0;
+}
+.turbo-missao-text {
+  font-size: clamp(13px, 1.45vw, 20px);
+  font-weight: 400;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.82);
+  margin: 0;
+  text-align: center;
+  flex-shrink: 0;
+}
+@keyframes turbo-tag-shimmer {
+  0%   { left: -70%; }
+  100% { left: 130%; }
+}
+.turbo-missao-tag {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  font-size: 0.78em;
+  color: #fff;
+  background: linear-gradient(130deg,
+    rgba(155,109,255,0.28) 0%,
+    rgba(77,141,255,0.20) 50%,
+    rgba(13,207,232,0.15) 100%
+  );
+  border: 1px solid rgba(155,109,255,0.55);
+  border-radius: 99px;
+  padding: 3px 16px 4px;
+  vertical-align: middle;
+  top: -1px;
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.18),
+    0 0 18px rgba(155,109,255,0.28),
+    inset 0 1px 0 rgba(255,255,255,0.10);
+}
+.turbo-missao-tag::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -70%; width: 45%; height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.14) 50%,
+    transparent 100%
+  );
+  animation: turbo-tag-shimmer 2.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.turbo-missao-brands {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.turbo-brand-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.13);
+  border-radius: 12px;
+  overflow: hidden;
+  flex: 1;
+  max-width: 160px;
+  min-width: 110px;
+}
+.turbo-brand-card-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 16px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.88);
+  flex: 1;
+  width: 100%;
+  text-align: center;
+}
+.turbo-brand-card-top img {
+  max-height: 26px;
+  max-width: 110px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.turbo-brand-card-top img[alt="Bready"] {
+  max-height: 58px;
+  max-width: 140px;
+}
+.turbo-brand-card--secret .turbo-brand-card-top {
+  color: rgba(255,255,255,0.35);
+  font-weight: 400;
+  border-style: dashed;
+}
+.turbo-brand-card-actions {
+  display: flex;
+  width: 100%;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+.turbo-brand-action {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 8px;
+  color: rgba(255,255,255,0.42);
+  text-decoration: none;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: background 0.15s, color 0.15s;
+  border-left: 1px solid rgba(255,255,255,0.08);
+}
+.turbo-brand-action:first-child { border-left: none; }
+.turbo-brand-action:hover {
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.9);
+}
+.turbo-brand-action svg { width: 11px; height: 11px; flex-shrink: 0; }
+
+/* ── TURBO SLIDE: TIPOGRAFIA Plus Jakarta Sans ───── */
+#apres-sub-turbo,
+#apres-sub-turbo * {
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+}
+
+/* ── TURBO SLIDE: MISSÃO + ÓRBITA ────────────────── */
+@keyframes turbo-orbit-spin    { to { transform: rotate(360deg);  } }
+@keyframes turbo-orbit-counter { to { transform: rotate(-360deg); } }
+
+.turbo-orbit-wrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.turbo-orbit-ring {
+  position: relative;
+  width:  min(56vh, 548px);
+  height: min(56vh, 548px);
+  flex-shrink: 0;
+  overflow: visible;
+}
+.turbo-orbit-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  cursor: pointer;
+}
+.turbo-orbit-center-logo {
+  width: 180px;
+  height: auto;
+  object-fit: contain;
+  filter: brightness(1.15) drop-shadow(0 0 22px rgba(77,141,255,0.4));
+}
+.turbo-orbit-guide { display: none; }
+.turbo-orbit-track {
+  position: absolute;
+  inset: 0;
+  animation: turbo-orbit-spin 30s linear infinite;
+}
+.turbo-orbit-bubble {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(var(--r) * -1));
+}
+.turbo-orbit-bubble-counter {
+  animation: turbo-orbit-counter 30s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.turbo-orbit-bubble-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transform: rotate(calc(-1 * var(--a)));
+}
+.turbo-orbit-bubble-circle {
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 33% 28%,
+    rgba(255,255,255,0.32) 0%,
+    rgba(60,110,230,0.20) 42%,
+    rgba(0,5,30,0.60) 100%);
+  border: 1px solid rgba(255,255,255,0.24);
+  box-shadow:
+    0 6px 24px rgba(77,141,255,0.40),
+    inset 0 2px 6px rgba(255,255,255,0.22),
+    inset 0 -2px 5px rgba(0,0,40,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  position: relative;
+  backdrop-filter: blur(6px);
+}
+.turbo-orbit-bubble-circle::after {
+  content: '';
+  position: absolute;
+  top: 16%; left: 20%;
+  width: 32%; height: 18%;
+  background: rgba(255,255,255,0.40);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+.turbo-orbit-bubble-label {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+/* ── TURBO SLIDE: CASES (imagem) ─────────────────── */
+.turbo-slide--cases {
+  background: #050810;
+  padding: 0 !important;
+  align-items: stretch;
+  justify-content: stretch;
+}
+.turbo-cases-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* ── TURBO SLIDE: CULTURA ────────────────────────── */
+.turbo-slide--cultura {
+  background: #050810;
+  position: relative;
+  align-items: stretch;
+  padding: 64px 72px;
+}
+.turbo-culture-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 70% 80% at 88% 65%, rgba(13,80,200,0.38) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 92% 15%, rgba(77,141,255,0.12) 0%, transparent 55%);
+  pointer-events: none;
+}
+.turbo-slide--cultura .turbo-slide-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+  position: relative; z-index: 1;
+  max-width: 700px;
+}
+.turbo-culture-quote {
+  font-size: clamp(90px, 12vw, 140px);
+  line-height: 0.75;
+  color: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+  position: absolute;
+  user-select: none;
+  pointer-events: none;
+}
+.turbo-culture-quote--open  { top: 44px;  left: 60px;  }
+.turbo-culture-quote--close { bottom: 32px; right: 56px; }
+.turbo-culture-title {
+  font-size: clamp(26px, 3vw, 44px);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: -0.5px;
+  line-height: 1.1;
+  color: #fff;
+  margin: 0;
+  text-transform: uppercase;
+}
+.turbo-culture-body {
+  font-size: clamp(15px, 1.55vw, 20px);
+  line-height: 1.7;
+  color: rgba(255,255,255,0.82);
+  margin: 0;
+}
+.turbo-culture-author {
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: rgba(255,255,255,0.52);
+  margin: 0;
+  letter-spacing: 0.3px;
 }
 
 /* ── BREADY SOCIAL PROOF ──────────────────────────── */
@@ -5999,11 +6326,11 @@ a.xpto-pricing-btn { text-decoration: none; }
             <p class="turbo-growth-desc">De zero a mais de 1.300 parceiros em 4 anos — crescimento guiado por estratégia, dados e execução.</p>
             <div class="turbo-growth-stats">
               <div class="turbo-growth-stat">
-                <span class="turbo-growth-stat-value">1.300+</span>
+                <span class="turbo-growth-stat-value" id="stat-clientes">1.300+</span>
                 <span class="turbo-growth-stat-label">Clientes atendidos</span>
               </div>
               <div class="turbo-growth-stat">
-                <span class="turbo-growth-stat-value">120+</span>
+                <span class="turbo-growth-stat-value" id="stat-colab">120+</span>
                 <span class="turbo-growth-stat-label">Colaboradores</span>
               </div>
             </div>
@@ -6017,48 +6344,161 @@ a.xpto-pricing-btn { text-decoration: none; }
             <div class="turbo-chart-area">
               <svg class="turbo-chart-svg" viewBox="0 0 500 650" preserveAspectRatio="xMidYMax meet">
                 <defs>
+                  <!-- Espaçamento igual: 2022=30 2023=138 2024=246 2025=354 2026=462 (108px cada) -->
                   <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%"   stop-color="rgba(155,109,255,0)"/>
+                    <stop offset="0%"   stop-color="rgba(77,141,255,0)"/>
                     <stop offset="55%"  stop-color="rgba(77,141,255,0.45)"/>
-                    <stop offset="85%"  stop-color="rgba(13,207,232,0.9)"/>
-                    <stop offset="100%" stop-color="rgba(255,255,255,1)"/>
+                    <stop offset="85%"  stop-color="rgba(77,141,255,0.9)"/>
+                    <stop offset="100%" stop-color="rgba(106,170,255,1)"/>
                   </linearGradient>
                   <filter id="glow">
                     <feGaussianBlur stdDeviation="3" result="blur"/>
                     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
                   </filter>
+                  <filter id="dotGlow" x="-120%" y="-120%" width="340%" height="340%">
+                    <feGaussianBlur stdDeviation="7" result="b1"/>
+                    <feGaussianBlur stdDeviation="2.5" result="b2"/>
+                    <feMerge><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
                 </defs>
-                <!-- Escala linear proporcional: y = 610 - 580*(v/1300) -->
-                <!-- 2022=0→610  2023=100→565  2024=300→476  2025=1000→164  2026=1300→30 -->
-                <path d="M 30 610 C 62 608, 93 569, 115 565 C 155 557, 184 483, 215 476 C 275 465, 318 178, 372 164 C 408 147, 436 48, 462 30"
+                <!-- y = 610 - 580*(v/1300) | x igualmente espaçados a cada 108px -->
+                <path id="growth-curve"
+                      d="M 30 610 C 71 608, 110 569, 138 565 C 181 557, 213 483, 246 476 C 287 465, 317 178, 354 164 C 397 147, 431 48, 462 30"
                       fill="none" stroke="url(#curveGrad)" stroke-width="3" filter="url(#glow)"/>
                 <!-- Linhas verticais tracejadas -->
                 <line x1="30"  y1="610" x2="30"  y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="115" y1="565" x2="115" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="215" y1="476" x2="215" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="372" y1="164" x2="372" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="462" y1="30"  x2="462" y2="628" stroke="rgba(13,207,232,0.3)"   stroke-width="1" stroke-dasharray="3,4"/>
-                <!-- Pontos -->
-                <circle cx="30"  cy="610" r="5" fill="rgba(255,255,255,0.5)" filter="url(#glow)"/>
-                <circle cx="115" cy="565" r="5" fill="rgba(255,255,255,0.6)" filter="url(#glow)"/>
-                <circle cx="215" cy="476" r="6" fill="rgba(255,255,255,0.75)" filter="url(#glow)"/>
-                <circle cx="372" cy="164" r="7" fill="white" filter="url(#glow)"/>
-                <circle cx="462" cy="30"  r="9" fill="rgba(13,207,232,1)"    filter="url(#glow)"/>
-                <!-- Labels dos valores -->
-                <text x="42"  y="604" fill="rgba(255,255,255,0.45)" font-size="16" font-weight="600" font-family="inherit">0</text>
-                <text x="127" y="557" fill="rgba(255,255,255,0.6)"  font-size="16" font-weight="600" font-family="inherit">100</text>
-                <text x="227" y="468" fill="rgba(255,255,255,0.75)" font-size="17" font-weight="700" font-family="inherit">300</text>
-                <text x="316" y="156" fill="white"                  font-size="18" font-weight="700" font-family="inherit">1.000</text>
-                <text x="432" y="22"  fill="rgba(13,207,232,1)"     font-size="18" font-weight="800" font-family="inherit">1.300</text>
+                <line x1="138" y1="565" x2="138" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="246" y1="476" x2="246" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="354" y1="164" x2="354" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="462" y1="30"  x2="462" y2="628" stroke="rgba(77,141,255,0.35)"  stroke-width="1" stroke-dasharray="3,4"/>
+                <!-- Pontos dos marcos — inicialmente ocultos, revelados pela animação -->
+                <circle class="growth-milestone" id="gm-0"    cx="30"  cy="610" r="5" fill="rgba(255,255,255,0.5)"  filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-100"  cx="138" cy="565" r="5" fill="rgba(255,255,255,0.6)"  filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-300"  cx="246" cy="476" r="6" fill="rgba(255,255,255,0.75)" filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-1000" cx="354" cy="164" r="7" fill="white"                  filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-1300" cx="462" cy="30"  r="9" fill="#4d8dff"               filter="url(#glow)" opacity="0"/>
+                <!-- Labels dos marcos — inicialmente ocultos -->
+                <text class="growth-milestone" id="gml-0"    x="42"  y="604" fill="rgba(255,255,255,0.45)" font-size="16" font-weight="600" font-family="inherit" opacity="0">0</text>
+                <text class="growth-milestone" id="gml-100"  x="150" y="557" fill="rgba(255,255,255,0.6)"  font-size="16" font-weight="600" font-family="inherit" opacity="0">100</text>
+                <text class="growth-milestone" id="gml-300"  x="258" y="468" fill="rgba(255,255,255,0.75)" font-size="17" font-weight="700" font-family="inherit" opacity="0">300</text>
+                <text class="growth-milestone" id="gml-1000" x="302" y="156" fill="white"                  font-size="18" font-weight="700" font-family="inherit" opacity="0">1.000</text>
+                <text class="growth-milestone" id="gml-1300" x="432" y="22"  fill="#6aaaff"                font-size="18" font-weight="800" font-family="inherit" opacity="0">1.300</text>
+                <!-- Anéis de brilho da bolinha animada -->
+                <circle id="growth-glow-outer" cx="30" cy="610" r="24" fill="rgba(77,141,255,0.09)" opacity="0"/>
+                <circle id="growth-glow-mid"   cx="30" cy="610" r="15" fill="rgba(77,141,255,0.22)" opacity="0"/>
+                <!-- Bolinha animada (sem filter pesado — brilho vem dos anéis) -->
+                <circle id="growth-dot" cx="30" cy="610" r="9" fill="#4d8dff" opacity="0"/>
+                <!-- Logo Turbo acima da bolinha (centrada no mesmo eixo) -->
+                <image id="growth-dot-logo" href="logo.png" width="26" height="26" x="17" y="570" opacity="0" preserveAspectRatio="xMidYMid meet"/>
+                <!-- Contador abaixo da bolinha (centrado no mesmo eixo) -->
+                <text id="growth-dot-counter" x="30" y="630" fill="#6aaaff" font-size="17" font-weight="800" font-family="inherit" text-anchor="middle" opacity="0">0</text>
                 <!-- Eixo X -->
                 <text x="30"  y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2022</text>
-                <text x="115" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2023</text>
-                <text x="215" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2024</text>
-                <text x="372" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2025</text>
-                <text x="462" y="646" fill="rgba(13,207,232,0.75)"  font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2026</text>
+                <text x="138" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2023</text>
+                <text x="246" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2024</text>
+                <text x="354" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2025</text>
+                <text x="462" y="646" fill="rgba(77,141,255,0.85)"  font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2026</text>
               </svg>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 03 — MISSÃO + ÓRBITA -->
+      <div class="turbo-slide turbo-slide--missao">
+        <div class="turbo-missao-bg"></div>
+
+        <div class="turbo-missao-eyebrow">Nossa Missão</div>
+        <div class="turbo-missao-spacer"></div>
+        <p class="turbo-missao-text">
+          Tornamos a vida de quem vende online mais
+          <span class="turbo-missao-tag">FÁCIL</span>
+          e <span class="turbo-missao-tag">RENTÁVEL</span>...
+        </p>
+        <div class="turbo-missao-spacer"></div>
+
+        <div class="turbo-orbit-wrap">
+          <div class="turbo-orbit-ring" style="--r:190px">
+            <div class="turbo-orbit-guide"></div>
+            <div class="turbo-orbit-center">
+              <img src="Logo-Turbo-branca (4).png" alt="Turbo" class="turbo-orbit-center-logo">
+            </div>
+            <div class="turbo-orbit-track">
+              <div class="turbo-orbit-bubble" style="--a:-90deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">📹</div><span class="turbo-orbit-bubble-label">UGCs</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:-60deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">🎨</div><span class="turbo-orbit-bubble-label">ID Visual</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:-30deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">📦</div><span class="turbo-orbit-bubble-label">Rótulo de embalagem</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:0deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">🛍️</div><span class="turbo-orbit-bubble-label">Loja Virtual</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:30deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">⚙️</div><span class="turbo-orbit-bubble-label">Automações</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:60deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">📈</div><span class="turbo-orbit-bubble-label">Performance (tráfego)</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:90deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">🎬</div><span class="turbo-orbit-bubble-label">Criativos</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:120deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">📝</div><span class="turbo-orbit-bubble-label">Listicle/Advertorial</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:150deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">🤝</div><span class="turbo-orbit-bubble-label">Comunidade</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:180deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">📱</div><span class="turbo-orbit-bubble-label">Social Media</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:210deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">📊</div><span class="turbo-orbit-bubble-label">CRM</span></div></div></div>
+              <div class="turbo-orbit-bubble" style="--a:240deg"><div class="turbo-orbit-bubble-counter"><div class="turbo-orbit-bubble-content"><div class="turbo-orbit-bubble-circle">🔬</div><span class="turbo-orbit-bubble-label">CRO</span></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="turbo-missao-spacer"></div>
+        <p class="turbo-missao-text">...e aproveitamos desse know-how para criar as marcas da próxima geração.</p>
+        <div class="turbo-missao-spacer"></div>
+
+        <div class="turbo-missao-brands">
+          <!-- Bready -->
+          <div class="turbo-brand-card">
+            <div class="turbo-brand-card-top">
+              <img src="beady-logo.png" alt="Bready">
+            </div>
+            <div class="turbo-brand-card-actions">
+              <a href="https://www.meubready.com.br/" target="_blank" rel="noopener" class="turbo-brand-action">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Site
+              </a>
+              <a href="https://www.instagram.com/meubready/" target="_blank" rel="noopener" class="turbo-brand-action">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                IG
+              </a>
+            </div>
+          </div>
+          <!-- flashCRM -->
+          <div class="turbo-brand-card">
+            <div class="turbo-brand-card-top">
+              <img src="flashcrm-logo.svg" alt="flashCRM">
+            </div>
+            <div class="turbo-brand-card-actions">
+              <a href="https://www.flashcrm.com.br/" target="_blank" rel="noopener" class="turbo-brand-action">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                Site
+              </a>
+            </div>
+          </div>
+          <!-- Em breve -->
+          <div class="turbo-brand-card turbo-brand-card--secret">
+            <div class="turbo-brand-card-top">🤫 Em breve...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 04 — CASES E-COMMERCE -->
+      <div class="turbo-slide turbo-slide--cases">
+        <img src="fotos%20turbo/cases%20ecom%40sharp.png" alt="Cases E-commerce Turbo" class="turbo-cases-img">
+      </div>
+
+      <!-- SLIDE 05 — CASES LEAD -->
+      <div class="turbo-slide turbo-slide--cases">
+        <img src="fotos%20turbo/cases%20leads%40sharp.png" alt="Cases Lead Generation Turbo" class="turbo-cases-img">
+      </div>
+
+      <!-- SLIDE 06 — CULTURA -->
+      <div class="turbo-slide turbo-slide--cultura">
+        <div class="turbo-culture-bg"></div>
+        <span class="turbo-culture-quote turbo-culture-quote--open">"</span>
+        <span class="turbo-culture-quote turbo-culture-quote--close">"</span>
+        <div class="turbo-slide-inner">
+          <h2 class="turbo-culture-title">Cultura Forte<br>com Foco em Resultados</h2>
+          <p class="turbo-culture-body">Você sonha grande, é inconformado e por isso melhora todos os dias. Pensando como dono, fazendo o que tem que ser feito, você terá o que você merece!</p>
+          <p class="turbo-culture-author">– Musso, Quieroz</p>
         </div>
       </div>
 
@@ -7786,6 +8226,199 @@ document.addEventListener('keydown', e => {
       }
     });
   });
+})();
+
+// Growth chart animation — triggered every time slide 2 becomes active
+(function () {
+  const container = document.querySelector('.turbo-slides');
+  if (!container) return;
+
+  let lastSlide = -1;
+  let rafId = null;
+
+  function fmtBR(n) {
+    if (n >= 1000) return Math.floor(n / 1000) + '.' + String(n % 1000).padStart(3, '0');
+    return String(n);
+  }
+
+  function easeGrowth(t) { return t; } // linear — velocidade uniforme
+
+  function resetChart() {
+    const svg = document.querySelector('.turbo-chart-svg');
+    if (!svg) return;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+    const curve = svg.querySelector('#growth-curve');
+    if (curve) {
+      curve.style.transition = 'none';
+      const len = curve.getTotalLength();
+      curve.style.strokeDasharray = len;
+      curve.style.strokeDashoffset = len;
+    }
+    svg.querySelectorAll('.growth-milestone').forEach(el => el.setAttribute('opacity', '0'));
+    ['growth-dot','growth-glow-outer','growth-glow-mid','growth-dot-counter','growth-dot-logo','gml-1300'].forEach(id => {
+      svg.querySelector('#' + id)?.setAttribute('opacity', '0');
+    });
+    // Zera os big numbers
+    const sc = document.getElementById('stat-clientes');
+    const sb = document.getElementById('stat-colab');
+    if (sc) sc.textContent = '0';
+    if (sb) sb.textContent = '0';
+  }
+
+  function animateChart() {
+    const svg = document.querySelector('.turbo-chart-svg');
+    if (!svg) return;
+
+    const curve   = svg.querySelector('#growth-curve');
+    const dot     = svg.querySelector('#growth-dot');
+    const glowOut = svg.querySelector('#growth-glow-outer');
+    const glowMid = svg.querySelector('#growth-glow-mid');
+    const counter = svg.querySelector('#growth-dot-counter');
+    const logo    = svg.querySelector('#growth-dot-logo');
+    if (!curve || !dot) return;
+
+    curve.style.transition = 'none';
+    const totalLen = curve.getTotalLength();
+    curve.style.strokeDasharray  = totalLen;
+    curve.style.strokeDashoffset = totalLen;
+
+    // Precompute t (0-1 along path) para cada marco — x igualmente espaçados
+    const milestones = [
+      { x: 30,  dotId: 'gm-0',    lblId: 'gml-0',    val: 0,    t: 0 },
+      { x: 138, dotId: 'gm-100',  lblId: 'gml-100',  val: 100,  t: null },
+      { x: 246, dotId: 'gm-300',  lblId: 'gml-300',  val: 300,  t: null },
+      { x: 354, dotId: 'gm-1000', lblId: 'gml-1000', val: 1000, t: null },
+      { x: 462, dotId: 'gm-1300', lblId: 'gml-1300', val: 1300, t: null },
+    ];
+    const SAMPLES = 600;
+    milestones.forEach(m => {
+      if (m.t !== null) return;
+      let bestT = 0, bestD = Infinity;
+      for (let i = 0; i <= SAMPLES; i++) {
+        const t  = i / SAMPLES;
+        const pt = curve.getPointAtLength(totalLen * t);
+        const d  = Math.abs(pt.x - m.x);
+        if (d < bestD) { bestD = d; bestT = t; }
+      }
+      m.t = bestT;
+    });
+
+    // Pré-amostra o path — evita getPointAtLength 60x/s (causa de jank)
+    const STEPS = 1200;
+    const pathPts = new Array(STEPS + 1);
+    for (let i = 0; i <= STEPS; i++) {
+      const p = curve.getPointAtLength(totalLen * i / STEPS);
+      pathPts[i] = { x: p.x, y: p.y };
+    }
+
+    const DOT_R   = 9;
+    const LOGO_SZ = 26;
+    const LOGO_GAP_TOP = 12;   // gap entre topo do dot e base da logo
+    const NUM_GAP_BOT  = 10;   // gap entre base do dot e topo do número
+
+    // Fade: counter+logo somem, gml-1300 aparece nos últimos 4%
+    const FADE_START = 0.96;
+
+    // Show animated elements
+    dot.setAttribute('opacity', '1');
+    glowOut.setAttribute('opacity', '1');
+    glowMid.setAttribute('opacity', '1');
+    counter.setAttribute('opacity', '1');
+    if (logo) logo.setAttribute('opacity', '1');
+
+    const duration = 3100;
+    let startTime = null;
+    const statClientes = document.getElementById('stat-clientes');
+    const statColab    = document.getElementById('stat-colab');
+
+    function frame(now) {
+      if (startTime === null) startTime = now;
+      const raw   = Math.min((now - startTime) / duration, 1);
+      const eased = easeGrowth(raw);
+
+      // Curva progressiva
+      curve.style.strokeDashoffset = totalLen * (1 - eased);
+
+      // Posição do dot via array pré-amostrado (sem getPointAtLength em loop)
+      const idx = Math.min(STEPS, Math.round(eased * STEPS));
+      const pt  = pathPts[idx];
+
+      [dot, glowOut, glowMid].forEach(el => {
+        el.setAttribute('cx', pt.x);
+        el.setAttribute('cy', pt.y);
+      });
+
+      // Contadores sincronizados
+      const val = Math.round(eased * 1300);
+      counter.textContent = fmtBR(val);
+      if (statClientes) statClientes.textContent = fmtBR(val) + '+';
+      if (statColab)    statColab.textContent    = Math.round(eased * 120) + '+';
+
+      // Logo: centralizada ACIMA do dot (mesmo eixo x)
+      const logoX = pt.x - LOGO_SZ / 2;
+      const logoY = Math.max(2, pt.y - DOT_R - LOGO_GAP_TOP - LOGO_SZ);
+      if (logo) {
+        logo.setAttribute('x', logoX);
+        logo.setAttribute('y', logoY);
+      }
+
+      // Contador: centralizado ABAIXO do dot (mesmo eixo x), separado pelo dot
+      const numY = Math.min(pt.y + DOT_R + NUM_GAP_BOT + 16, 636);
+      counter.setAttribute('x', pt.x);
+      counter.setAttribute('y', numY);
+
+      // Fade out counter+logo / fade in gml-1300 nos últimos 4%
+      const aAlpha = eased < FADE_START
+        ? '1'
+        : String(Math.max(0, 1 - (eased - FADE_START) / (1 - FADE_START)));
+      counter.setAttribute('opacity', aAlpha);
+      if (logo) logo.setAttribute('opacity', aAlpha);
+      const sAlpha = eased < FADE_START
+        ? '0'
+        : String(Math.min(1, (eased - FADE_START) / (1 - FADE_START)));
+      svg.querySelector('#gml-1300')?.setAttribute('opacity', sAlpha);
+
+      // Revela marcos
+      milestones.forEach(m => {
+        if (eased >= m.t) {
+          svg.querySelector('#' + m.dotId)?.setAttribute('opacity', '1');
+          if (m.lblId && m.lblId !== 'gml-1300') {
+            svg.querySelector('#' + m.lblId)?.setAttribute('opacity', '1');
+          }
+        }
+      });
+
+      if (raw < 1) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        dot.setAttribute('opacity', '0');
+        glowOut.setAttribute('opacity', '0');
+        glowMid.setAttribute('opacity', '0');
+        counter.setAttribute('opacity', '0');
+        if (logo) logo.setAttribute('opacity', '0');
+        svg.querySelector('#gml-1300')?.setAttribute('opacity', '1');
+        if (statClientes) statClientes.textContent = '1.300+';
+        if (statColab)    statColab.textContent    = '120+';
+        rafId = null;
+      }
+    }
+
+    rafId = requestAnimationFrame(frame);
+  }
+
+  container.addEventListener('scroll', () => {
+    const slides  = container.querySelectorAll('.turbo-slide');
+    const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
+    if (current === lastSlide) return;
+    lastSlide = current;
+    if (current === 1) {
+      resetChart();
+      setTimeout(animateChart, 350);
+    }
+  }, { passive: true });
+
+  // Initialize hidden state on load
+  resetChart();
 })();
 
 // Checklist delegation
