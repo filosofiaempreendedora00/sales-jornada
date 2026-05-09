@@ -2922,7 +2922,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 /* ── TURBO SLIDE: DNA DE NEGÓCIOS ───────────────── */
 .turbo-slide--dna {
   background: #060910;
-  padding: 52px 56px 48px;
+  padding: 72px clamp(24px, 4vw, 56px) 32px;
   align-items: stretch;
 }
 .turbo-slide--dna .turbo-slide-inner {
@@ -2931,7 +2931,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-direction: column;
   height: 100%;
   gap: 0;
-  justify-content: center;
+  justify-content: flex-start;
 }
 .turbo-dna-bg {
   position: absolute; inset: 0;
@@ -2945,7 +2945,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
   position: relative; z-index: 1;
 }
 .turbo-dna-title {
@@ -2978,18 +2978,22 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     0 0 0 1px rgba(155,109,255,0.28),
     0 0 0 5px rgba(155,109,255,0.06),
     0 28px 72px rgba(0,0,0,0.6);
-  flex: 0 0 auto;
+  flex: 0 1 auto;
+  min-width: 0;
   align-self: center;
   background: #0a0c16;
 }
-/* founders 6000×4000 = 3:2 → 340×227px (smaller, supporting role) */
+/* founders 6000×4000 = 3:2 — grows in 17:15 ratio vs team, capped by available height
+   buffer 350px = top pad (72) + header (~128) + drop shadow (~64) + chevron clearance (~86) */
 .turbo-dna-photos > .turbo-dna-photo-wrap:first-child {
-  width: 340px;
+  flex: 17 1 0;
+  max-width: min(900px, calc((100vh - 350px) * 0.8 * 17 / 15));
   aspect-ratio: 3 / 2;
 }
-/* team 1080×1350 = 4:5 → 300×375px (taller, more prominent) */
+/* team 1080×1350 = 4:5 — taller, more prominent, sized so its shadow doesn't crowd the scroll chevron */
 .turbo-dna-photo-wrap--team {
-  width: 300px;
+  flex: 15 1 0;
+  max-width: min(794px, calc((100vh - 350px) * 0.8));
   aspect-ratio: 4 / 5;
 }
 .turbo-dna-photo {
@@ -3011,13 +3015,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-transform: uppercase;
   color: rgba(255,255,255,0.6);
 }
-/* hélice DNA animada entre as fotos */
+/* hélice DNA animada entre as fotos — gap visível, responsivo */
 .turbo-dna-helix {
-  flex: 0 0 120px;
+  position: relative;
+  flex: 0 0 clamp(40px, 4vw, 72px);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative; z-index: 2;
+  z-index: 2;
 }
 .turbo-dna-helix-svg {
   width: 100%;
