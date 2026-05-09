@@ -3195,7 +3195,19 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   position: sticky;
   top: 0;
   z-index: 2;
-  will-change: transform;
+}
+/* Durante o zoom: troca filter (3 passes CPU) por text-shadow (shader GPU barato)
+   — mantém o brilho visualmente equivalente, sem pixelação e sem travar */
+#turbo-missao-text-slide.is-zooming .turbo-missao-text-big {
+  filter: none;
+  text-shadow:
+    0 0 24px rgba(155,109,255,0.55),
+    0 0 64px rgba(77,141,255,0.30),
+    0 6px 28px rgba(0,0,0,0.45);
+}
+#turbo-missao-text-slide.is-zooming .turbo-missao-text-highlight {
+  filter: none;
+  text-shadow: 0 0 12px rgba(13,207,232,0.22);
 }
 .turbo-missao-zoom-stop {
   height: 100vh;
@@ -9712,6 +9724,7 @@ function turboFindSlideIdx(container, slides) {
     if (rawP <= 0) {
       missaoSlide.style.transform = '';
       missaoSlide.style.opacity   = '1';
+      missaoSlide.classList.remove('is-zooming');
       targetScale = null;  // force fresh zoom calibration on next entry
       return;
     }
@@ -9721,6 +9734,8 @@ function turboFindSlideIdx(container, slides) {
       calibrateZoom();
       if (targetScale === null) return;
     }
+
+    missaoSlide.classList.add('is-zooming');
 
     const p     = Math.min(rawP, 1);
     const ease  = easeInOutSine(p);
@@ -9734,6 +9749,7 @@ function turboFindSlideIdx(container, slides) {
 
   function resetCalibration() {
     sectionTop = null; targetScale = null;
+    missaoSlide.classList.remove('is-zooming');
     missaoSlide.style.transform = '';
     missaoSlide.style.transformOrigin = '';
     missaoSlide.style.opacity   = '';
