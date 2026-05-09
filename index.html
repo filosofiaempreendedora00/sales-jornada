@@ -9661,46 +9661,68 @@ function turboFindSlideIdx(container, slides) {
   const facil       = document.getElementById('turbo-facil-span');
   if (!container || !section || !missaoSlide || !facil) return;
 
-  let originX = null, originY = null, targetScale = null;
+  // Posição da seção dentro do scroll container (coordenada fixa, scroll-independente)
+  // Usa getBoundingClientRect para ser relativo ao container, não ao offset parent do DOM
+  let sectionTop  = null;
+  let targetScale = null;
 
   function calibrate() {
-    // Mede posições brutas (slide pode estar fora da viewport — tudo bem,
-    // a diferença relativa entre rects é o que importa para transform-origin)
-    const sr = missaoSlide.getBoundingClientRect();
-    const fr = facil.getBoundingClientRect();
-    originX = fr.left + fr.width  / 2 - sr.left;
-    originY = fr.top  + fr.height / 2 - sr.top;
-    // Alvo: "fácil" preenche ~85 % da menor dimensão
-    targetScale = Math.min(
-      (sr.width  * 0.85) / fr.width,
-      (sr.height * 0.85) / fr.height
-    );
-    missaoSlide.style.transformOrigin = `${originX}px ${originY}px`;
-  }
+    const wasTransform = missaoSlide.style.transform;
+    missaoSlide.style.transform = '';          // garante medição com scale=1
 
-  // Calibra quando o layout estiver pronto
-  if (document.readyState === 'complete') { calibrate(); }
-  else { window.addEventListener('load', calibrate, { once: true }); }
-  window.addEventListener('resize', calibrate);
+    const cR = container.getBoundingClientRect();
+    const sR = section.getBoundingClientRect();
+    const mR = missaoSlide.getBoundingClientRect();
+    const fR = facil.getBoundingClientRect();
+
+    // Posição absoluta da seção dentro do container (invariante ao scroll)
+    sectionTop = sR.top - cR.top + container.scrollTop;
+
+    // transform-origin: centro de "fácil" relativo ao slide
+    const ox = fR.left + fR.width  / 2 - mR.left;
+    const oy = fR.top  + fR.height / 2 - mR.top;
+    missaoSlide.style.transformOrigin = `${ox}px ${oy}px`;
+
+    // Escala alvo: "fácil" ocupa ~85 % da tela
+    targetScale = Math.min(
+      (mR.width  * 0.85) / fR.width,
+      (mR.height * 0.85) / fR.height
+    );
+
+    missaoSlide.style.transform = wasTransform; // restaura
+  }
 
   function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t + 2, 2) / 2; }
 
   function update() {
-    if (targetScale === null) calibrate();
+    if (sectionTop === null || targetScale === null) return;
     const slideH = window.innerHeight;
-    const rawP   = (container.scrollTop - section.offsetTop) / slideH;
+    const rawP   = (container.scrollTop - sectionTop) / slideH;
     const p      = Math.max(0, Math.min(1, rawP));
     const scale  = 1 + easeInOut(p) * (targetScale - 1);
 
     missaoSlide.style.transform = `scale(${scale.toFixed(4)})`;
-    // Dissolve ao sair para órbita — revela a logo Turbo por trás
-    missaoSlide.style.opacity = rawP > 1
+    missaoSlide.style.opacity   = rawP > 1
       ? Math.max(0, 1 - (rawP - 1) * 2.5).toFixed(4)
       : '1';
   }
 
+  function init() {
+    calibrate();
+    update();
+  }
+
+  if (document.readyState === 'complete') { init(); }
+  else { window.addEventListener('load', init, { once: true }); }
+
+  window.addEventListener('resize', () => {
+    missaoSlide.style.transform = '';
+    targetScale = null; sectionTop = null;
+    calibrate();
+    update();
+  });
+
   container.addEventListener('scroll', update, { passive: true });
-  update();
 })();
 
 // Checklist delegation
