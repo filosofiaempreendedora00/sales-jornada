@@ -2830,7 +2830,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 26px;
 }
 .turbo-growth-title {
-  font-size: clamp(28px, 3vw, 44px);
+  font-size: clamp(36px, 4vw, 58px);
   font-weight: 900;
   letter-spacing: -1.5px;
   line-height: 1.05;
@@ -2869,10 +2869,15 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   background: rgba(77,141,255,0.07);
 }
 .turbo-growth-stat-value {
+  display: block;
+  height: 1em;
+  overflow: hidden;
   font-size: clamp(28px, 3vw, 40px);
   font-weight: 900;
   letter-spacing: -1.5px;
   line-height: 1;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
   background: linear-gradient(135deg, #6aaaff 0%, #0dcfe8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -2893,7 +2898,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   align-items: stretch;
   gap: 0;
   position: relative; z-index: 1;
-  overflow: hidden;
+  overflow: visible;
+  padding-top: 60px;
 }
 .turbo-chart-yaxis { display: none; }
 .turbo-chart-ylabel { display: none; }
@@ -2903,7 +2909,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   align-items: flex-end;
   min-width: 0;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 .turbo-chart-svg {
   width: 100%;
@@ -2911,6 +2917,142 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: block;
   font-family: inherit;
   overflow: visible;
+}
+
+/* ── TURBO SLIDE: DNA DE NEGÓCIOS ───────────────── */
+.turbo-slide--dna {
+  background: #060910;
+  padding: 52px 56px 48px;
+  align-items: stretch;
+}
+.turbo-slide--dna .turbo-slide-inner {
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 0;
+  justify-content: center;
+}
+.turbo-dna-bg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 70% at 18% 55%, rgba(155,109,255,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 82% 55%, rgba(13,80,200,0.18) 0%, transparent 60%);
+  pointer-events: none;
+}
+.turbo-dna-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 22px;
+  position: relative; z-index: 1;
+}
+.turbo-dna-title {
+  font-size: clamp(30px, 3.2vw, 48px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1.1;
+  margin: 0;
+  /* padding-bottom prevents descender clip on gradient text */
+  padding-bottom: 6px;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+/* fotos: flex row com hélice no meio */
+.turbo-dna-photos {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  position: relative; z-index: 1;
+}
+.turbo-dna-photo-wrap {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(155,109,255,0.28),
+    0 0 0 5px rgba(155,109,255,0.06),
+    0 28px 72px rgba(0,0,0,0.6);
+  flex: 0 0 auto;
+  align-self: center;
+  background: #0a0c16;
+}
+/* founders 6000×4000 = 3:2 → 340×227px (smaller, supporting role) */
+.turbo-dna-photos > .turbo-dna-photo-wrap:first-child {
+  width: 340px;
+  aspect-ratio: 3 / 2;
+}
+/* team 1080×1350 = 4:5 → 300×375px (taller, more prominent) */
+.turbo-dna-photo-wrap--team {
+  width: 300px;
+  aspect-ratio: 4 / 5;
+}
+.turbo-dna-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+.turbo-dna-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 48px 20px 16px;
+  background: linear-gradient(to top, rgba(5,8,18,0.82) 0%, transparent 100%);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+}
+/* hélice DNA animada entre as fotos */
+.turbo-dna-helix {
+  flex: 0 0 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; z-index: 2;
+}
+.turbo-dna-helix-svg {
+  width: 100%;
+  height: 80px;
+  overflow: visible;
+}
+.helix-s1 {
+  fill: none;
+  stroke: rgba(155,109,255,0.92);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 4;
+  animation: helix-flow 0.9s linear infinite;
+}
+.helix-s2 {
+  fill: none;
+  stroke: rgba(106,170,255,0.65);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 6 4;
+  animation: helix-flow 0.9s linear infinite;
+  animation-delay: -0.45s;
+}
+.helix-rung {
+  stroke: rgba(155,109,255,0.22);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+.helix-dot {
+  fill: rgba(155,109,255,0.75);
+  r: 3px;
+}
+@keyframes helix-flow {
+  from { stroke-dashoffset: 0; }
+  to   { stroke-dashoffset: -10; }
 }
 
 /* ── TURBO SLIDE: MISSÃO ─────────────────────────── */
@@ -6314,101 +6456,11 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
 
-      <!-- SLIDE 02 — CRESCIMENTO DE CLIENTES -->
-      <div class="turbo-slide turbo-slide--growth">
-        <div class="turbo-growth-bg"></div>
-        <div class="turbo-slide-inner">
-          <div class="turbo-growth-header">
-            <div>
-              <div class="xpto-eyebrow"><span></span>Crescimento</div>
-              <h2 class="turbo-growth-title">Somos obcecados<br>por resultado.</h2>
-            </div>
-            <p class="turbo-growth-desc">De zero a mais de 1.300 parceiros em 4 anos — crescimento guiado por estratégia, dados e execução.</p>
-            <div class="turbo-growth-stats">
-              <div class="turbo-growth-stat">
-                <span class="turbo-growth-stat-value" id="stat-clientes">1.300+</span>
-                <span class="turbo-growth-stat-label">Clientes atendidos</span>
-              </div>
-              <div class="turbo-growth-stat">
-                <span class="turbo-growth-stat-value" id="stat-colab">120+</span>
-                <span class="turbo-growth-stat-label">Colaboradores</span>
-              </div>
-            </div>
-          </div>
-          <div class="turbo-growth-chart">
-            <!-- Eixo Y -->
-            <div class="turbo-chart-yaxis">
-              <span class="turbo-chart-ylabel">C l i e n t e s</span>
-            </div>
-            <!-- Área do gráfico -->
-            <div class="turbo-chart-area">
-              <svg class="turbo-chart-svg" viewBox="0 0 500 650" preserveAspectRatio="xMidYMax meet">
-                <defs>
-                  <!-- Espaçamento igual: 2022=30 2023=138 2024=246 2025=354 2026=462 (108px cada) -->
-                  <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%"   stop-color="rgba(77,141,255,0)"/>
-                    <stop offset="55%"  stop-color="rgba(77,141,255,0.45)"/>
-                    <stop offset="85%"  stop-color="rgba(77,141,255,0.9)"/>
-                    <stop offset="100%" stop-color="rgba(106,170,255,1)"/>
-                  </linearGradient>
-                  <filter id="glow">
-                    <feGaussianBlur stdDeviation="3" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                  </filter>
-                  <filter id="dotGlow" x="-120%" y="-120%" width="340%" height="340%">
-                    <feGaussianBlur stdDeviation="7" result="b1"/>
-                    <feGaussianBlur stdDeviation="2.5" result="b2"/>
-                    <feMerge><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge>
-                  </filter>
-                </defs>
-                <!-- y = 610 - 580*(v/1300) | x igualmente espaçados a cada 108px -->
-                <path id="growth-curve"
-                      d="M 30 610 C 71 608, 110 569, 138 565 C 181 557, 213 483, 246 476 C 287 465, 317 178, 354 164 C 397 147, 431 48, 462 30"
-                      fill="none" stroke="url(#curveGrad)" stroke-width="3" filter="url(#glow)"/>
-                <!-- Linhas verticais tracejadas -->
-                <line x1="30"  y1="610" x2="30"  y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="138" y1="565" x2="138" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="246" y1="476" x2="246" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="354" y1="164" x2="354" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
-                <line x1="462" y1="30"  x2="462" y2="628" stroke="rgba(77,141,255,0.35)"  stroke-width="1" stroke-dasharray="3,4"/>
-                <!-- Pontos dos marcos — inicialmente ocultos, revelados pela animação -->
-                <circle class="growth-milestone" id="gm-0"    cx="30"  cy="610" r="5" fill="rgba(255,255,255,0.5)"  filter="url(#glow)" opacity="0"/>
-                <circle class="growth-milestone" id="gm-100"  cx="138" cy="565" r="5" fill="rgba(255,255,255,0.6)"  filter="url(#glow)" opacity="0"/>
-                <circle class="growth-milestone" id="gm-300"  cx="246" cy="476" r="6" fill="rgba(255,255,255,0.75)" filter="url(#glow)" opacity="0"/>
-                <circle class="growth-milestone" id="gm-1000" cx="354" cy="164" r="7" fill="white"                  filter="url(#glow)" opacity="0"/>
-                <circle class="growth-milestone" id="gm-1300" cx="462" cy="30"  r="9" fill="#4d8dff"               filter="url(#glow)" opacity="0"/>
-                <!-- Labels dos marcos — inicialmente ocultos -->
-                <text class="growth-milestone" id="gml-0"    x="42"  y="604" fill="rgba(255,255,255,0.45)" font-size="16" font-weight="600" font-family="inherit" opacity="0">0</text>
-                <text class="growth-milestone" id="gml-100"  x="150" y="557" fill="rgba(255,255,255,0.6)"  font-size="16" font-weight="600" font-family="inherit" opacity="0">100</text>
-                <text class="growth-milestone" id="gml-300"  x="258" y="468" fill="rgba(255,255,255,0.75)" font-size="17" font-weight="700" font-family="inherit" opacity="0">300</text>
-                <text class="growth-milestone" id="gml-1000" x="302" y="156" fill="white"                  font-size="18" font-weight="700" font-family="inherit" opacity="0">1.000</text>
-                <text class="growth-milestone" id="gml-1300" x="432" y="22"  fill="#6aaaff"                font-size="18" font-weight="800" font-family="inherit" opacity="0">1.300</text>
-                <!-- Anéis de brilho da bolinha animada -->
-                <circle id="growth-glow-outer" cx="30" cy="610" r="24" fill="rgba(77,141,255,0.09)" opacity="0"/>
-                <circle id="growth-glow-mid"   cx="30" cy="610" r="15" fill="rgba(77,141,255,0.22)" opacity="0"/>
-                <!-- Bolinha animada (sem filter pesado — brilho vem dos anéis) -->
-                <circle id="growth-dot" cx="30" cy="610" r="9" fill="#4d8dff" opacity="0"/>
-                <!-- Logo Turbo acima da bolinha (centrada no mesmo eixo) -->
-                <image id="growth-dot-logo" href="logo.png" width="26" height="26" x="17" y="570" opacity="0" preserveAspectRatio="xMidYMid meet"/>
-                <!-- Contador abaixo da bolinha (centrado no mesmo eixo) -->
-                <text id="growth-dot-counter" x="30" y="630" fill="#6aaaff" font-size="17" font-weight="800" font-family="inherit" text-anchor="middle" opacity="0">0</text>
-                <!-- Eixo X -->
-                <text x="30"  y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2022</text>
-                <text x="138" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2023</text>
-                <text x="246" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2024</text>
-                <text x="354" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2025</text>
-                <text x="462" y="646" fill="rgba(77,141,255,0.85)"  font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2026</text>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- SLIDE 03 — MISSÃO + ÓRBITA -->
       <div class="turbo-slide turbo-slide--missao">
         <div class="turbo-missao-bg"></div>
 
-        <div class="turbo-missao-eyebrow">Nossa Missão</div>
+        <div class="xpto-eyebrow"><span></span>Nossa Missão</div>
         <div class="turbo-missao-spacer"></div>
         <p class="turbo-missao-text">
           Tornamos a vida de quem vende online mais
@@ -6480,7 +6532,142 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
 
-      <!-- SLIDE 04 — CASES E-COMMERCE -->
+      <!-- SLIDE 02 — CRESCIMENTO DE CLIENTES -->
+      <div class="turbo-slide turbo-slide--growth">
+        <div class="turbo-growth-bg"></div>
+        <div class="turbo-slide-inner">
+          <div class="turbo-growth-header">
+            <div>
+              <div class="xpto-eyebrow"><span></span>Crescimento</div>
+              <h2 class="turbo-growth-title">Somos obcecados<br><span style="white-space:nowrap">por resultado.</span></h2>
+            </div>
+            <div class="turbo-growth-stats">
+              <div class="turbo-growth-stat">
+                <span class="turbo-growth-stat-value" id="stat-clientes">1.300+</span>
+                <span class="turbo-growth-stat-label">Clientes atendidos</span>
+              </div>
+              <div class="turbo-growth-stat">
+                <span class="turbo-growth-stat-value" id="stat-colab">120+</span>
+                <span class="turbo-growth-stat-label">Colaboradores</span>
+              </div>
+            </div>
+          </div>
+          <div class="turbo-growth-chart">
+            <!-- Eixo Y -->
+            <div class="turbo-chart-yaxis">
+              <span class="turbo-chart-ylabel">C l i e n t e s</span>
+            </div>
+            <!-- Área do gráfico -->
+            <div class="turbo-chart-area">
+              <svg class="turbo-chart-svg" viewBox="0 -70 500 720" preserveAspectRatio="xMidYMax meet">
+                <defs>
+                  <!-- Espaçamento igual: 2022=30 2023=138 2024=246 2025=354 2026=462 (108px cada) -->
+                  <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%"   stop-color="rgba(77,141,255,0)"/>
+                    <stop offset="55%"  stop-color="rgba(77,141,255,0.45)"/>
+                    <stop offset="85%"  stop-color="rgba(77,141,255,0.9)"/>
+                    <stop offset="100%" stop-color="rgba(106,170,255,1)"/>
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                  <filter id="dotGlow" x="-120%" y="-120%" width="340%" height="340%">
+                    <feGaussianBlur stdDeviation="7" result="b1"/>
+                    <feGaussianBlur stdDeviation="2.5" result="b2"/>
+                    <feMerge><feMergeNode in="b1"/><feMergeNode in="b2"/><feMergeNode in="SourceGraphic"/></feMerge>
+                  </filter>
+                </defs>
+                <!-- y = 610 - 580*(v/1300) | x igualmente espaçados a cada 108px -->
+                <path id="growth-curve"
+                      d="M 30 610 C 71 608, 110 569, 138 565 C 181 557, 213 483, 246 476 C 287 465, 317 178, 354 164 C 397 147, 431 48, 462 30"
+                      fill="none" stroke="url(#curveGrad)" stroke-width="3" filter="url(#glow)"/>
+                <!-- Linhas verticais tracejadas -->
+                <line x1="30"  y1="610" x2="30"  y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="138" y1="565" x2="138" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="246" y1="476" x2="246" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="354" y1="164" x2="354" y2="628" stroke="rgba(255,255,255,0.18)" stroke-width="1" stroke-dasharray="3,4"/>
+                <line x1="462" y1="30"  x2="462" y2="628" stroke="rgba(77,141,255,0.35)"  stroke-width="1" stroke-dasharray="3,4"/>
+                <!-- Pontos dos marcos — inicialmente ocultos, revelados pela animação -->
+                <circle class="growth-milestone" id="gm-0"    cx="30"  cy="610" r="5" fill="rgba(255,255,255,0.5)"  filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-100"  cx="138" cy="565" r="5" fill="rgba(255,255,255,0.6)"  filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-300"  cx="246" cy="476" r="6" fill="rgba(255,255,255,0.75)" filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-1000" cx="354" cy="164" r="7" fill="white"                  filter="url(#glow)" opacity="0"/>
+                <circle class="growth-milestone" id="gm-1300" cx="462" cy="30"  r="9" fill="#4d8dff"               filter="url(#glow)" opacity="0"/>
+                <!-- Labels dos marcos — inicialmente ocultos -->
+                <text class="growth-milestone" id="gml-0"    x="42"  y="604" fill="rgba(255,255,255,0.45)" font-size="16" font-weight="600" font-family="inherit" opacity="0">0</text>
+                <text class="growth-milestone" id="gml-100"  x="150" y="557" fill="rgba(255,255,255,0.6)"  font-size="16" font-weight="600" font-family="inherit" opacity="0">100</text>
+                <text class="growth-milestone" id="gml-300"  x="258" y="468" fill="rgba(255,255,255,0.75)" font-size="17" font-weight="700" font-family="inherit" opacity="0">300</text>
+                <text class="growth-milestone" id="gml-1000" x="302" y="156" fill="white"                  font-size="18" font-weight="700" font-family="inherit" opacity="0">1.000</text>
+                <text class="growth-milestone" id="gml-1300" x="432" y="5"   fill="#6aaaff"                font-size="18" font-weight="800" font-family="inherit" opacity="0">1.300</text>
+                <!-- Anéis de brilho da bolinha animada -->
+                <circle id="growth-glow-outer" cx="30" cy="610" r="24" fill="rgba(77,141,255,0.09)" opacity="0"/>
+                <circle id="growth-glow-mid"   cx="30" cy="610" r="15" fill="rgba(77,141,255,0.22)" opacity="0"/>
+                <!-- Bolinha animada (sem filter pesado — brilho vem dos anéis) -->
+                <circle id="growth-dot" cx="30" cy="610" r="9" fill="#4d8dff" opacity="0"/>
+                <!-- Logo Turbo acima da bolinha (centrada no mesmo eixo) -->
+                <image id="growth-dot-logo" href="logo.png" width="26" height="26" x="17" y="570" opacity="0" preserveAspectRatio="xMidYMid meet"/>
+                <!-- Contador abaixo da bolinha (centrado no mesmo eixo) -->
+                <text id="growth-dot-counter" x="30" y="630" fill="#6aaaff" font-size="17" font-weight="800" font-family="inherit" text-anchor="middle" opacity="0">0</text>
+                <!-- Eixo X -->
+                <text x="30"  y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2022</text>
+                <text x="138" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2023</text>
+                <text x="246" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2024</text>
+                <text x="354" y="646" fill="rgba(255,255,255,0.35)" font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2025</text>
+                <text x="462" y="646" fill="rgba(77,141,255,0.85)"  font-size="13" letter-spacing="2" text-anchor="middle" font-family="inherit">2026</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 04 — DNA DE NEGÓCIOS -->
+      <div class="turbo-slide turbo-slide--dna">
+        <div class="turbo-dna-bg"></div>
+        <div class="turbo-slide-inner">
+          <div class="turbo-dna-header">
+            <div class="xpto-eyebrow"><span></span>Além do marketing</div>
+            <h2 class="turbo-dna-title">DNA de negócios</h2>
+          </div>
+          <div class="turbo-dna-photos">
+            <div class="turbo-dna-photo-wrap">
+              <img src="fotos%20turbo/founders.JPG" alt="Founders Turbo Partners" class="turbo-dna-photo">
+              <div class="turbo-dna-caption">Os fundadores</div>
+            </div>
+            <div class="turbo-dna-helix">
+              <svg class="turbo-dna-helix-svg" viewBox="0 0 120 80" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                <!-- Rungs (vertical, at each half-period center) -->
+                <line class="helix-rung" x1="12"  y1="15" x2="12"  y2="65"/>
+                <line class="helix-rung" x1="36"  y1="15" x2="36"  y2="65"/>
+                <line class="helix-rung" x1="60"  y1="15" x2="60"  y2="65"/>
+                <line class="helix-rung" x1="84"  y1="15" x2="84"  y2="65"/>
+                <line class="helix-rung" x1="108" y1="15" x2="108" y2="65"/>
+                <!-- Strand 1 (purple, starts top) -->
+                <path class="helix-s1" d="M 0 15 C 6 15, 6 65, 12 65 C 18 65, 18 15, 24 15 C 30 15, 30 65, 36 65 C 42 65, 42 15, 48 15 C 54 15, 54 65, 60 65 C 66 65, 66 15, 72 15 C 78 15, 78 65, 84 65 C 90 65, 90 15, 96 15 C 102 15, 102 65, 108 65 C 114 65, 114 15, 120 15"/>
+                <!-- Strand 2 (blue, starts bottom) -->
+                <path class="helix-s2" d="M 0 65 C 6 65, 6 15, 12 15 C 18 15, 18 65, 24 65 C 30 65, 30 15, 36 15 C 42 15, 42 65, 48 65 C 54 65, 54 15, 60 15 C 66 15, 66 65, 72 65 C 78 65, 78 15, 84 15 C 90 15, 90 65, 96 65 C 102 65, 102 15, 108 15 C 114 15, 114 65, 120 65"/>
+                <!-- Crossing dots -->
+                <circle class="helix-dot" cx="6"   cy="40"/>
+                <circle class="helix-dot" cx="18"  cy="40"/>
+                <circle class="helix-dot" cx="30"  cy="40"/>
+                <circle class="helix-dot" cx="42"  cy="40"/>
+                <circle class="helix-dot" cx="54"  cy="40"/>
+                <circle class="helix-dot" cx="66"  cy="40"/>
+                <circle class="helix-dot" cx="78"  cy="40"/>
+                <circle class="helix-dot" cx="90"  cy="40"/>
+                <circle class="helix-dot" cx="102" cy="40"/>
+                <circle class="helix-dot" cx="114" cy="40"/>
+              </svg>
+            </div>
+            <div class="turbo-dna-photo-wrap turbo-dna-photo-wrap--team">
+              <img src="fotos%20turbo/foto%20galera.png" alt="Time Turbo Partners" class="turbo-dna-photo">
+              <div class="turbo-dna-caption">120+ colaboradores</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 05 — CASES E-COMMERCE -->
       <div class="turbo-slide turbo-slide--cases">
         <img src="fotos%20turbo/cases%20ecom%40sharp.png" alt="Cases E-commerce Turbo" class="turbo-cases-img">
       </div>
@@ -8313,7 +8500,7 @@ document.addEventListener('keydown', e => {
 
     const DOT_R   = 9;
     const LOGO_SZ = 26;
-    const LOGO_GAP_TOP = 12;   // gap entre topo do dot e base da logo
+    const LOGO_GAP_TOP = 40;   // gap entre topo do dot e base da logo
     const NUM_GAP_BOT  = 10;   // gap entre base do dot e topo do número
 
     // Fade: counter+logo somem, gml-1300 aparece nos últimos 4%
@@ -8356,7 +8543,7 @@ document.addEventListener('keydown', e => {
 
       // Logo: centralizada ACIMA do dot (mesmo eixo x)
       const logoX = pt.x - LOGO_SZ / 2;
-      const logoY = Math.max(2, pt.y - DOT_R - LOGO_GAP_TOP - LOGO_SZ);
+      const logoY = Math.max(-60, pt.y - DOT_R - LOGO_GAP_TOP - LOGO_SZ);
       if (logo) {
         logo.setAttribute('x', logoX);
         logo.setAttribute('y', logoY);
@@ -8367,12 +8554,11 @@ document.addEventListener('keydown', e => {
       counter.setAttribute('x', pt.x);
       counter.setAttribute('y', numY);
 
-      // Fade out counter+logo / fade in gml-1300 nos últimos 4%
+      // Fade out counter / fade in gml-1300 nos últimos 4% (logo permanece visível)
       const aAlpha = eased < FADE_START
         ? '1'
         : String(Math.max(0, 1 - (eased - FADE_START) / (1 - FADE_START)));
       counter.setAttribute('opacity', aAlpha);
-      if (logo) logo.setAttribute('opacity', aAlpha);
       const sAlpha = eased < FADE_START
         ? '0'
         : String(Math.min(1, (eased - FADE_START) / (1 - FADE_START)));
@@ -8395,7 +8581,6 @@ document.addEventListener('keydown', e => {
         glowOut.setAttribute('opacity', '0');
         glowMid.setAttribute('opacity', '0');
         counter.setAttribute('opacity', '0');
-        if (logo) logo.setAttribute('opacity', '0');
         svg.querySelector('#gml-1300')?.setAttribute('opacity', '1');
         if (statClientes) statClientes.textContent = '1.300+';
         if (statColab)    statColab.textContent    = '120+';
@@ -8411,7 +8596,7 @@ document.addEventListener('keydown', e => {
     const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
     if (current === lastSlide) return;
     lastSlide = current;
-    if (current === 1) {
+    if (current === 2) {
       resetChart();
       setTimeout(animateChart, 350);
     }
