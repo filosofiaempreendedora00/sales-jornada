@@ -9665,40 +9665,35 @@ function turboFindSlideIdx(container, slides) {
   let targetScale = null;
   let tx = 0, ty = 0;
 
-  function calibrate() {
-    const savedT = missaoSlide.style.transform;
-    missaoSlide.style.transform = '';
-
+  // sectionTop: scroll-invariant, safe to compute anytime.
+  function calibrateSectionTop() {
     const cR = container.getBoundingClientRect();
     const mR = missaoSlide.getBoundingClientRect();
-    const fR = facil.getBoundingClientRect();
+    if (mR.width <= 0) return;
+    const sR = section.getBoundingClientRect();
+    sectionTop = sR.top - cR.top + container.scrollTop;
+  }
 
+  // targetScale/tx/ty/transformOrigin: MUST be computed while slide is sticky
+  // (rawP > 0), otherwise fácil's BCR reflects wrong non-sticky position.
+  function calibrateZoom() {
+    const savedT = missaoSlide.style.transform;
+    missaoSlide.style.transform = '';
+    const mR = missaoSlide.getBoundingClientRect();
+    const fR = facil.getBoundingClientRect();
     if (mR.width <= 0 || fR.width <= 0) {
       missaoSlide.style.transform = savedT;
       return;
     }
-
-    const sR = section.getBoundingClientRect();
-    sectionTop = sR.top - cR.top + container.scrollTop;
-
-    // transform-origin: center of "fácil" in the slide's local coordinate space
     const ox = fR.left + fR.width  / 2 - mR.left;
     const oy = fR.top  + fR.height / 2 - mR.top;
     missaoSlide.style.transformOrigin = `${ox}px ${oy}px`;
-
     targetScale = Math.min(
       (mR.width  * 0.60) / fR.width,
       (mR.height * 0.60) / fR.height
     );
-
-    // screen-space offset needed to bring fácil to viewport center
-    // Using translate(tx, ty) scale(s): the translate is applied AFTER scale,
-    // so values are in screen space — no division by scale needed.
-    const facilVpX = fR.left + fR.width  / 2;
-    const facilVpY = fR.top  + fR.height / 2;
-    tx = window.innerWidth  / 2 - facilVpX;
-    ty = window.innerHeight / 2 - facilVpY;
-
+    tx = window.innerWidth  / 2 - (fR.left + fR.width  / 2);
+    ty = window.innerHeight / 2 - (fR.top  + fR.height / 2);
     missaoSlide.style.transform = savedT;
   }
 
@@ -9706,7 +9701,7 @@ function turboFindSlideIdx(container, slides) {
 
   function update() {
     if (sectionTop === null) {
-      calibrate();
+      calibrateSectionTop();
       if (sectionTop === null) return;
     }
 
@@ -9715,14 +9710,19 @@ function turboFindSlideIdx(container, slides) {
     if (rawP <= 0) {
       missaoSlide.style.transform = '';
       missaoSlide.style.opacity   = '1';
+      targetScale = null;  // force fresh zoom calibration on next entry
       return;
+    }
+
+    // Slide is now sticky — safe to calibrate zoom params
+    if (targetScale === null) {
+      calibrateZoom();
+      if (targetScale === null) return;
     }
 
     const p     = Math.min(rawP, 1);
     const ease  = easeInOutSine(p);
     const scale = 1 + ease * (targetScale - 1);
-    // translate(tx,ty) scale(s): translate is in screen space (post-scale),
-    // so the origin point stays fixed and fácil drifts to viewport center.
     missaoSlide.style.transform = `translate(${(tx * ease).toFixed(2)}px, ${(ty * ease).toFixed(2)}px) scale(${scale.toFixed(4)})`;
 
     missaoSlide.style.opacity = rawP > 1
