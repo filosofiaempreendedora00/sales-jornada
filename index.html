@@ -3186,14 +3186,29 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   z-index: 1;
   margin: 0;
 }
-/* ── Zoom intermediário: "fácil" gigante ── */
-.turbo-slide--missao-zoom {
-  background: #050810;
+/* ── Zoom "fácil" — sticky section ── */
+.turbo-missao-zoom-section {
+  height: 200vh;
   position: relative;
+}
+.turbo-missao-zoom-section .turbo-slide--missao-text {
+  position: sticky;
+  top: 0;
+}
+.turbo-missao-zoom-stop {
+  height: 100vh;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.turbo-facil-zoom-overlay {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 10;
 }
 .turbo-missao-zoom-word {
   font-size: clamp(130px, 23vw, 360px);
@@ -7110,19 +7125,21 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
 
-      <!-- SLIDE 03 — MISSÃO (texto garrafal) -->
-      <div class="turbo-slide turbo-slide--missao-text">
-        <div class="turbo-missao-bg"></div>
-        <div class="xpto-eyebrow"><span></span>Nossa Missão</div>
-        <h2 class="turbo-missao-text-big">
-          Tornar a vida de quem vende online mais <span class="turbo-missao-text-highlight">fácil</span> e mais <span class="turbo-missao-text-highlight">rentável</span>
-        </h2>
-      </div>
-
-      <!-- SLIDE: zoom de "fácil" — intermediário antes da órbita -->
-      <div class="turbo-slide turbo-slide--missao-zoom" id="turbo-zoom-slide">
-        <div class="turbo-missao-bg"></div>
-        <span class="turbo-missao-zoom-word" id="turbo-zoom-word">fácil</span>
+      <!-- SLIDE 03 — MISSÃO: texto + zoom "fácil" (sticky 200vh section) -->
+      <div class="turbo-missao-zoom-section" id="turbo-missao-section">
+        <div class="turbo-slide turbo-slide--missao-text" id="turbo-missao-text-slide">
+          <div class="turbo-missao-bg"></div>
+          <div class="xpto-eyebrow" id="turbo-missao-eyebrow"><span></span>Nossa Missão</div>
+          <h2 class="turbo-missao-text-big" id="turbo-missao-h2">
+            Tornar a vida de quem vende online mais <span class="turbo-missao-text-highlight">fácil</span> e mais <span class="turbo-missao-text-highlight">rentável</span>
+          </h2>
+          <!-- "fácil" gigante — revelado pelo scroll dentro da seção -->
+          <div class="turbo-facil-zoom-overlay" id="turbo-facil-overlay">
+            <span class="turbo-missao-zoom-word" id="turbo-zoom-word">fácil</span>
+          </div>
+        </div>
+        <!-- Segundo snap stop: usuário pausa aqui com "fácil" preenchendo a tela -->
+        <div class="turbo-missao-zoom-stop"></div>
       </div>
 
       <!-- SLIDE 04 — MISSÃO + ÓRBITA -->
@@ -9277,13 +9294,10 @@ document.addEventListener('keydown', e => {
     const slides    = [...document.querySelectorAll('.turbo-slide')];
     if (!container || !slides.length) return;
 
-    // Determina slide atual pelo scroll position
-    const scrollTop = container.scrollTop;
-    const slideH    = slides[0].offsetHeight;
-    const current   = Math.round(scrollTop / slideH);
-    const next      = Math.max(0, Math.min(slides.length - 1, current + dir));
+    const current = turboFindSlideIdx(container, slides);
+    const next    = Math.max(0, Math.min(slides.length - 1, current + dir));
 
-    container.scrollTo({ top: next * slideH, behavior: 'smooth' });
+    container.scrollTo({ top: slides[next].offsetTop, behavior: 'smooth' });
   }
 
   document.addEventListener('keydown', e => {
@@ -9331,6 +9345,18 @@ document.addEventListener('keydown', e => {
     });
   });
 })();
+
+// Shared helper: find which .turbo-slide index is closest to current scrollTop
+// (robust with non-uniform heights, e.g. sticky sections)
+function turboFindSlideIdx(container, slides) {
+  const st = container.scrollTop;
+  let best = 0, bestDist = Infinity;
+  for (let i = 0; i < slides.length; i++) {
+    const d = Math.abs(slides[i].offsetTop - st);
+    if (d < bestDist) { bestDist = d; best = i; }
+  }
+  return best;
+}
 
 // Growth chart animation — triggered every time slide 2 becomes active
 (function () {
@@ -9520,7 +9546,7 @@ document.addEventListener('keydown', e => {
 
   container.addEventListener('scroll', () => {
     const slides  = [...container.querySelectorAll('.turbo-slide')];
-    const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
+    const current = turboFindSlideIdx(container, slides);
     if (current === lastSlide) return;
     lastSlide = current;
     if (slides[current]?.classList.contains('turbo-slide--growth')) {
@@ -9641,7 +9667,7 @@ document.addEventListener('keydown', e => {
   let lastSlide = -1;
   container.addEventListener('scroll', () => {
     const slides  = [...container.querySelectorAll('.turbo-slide')];
-    const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
+    const current = turboFindSlideIdx(container, slides);
     if (current === lastSlide) return;
     const prev = lastSlide;
     lastSlide  = current;
@@ -9658,84 +9684,43 @@ document.addEventListener('keydown', e => {
   resetOrbit(); // estado inicial colapsado
 })();
 
-// ── "fácil" zoom slide animation ─────────────────────
+// ── "fácil" zoom — scroll-driven dentro do slide de missão ───────────
 ;(() => {
-  const container = document.querySelector('.turbo-slides');
-  if (!container) return;
-  const zoomSlide = document.getElementById('turbo-zoom-slide');
-  const zoomWord  = document.getElementById('turbo-zoom-word');
-  if (!zoomSlide || !zoomWord) return;
+  const container   = document.querySelector('.turbo-slides');
+  const section     = document.getElementById('turbo-missao-section');
+  const missaoSlide = document.getElementById('turbo-missao-text-slide');
+  const h2          = document.getElementById('turbo-missao-h2');
+  const eyebrow     = document.getElementById('turbo-missao-eyebrow');
+  const overlay     = document.getElementById('turbo-facil-overlay');
+  const zoomWord    = document.getElementById('turbo-zoom-word');
+  if (!container || !section || !overlay || !zoomWord) return;
 
-  let zoomPlayed = false;
-  let zoomRafId  = null;
+  function easeInOut(t) { return t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2, 2)/2; }
 
-  function easeOutBack(t) {
-    const c1 = 1.5, c3 = c1 + 1;
-    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
-  }
+  function update() {
+    const slideH = window.innerHeight;
+    const rawP   = (container.scrollTop - section.offsetTop) / slideH;
+    const p      = Math.max(0, Math.min(1, rawP));
 
-  function resetZoom() {
-    if (zoomRafId) { cancelAnimationFrame(zoomRafId); zoomRafId = null; }
-    zoomWord.style.transition = 'none';
-    zoomWord.style.transform  = 'scale(0.06)';
-    zoomWord.style.opacity    = '0';
-    zoomPlayed = false;
-  }
+    // Texto: some conforme avança
+    h2.style.opacity      = Math.max(0, 1 - p * 1.6).toFixed(4);
+    eyebrow.style.opacity = Math.max(0, 1 - p * 2.2).toFixed(4);
 
-  function playZoom() {
-    if (zoomPlayed) return;
-    zoomPlayed = true;
-    const start    = performance.now();
-    const duration = 680;
-    function frame(now) {
-      const p     = Math.min((now - start) / duration, 1);
-      const eased = Math.max(0, easeOutBack(p));
-      zoomWord.style.transform = `scale(${eased})`;
-      zoomWord.style.opacity   = Math.min(p * 6, 1).toFixed(4);
-      if (p < 1) { zoomRafId = requestAnimationFrame(frame); }
-      else { zoomWord.style.transform = 'scale(1)'; zoomWord.style.opacity = '1'; zoomRafId = null; }
-    }
-    zoomRafId = requestAnimationFrame(frame);
-  }
+    // Overlay "fácil": aparece e cresce
+    overlay.style.opacity        = Math.min(p * 1.6, 1).toFixed(4);
+    const scale                  = 0.14 + 0.86 * easeInOut(p);
+    zoomWord.style.transform     = `scale(${scale.toFixed(4)})`;
 
-  // Scroll-driven morph: "fácil" fades+scales as user scrolls away
-  function updateScrollMorph() {
-    if (!zoomPlayed) return;
-    const slides  = [...container.querySelectorAll('.turbo-slide')];
-    const zoomIdx = slides.indexOf(zoomSlide);
-    const slideH  = slides[0]?.offsetHeight || window.innerHeight;
-    const progress = (container.scrollTop - zoomIdx * slideH) / slideH; // 0 = at zoom, 1 = at next, -1 = at prev
-
-    if (progress > 0 && progress <= 1) {
-      // Scrolling forward → orbit: fácil scales up and dissolves
-      const fade  = Math.max(0, 1 - progress * 2.2);
-      const scale = 1 + progress * 0.55;
-      zoomWord.style.transform = `scale(${scale})`;
-      zoomWord.style.opacity   = fade.toFixed(4);
-    } else if (progress < 0 && progress >= -1) {
-      // Scrolling backward → missão text: fácil shrinks and dissolves
-      const fade  = Math.max(0, 1 + progress * 2.2);
-      const scale = Math.max(0.06, 1 + progress * 0.25);
-      zoomWord.style.transform = `scale(${scale})`;
-      zoomWord.style.opacity   = fade.toFixed(4);
+    // Saindo para órbita (rawP > 1): slide inteiro dissolve revelando a logo
+    if (rawP > 1) {
+      missaoSlide.style.opacity = Math.max(0, 1 - (rawP - 1) * 2.5).toFixed(4);
+    } else {
+      missaoSlide.style.opacity = '1';
     }
   }
 
-  let lastSlide = -1;
-  container.addEventListener('scroll', () => {
-    updateScrollMorph();
-
-    const slides  = [...container.querySelectorAll('.turbo-slide')];
-    const current = Math.round(container.scrollTop / (slides[0]?.offsetHeight || 1));
-    if (current === lastSlide) return;
-    const prev = lastSlide;
-    lastSlide  = current;
-
-    if (slides[prev]?.id === 'turbo-zoom-slide') resetZoom();
-    if (slides[current]?.id === 'turbo-zoom-slide') playZoom();
-  }, { passive: true });
-
-  resetZoom();
+  container.addEventListener('scroll', update, { passive: true });
+  update();
 })();
 
 // Checklist delegation
