@@ -4806,6 +4806,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .cp-cover-text {
   display: flex; flex-direction: column; gap: 22px;
 }
+.cp-cover-text .xpto-eyebrow { align-self: flex-start; }
 .cp-cover-title {
   font-size: clamp(64px, 9vw, 120px);
   font-weight: 900;
@@ -4824,7 +4825,32 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   max-width: 460px;
   margin: 0;
 }
-.cp-cover-phone { width: 100%; }
+.cp-cover-phone { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.cp-phone-frame--sound { cursor: pointer; }
+.cp-sound-overlay {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: inherit;
+  background: rgba(0,0,0,0.18);
+  transition: opacity 0.2s;
+  z-index: 2;
+}
+.cp-sound-overlay.is-playing { opacity: 0; pointer-events: none; }
+.cp-phone-frame--sound:hover .cp-sound-overlay.is-playing { opacity: 1; pointer-events: auto; }
+.cp-sound-icon { font-size: 28px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
+.cp-sound-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 99px;
+  padding: 7px 16px;
+  color: rgba(255,255,255,0.7);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.cp-sound-btn:hover { background: rgba(255,255,255,0.14); color: #fff; }
+.cp-sound-btn-icon { font-size: 14px; }
 
 /* ── CP SLIDE 02: PORQUE UGC? ───────────────────── */
 .cp-slide-why { overflow: hidden; }
@@ -4838,47 +4864,65 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .cp-slide-why .xpto-slide-inner {
   max-width: 1080px; width: 100%; margin: 0 auto;
   position: relative; z-index: 1;
+  display: flex; align-items: flex-start; justify-content: center;
 }
-.cp-why-grid {
-  display: grid;
-  grid-template-columns: minmax(220px, 360px) 1fr;
-  gap: 64px;
-  align-items: start;
+.cp-why-wrap {
+  width: 100%;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 40px;
+  padding-top: 8px;
 }
 .cp-why-title {
   font-size: clamp(40px, 5.2vw, 72px);
   font-weight: 900;
   letter-spacing: -2px;
-  line-height: 1;
+  line-height: 1.12;
   margin: 0;
+  text-align: center;
   text-transform: uppercase;
   background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
-.cp-why-list {
-  list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 22px;
+.cp-why-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 700px;
 }
-.cp-why-list li {
-  position: relative;
-  padding-left: 22px;
-  font-size: clamp(14px, 1.15vw, 16px);
+.cp-why-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 20px 22px;
+  display: flex; flex-direction: column; gap: 8px;
+  transition: border-color 0.2s;
+}
+.cp-why-card:hover {
+  border-color: rgba(155,109,255,0.45);
+}
+.cp-why-card-header {
+  display: flex; align-items: center; gap: 8px;
+}
+.cp-why-card-icon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.cp-why-card-title {
+  margin: 0;
+  font-size: clamp(14px, 1.2vw, 17px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+.cp-why-card-text {
+  margin: 0;
+  font-size: clamp(11px, 0.9vw, 13px);
   line-height: 1.6;
-  color: rgba(255,255,255,0.82);
-}
-.cp-why-list li::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 9px;
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #9b6dff;
-  box-shadow: 0 0 8px #9b6dff;
-}
-.cp-why-list li strong {
-  color: #fff; font-weight: 700;
+  color: rgba(255,255,255,0.65);
 }
 
 /* ── CP SLIDE 03: UGC FRAMEWORK ─────────────────── */
@@ -4953,81 +4997,71 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 
 /* ── CP SLIDE 04: TURBO VS DIY ──────────────────── */
-.cp-slide-vs { overflow: hidden; }
+.cp-slide-vs { position: relative; overflow: hidden; }
 .cp-slide-vs::before {
   content: '';
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 50% 60% at 25% 50%, rgba(155,109,255,0.18) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 60% at 75% 50%, rgba(13,80,200,0.15) 0%, transparent 60%);
-  pointer-events: none;
+    radial-gradient(ellipse 60% 80% at 85% 50%, rgba(155,109,255,0.16) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 55% at 15% 50%, rgba(255,80,80,0.04) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
 }
 .cp-slide-vs .xpto-slide-inner {
-  max-width: 1100px; width: 100%; margin: 0 auto;
-  position: relative; z-index: 1;
+  max-width: 1020px; width: 100%; position: relative; z-index: 1;
+  display: flex; align-items: center; justify-content: center;
 }
 .cp-vs-wrap {
-  display: grid;
-  grid-template-columns: 1fr 80px 1fr;
-  align-items: center;
-  gap: 16px;
+  display: flex; align-items: stretch; gap: 0; width: 100%; min-height: 480px;
 }
-.cp-vs-col { display: flex; flex-direction: column; gap: 18px; }
-.cp-vs-col--alt { padding-top: 44px; }
-.cp-vs-title {
-  font-size: clamp(20px, 2vw, 28px);
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  line-height: 1.15;
-  text-align: center;
-  color: #fff;
-  margin: 0;
-}
-.cp-vs-card {
-  border-radius: 18px;
-  padding: 26px 24px;
-  border: 1px solid rgba(255,255,255,0.08);
-  background: rgba(255,255,255,0.025);
-}
-.cp-vs-card--turbo {
-  border-color: rgba(155,109,255,0.32);
-  background: rgba(155,109,255,0.08);
-}
-.cp-vs-list {
-  list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.cp-vs-list li {
-  display: flex; gap: 10px;
-  align-items: flex-start;
-  font-size: clamp(13px, 1vw, 15px);
-  line-height: 1.5;
-  color: rgba(255,255,255,0.85);
-}
-.cp-vs-icon {
-  flex-shrink: 0;
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 800;
-  margin-top: 1px;
-}
-.cp-vs-icon--pro {
-  background: rgba(18,212,144,0.16);
-  color: #6fe5b1;
-}
-.cp-vs-icon--neg {
-  background: rgba(255,107,107,0.14);
-  color: #ff8a8a;
-}
+.cp-vs-col { flex: 1; display: flex; flex-direction: column; gap: 20px; }
 .cp-vs-divider {
+  width: 120px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
 }
 .cp-vs-symbol {
-  font-size: clamp(28px, 3vw, 42px);
-  font-weight: 900;
-  color: rgba(255,255,255,0.32);
-  letter-spacing: 1px;
+  font-size: 56px; font-weight: 900; line-height: 1; letter-spacing: -3px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.38) 0%, rgba(255,255,255,0.12) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cp-vs-title {
+  font-size: clamp(20px, 2.6vw, 32px);
+  font-weight: 900; letter-spacing: -0.8px; line-height: 1.1; margin: 0;
+}
+.cp-vs-title--pro {
+  background: linear-gradient(135deg, #c4a8ff 0%, #7c50ff 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 18px rgba(155,109,255,0.45));
+}
+.cp-vs-title--neg { color: rgba(255,255,255,0.35); }
+.cp-vs-card {
+  width: 100%; border-radius: 20px; padding: 32px 30px; flex: 1;
+}
+.cp-vs-card--pro {
+  background: linear-gradient(145deg, rgba(155,109,255,0.10) 0%, rgba(100,70,255,0.06) 100%);
+  border: 1px solid rgba(155,109,255,0.30);
+  box-shadow: 0 0 60px rgba(155,109,255,0.12), 0 0 0 1px rgba(130,80,255,0.07) inset, 0 1px 0 rgba(255,255,255,0.08) inset;
+}
+.cp-vs-card--neg {
+  background: rgba(255,255,255,0.022);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.cp-vs-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 20px; }
+.cp-vs-list li {
+  display: flex; align-items: flex-start; gap: 13px;
+  font-size: 15px; line-height: 1.55; font-weight: 500;
+  color: rgba(255,255,255,0.86);
+}
+.cp-vs-card--neg .cp-vs-list li { color: rgba(255,255,255,0.36); }
+.cp-vs-icon {
+  flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; margin-top: 1px;
+}
+.cp-vs-icon--pro {
+  background: rgba(155,109,255,0.18); border: 1px solid rgba(155,109,255,0.50); color: #c4a8ff;
+}
+.cp-vs-icon--neg {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09); color: rgba(255,255,255,0.22);
 }
 
 /* ── CP SLIDE 05: CRONOGRAMA ────────────────────── */
@@ -5039,10 +5073,11 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     radial-gradient(ellipse 60% 50% at 80% 30%, rgba(13,80,200,0.22) 0%, transparent 60%);
   pointer-events: none;
 }
+.cp-slide-timeline { justify-content: flex-start; }
 .cp-slide-timeline .xpto-slide-inner {
   max-width: 1100px; width: 100%; margin: 0 auto;
   position: relative; z-index: 1;
-  display: flex; flex-direction: column; gap: 40px;
+  display: flex; flex-direction: column; gap: 72px;
 }
 .cp-timeline-header { text-align: center; }
 .cp-timeline-title {
@@ -5051,38 +5086,60 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   letter-spacing: -1.5px;
   text-transform: uppercase;
   color: #fff;
-  margin: 0;
+  margin: 0 0 8px;
 }
 .cp-timeline {
   position: relative;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 12px;
-  min-height: 320px;
+  height: 360px;
   align-items: stretch;
 }
 .cp-timeline-line {
   position: absolute;
-  left: 5%; right: 5%;
+  left: 3%; right: 3%;
   top: 50%;
   height: 1px;
   border-top: 2px dashed rgba(255,255,255,0.18);
   z-index: 0;
 }
+/* Each step is split into two equal halves with the dot at the boundary */
 .cp-timeline-step {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   z-index: 1;
+  height: 100%;
 }
-.cp-timeline-step--up { justify-content: flex-end; padding-bottom: calc(50% - 8px); }
-.cp-timeline-step--down { justify-content: flex-start; padding-top: calc(50% - 8px); }
-.cp-timeline-step--up .cp-timeline-stem,
-.cp-timeline-step--down .cp-timeline-stem {
+.cp-timeline-half {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Top half for --up: card at top, stem stretches down to dot */
+.cp-timeline-half--top { justify-content: flex-start; }
+/* Bottom half for --down: stem stretches up from dot, card below */
+.cp-timeline-half--bottom { justify-content: flex-start; }
+.cp-timeline-stem {
+  flex: 1;
   width: 1px;
-  height: 32px;
   background: rgba(255,255,255,0.22);
+}
+.cp-timeline-dot {
+  flex-shrink: 0;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
+  z-index: 2;
+}
+.cp-timeline-dot--end {
+  background: #9b6dff;
+  box-shadow: 0 0 0 4px rgba(155,109,255,0.18);
 }
 .cp-timeline-card {
   background: rgba(255,255,255,0.04);
@@ -5118,18 +5175,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-weight: 600;
   line-height: 1.35;
   color: #fff;
-  margin: 0;
-  margin-top: 6px;
-}
-.cp-timeline-dot {
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(255,255,255,0.08);
-}
-.cp-timeline-dot--end {
-  background: #9b6dff;
-  box-shadow: 0 0 0 4px rgba(155,109,255,0.18);
+  margin: 6px 0 0;
 }
 
 /* ── CP SLIDE 06: CLIENTES ──────────────────────── */
@@ -5282,6 +5328,11 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+}
+.cp-case-venture {
+  margin: 0;
+  font-size: 13px;
   color: rgba(255,255,255,0.5);
 }
 
@@ -7876,14 +7927,21 @@ a.xpto-pricing-btn { text-decoration: none; }
       <div class="xpto-slide-inner">
         <div class="cp-cover-grid">
           <div class="cp-cover-text">
-            <div class="xpto-eyebrow"><span></span>Turbo Partners</div>
+            <div class="xpto-eyebrow"><span></span>UGC | User Generated Content</div>
             <h1 class="cp-cover-title">CREATORS</h1>
             <p class="cp-cover-subtitle">Aumentamos as vendas da sua empresa a partir de anúncios que não se parecem com anúncios.</p>
           </div>
           <div class="cp-cover-phone">
-            <div class="cp-phone-frame">
-              <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
+            <div class="cp-phone-frame cp-phone-frame--sound" id="cp-cover-phone-frame">
+              <video id="cp-cover-video" src="Criativos/Sulmel_Bruna.mp4" autoplay loop muted playsinline></video>
+              <div class="cp-sound-overlay" id="cp-sound-overlay" title="Clique para ativar o som">
+                <span class="cp-sound-icon">🔇</span>
+              </div>
             </div>
+            <button class="cp-sound-btn" id="cp-sound-btn" type="button">
+              <span class="cp-sound-btn-icon">🔇</span>
+              <span class="cp-sound-btn-label">Toque para ativar o som</span>
+            </button>
           </div>
         </div>
       </div>
@@ -7892,16 +7950,38 @@ a.xpto-pricing-btn { text-decoration: none; }
     <!-- SLIDE 02 — PORQUE UGC? -->
     <section class="xpto-slide cp-slide-why">
       <div class="xpto-slide-inner">
-        <div class="cp-why-grid">
-          <div class="cp-why-heading">
-            <h2 class="cp-why-title">Porque<br>conteúdos<br>UGC?</h2>
+        <div class="cp-why-wrap">
+          <h2 class="cp-why-title">POR QUE conteúdos<br>UGC?</h2>
+          <div class="cp-why-cards">
+            <div class="cp-why-card">
+              <div class="cp-why-card-header">
+                <span class="cp-why-card-icon">🛡️</span>
+                <h3 class="cp-why-card-title">Confiança</h3>
+              </div>
+              <p class="cp-why-card-text">80% dos consumidores confiam mais em UGC do que em anúncios tradicionais da marca.</p>
+            </div>
+            <div class="cp-why-card">
+              <div class="cp-why-card-header">
+                <span class="cp-why-card-icon">📈</span>
+                <h3 class="cp-why-card-title">Conversão</h3>
+              </div>
+              <p class="cp-why-card-text">Páginas de produto com UGC geram aumento de até 10% nas conversões.</p>
+            </div>
+            <div class="cp-why-card">
+              <div class="cp-why-card-header">
+                <span class="cp-why-card-icon">⚡</span>
+                <h3 class="cp-why-card-title">Desempenho em Ads</h3>
+              </div>
+              <p class="cp-why-card-text">Anúncios com UGC têm até 4× mais cliques (CTR) e reduzem o CPC em até 50%.</p>
+            </div>
+            <div class="cp-why-card">
+              <div class="cp-why-card-header">
+                <span class="cp-why-card-icon">💎</span>
+                <h3 class="cp-why-card-title">Custo-Benefício</h3>
+              </div>
+              <p class="cp-why-card-text">UGC é 85% mais eficiente em custo do que conteúdos de influenciadores profissionais.</p>
+            </div>
           </div>
-          <ul class="cp-why-list">
-            <li><strong>Confiança:</strong> 80% dos consumidores confiam mais em Conteúdo Gerado por Usuário (UGC) do que em anúncios tradicionais da marca.</li>
-            <li><strong>Conversão:</strong> Páginas de produto com UGC podem gerar um aumento de até 10% nas conversões.</li>
-            <li><strong>Desempenho em Ads:</strong> Anúncios com UGC podem ter até 4× mais cliques (CTR) do que os tradicionais e reduzir o Custo por Clique (CPC) em até 50%.</li>
-            <li><strong>Custo-Benefício:</strong> O UGC é, em média, 85% mais eficiente em custo do que os conteúdos produzidos por influenciadores profissionais.</li>
-          </ul>
         </div>
       </div>
     </section>
@@ -7945,32 +8025,36 @@ a.xpto-pricing-btn { text-decoration: none; }
     <!-- SLIDE 04 — TURBO VS DIY -->
     <section class="xpto-slide cp-slide-vs">
       <div class="xpto-slide-inner">
+
         <div class="cp-vs-wrap">
 
-          <div class="cp-vs-col cp-vs-col--turbo">
-            <h2 class="cp-vs-title">UGC com a Turbo</h2>
-            <div class="cp-vs-card cp-vs-card--turbo">
+          <!-- LADO ESQUERDO — NEG -->
+          <div class="cp-vs-col">
+            <h2 class="cp-vs-title cp-vs-title--neg">Plataforma ou<br>conta própria</h2>
+            <div class="cp-vs-card cp-vs-card--neg">
+              <ul class="cp-vs-list">
+                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Falta de controle do conteúdo, prazo e estratégias</li>
+                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Custo por vídeo menor, mas ROI também menor…</li>
+                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Tempo gasto gerindo os criadores</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SÍMBOLO VS -->
+          <div class="cp-vs-divider">
+            <span class="cp-vs-symbol">VS</span>
+          </div>
+
+          <!-- LADO DIREITO — PRO -->
+          <div class="cp-vs-col">
+            <h2 class="cp-vs-title cp-vs-title--pro">UGC com<br>a Turbo</h2>
+            <div class="cp-vs-card cp-vs-card--pro">
               <ul class="cp-vs-list">
                 <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Resultados e método validados</li>
                 <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Curadoria de criadores de acordo com a persona da sua marca</li>
                 <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Roteiros e edição personalizados focados em venda (Guia de conteúdo)</li>
                 <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>Gestão dos criadores feita pela Turbo</li>
                 <li><span class="cp-vs-icon cp-vs-icon--pro">✓</span>+500 criadores na base</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="cp-vs-divider">
-            <span class="cp-vs-symbol">VS</span>
-          </div>
-
-          <div class="cp-vs-col cp-vs-col--alt">
-            <h2 class="cp-vs-title">Contratar plataforma ou<br>fazer por conta própria</h2>
-            <div class="cp-vs-card cp-vs-card--alt">
-              <ul class="cp-vs-list">
-                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Falta de controle do conteúdo, prazo e estratégias</li>
-                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Custo por vídeo menor, mas ROI também menor…</li>
-                <li><span class="cp-vs-icon cp-vs-icon--neg">✕</span>Tempo gasto gerindo os criadores</li>
               </ul>
             </div>
           </div>
@@ -7988,48 +8072,68 @@ a.xpto-pricing-btn { text-decoration: none; }
         <div class="cp-timeline">
           <div class="cp-timeline-line"></div>
 
-          <div class="cp-timeline-step cp-timeline-step--up">
-            <div class="cp-timeline-card">
-              <span class="cp-timeline-tag">PASSO 1</span>
-              <p class="cp-timeline-text">Analisamos a marca</p>
+          <!-- PASSO 1 — acima da linha -->
+          <div class="cp-timeline-step">
+            <div class="cp-timeline-half cp-timeline-half--top">
+              <div class="cp-timeline-card">
+                <span class="cp-timeline-tag">PASSO 1</span>
+                <p class="cp-timeline-text">Analisamos a marca</p>
+              </div>
+              <div class="cp-timeline-stem"></div>
             </div>
-            <div class="cp-timeline-stem"></div>
             <div class="cp-timeline-dot"></div>
+            <div class="cp-timeline-half cp-timeline-half--bottom"></div>
           </div>
 
-          <div class="cp-timeline-step cp-timeline-step--down">
+          <!-- PASSO 2 — abaixo da linha -->
+          <div class="cp-timeline-step">
+            <div class="cp-timeline-half cp-timeline-half--top"></div>
             <div class="cp-timeline-dot"></div>
-            <div class="cp-timeline-stem"></div>
-            <div class="cp-timeline-card">
-              <span class="cp-timeline-tag">PASSO 2</span>
-              <p class="cp-timeline-text">Achamos o criador perfeito para você</p>
-            </div>
-          </div>
-
-          <div class="cp-timeline-step cp-timeline-step--up">
-            <div class="cp-timeline-card">
-              <span class="cp-timeline-tag">PASSO 3</span>
-              <p class="cp-timeline-text">Criamos uma estratégia e produzimos 100% do conteúdo</p>
-            </div>
-            <div class="cp-timeline-stem"></div>
-            <div class="cp-timeline-dot"></div>
-          </div>
-
-          <div class="cp-timeline-step cp-timeline-step--down">
-            <div class="cp-timeline-dot"></div>
-            <div class="cp-timeline-stem"></div>
-            <div class="cp-timeline-card">
-              <span class="cp-timeline-tag">PASSO 4</span>
-              <p class="cp-timeline-text">Revise e aprove a proposta</p>
+            <div class="cp-timeline-half cp-timeline-half--bottom">
+              <div class="cp-timeline-stem"></div>
+              <div class="cp-timeline-card">
+                <span class="cp-timeline-tag">PASSO 2</span>
+                <p class="cp-timeline-text">Achamos o criador perfeito para você</p>
+              </div>
             </div>
           </div>
 
-          <div class="cp-timeline-step cp-timeline-step--up cp-timeline-step--end">
-            <div class="cp-timeline-card cp-timeline-card--end">
-              <p class="cp-timeline-text">Seu anúncio está pronto!</p>
+          <!-- PASSO 3 — acima da linha -->
+          <div class="cp-timeline-step">
+            <div class="cp-timeline-half cp-timeline-half--top">
+              <div class="cp-timeline-card">
+                <span class="cp-timeline-tag">PASSO 3</span>
+                <p class="cp-timeline-text">Criamos uma estratégia e produzimos 100% do conteúdo</p>
+              </div>
+              <div class="cp-timeline-stem"></div>
             </div>
-            <div class="cp-timeline-stem"></div>
+            <div class="cp-timeline-dot"></div>
+            <div class="cp-timeline-half cp-timeline-half--bottom"></div>
+          </div>
+
+          <!-- PASSO 4 — abaixo da linha -->
+          <div class="cp-timeline-step">
+            <div class="cp-timeline-half cp-timeline-half--top"></div>
+            <div class="cp-timeline-dot"></div>
+            <div class="cp-timeline-half cp-timeline-half--bottom">
+              <div class="cp-timeline-stem"></div>
+              <div class="cp-timeline-card">
+                <span class="cp-timeline-tag">PASSO 4</span>
+                <p class="cp-timeline-text">Revise e aprove a proposta</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PASSO 5 — acima da linha -->
+          <div class="cp-timeline-step">
+            <div class="cp-timeline-half cp-timeline-half--top">
+              <div class="cp-timeline-card cp-timeline-card--end">
+                <p class="cp-timeline-text">Seu anúncio está pronto!</p>
+              </div>
+              <div class="cp-timeline-stem"></div>
+            </div>
             <div class="cp-timeline-dot cp-timeline-dot--end"></div>
+            <div class="cp-timeline-half cp-timeline-half--bottom"></div>
           </div>
 
         </div>
@@ -8102,6 +8206,152 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="cp-case-right">
             <div class="cp-phone-frame">
               <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+            </div>
+            <span class="cp-case-tag">Exemplo Creators</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 08 — CASE BREADY -->
+    <section class="xpto-slide cp-slide-case">
+      <div class="xpto-slide-inner">
+        <div class="cp-case-grid">
+          <div class="cp-case-left">
+            <div>
+              <span class="cp-case-eyebrow">CASE</span>
+              <h2 class="cp-case-title">Bready</h2>
+            </div>
+            <ol class="cp-case-list">
+              <li><span class="cp-case-num">1</span>Estratégia principal para a Bready ir do 0 a <strong>R$1.5 milhão por mês</strong></li>
+              <li><span class="cp-case-num">2</span>Testes de hooks, creators, ângulos e múltiplas receitas</li>
+            </ol>
+            <p class="cp-case-venture">✦&nbsp; A Bready é uma Venture da Turbo Partners</p>
+          </div>
+          <div class="cp-case-right">
+            <div class="cp-phone-frame">
+              <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+            </div>
+            <span class="cp-case-tag">Exemplo Creators</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 09 — CASE CACOW -->
+    <section class="xpto-slide cp-slide-case">
+      <div class="xpto-slide-inner">
+        <div class="cp-case-grid">
+          <div class="cp-case-left">
+            <div>
+              <span class="cp-case-eyebrow">CASE</span>
+              <h2 class="cp-case-title">Cacow</h2>
+            </div>
+            <ol class="cp-case-list">
+              <li><span class="cp-case-num">1</span>Testes de ângulos de criativos e <strong>validação do ângulo vegano</strong> para os produtos</li>
+              <li><span class="cp-case-num">2</span>Divulgação de novos produtos e receitas</li>
+              <li><span class="cp-case-num">3</span>Teste de personas e público alvo</li>
+            </ol>
+            <div class="cp-case-metrics-wrap">
+              <p class="cp-case-metrics-label">MÉTRICAS</p>
+              <div class="cp-case-metrics">
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">+92%</span>
+                  <span class="cp-case-metric-label">no ROAS</span>
+                </div>
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">6</span>
+                  <span class="cp-case-metric-label">dígitos no faturamento em 5 meses</span>
+                </div>
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">+400%</span>
+                  <span class="cp-case-metric-label">de faturamento consolidado</span>
+                </div>
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">+200%</span>
+                  <span class="cp-case-metric-label">de recorrência e LTV consolidado</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cp-case-right">
+            <div class="cp-phone-frame">
+              <img src="Criativos/WhatsApp%20Image%202025-09-23%20at%2009.56.57%20(1).jpeg" alt="Cacow">
+            </div>
+            <span class="cp-case-tag">Exemplo Creators</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 09 — CASE ÓTICAS PARIS -->
+    <section class="xpto-slide cp-slide-case">
+      <div class="xpto-slide-inner">
+        <div class="cp-case-grid">
+          <div class="cp-case-left">
+            <div>
+              <span class="cp-case-eyebrow">CASE</span>
+              <h2 class="cp-case-title">Óticas Paris</h2>
+            </div>
+            <ol class="cp-case-list">
+              <li><span class="cp-case-num">1</span>Experiência em loja</li>
+              <li><span class="cp-case-num">2</span>Qualidade e variedade de óculos</li>
+              <li><span class="cp-case-num">3</span>Ocasiões do dia a dia</li>
+            </ol>
+            <div class="cp-case-metrics-wrap">
+              <p class="cp-case-metrics-label">MÉTRICAS</p>
+              <div class="cp-case-metrics">
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">27</span>
+                  <span class="cp-case-metric-label">ROAS</span>
+                </div>
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">3,62%</span>
+                  <span class="cp-case-metric-label">CTR</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cp-case-right">
+            <div class="cp-phone-frame">
+              <img src="Criativos/C%C3%B3pia%20de%20WhatsApp%20Image%202025-06-05%20at%2014.42.36%20(1).jpeg" alt="Óticas Paris">
+            </div>
+            <span class="cp-case-tag">Exemplo Creators</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 — CASE OCEAN DROP -->
+    <section class="xpto-slide cp-slide-case">
+      <div class="xpto-slide-inner">
+        <div class="cp-case-grid">
+          <div class="cp-case-left">
+            <div>
+              <span class="cp-case-eyebrow">CASE</span>
+              <h2 class="cp-case-title">Ocean Drop</h2>
+            </div>
+            <ol class="cp-case-list">
+              <li><span class="cp-case-num">1</span>Estratégia no TikTok Ads</li>
+              <li><span class="cp-case-num">2</span>Aumentar a dinâmica dos conteúdos</li>
+              <li><span class="cp-case-num">3</span>Mostrar diferencial do produto My Protein</li>
+            </ol>
+            <div class="cp-case-metrics-wrap">
+              <p class="cp-case-metrics-label">MÉTRICAS</p>
+              <div class="cp-case-metrics">
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">22% do faturamento do E-commerce</span>
+                  <span class="cp-case-metric-label">veio através dos nossos anúncios UGC</span>
+                </div>
+                <div class="cp-case-metric">
+                  <span class="cp-case-metric-value">A maior Black da História</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="cp-case-right">
+            <div class="cp-phone-frame">
+              <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
             </div>
             <span class="cp-case-tag">Exemplo Creators</span>
           </div>
@@ -12198,6 +12448,31 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 // ─────────────────────────────────────────────────
 renderFlow();
 renderProgress();
+
+// ── Cover video sound toggle ──────────────────────
+(function () {
+  const vid     = document.getElementById('cp-cover-video');
+  const overlay = document.getElementById('cp-sound-overlay');
+  const btn     = document.getElementById('cp-sound-btn');
+  if (!vid || !overlay || !btn) return;
+
+  const overlayIcon = overlay.querySelector('.cp-sound-icon');
+  const btnIcon     = btn.querySelector('.cp-sound-btn-icon');
+  const btnLabel    = btn.querySelector('.cp-sound-btn-label');
+
+  function setMuted(muted) {
+    vid.muted = muted;
+    const icon  = muted ? '🔇' : '🔊';
+    const label = muted ? 'Toque para ativar o som' : 'Toque para silenciar';
+    overlayIcon.textContent = icon;
+    btnIcon.textContent     = icon;
+    btnLabel.textContent    = label;
+    overlay.classList.toggle('is-playing', !muted);
+  }
+
+  overlay.addEventListener('click', () => setMuted(vid.muted ? false : true));
+  btn.addEventListener('click',     () => setMuted(vid.muted ? false : true));
+})();
 
 </script>
 <div id="perf-overlay" class="perf-overlay"></div>
