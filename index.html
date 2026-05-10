@@ -12857,23 +12857,36 @@ renderProgress();
     const src = frame.querySelector('video')?.src;
     if (!src) return;
 
-    // Pause all videos in the same slide
     activeContainer = container;
     container.querySelectorAll('video').forEach(v => v.pause());
 
-    modalVideo.src = src;
-    modalVideo.currentTime = 0;
-    modalVideo.muted = false;
+    // Show modal before loading so the user sees the frame appear
     modal.classList.add('is-open');
-    modalVideo.play().catch(() => { modalVideo.muted = true; modalVideo.play(); });
+    modalVideo.src = src;
+
+    function tryPlay() {
+      modalVideo.muted = false;
+      modalVideo.play().catch(() => {
+        modalVideo.muted = true;
+        modalVideo.play().catch(() => {});
+      });
+    }
+
+    // If browser already has data (cache hit) — play immediately
+    // Otherwise wait for loadeddata before calling play
+    if (modalVideo.readyState >= 2) {
+      tryPlay();
+    } else {
+      modalVideo.addEventListener('loadeddata', tryPlay, { once: true });
+    }
   }
 
   function closeLightbox() {
     modal.classList.remove('is-open');
     modalVideo.pause();
-    modalVideo.src = '';
+    modalVideo.removeAttribute('src');
+    modalVideo.load(); // abort any pending load cleanly
 
-    // Resume slide videos
     if (activeContainer) {
       activeContainer.querySelectorAll('video').forEach(v => {
         v.muted = true;
