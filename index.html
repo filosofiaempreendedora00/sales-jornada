@@ -10643,6 +10643,10 @@ document.querySelectorAll('.nav-item').forEach(item => {
     // mostrar/ocultar subnav da apresentação
     const subnav = document.getElementById('apres-subnav');
     if (subnav) subnav.classList.toggle('is-visible', view === 'apresentacao');
+    // garantir que cp-overlay nunca fique preso ao navegar
+    document.getElementById('cp-overlay')?.classList.remove('is-open');
+    document.getElementById('cp-modal')?.classList.remove('is-open');
+    document.body.style.overflow = '';
   });
 });
 
