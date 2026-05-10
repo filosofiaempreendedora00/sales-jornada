@@ -5063,6 +5063,40 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 /* ── CP SLIDE 05: CRONOGRAMA ────────────────────── */
 .cp-slide-timeline { overflow: hidden; }
+.cp-timeline-process-link {
+  position: absolute;
+  bottom: 68px; right: 32px;
+  width: 200px;
+  background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.04) 100%);
+  border: 1px solid rgba(16,185,129,0.28);
+  border-radius: 12px;
+  padding: 12px 14px 14px;
+  z-index: 10;
+  overflow: hidden;
+}
+.cp-timeline-process-link::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #10b981, rgba(16,185,129,0.2));
+  border-radius: 12px 12px 0 0;
+}
+.cp-timeline-process-label {
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(16,185,129,0.75);
+  margin-bottom: 8px;
+  display: block;
+}
+.cp-timeline-process-link .link-row {
+  border-bottom-color: rgba(16,185,129,0.1);
+}
+.cp-timeline-process-link .link-anchor {
+  color: #10b981;
+}
 .cp-slide-timeline::before {
   content: '';
   position: absolute; inset: 0;
@@ -5222,6 +5256,79 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   max-width: 160px;
 }
 
+/* ── Video Lightbox ──────────────────────────────── */
+.cp-phone-frame--lightbox { cursor: zoom-in; }
+.cp-phone-frame--lightbox .cp-lightbox-hint {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+  z-index: 4;
+}
+.cp-phone-frame--lightbox:hover .cp-lightbox-hint { opacity: 1; }
+
+.cp-video-lightbox {
+  position: fixed; inset: 0;
+  z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.cp-video-lightbox.is-open {
+  opacity: 1;
+  pointer-events: all;
+}
+.cp-video-lightbox-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+.cp-video-lightbox-frame {
+  position: relative; z-index: 1;
+  width: min(320px, 80vw);
+  aspect-ratio: 9/16;
+  border-radius: 36px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.14);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 40px 90px rgba(0,0,0,0.75);
+  transform: scale(0.88);
+  transition: transform 0.30s cubic-bezier(0.34,1.56,0.64,1);
+}
+.cp-video-lightbox.is-open .cp-video-lightbox-frame { transform: scale(1); }
+.cp-video-lightbox-video {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cp-video-lightbox-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.6);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+  z-index: 2;
+}
+.cp-video-lightbox-close:hover { background: rgba(0,0,0,0.85); }
+
 /* ── CP SLIDE 07: CASE MINIMAL CLUB ─────────────── */
 .cp-slide-case { overflow: hidden; }
 .cp-slide-case::before {
@@ -5352,7 +5459,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 /* Bready — screenshot frame (no phone) */
 .cp-case-grid--screenshot {
-  grid-template-columns: 1fr 480px;
+  grid-template-columns: 1fr 540px;
 }
 .cp-case-screenshot {
   width: 100%;
@@ -5369,6 +5476,72 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   height: auto;
   display: block;
 }
+/* ── Bready slide — tema âmbar ─────────────────────── */
+.cp-slide-case--bready::before {
+  background:
+    radial-gradient(ellipse 70% 80% at 78% 40%, rgba(245,158,11,0.26) 0%, transparent 58%),
+    radial-gradient(ellipse 55% 60% at 8% 90%,  rgba(251,146,60,0.16) 0%, transparent 60%);
+}
+.cp-slide-case--bready .cp-case-eyebrow {
+  background: rgba(245,158,11,0.12);
+  border-color: rgba(245,158,11,0.30);
+  color: #fbbf24;
+}
+.cp-slide-case--bready .cp-case-title {
+  background: linear-gradient(160deg, #ffffff 30%, rgba(251,191,36,0.75));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cp-slide-case--bready .cp-case-venture {
+  background: linear-gradient(135deg, rgba(245,158,11,0.18) 0%, rgba(251,146,60,0.10) 100%);
+  border-color: rgba(245,158,11,0.38);
+  color: #fbbf24;
+}
+.cp-slide-case--bready .cp-case-screenshot {
+  box-shadow:
+    0 0 0 1px rgba(245,158,11,0.22),
+    0 24px 70px rgba(0,0,0,0.55),
+    0 0 40px rgba(245,158,11,0.10);
+}
+.cp-bready-desc {
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.55;
+  color: rgba(255,255,255,0.82);
+  margin: 0;
+}
+.cp-bready-metrics {
+  display: flex;
+  gap: 32px;
+}
+.cp-bready-metric {
+  display: flex; flex-direction: column;
+  border-left: 2px solid rgba(245,158,11,0.5);
+  padding-left: 16px;
+}
+.cp-bready-metric-value {
+  font-size: clamp(30px, 2.8vw, 42px);
+  font-weight: 900;
+  color: #f59e0b;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.cp-bready-metric-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.58);
+  margin-top: 5px;
+}
+.cp-bready-lib-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(245,158,11,0.7);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.cp-bready-lib-link:hover { color: #f59e0b; }
 /* Ocean Drop — 2+3 grid */
 .cp-case-grid--ocean {
   grid-template-columns: 1fr 620px;
@@ -7151,7 +7324,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   </div>
   <div class="sidebar-nav">
     <div class="nav-item is-active" data-view="apresentacao">
-      <span class="nav-item-icon">👤</span>
+      <span class="nav-item-icon">✦</span>
       <span class="nav-item-label">Apresentação</span>
     </div>
     <div class="nav-item" data-view="jornada">
@@ -7178,7 +7351,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   <!-- Sub-nav lateral full-height -->
   <div class="apres-subnav is-visible" id="apres-subnav">
     <button class="apres-subtab is-active" data-sub="especialista">
-      <span class="apres-subtab-icon">✦</span>
+      <span class="apres-subtab-icon">👤</span>
       <span class="apres-subtab-label">Especialista</span>
     </button>
     <button class="apres-subtab" data-sub="turbo">
@@ -8234,6 +8407,13 @@ a.xpto-pricing-btn { text-decoration: none; }
 
         </div>
       </div>
+      <div class="cp-timeline-process-link">
+        <span class="cp-timeline-process-label">⟳ processo ponta a ponta</span>
+        <div class="link-row">
+          <span class="link-name">Processo UGC completo</span>
+          <a class="link-anchor" href="https://sharing.clickup.com/31021986/wb/h/xjpx2-141553/93b429be61b7083" target="_blank" rel="noopener">↗ ver mais</a>
+        </div>
+      </div>
     </section>
 
     <!-- SLIDE 06 — QUEM TRABALHA COM CREATORS -->
@@ -8252,7 +8432,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="cp-client">
             <div class="cp-client-logo">LE LIS BLANC</div>
             <div class="cp-phone-frame">
-              <video src="Criativos/Le%20Lis-4UGCs2.mov" autoplay loop muted playsinline></video>
+              <video src="Criativos/Le%20Lis-4UGCs2.mp4" autoplay loop muted playsinline></video>
             </div>
           </div>
           <div class="cp-client">
@@ -8322,25 +8502,32 @@ a.xpto-pricing-btn { text-decoration: none; }
     </section>
 
     <!-- SLIDE 08 — CASE BREADY -->
-    <section class="xpto-slide cp-slide-case">
+    <section class="xpto-slide cp-slide-case cp-slide-case--bready">
       <div class="xpto-slide-inner">
         <div class="cp-case-grid cp-case-grid--screenshot">
           <div class="cp-case-left">
+            <div class="cp-case-venture">✦&nbsp; Venture da Turbo Partners</div>
             <div>
               <span class="cp-case-eyebrow">CASE</span>
               <h2 class="cp-case-title">Bready</h2>
             </div>
-            <ol class="cp-case-list">
-              <li style="white-space:nowrap"><span class="cp-case-num">1</span>Estratégia principal para a Bready ir do 0 a <strong>R$1.5 milhão por mês</strong></li>
-              <li><span class="cp-case-num">2</span>Testes de hooks, creators, ângulos e múltiplas receitas</li>
-            </ol>
-            <div class="cp-case-venture">✦&nbsp; Venture da Turbo Partners</div>
+            <p class="cp-bready-desc">Estratégia principal para a Bready ir do 0 a R$1.5 milhão por mês.<br>Testes de hooks, creators, ângulos e múltiplas receitas.</p>
+            <div class="cp-bready-metrics">
+              <div class="cp-bready-metric">
+                <span class="cp-bready-metric-value">120+</span>
+                <span class="cp-bready-metric-label">anúncios ativos</span>
+              </div>
+              <div class="cp-bready-metric">
+                <span class="cp-bready-metric-value">85%</span>
+                <span class="cp-bready-metric-label">deles sendo UGCs</span>
+              </div>
+            </div>
           </div>
           <div class="cp-case-right">
             <div class="cp-case-screenshot">
               <img src="Criativos/biblioteca-bready.png" alt="Bready biblioteca de criativos">
             </div>
-            <span class="cp-case-tag">Biblioteca de Criativos</span>
+            <a class="cp-bready-lib-link" href="https://www.facebook.com/ads/library/?active_status=active&ad_type=all&country=BR&is_targeted_country=false&media_type=all&search_type=page&sort_data[direction]=desc&sort_data[mode]=total_impressions&view_all_page_id=100931962845485" target="_blank" rel="noopener">↗ Biblioteca de anúncios</a>
           </div>
         </div>
       </div>
@@ -8755,7 +8942,6 @@ const STAGES = [
         impact: 'CTR baixo, CPM alto, custo por aquisição elevado. Você gasta mais para adquirir cada cliente.',
         deps: ['definicoes'],
         links: [
-          { label: 'Processo UGC completo', url: 'https://sharing.clickup.com/31021986/wb/h/xjpx2-141553/93b429be61b7083', type: 'process' },
           { label: 'Ocean Drop',  url: 'https://drive.google.com/drive/u/1/folders/1cugzfL_UohDiuPFh1HqgbllWNcenAY_r', type: 'featured' },
           { label: 'Sulmel',      url: 'https://drive.google.com/drive/u/1/folders/1lIRWpKfm_FPw_gDNdwEgy3tDGLiRV2zT' },
           { label: 'Vekka',       url: 'https://drive.google.com/drive/u/1/folders/1tZbBXg6xeCK2aTrEbrSaerIXFi-W539L' },
@@ -12629,7 +12815,7 @@ renderProgress();
     }
   }
 
-  document.querySelectorAll('.cp-phone-frame--sound').forEach(frame => {
+  document.querySelectorAll('.cp-phone-frame--sound:not(.cp-phone-frame--lightbox)').forEach(frame => {
     frame.addEventListener('click', () => toggleFrame(frame));
   });
 
@@ -12639,6 +12825,82 @@ renderProgress();
   if (coverBtn && coverFrame) {
     coverBtn.addEventListener('click', () => toggleFrame(coverFrame));
   }
+})();
+
+// ── Video Lightbox (Clients + Ocean Drop) ──────────
+(function () {
+  const targetContainers = [
+    document.querySelector('.cp-slide-clients'),
+    document.querySelector('.cp-case-grid--ocean'),
+  ].filter(Boolean);
+
+  if (!targetContainers.length) return;
+
+  // Build modal
+  const modal = document.createElement('div');
+  modal.className = 'cp-video-lightbox';
+  modal.id = 'cp-video-lightbox';
+  modal.innerHTML = `
+    <div class="cp-video-lightbox-backdrop"></div>
+    <div class="cp-video-lightbox-frame">
+      <video class="cp-video-lightbox-video" playsinline loop></video>
+      <button class="cp-video-lightbox-close" aria-label="Fechar">✕</button>
+    </div>`;
+  document.body.appendChild(modal);
+
+  const modalVideo = modal.querySelector('.cp-video-lightbox-video');
+  const closeBtn  = modal.querySelector('.cp-video-lightbox-close');
+  const backdrop  = modal.querySelector('.cp-video-lightbox-backdrop');
+  let activeContainer = null;
+
+  function openLightbox(frame, container) {
+    const src = frame.querySelector('video')?.src;
+    if (!src) return;
+
+    // Pause all videos in the same slide
+    activeContainer = container;
+    container.querySelectorAll('video').forEach(v => v.pause());
+
+    modalVideo.src = src;
+    modalVideo.currentTime = 0;
+    modalVideo.muted = false;
+    modal.classList.add('is-open');
+    modalVideo.play().catch(() => { modalVideo.muted = true; modalVideo.play(); });
+  }
+
+  function closeLightbox() {
+    modal.classList.remove('is-open');
+    modalVideo.pause();
+    modalVideo.src = '';
+
+    // Resume slide videos
+    if (activeContainer) {
+      activeContainer.querySelectorAll('video').forEach(v => {
+        v.muted = true;
+        v.play().catch(() => {});
+      });
+      activeContainer = null;
+    }
+  }
+
+  // Mark frames and attach listeners
+  targetContainers.forEach(container => {
+    container.querySelectorAll('.cp-phone-frame').forEach(frame => {
+      frame.classList.add('cp-phone-frame--lightbox');
+
+      // Expand hint icon
+      const hint = document.createElement('div');
+      hint.className = 'cp-lightbox-hint';
+      hint.textContent = '⛶';
+      frame.appendChild(hint);
+
+      frame.addEventListener('click', () => openLightbox(frame, container));
+    });
+  });
+
+  closeBtn.addEventListener('click', closeLightbox);
+  backdrop.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 })();
 
 </script>
