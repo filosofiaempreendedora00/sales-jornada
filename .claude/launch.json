@@ -2,16 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "Jornada Turbo (Python static server)",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8080"],
-      "port": 8080
-    },
-    {
-      "name": "Jornada Turbo (npx serve)",
+      "name": "Jornada Turbo (http-server)",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["serve", ".", "-p", "8081", "--no-clipboard"],
-      "port": 8081
+      "runtimeArgs": ["http-server", ".", "--cors", "-c-1", "--symlink"],
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }

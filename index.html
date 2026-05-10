@@ -4829,15 +4829,12 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .cp-phone-frame--sound { cursor: pointer; }
 .cp-sound-overlay {
   position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
   border-radius: inherit;
-  background: rgba(0,0,0,0.18);
+  background: transparent;
   transition: opacity 0.2s;
   z-index: 2;
 }
 .cp-sound-overlay.is-playing { opacity: 0; pointer-events: none; }
-.cp-phone-frame--sound:hover .cp-sound-overlay.is-playing { opacity: 1; pointer-events: auto; }
-.cp-sound-icon { font-size: 28px; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.5)); }
 .cp-sound-btn {
   display: inline-flex; align-items: center; gap: 7px;
   background: rgba(255,255,255,0.08);
@@ -5203,8 +5200,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .cp-clients-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 22px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 18px;
   align-items: end;
 }
 .cp-client {
@@ -5214,7 +5211,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 14px;
 }
 .cp-client-logo {
-  font-size: clamp(13px, 1.1vw, 16px);
+  font-size: clamp(11px, 0.95vw, 14px);
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -5222,7 +5219,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-align: center;
 }
 .cp-client .cp-phone-frame {
-  max-width: 180px;
+  max-width: 160px;
 }
 
 /* ── CP SLIDE 07: CASE MINIMAL CLUB ─────────────── */
@@ -5331,9 +5328,109 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: rgba(255,255,255,0.5);
 }
 .cp-case-venture {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, rgba(155,109,255,0.18) 0%, rgba(13,80,200,0.18) 100%);
+  border: 1px solid rgba(155,109,255,0.35);
+  border-radius: 99px;
+  padding: 7px 16px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #c8b4ff;
   margin: 0;
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
+}
+.cp-case-grid--dual {
+  grid-template-columns: 1fr 480px;
+}
+.cp-case-dual-phones {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+}
+/* Bready — screenshot frame (no phone) */
+.cp-case-grid--screenshot {
+  grid-template-columns: 1fr 480px;
+}
+.cp-case-screenshot {
+  width: 100%;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow:
+    0 0 0 1px rgba(155,109,255,0.18),
+    0 24px 70px rgba(0,0,0,0.55),
+    0 0 40px rgba(13,80,200,0.12);
+}
+.cp-case-screenshot img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+/* Ocean Drop — 2+3 grid */
+.cp-case-grid--ocean {
+  grid-template-columns: 1fr 620px;
+  gap: 40px;
+}
+.cp-case-ocean-phones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 610px;
+  padding-left: 36px;
+}
+.cp-case-ocean-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex: 1;
+}
+.cp-case-ocean-row .cp-phone-frame {
+  height: 288px;
+  width: auto;
+  aspect-ratio: 9 / 19.5;
+  flex: none;
+}
+.cp-case-ocean-row .cp-phone-frame::before {
+  height: 10px;
+  top: 5px;
+  width: 32%;
+  border-radius: 0 0 8px 8px;
+}
+.cp-case-dual-phone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.cp-case-roas-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 10px 18px;
+  white-space: nowrap;
+}
+.cp-case-roas-badge em {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+}
+.cp-case-roas-badge strong {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  line-height: 1;
 }
 
 /* ── CP RESPONSIVE (under 720px) ────────────────── */
@@ -5354,7 +5451,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   .cp-timeline-step--up .cp-timeline-stem,
   .cp-timeline-step--down .cp-timeline-stem,
   .cp-timeline-dot { display: none; }
-  .cp-clients-row { grid-template-columns: 1fr 1fr; }
+  .cp-clients-row { grid-template-columns: 1fr 1fr 1fr; }
+  .cp-client .cp-phone-frame { max-width: 140px; }
 }
 
 /* Modal overlay */
@@ -7934,9 +8032,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="cp-cover-phone">
             <div class="cp-phone-frame cp-phone-frame--sound" id="cp-cover-phone-frame">
               <video id="cp-cover-video" src="Criativos/Sulmel_Bruna.mp4" autoplay loop muted playsinline></video>
-              <div class="cp-sound-overlay" id="cp-sound-overlay" title="Clique para ativar o som">
-                <span class="cp-sound-icon">🔇</span>
-              </div>
+              <div class="cp-sound-overlay" id="cp-sound-overlay"></div>
             </div>
             <button class="cp-sound-btn" id="cp-sound-btn" type="button">
               <span class="cp-sound-btn-icon">🔇</span>
@@ -7987,7 +8083,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     </section>
 
     <!-- SLIDE 03 — UGC FRAMEWORK -->
-    <section class="xpto-slide cp-slide-framework">
+    <section class="xpto-slide cp-slide-framework" style="display:none">
       <div class="xpto-slide-inner">
         <div class="cp-framework-header">
           <h2 class="cp-framework-title">UGC</h2>
@@ -8150,25 +8246,31 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="cp-client">
             <div class="cp-client-logo">PARIS</div>
             <div class="cp-phone-frame">
-              <img src="Criativos/C%C3%B3pia%20de%20WhatsApp%20Image%202025-06-05%20at%2014.42.36%20(1).jpeg" alt="">
+              <video src="Criativos/paris-4UGCs.mp4" autoplay loop muted playsinline></video>
             </div>
           </div>
           <div class="cp-client">
             <div class="cp-client-logo">LE LIS BLANC</div>
             <div class="cp-phone-frame">
-              <img src="Criativos/WhatsApp%20Image%202025-09-23%20at%2009.56.57%20(1).jpeg" alt="">
+              <video src="Criativos/Le%20Lis-4UGCs2.mov" autoplay loop muted playsinline></video>
             </div>
           </div>
           <div class="cp-client">
-            <div class="cp-client-logo">winstage</div>
+            <div class="cp-client-logo">WINSTAGE</div>
             <div class="cp-phone-frame">
-              <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
+              <video src="Criativos/Winstage-4UGCs%20R2.mov" autoplay loop muted playsinline></video>
             </div>
           </div>
           <div class="cp-client">
-            <div class="cp-client-logo">Jui</div>
+            <div class="cp-client-logo">JUI</div>
             <div class="cp-phone-frame">
-              <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+              <video src="Criativos/jui-4UGCs.MOV" autoplay loop muted playsinline></video>
+            </div>
+          </div>
+          <div class="cp-client">
+            <div class="cp-client-logo">VEKKA</div>
+            <div class="cp-phone-frame">
+              <video src="Criativos/vekka-4UGCs.mp4" autoplay loop muted playsinline></video>
             </div>
           </div>
         </div>
@@ -8178,7 +8280,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     <!-- SLIDE 07 — CASE MINIMAL CLUB -->
     <section class="xpto-slide cp-slide-case">
       <div class="xpto-slide-inner">
-        <div class="cp-case-grid">
+        <div class="cp-case-grid cp-case-grid--dual">
           <div class="cp-case-left">
             <div>
               <span class="cp-case-eyebrow">CASE</span>
@@ -8196,18 +8298,24 @@ a.xpto-pricing-btn { text-decoration: none; }
                   <span class="cp-case-metric-value">+ R$1 milhão</span>
                   <span class="cp-case-metric-label">de receita gerada</span>
                 </div>
-                <div class="cp-case-metric">
-                  <span class="cp-case-metric-value">13</span>
-                  <span class="cp-case-metric-label">ROAS</span>
-                </div>
               </div>
             </div>
           </div>
           <div class="cp-case-right">
-            <div class="cp-phone-frame">
-              <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+            <div class="cp-case-dual-phones">
+              <div class="cp-case-dual-phone">
+                <div class="cp-phone-frame">
+                  <video src="Criativos/Minimal%20-%20Joao%204%20(1).mp4" autoplay loop muted playsinline></video>
+                </div>
+                <div class="cp-case-roas-badge"><em>ROAS</em><strong>13</strong></div>
+              </div>
+              <div class="cp-case-dual-phone">
+                <div class="cp-phone-frame">
+                  <video src="Criativos/Minimal%20-%20Rodrigo%20(1).mp4" autoplay loop muted playsinline></video>
+                </div>
+                <div class="cp-case-roas-badge"><em>ROAS</em><strong>12,3</strong></div>
+              </div>
             </div>
-            <span class="cp-case-tag">Exemplo Creators</span>
           </div>
         </div>
       </div>
@@ -8216,23 +8324,23 @@ a.xpto-pricing-btn { text-decoration: none; }
     <!-- SLIDE 08 — CASE BREADY -->
     <section class="xpto-slide cp-slide-case">
       <div class="xpto-slide-inner">
-        <div class="cp-case-grid">
+        <div class="cp-case-grid cp-case-grid--screenshot">
           <div class="cp-case-left">
             <div>
               <span class="cp-case-eyebrow">CASE</span>
               <h2 class="cp-case-title">Bready</h2>
             </div>
             <ol class="cp-case-list">
-              <li><span class="cp-case-num">1</span>Estratégia principal para a Bready ir do 0 a <strong>R$1.5 milhão por mês</strong></li>
+              <li style="white-space:nowrap"><span class="cp-case-num">1</span>Estratégia principal para a Bready ir do 0 a <strong>R$1.5 milhão por mês</strong></li>
               <li><span class="cp-case-num">2</span>Testes de hooks, creators, ângulos e múltiplas receitas</li>
             </ol>
-            <p class="cp-case-venture">✦&nbsp; A Bready é uma Venture da Turbo Partners</p>
+            <div class="cp-case-venture">✦&nbsp; Venture da Turbo Partners</div>
           </div>
           <div class="cp-case-right">
-            <div class="cp-phone-frame">
-              <video src="Criativos/WhatsApp%20Video%202025-09-23%20at%2009.56.57%20(7).mp4" autoplay loop muted playsinline></video>
+            <div class="cp-case-screenshot">
+              <img src="Criativos/biblioteca-bready.png" alt="Bready biblioteca de criativos">
             </div>
-            <span class="cp-case-tag">Exemplo Creators</span>
+            <span class="cp-case-tag">Biblioteca de Criativos</span>
           </div>
         </div>
       </div>
@@ -8248,7 +8356,7 @@ a.xpto-pricing-btn { text-decoration: none; }
               <h2 class="cp-case-title">Cacow</h2>
             </div>
             <ol class="cp-case-list">
-              <li><span class="cp-case-num">1</span>Testes de ângulos de criativos e <strong>validação do ângulo vegano</strong> para os produtos</li>
+              <li style="white-space:nowrap"><span class="cp-case-num">1</span>Testes de ângulos de criativos e <strong>validação do ângulo vegano</strong> para os produtos</li>
               <li><span class="cp-case-num">2</span>Divulgação de novos produtos e receitas</li>
               <li><span class="cp-case-num">3</span>Teste de personas e público alvo</li>
             </ol>
@@ -8276,7 +8384,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
           <div class="cp-case-right">
             <div class="cp-phone-frame">
-              <img src="Criativos/WhatsApp%20Image%202025-09-23%20at%2009.56.57%20(1).jpeg" alt="Cacow">
+              <video src="Criativos/cacow-Natalia.mov" autoplay loop muted playsinline></video>
             </div>
             <span class="cp-case-tag">Exemplo Creators</span>
           </div>
@@ -8314,7 +8422,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
           <div class="cp-case-right">
             <div class="cp-phone-frame">
-              <img src="Criativos/C%C3%B3pia%20de%20WhatsApp%20Image%202025-06-05%20at%2014.42.36%20(1).jpeg" alt="Óticas Paris">
+              <video src="Criativos/oticas-joao.mp4" autoplay loop muted playsinline></video>
             </div>
             <span class="cp-case-tag">Exemplo Creators</span>
           </div>
@@ -8325,7 +8433,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     <!-- SLIDE 10 — CASE OCEAN DROP -->
     <section class="xpto-slide cp-slide-case">
       <div class="xpto-slide-inner">
-        <div class="cp-case-grid">
+        <div class="cp-case-grid cp-case-grid--ocean">
           <div class="cp-case-left">
             <div>
               <span class="cp-case-eyebrow">CASE</span>
@@ -8350,10 +8458,27 @@ a.xpto-pricing-btn { text-decoration: none; }
             </div>
           </div>
           <div class="cp-case-right">
-            <div class="cp-phone-frame">
-              <video src="Criativos/m-Drycat-9x16.mp4" autoplay loop muted playsinline></video>
+            <div class="cp-case-ocean-phones">
+              <div class="cp-case-ocean-row">
+                <div class="cp-phone-frame">
+                  <video src="Criativos/ocean/Roteiro%201%20-%20Hook%201%20-%20Eduarda%20-%20Ocean.mp4" autoplay loop muted playsinline></video>
+                </div>
+                <div class="cp-phone-frame">
+                  <video src="Criativos/ocean/Roteiro%201%20-%20Hook%201%20-%20Jacque%20-%20Ocean.mp4" autoplay loop muted playsinline></video>
+                </div>
+              </div>
+              <div class="cp-case-ocean-row">
+                <div class="cp-phone-frame">
+                  <video src="Criativos/ocean/Roteiro%201%20-%20Hook%203%20-%20Lara%20-%20Ocean.mp4" autoplay loop muted playsinline></video>
+                </div>
+                <div class="cp-phone-frame">
+                  <video src="Criativos/ocean/Roteiro%201%20-%20Hook%203%20-%20Monise%20-%20Ocean%20Drop.mp4" autoplay loop muted playsinline></video>
+                </div>
+                <div class="cp-phone-frame">
+                  <video src="Criativos/ocean/ocean-natalia.mov" autoplay loop muted playsinline></video>
+                </div>
+              </div>
             </div>
-            <span class="cp-case-tag">Exemplo Creators</span>
           </div>
         </div>
       </div>
@@ -12428,6 +12553,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     document.getElementById('cp-close').style.display = 'none';
     document.getElementById('cp-scroll-hint').style.display = 'none';
     document.body.style.overflow = '';
+    // Navegar para a Jornada ao sair da apresentação
+    const jornadaNav = document.querySelector('.nav-item[data-view="jornada"]');
+    if (jornadaNav) jornadaNav.click();
   }
 
   document.getElementById('cp-close').style.display = 'none';
@@ -12449,29 +12577,68 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 renderFlow();
 renderProgress();
 
-// ── Cover video sound toggle ──────────────────────
+// ── Universal sound toggle for all phone-frame videos ──
 (function () {
-  const vid     = document.getElementById('cp-cover-video');
-  const overlay = document.getElementById('cp-sound-overlay');
-  const btn     = document.getElementById('cp-sound-btn');
-  if (!vid || !overlay || !btn) return;
+  // Inject overlay into every phone frame that contains a video
+  document.querySelectorAll('.cp-phone-frame').forEach(frame => {
+    const vid = frame.querySelector('video');
+    if (!vid) return;
+    frame.classList.add('cp-phone-frame--sound');
+    if (!frame.querySelector('.cp-sound-overlay')) {
+      const ov = document.createElement('div');
+      ov.className = 'cp-sound-overlay';
+      frame.appendChild(ov);
+    }
+  });
 
-  const overlayIcon = overlay.querySelector('.cp-sound-icon');
-  const btnIcon     = btn.querySelector('.cp-sound-btn-icon');
-  const btnLabel    = btn.querySelector('.cp-sound-btn-label');
-
-  function setMuted(muted) {
-    vid.muted = muted;
-    const icon  = muted ? '🔇' : '🔊';
-    const label = muted ? 'Toque para ativar o som' : 'Toque para silenciar';
-    overlayIcon.textContent = icon;
-    btnIcon.textContent     = icon;
-    btnLabel.textContent    = label;
-    overlay.classList.toggle('is-playing', !muted);
+  function muteAll() {
+    document.querySelectorAll('.cp-phone-frame video').forEach(v => {
+      v.muted = true;
+      const ov = v.closest('.cp-phone-frame')?.querySelector('.cp-sound-overlay');
+      if (ov) ov.classList.remove('is-playing');
+    });
+    // reset cover btn label if present
+    const btnIcon  = document.querySelector('#cp-sound-btn .cp-sound-btn-icon');
+    const btnLabel = document.querySelector('#cp-sound-btn .cp-sound-btn-label');
+    if (btnIcon)  btnIcon.textContent  = '🔇';
+    if (btnLabel) btnLabel.textContent = 'Toque para ativar o som';
   }
 
-  overlay.addEventListener('click', () => setMuted(vid.muted ? false : true));
-  btn.addEventListener('click',     () => setMuted(vid.muted ? false : true));
+  function toggleFrame(frame) {
+    const vid     = frame.querySelector('video');
+    const overlay = frame.querySelector('.cp-sound-overlay');
+    if (!vid || !overlay) return;
+
+    if (!vid.muted) {
+      // Already playing with sound — mute it
+      vid.muted = true;
+      overlay.classList.remove('is-playing');
+    } else {
+      // Mute all others first, then unmute this one from the start
+      muteAll();
+      vid.currentTime = 0;
+      vid.muted = false;
+      overlay.classList.add('is-playing');
+      // Update cover btn if this is the cover video
+      if (vid.id === 'cp-cover-video') {
+        const btnIcon  = document.querySelector('#cp-sound-btn .cp-sound-btn-icon');
+        const btnLabel = document.querySelector('#cp-sound-btn .cp-sound-btn-label');
+        if (btnIcon)  btnIcon.textContent  = '🔊';
+        if (btnLabel) btnLabel.textContent = 'Toque para silenciar';
+      }
+    }
+  }
+
+  document.querySelectorAll('.cp-phone-frame--sound').forEach(frame => {
+    frame.addEventListener('click', () => toggleFrame(frame));
+  });
+
+  // Cover's standalone button also toggles the cover frame
+  const coverBtn = document.getElementById('cp-sound-btn');
+  const coverFrame = document.getElementById('cp-cover-phone-frame');
+  if (coverBtn && coverFrame) {
+    coverBtn.addEventListener('click', () => toggleFrame(coverFrame));
+  }
 })();
 
 </script>
