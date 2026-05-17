@@ -13798,15 +13798,18 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         overflow: visible !important; scroll-snap-type: none !important;
       }
       .xpto-slide { scroll-snap-align: none !important; }
-      /* ── Compactar slides para formato documento ───────
-         No app, cada slide ocupa 100vh com padding generoso (faz sentido
-         numa apresentação fullscreen). Na proposta/PDF isso gera espaço
-         em branco enorme entre seções. Aqui: altura por conteúdo + padding
-         reduzido + delimitador sutil entre slides. */
+      /* ── Slides em formato documento: altura mínima harmônica ────
+         No app, cada slide ocupa 100vh (apresentação fullscreen).
+         Na proposta isso gerava 100vh de espaço em branco quando o
+         conteúdo era curto. Eliminar 100vh sem limite inferior fez
+         o oposto: capas/heros ficaram esmagadas (200-300px) enquanto
+         slides densos ficavam grandes (900-1300px). Aqui usamos uma
+         linha de base (~720px desktop, 540px mobile) para que slides
+         curtos respirem, slides densos cresçam naturalmente. */
       .proposal-section .xpto-slide,
       .proposal-section .turbo-slide {
-        min-height: auto !important;
-        padding: 48px 32px !important;
+        min-height: 720px !important;
+        padding: 56px 40px !important;
       }
       .proposal-section .xpto-slide + .xpto-slide,
       .proposal-section .turbo-slide + .turbo-slide {
@@ -13815,7 +13818,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       @media (max-width: 600px) {
         .proposal-section .xpto-slide,
         .proposal-section .turbo-slide {
-          padding: 36px 18px !important;
+          min-height: 540px !important;
+          padding: 40px 20px !important;
         }
       }
       /* ── Turbo / Missão: colapsar zoom-section e mostrar orbit já aberto + animado ──
