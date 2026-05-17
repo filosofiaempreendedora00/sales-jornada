@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proposta Social Media — Turbo Partners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-deep: #0B0726;
+    --navy: #172656;
+    --blue: #2564EC;
+    --blue-light: #415FF2;
+    --mint: #37D3A4;
+    --mint-dim: rgba(55,211,164,0.12);
+    --mint-glow: rgba(55,211,164,0.25);
+    --white: #FFFFFF;
+    --white-dim: rgba(255,255,255,0.07);
+    --white-soft: rgba(255,255,255,0.55);
+    --white-muted: rgba(255,255,255,0.35);
+    --card-bg: rgba(23,38,86,0.55);
+    --border: rgba(255,255,255,0.08);
+    --border-mint: rgba(55,211,164,0.3);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--navy-deep);
+    color: var(--white);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GRID PATTERN ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(37,100,236,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(37,100,236,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HERO GLOW ── */
+  .glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(11,7,38,0.8);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .nav-logo-mark {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--blue), var(--mint));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: white;
+    letter-spacing: -1px;
+  }
+
+  .nav-logo-text {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+
+  .nav-logo-text span { color: var(--mint); }
+
+  .nav-badge {
+    background: var(--mint-dim);
+    border: 1px solid var(--border-mint);
+    color: var(--mint);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 100px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+  }
+
+  .hero .glow-orb:nth-child(1) {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(37,100,236,0.3) 0%, transparent 70%);
+    top: -150px; left: 50%; transform: translateX(-50%);
+  }
+
+  .hero .glow-orb:nth-child(2) {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(55,211,164,0.18) 0%, transparent 70%);
+    bottom: 0; right: -100px;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--mint-dim);
+    border: 1px solid var(--border-mint);
+    color: var(--mint);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    margin-bottom: 32px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--mint);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-size: clamp(42px, 7vw, 88px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.7s 0.1s ease both;
+  }
+
+  .hero h1 .accent {
+    background: linear-gradient(90deg, var(--blue-light), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 20px);
+    color: var(--white-soft);
+    max-width: 600px;
+    font-weight: 400;
+    line-height: 1.7;
+    margin-bottom: 52px;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 16px 36px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 0 40px rgba(37,100,236,0.4);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 60px rgba(37,100,236,0.6);
+  }
+
+  .btn-ghost {
+    background: var(--white-dim);
+    color: white;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 16px 36px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.2);
+    transform: translateY(-2px);
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: relative;
+    z-index: 1;
+    padding: 0 48px;
+    margin-top: -1px;
+  }
+
+  .stats-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    backdrop-filter: blur(20px);
+  }
+
+  .stat-item {
+    text-align: center;
+    position: relative;
+  }
+
+  .stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+  }
+
+  .stat-num {
+    font-size: 32px;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--blue-light), var(--mint));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--white-muted);
+    font-weight: 500;
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 100px 48px;
+  }
+
+  .section-inner { max-width: 1100px; margin: 0 auto; }
+
+  .section-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mint);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+  }
+
+  .section-eyebrow::before {
+    content: '';
+    width: 24px; height: 2px;
+    background: var(--mint);
+  }
+
+  .section-title {
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--white-soft);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* ── PLANOS ── */
+  .plans-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 56px;
+  }
+
+  .plan-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    transition: transform 0.3s, border-color 0.3s;
+  }
+
+  .plan-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .plan-card.featured {
+    border-color: var(--border-mint);
+    background: linear-gradient(135deg, rgba(23,38,86,0.8), rgba(11,7,38,0.8));
+  }
+
+  .plan-card.featured::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(55,211,164,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .plan-card.featured .glow-corner {
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(55,211,164,0.2) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .plan-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .tag-starter { background: rgba(37,100,236,0.15); color: var(--blue-light); border: 1px solid rgba(37,100,236,0.3); }
+  .tag-enterprise { background: var(--mint-dim); color: var(--mint); border: 1px solid var(--border-mint); }
+
+  .plan-name {
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+
+  .plan-desc {
+    font-size: 14px;
+    color: var(--white-muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .plan-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 28px;
+  }
+
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .plan-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    color: var(--white-soft);
+    line-height: 1.5;
+  }
+
+  .feat-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+  }
+
+  .feat-icon.blue { background: rgba(37,100,236,0.2); }
+  .feat-icon.mint { background: var(--mint-dim); }
+
+  .feat-icon svg { width: 11px; height: 11px; }
+
+  .plan-highlight {
+    background: var(--mint-dim);
+    border: 1px solid var(--border-mint);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .plan-highlight .hi-icon {
+    width: 36px; height: 36px;
+    background: var(--mint-dim);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .plan-highlight .hi-text {
+    font-size: 13px;
+    color: var(--mint);
+    font-weight: 600;
+    line-height: 1.5;
+  }
+
+  .plan-price {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 24px;
+  }
+
+  .price-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--white-muted);
+  }
+
+  .price-value {
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    color: var(--white);
+  }
+
+  .plan-card.featured .price-value {
+    background: linear-gradient(90deg, var(--mint), #2bb88d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .plan-cta { cursor: default; }
+
+
+    padding: 16px;
+    border-radius: 12px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .cta-starter {
+    background: rgba(37,100,236,0.15);
+    border: 1px solid rgba(37,100,236,0.4);
+    color: var(--blue-light);
+  }
+
+  .cta-starter:hover {
+    background: rgba(37,100,236,0.25);
+    transform: translateY(-2px);
+  }
+
+  .cta-enterprise {
+    background: linear-gradient(135deg, var(--mint), #2bb88d);
+    border: none;
+    color: var(--navy-deep);
+    box-shadow: 0 0 40px rgba(55,211,164,0.3);
+  }
+
+  .cta-enterprise:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 60px rgba(55,211,164,0.5);
+  }
+
+  /* ── SETUP 360 ── */
+  .setup-section {
+    background: linear-gradient(135deg, rgba(23,38,86,0.4), rgba(11,7,38,0.6));
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .setup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 64px;
+    align-items: center;
+    margin-top: 0;
+  }
+
+  .setup-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--blue), var(--blue-light));
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+  }
+
+  .setup-title {
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+
+  .setup-sub {
+    font-size: 15px;
+    color: var(--white-soft);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .setup-deadline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(37,100,236,0.12);
+    border: 1px solid rgba(37,100,236,0.25);
+    color: var(--blue-light);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 10px;
+  }
+
+  .setup-items {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .setup-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 22px;
+    backdrop-filter: blur(10px);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .setup-item:hover {
+    border-color: var(--border-mint);
+    transform: translateY(-2px);
+  }
+
+  .setup-item-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mint);
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .setup-item-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .setup-item-desc {
+    font-size: 12px;
+    color: var(--white-muted);
+    line-height: 1.5;
+  }
+
+  /* ── DIFERENCIAIS ── */
+  .diff-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+
+  .diff-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 28px;
+    backdrop-filter: blur(20px);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .diff-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-4px);
+  }
+
+  .diff-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--white-muted);
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .diff-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 18px;
+  }
+
+  .diff-icon.blue-bg { background: rgba(37,100,236,0.15); }
+  .diff-icon.mint-bg { background: var(--mint-dim); }
+
+  .diff-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    letter-spacing: -0.3px;
+  }
+
+  .diff-text {
+    font-size: 13px;
+    color: var(--white-soft);
+    line-height: 1.65;
+  }
+
+  /* ── ESCADA ── */
+  .ladder-section {}
+
+  .ladder-visual {
+    display: flex;
+    align-items: flex-end;
+    gap: 0;
+    margin-top: 56px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ladder-visual::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at bottom right, rgba(55,211,164,0.06) 0%, transparent 60%);
+  }
+
+  .ladder-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    position: relative;
+  }
+
+  .ladder-step:not(:last-child)::after {
+    content: '→';
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--white-muted);
+    font-size: 20px;
+    z-index: 1;
+  }
+
+  .ladder-bar {
+    width: 100%;
+    max-width: 140px;
+    border-radius: 12px 12px 0 0;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+
+  .bar-starter { height: 120px; background: linear-gradient(180deg, rgba(37,100,236,0.5), rgba(37,100,236,0.2)); border: 1px solid rgba(37,100,236,0.4); }
+  .bar-enterprise { height: 200px; background: linear-gradient(180deg, rgba(55,211,164,0.6), rgba(55,211,164,0.2)); border: 1px solid var(--border-mint); }
+  .bar-addons { height: 260px; background: linear-gradient(180deg, rgba(65,95,242,0.5), rgba(65,95,242,0.2)); border: 1px solid rgba(65,95,242,0.3); }
+
+  .ladder-label { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .ladder-desc { font-size: 12px; color: var(--white-muted); max-width: 140px; line-height: 1.5; }
+
+  /* ── CTA FINAL ── */
+  .cta-section {
+    text-align: center;
+    padding: 100px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section .glow-orb {
+    width: 700px; height: 400px;
+    background: radial-gradient(ellipse, rgba(37,100,236,0.25) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .cta-inner { position: relative; z-index: 1; max-width: 700px; margin: 0 auto; }
+
+  .cta-title {
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1.05;
+    margin-bottom: 24px;
+  }
+
+  .cta-sub {
+    font-size: 17px;
+    color: var(--white-soft);
+    margin-bottom: 40px;
+    line-height: 1.7;
+  }
+
+  .cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-right {
+    font-size: 13px;
+    color: var(--white-muted);
+  }
+
+  .pricing-final {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px 48px;
+    margin: 40px auto;
+    max-width: 520px;
+    backdrop-filter: blur(20px);
+  }
+
+  .pricing-item {
+    flex: 1;
+    text-align: center;
+  }
+
+  .pricing-plan-name {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--white-muted);
+    margin-bottom: 8px;
+  }
+
+  .pricing-value {
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    color: var(--white);
+  }
+
+  .pricing-value span {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white-muted);
+    letter-spacing: 0;
+  }
+
+  .mint-price {
+    background: linear-gradient(90deg, var(--mint), #2bb88d);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .pricing-divider {
+    width: 1px;
+    height: 48px;
+    background: var(--border);
+    margin: 0 32px;
+    flex-shrink: 0;
+  }
+
+  /* ── ADD-ONS ── */
+  .addons-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 56px;
+  }
+
+  .addon-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    backdrop-filter: blur(20px);
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .addon-card:hover {
+    border-color: rgba(255,255,255,0.15);
+    transform: translateY(-3px);
+  }
+
+  .addon-icon {
+    font-size: 24px;
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    background: var(--white-dim);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .addon-body { flex: 1; }
+
+  .addon-name {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+  }
+
+  .addon-desc {
+    font-size: 13px;
+    color: var(--white-soft);
+    line-height: 1.6;
+  }
+
+  .addon-tag {
+    flex-shrink: 0;
+    align-self: flex-start;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    background: rgba(37,100,236,0.15);
+    border: 1px solid rgba(37,100,236,0.3);
+    color: var(--blue-light);
+    white-space: nowrap;
+  }
+
+  .addon-tag-note {
+    background: var(--mint-dim);
+    border-color: var(--border-mint);
+    color: var(--mint);
+  }
+
+  @media (max-width: 600px) {
+    .addons-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    section { padding: 72px 24px; }
+    .plans-grid { grid-template-columns: 1fr; }
+    .setup-grid { grid-template-columns: 1fr; gap: 40px; }
+    .diff-grid { grid-template-columns: 1fr 1fr; }
+    .stats-inner { grid-template-columns: 1fr; gap: 24px; padding: 28px 24px; }
+    .stat-item::after { display: none; }
+    .ladder-visual { padding: 32px 24px; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .stats-bar { padding: 0 24px; }
+  }
+
+  @media (max-width: 600px) {
+    .diff-grid { grid-template-columns: 1fr; }
+    .setup-items { grid-template-columns: 1fr; }
+    .cta-section { padding: 72px 24px; }
+    .hero h1 { letter-spacing: -1px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">T</div>
+    <span class="nav-logo-text">Turbo <span>Partners</span></span>
+  </a>
+  <span class="nav-badge">📋 Proposta Comercial</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="glow-orb"></div>
+  <div class="glow-orb"></div>
+
+  <div class="hero-eyebrow">Social Media Management</div>
+
+  <h1>
+    Presença digital<br>
+    que <span class="accent">vende de verdade.</span>
+  </h1>
+
+  <p class="hero-sub">
+    Dois planos desenhados para marcas que querem mais do que likes —
+    querem posicionamento, crescimento mensurável e resultados reais.
+  </p>
+
+  <div class="hero-ctas">
+    <a href="#planos" class="btn-primary">
+      Ver planos
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 17L17 7M17 7H7M17 7v10"/></svg>
+    </a>
+    <a href="#diferenciais" class="btn-ghost">
+      Por que a Turbo?
+    </a>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar fade-in">
+  <div class="stats-inner">
+    <div class="stat-item">
+      <div class="stat-num">350+</div>
+      <div class="stat-label">Clientes turbinados</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">R$225M+</div>
+      <div class="stat-label">Faturamento gerado</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">7.135+</div>
+      <div class="stat-label">Criativos produzidos</div>
+    </div>
+  </div>
+</div>
+
+<!-- PLANOS -->
+<section id="planos">
+  <div class="section-inner">
+    <div class="fade-in">
+      <div class="section-eyebrow">Planos</div>
+      <h2 class="section-title">Escolha o nível<br>certo para o seu momento.</h2>
+      <p class="section-sub">Do primeiro posicionamento ao crescimento estruturado — existe um plano para onde você está agora.</p>
+    </div>
+
+    <div class="plans-grid">
+
+      <!-- STARTER -->
+      <div class="plan-card fade-in">
+        <div class="plan-tag tag-starter">⚡ Social Media Starter</div>
+        <h3 class="plan-name">Starter</h3>
+        <p class="plan-desc">Para marcas que querem começar com estratégia, sem improvisar. Presença consistente com intenção em cada post.</p>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>
+            <div class="feat-icon blue">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#415FF2" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Planejamento mensal com pilares de comunicação definidos
+          </li>
+          <li>
+            <div class="feat-icon blue">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#415FF2" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Copywriting estratégico — cada post tem intenção
+          </li>
+          <li>
+            <div class="feat-icon blue">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#415FF2" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Organização estratégica do feed como vitrine do negócio
+          </li>
+          <li>
+            <div class="feat-icon blue">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#415FF2" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            <strong>12 conteúdos mensais</strong> — consistência sem burocracia
+          </li>
+          <li>
+            <div class="feat-icon blue">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#415FF2" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Relatório analítico mensal — você vê o que funciona
+          </li>
+          <li>
+            <div class="feat-icon blue">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#415FF2" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Kickoff essencial para alinhamento de marca
+          </li>
+        </ul>
+        <span class="plan-cta cta-starter">Quero o Starter →</span>
+      </div>
+
+      <!-- ENTERPRISE -->
+      <div class="plan-card featured fade-in">
+        <div class="glow-corner"></div>
+        <div class="plan-tag tag-enterprise">🚀 Social Media Scale</div>
+        <h3 class="plan-name">Scale</h3>
+        <p class="plan-desc">Para marcas que querem escalar com estrutura. Estratégia completa, creators integrados e presença autoral.</p>
+        <div class="plan-divider"></div>
+        <ul class="plan-features">
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Planejamento estratégico mensal com meta de crescimento
+          </li>
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Relatório analítico mensal — você vê o que funciona
+          </li>
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            <strong>8 conteúdos fixos estratégicos</strong> + <strong>4 dinâmicos</strong> (1/semana)
+          </li>
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Stories Estratégicos PRO: calendário completo, 4 sequências/mês
+          </li>
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            Reunião estratégica mensal com time especializado
+          </li>
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            <strong>Setup 360 incluso</strong> — estruturação estratégica completa
+          </li>
+          <li>
+            <div class="feat-icon mint">
+              <svg viewBox="0 0 12 12" fill="none" stroke="#37D3A4" stroke-width="2"><polyline points="2,6 5,9 10,3"/></svg>
+            </div>
+            <strong>Presença Autoral inclusa</strong> — até 2 criadores/mês, 4 vídeos no total
+          </li>
+        </ul>
+        <div class="plan-highlight">
+          <div class="hi-icon">🎬</div>
+          <div class="hi-text">Creators integrados à estratégia — humanização como diferencial competitivo</div>
+        </div>
+        <span class="plan-cta cta-enterprise">Quero o Scale →</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SETUP 360 -->
+<section class="setup-section" id="setup">
+  <div class="section-inner">
+    <div class="setup-grid">
+      <div class="fade-in">
+        <div class="setup-badge">✦ Incluso no Scale</div>
+        <h2 class="setup-title">Setup 360</h2>
+        <p class="setup-sub">
+          Antes de criar, a gente entende. O Setup 360 é a estruturação estratégica completa da sua presença digital — 
+          da análise de mercado ao plano de ação, tudo definido antes do primeiro post.
+        </p>
+        <div class="setup-deadline">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          Entrega em até 15 dias após pré-kickoff
+        </div>
+      </div>
+
+      <div class="setup-items fade-in">
+        <div class="setup-item">
+          <div class="setup-item-num">01</div>
+          <div class="setup-item-name">Diagnóstico Digital</div>
+          <div class="setup-item-desc">Radiografia completa da presença atual da marca</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">02</div>
+          <div class="setup-item-name">Análise de Mercado</div>
+          <div class="setup-item-desc">Mapeamento de concorrência e oportunidades</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">03</div>
+          <div class="setup-item-name">Definição Estratégica</div>
+          <div class="setup-item-desc">Posicionamento, tom de voz e direcionamento</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">04</div>
+          <div class="setup-item-name">Estrutura de Conteúdo</div>
+          <div class="setup-item-desc">Pilares, formatos e cadência editorial</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">05</div>
+          <div class="setup-item-name">Estrutura de Conversão</div>
+          <div class="setup-item-desc">Funil de conteúdo alinhado ao negócio</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">06</div>
+          <div class="setup-item-name">Estratégia de Stories</div>
+          <div class="setup-item-desc">Sequências e narrativas para engajamento diário</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">07</div>
+          <div class="setup-item-name">Estrutura Visual</div>
+          <div class="setup-item-desc">Identidade, paleta e coerência estética</div>
+        </div>
+        <div class="setup-item">
+          <div class="setup-item-num">08</div>
+          <div class="setup-item-name">Plano de Ação Inicial</div>
+          <div class="setup-item-desc">Primeiros 30 dias com passos claros</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFERENCIAIS -->
+<section id="diferenciais">
+  <div class="section-inner">
+    <div class="fade-in">
+      <div class="section-eyebrow">Diferenciais</div>
+      <h2 class="section-title">Por que isso é<br>diferente do resto.</h2>
+    </div>
+
+    <div class="diff-grid">
+
+      <div class="diff-card fade-in">
+        <div class="diff-num">01</div>
+        <div class="diff-icon blue-bg">🎯</div>
+        <h4 class="diff-title">Posicionamento real</h4>
+        <p class="diff-text">Do feed ao copywriting — cada detalhe comunica quem é a marca. Sem post genérico, sem estética de template.</p>
+      </div>
+
+      <div class="diff-card fade-in">
+        <div class="diff-num">02</div>
+        <div class="diff-icon mint-bg">📊</div>
+        <h4 class="diff-title">Crescimento mensurável</h4>
+        <p class="diff-text">Relatório analítico em ambos os planos. No Scale, metas definidas e reunião mensal para acompanhar cada métrica.</p>
+      </div>
+
+      <div class="diff-card fade-in">
+        <div class="diff-num">03</div>
+        <div class="diff-icon mint-bg">🎬</div>
+        <h4 class="diff-title">Presença Autoral inclusa</h4>
+        <p class="diff-text">Criadores integrados ao Scale — humanização como estratégia, não como extra. Até 2 criadores/mês com 4 vídeos.</p>
+      </div>
+
+      <div class="diff-card fade-in">
+        <div class="diff-num">04</div>
+        <div class="diff-icon blue-bg">💸</div>
+        <h4 class="diff-title">Sem custo de creator</h4>
+        <p class="diff-text">Pagamento direto entre cliente e creator: financeiro, permuta ou collab. Você só paga o que já acordou.</p>
+      </div>
+
+      <div class="diff-card fade-in">
+        <div class="diff-num">05</div>
+        <div class="diff-icon mint-bg">📈</div>
+        <h4 class="diff-title">Evolução natural</h4>
+        <p class="diff-text">Do Starter ao Scale, uma escada clara. Você cresce junto com o serviço — sem burocracia para subir de nível.</p>
+      </div>
+
+      <div class="diff-card fade-in">
+        <div class="diff-num">06</div>
+        <div class="diff-icon blue-bg">🔧</div>
+        <h4 class="diff-title">Estrutura escalável</h4>
+        <p class="diff-text">Add-ons de expansão disponíveis para volume, novos canais ou projetos especiais. O serviço cresce com a marca.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ADD-ONS -->
+<section id="addons">
+  <div class="section-inner">
+    <div class="fade-in">
+      <div class="section-eyebrow">Expansão</div>
+      <h2 class="section-title">Add-ons disponíveis<br>para qualquer plano.</h2>
+      <p class="section-sub">Expanda o escopo conforme a marca cresce — sem trocar de plano, sem fricção.</p>
+    </div>
+
+    <div class="addons-grid fade-in">
+
+      <div class="addon-card">
+        <div class="addon-icon">⚙️</div>
+        <div class="addon-body">
+          <div class="addon-name">Setup 360</div>
+          <div class="addon-desc">Estruturação estratégica completa antes do início da execução. Add-on pontual para o Starter ou contratação avulsa.</div>
+        </div>
+        <div class="addon-tag">Pontual</div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-icon">💼</div>
+        <div class="addon-body">
+          <div class="addon-name">LinkedIn</div>
+          <div class="addon-desc">4 posts mensais com estratégia editorial para LinkedIn — presença profissional com intenção.</div>
+        </div>
+        <div class="addon-tag">Mensal</div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-icon">📲</div>
+        <div class="addon-body">
+          <div class="addon-name">Stories Interativos</div>
+          <div class="addon-desc">12 stories interativos/mês: caixas de pergunta, seleção e enquetes. Postagem realizada pelo próprio cliente.</div>
+        </div>
+        <div class="addon-tag">Mensal</div>
+      </div>
+
+      <div class="addon-card">
+        <div class="addon-icon">🚀</div>
+        <div class="addon-body">
+          <div class="addon-name">Distribuição de Conteúdo</div>
+          <div class="addon-desc">4 impulsionamentos/mês com acompanhamento estratégico. Cliente aporta R$ 400 em mídia.</div>
+        </div>
+        <div class="addon-tag">Pontual</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ESCADA -->
+<section class="ladder-section" id="evolucao">
+  <div class="section-inner">
+    <div class="fade-in">
+      <div class="section-eyebrow">Evolução</div>
+      <h2 class="section-title">A escada de crescimento<br>está traçada.</h2>
+      <p class="section-sub">Você não precisa começar no topo para chegar lá. O caminho é claro.</p>
+    </div>
+
+    <div class="ladder-visual fade-in">
+      <div class="ladder-step">
+        <div class="ladder-bar bar-starter"></div>
+        <div class="ladder-label">Starter</div>
+        <div class="ladder-desc">Posicionamento e consistência nos primeiros 12 conteúdos</div>
+      </div>
+      <div class="ladder-step">
+        <div class="ladder-bar bar-enterprise"></div>
+        <div class="ladder-label">Scale</div>
+        <div class="ladder-desc">Estratégia completa + creators + Setup 360 incluso</div>
+      </div>
+      <div class="ladder-step">
+        <div class="ladder-bar bar-addons"></div>
+        <div class="ladder-label">Add-ons</div>
+        <div class="ladder-desc">Volume, novos canais e projetos especiais sem limite</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <div class="glow-orb"></div>
+  <div class="cta-inner fade-in">
+    <h2 class="cta-title">
+      Pronto para sua marca
+      <span style="background: linear-gradient(90deg, #415FF2, #37D3A4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">parar de improvisar?</span>
+    </h2>
+    <p class="cta-sub">
+      Fale com um especialista Turbo e descubra qual plano faz sentido para o momento da sua marca.
+    </p>
+
+    <div class="pricing-final">
+      <div class="pricing-item">
+        <div class="pricing-plan-name">Starter</div>
+        <div class="pricing-value">R$&nbsp;3.397<span>/mês</span></div>
+      </div>
+      <div class="pricing-divider"></div>
+      <div class="pricing-item featured-price">
+        <div class="pricing-plan-name">Scale</div>
+        <div class="pricing-value mint-price">R$&nbsp;3.897<span>/mês</span></div>
+      </div>
+    </div>
+
+    <div class="cta-buttons">
+      <span class="btn-primary">
+        💬 Falar no WhatsApp
+      </span>
+      <span class="btn-ghost">
+        Conhecer a Turbo
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="nav-logo-mark">T</div>
+    <span class="nav-logo-text">Turbo <span style="color: var(--mint)">Partners</span></span>
+  </div>
+  <div class="footer-right">
+    Turbo Partners © 2025 · Vitória, ES
+  </div>
+</footer>
+
+<script>
+  // Intersection Observer for fade-in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Staggered children
+  document.querySelectorAll('.plans-grid, .diff-grid, .setup-items').forEach(grid => {
+    const children = grid.querySelectorAll('.fade-in, .plan-card, .diff-card, .setup-item');
+    children.forEach((child, i) => {
+      child.style.transitionDelay = `${i * 80}ms`;
+    });
+  });
+</script>
+
+</body>
+</html>

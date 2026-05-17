@@ -12964,10 +12964,11 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   const SOLUTIONS = [
     { id: 'performance', icon: '📈', name: 'Performance',   color: '#0dcfe8', sourceId: 'pp-inner' },
     { id: 'creators',    icon: '🎬', name: 'Creators UGC',  color: '#ffa826', sourceId: 'cp-inner' },
-    { id: 'social',      icon: '📱', name: 'Social Media',  color: '#12d490', sourceId: null, disabled: true, disabledReason: 'Em breve' }
+    { id: 'social',      icon: '📱', name: 'Social Media',  color: '#12d490', externalUrl: 'htmls/proposta-social-media.html' }
   ];
 
   const selected = new Set(['performance', 'creators']);
+  const externalCache = new Map();
   let previewDirty = true;
 
   const $solutions = document.getElementById('prop-solutions');
@@ -13016,7 +13017,17 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     }
   }
 
-  function buildProposalHTML() {
+  async function fetchExternal(url) {
+    if (externalCache.has(url)) return externalCache.get(url);
+    const p = fetch(url).then(r => {
+      if (!r.ok) throw new Error(`Falha ao carregar ${url}: ${r.status}`);
+      return r.text();
+    });
+    externalCache.set(url, p);
+    return p;
+  }
+
+  async function buildProposalHTML() {
     // Capture all <style> tags from the host page so the standalone HTML looks identical.
     const styles = Array.from(document.querySelectorAll('style'))
       .map(s => s.outerHTML)
@@ -13031,14 +13042,29 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       </section>`);
     }
     // 2. Soluções selecionadas, na ordem de SOLUTIONS
-    SOLUTIONS.forEach(s => {
-      if (!selected.has(s.id) || !s.sourceId) return;
-      const node = document.getElementById(s.sourceId);
-      if (!node) return;
-      sections.push(`<section class="proposal-section proposal-section--${s.id}">
-        <div class="xpto-inner">${node.innerHTML}</div>
-      </section>`);
-    });
+    for (const s of SOLUTIONS) {
+      if (!selected.has(s.id)) continue;
+      if (s.sourceId) {
+        const node = document.getElementById(s.sourceId);
+        if (!node) continue;
+        sections.push(`<section class="proposal-section proposal-section--${s.id}">
+          <div class="xpto-inner">${node.innerHTML}</div>
+        </section>`);
+      } else if (s.externalUrl) {
+        try {
+          const html = await fetchExternal(s.externalUrl);
+          // Embute o documento externo via srcdoc (escapando aspas duplas) → isolamento total de CSS/JS
+          const escaped = html.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+          sections.push(`<section class="proposal-section proposal-section--${s.id} proposal-section--external">
+            <iframe class="proposal-external-frame" srcdoc="${escaped}" loading="lazy"></iframe>
+          </section>`);
+        } catch (e) {
+          sections.push(`<section class="proposal-section proposal-section--${s.id}">
+            <div style="padding:48px;color:#f55;text-align:center">Erro ao carregar ${s.name}: ${e.message}</div>
+          </section>`);
+        }
+      }
+    }
 
     const extraCSS = `
       html, body {
@@ -13072,7 +13098,66 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         overflow: visible !important; scroll-snap-type: none !important;
       }
       .xpto-slide { scroll-snap-align: none !important; }
+      /* Seções externas: iframe full-width que se auto-redimensiona via script */
+      .proposal-section--external { padding: 0; background: #0a0a0c; }
+      .proposal-external-frame {
+        width: 100%; border: 0; display: block;
+        height: 100vh; /* fallback enquanto o auto-resize não rodou */
+        background: #0a0a0c;
+      }
     `;
+
+    const autoResizeScript = `
+<` + `script>
+(function(){
+  // Conteúdo externo costuma usar min-height:100vh em hero/splash, que vira loop
+  // quando o iframe é redimensionado. Estratégia: injeta um <style> dentro do iframe
+  // que substitui 100vh por px fixo (= viewport real do navegador top-level).
+  // Aí mede scrollHeight e aplica como altura do iframe.
+  function getTopVH(){
+    try { return (window.top && window.top.innerHeight) || window.innerHeight; }
+    catch(e){ return window.innerHeight; }
+  }
+  function fit(f){
+    try {
+      var d = f.contentDocument;
+      if(!d || !d.body) return;
+      var vh = getTopVH();
+      var styleId = '__pp_vh_override__';
+      var st = d.getElementById(styleId);
+      if(!st){
+        st = d.createElement('style');
+        st.id = styleId;
+        d.head.appendChild(st);
+      }
+      // Sobrescreve qualquer min-height: 100vh em hero/splash/full-screen
+      // (alvos comuns; se sua proposta usar outro seletor, adicione aqui)
+      st.textContent =
+        '.hero, .splash, .full-screen, [class*="hero-full"], ' +
+        'section[class*="full"], main[class*="hero"] { ' +
+        'min-height: ' + vh + 'px !important; height: auto !important; }';
+      void d.body.offsetHeight;
+      var h = Math.max(d.documentElement.scrollHeight, d.body.scrollHeight);
+      if(h > 0 && h < 200000) f.style.height = h + 'px';
+    } catch(e){}
+  }
+  function attach(f){
+    f.addEventListener('load', function(){
+      fit(f);
+      [200, 800, 2500, 6000].forEach(function(t){ setTimeout(function(){ fit(f); }, t); });
+    });
+    if(f.contentDocument && f.contentDocument.readyState === 'complete') fit(f);
+  }
+  document.querySelectorAll('iframe.proposal-external-frame').forEach(attach);
+  var resizeTO;
+  window.addEventListener('resize', function(){
+    clearTimeout(resizeTO);
+    resizeTO = setTimeout(function(){
+      document.querySelectorAll('iframe.proposal-external-frame').forEach(fit);
+    }, 150);
+  });
+})();
+<` + `/script>`;
 
     return `<!doctype html>
 <html lang="pt-BR">
@@ -13085,35 +13170,55 @@ ${styles}
 </head>
 <body>
 ${sections.join('\n')}
+${autoResizeScript}
 </body>
 </html>`;
   }
 
-  function renderPreview() {
+  async function renderPreview() {
     if (!$frame) return;
     if (selected.size === 0) {
       $frame.srcdoc = `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#888;font-family:system-ui;display:grid;place-items:center;height:100vh;font-size:14px">Selecione ao menos uma solução à esquerda</body></html>`;
       previewDirty = false;
       return;
     }
-    $frame.srcdoc = buildProposalHTML();
     previewDirty = false;
+    setBusy(true);
+    try {
+      $frame.srcdoc = await buildProposalHTML();
+    } finally {
+      setBusy(false);
+    }
   }
 
-  function downloadHTML() {
+  async function downloadHTML() {
     if (selected.size === 0) return;
-    const html = buildProposalHTML();
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-    const url  = URL.createObjectURL(blob);
-    const a    = document.createElement('a');
-    const ts   = new Date().toISOString().slice(0, 10);
-    const sols = Array.from(selected).join('-');
-    a.href = url;
-    a.download = `proposta-turbo-${sols}-${ts}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setBusy(true);
+    try {
+      const html = await buildProposalHTML();
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      const ts   = new Date().toISOString().slice(0, 10);
+      const sols = Array.from(selected).join('-');
+      a.href = url;
+      a.download = `proposta-turbo-${sols}-${ts}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function setBusy(busy) {
+    if ($download) $download.disabled = busy || selected.size === 0;
+    if ($refresh)  $refresh.disabled = busy;
+    if ($meta) {
+      if (busy) $meta.textContent = 'Gerando proposta...';
+      else updateMeta();
+    }
   }
 
   $download?.addEventListener('click', downloadHTML);
