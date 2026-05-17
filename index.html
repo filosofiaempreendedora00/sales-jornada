@@ -15161,9 +15161,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           overflow: hidden !important;
         }
         .proposal-section--turbo .turbo-slide--missao-orbit .turbo-orbit-ring {
-          width:  min(78vw, 300px) !important;
-          height: min(78vw, 300px) !important;
-          --r: clamp(95px, 30vw, 125px) !important;
+          width:  min(84vw, 320px) !important;
+          height: min(84vw, 320px) !important;
+          --r: clamp(110px, 34vw, 142px) !important;
         }
         .proposal-section--turbo .turbo-slide--missao-orbit .turbo-orbit-center-logo {
           width: clamp(56px, 15vw, 78px);
@@ -15210,7 +15210,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           opacity: 0.55;
           flex: 0 0 auto !important;
         }
-        .proposal-section--turbo .turbo-dna-tags { gap: 6px; }
+        .proposal-section--turbo .turbo-dna-tags {
+          gap: 6px;
+          /* Mobile: tags vão ACIMA da foto dos founders. Faz sentido
+             visual porque o helix conecta as DUAS fotos, não as tags
+             à foto do time. */
+          order: -1;
+        }
         .proposal-section--turbo .turbo-dna-tag {
           font-size: 10.5px;
           padding: 5px 10px;
@@ -15409,6 +15415,125 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         .proposal-section--closing .closing-brand-mark {
           width: 120px !important;
         }
+
+        /* ════ PERFORMANCE — refinamentos mobile ════ */
+
+        /* Capa: aumenta título + reduz subtítulo */
+        .proposal-section--performance .xpto-slide-hero .xpto-title {
+          font-size: clamp(36px, 11vw, 56px) !important;
+          line-height: 1.05 !important;
+          letter-spacing: -1.5px !important;
+        }
+        .proposal-section--performance .xpto-slide-hero .xpto-subtitle {
+          font-size: 13.5px !important;
+          line-height: 1.45 !important;
+        }
+
+        /* Slide "Compare ≠": esconde header longo + cola título no card,
+           dando ao símbolo ≠ espaço equidistante entre as duas boxes */
+        .proposal-section--performance .pp-compare-header h2.pp-compare-heading {
+          display: none !important;
+        }
+        .proposal-section--performance .pp-compare-eyebrow {
+          margin-bottom: 16px;
+        }
+        .proposal-section--performance .pp-compare-col {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 0 !important;
+        }
+        .proposal-section--performance .pp-compare-title {
+          margin: 0 !important;
+          padding: 12px 18px !important;
+          font-size: 17px !important;
+          text-align: center !important;
+          border-radius: 14px 14px 0 0 !important;
+        }
+        .proposal-section--performance .pp-compare-title--neg {
+          background: rgba(255,255,255,0.04) !important;
+          border: 1px solid rgba(255,255,255,0.12) !important;
+          border-bottom: 0 !important;
+        }
+        .proposal-section--performance .pp-compare-title--pro {
+          background: rgba(77,141,255,0.18) !important;
+          border: 1px solid rgba(77,141,255,0.40) !important;
+          border-bottom: 0 !important;
+        }
+        .proposal-section--performance .pp-compare-card {
+          margin-top: 0 !important;
+          border-top: 0 !important;
+          border-top-left-radius: 0 !important;
+          border-top-right-radius: 0 !important;
+        }
+        /* ≠ ganha mais respiro vertical no mobile */
+        .proposal-section--performance .pp-compare-divider {
+          margin: 18px auto !important;
+        }
+
+        /* Slide Gameplan ("Estruturação Estratégica"): 2-col grid plano,
+           cards 1-5 fluem [1,2] [3,4] [5 sozinho à esquerda] */
+        .proposal-section--performance .pp-gameplan-rows {
+          display: grid !important;
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+        }
+        .proposal-section--performance .pp-gameplan-row {
+          display: contents !important;
+        }
+
+        /* Slide Criativos: grid 2x2 ao invés de 1 col (override do meu
+           próprio override anterior pra essa solução) */
+        .proposal-section--performance .pp-criativos-grid {
+          grid-template-columns: 1fr 1fr !important;
+          gap: 10px !important;
+        }
+
+        /* ════ CREATORS — refinamentos mobile ════ */
+
+        /* Cover (Sulmel): reduz o phone-frame pra não ocupar tela toda */
+        .proposal-section--creators .cp-cover-phone {
+          max-width: 200px !important;
+          margin: 0 auto !important;
+        }
+
+        /* "Quem trabalha com Creators": 3 brands na linha 1 (Paris,
+           Le Lis, Winstage) + 2 na linha 2 (Jui, Vekka) centralizadas
+           via flex-wrap + justify-content:center */
+        .proposal-section--creators .cp-clients-row {
+          display: flex !important;
+          flex-wrap: wrap !important;
+          justify-content: center !important;
+          gap: 12px !important;
+        }
+        .proposal-section--creators .cp-client {
+          flex: 0 0 calc(33.33% - 8px) !important;
+          max-width: 130px !important;
+        }
+        .proposal-section--creators .cp-client .cp-phone-frame {
+          max-width: 100% !important;
+        }
+
+        /* Cronograma (cp-timeline): o link verde "processo ponta a ponta"
+           tinha sobreposição + ficava cortado. Garante margin no fim. */
+        .proposal-section--creators .cp-timeline {
+          margin-bottom: 18px !important;
+        }
+        .proposal-section--creators .cp-timeline-process-link {
+          position: relative !important;
+          margin-top: 24px !important;
+          width: 100% !important;
+          flex-wrap: wrap !important;
+        }
+        .proposal-section--creators .cp-timeline-process-link .link-row {
+          flex-wrap: wrap !important;
+          gap: 4px !important;
+        }
+
+        /* Cases Cacow e Óticas Paris (videos grandes): reduz os phones */
+        .proposal-section--creators .cp-slide-case .cp-case-right .cp-phone-frame {
+          max-width: 180px !important;
+          margin: 0 auto !important;
+        }
       }
     `;
 
@@ -15605,19 +15730,25 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
   function init(){
     var slide = getSlide(); if (!slide) return;
-    // IntersectionObserver com root = viewport do próprio documento
-    // (no preview o iframe tem scroll interno; standalone usa window scroll —
-    // ambos os casos funcionam com root=null).
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if (e.isIntersecting && !played) {
-          played = true;
-          setTimeout(animate, 200);
-          io.disconnect();
-        }
-      });
-    }, { threshold: 0.35 });
-    io.observe(slide);
+    function play(){
+      if (played) return;
+      played = true;
+      animate();
+    }
+    // IntersectionObserver com threshold baixo + rootMargin de +80px embaixo
+    // pra preload — em mobile com slide alto e scroll rápido, threshold maior
+    // (ex: 0.35) podia perder o gatilho. Aqui qualquer intersecção dispara.
+    try {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting) { play(); io.disconnect(); }
+        });
+      }, { threshold: 0.05, rootMargin: '0px 0px 80px 0px' });
+      io.observe(slide);
+    } catch(_) { /* IO indisponível — fallback abaixo já cobre */ }
+    // Fallback: se IO não disparou em 6s (pode acontecer em mobile com
+    // iframe ou condições estranhas), anima de qualquer forma.
+    setTimeout(play, 6000);
   }
 
   if (document.readyState === 'loading') {
