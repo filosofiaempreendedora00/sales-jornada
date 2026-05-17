@@ -2437,6 +2437,65 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-fixed-name { font-size: 14px; font-weight: 600; color: var(--text); }
 .prop-fixed-hint { font-size: 11px; color: var(--text-soft); }
 .prop-fixed-lock { font-size: 12px; opacity: 0.55; }
+.prop-client-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+.prop-client-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.2px;
+}
+.prop-required {
+  color: #ff6b8e;
+  font-weight: 800;
+  margin-left: 2px;
+}
+.prop-client-input {
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(155,109,255,0.32);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.2px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+.prop-client-input::placeholder {
+  color: var(--text-soft);
+  font-weight: 400;
+}
+.prop-client-input:hover {
+  border-color: rgba(155,109,255,0.50);
+  background: rgba(255,255,255,0.045);
+}
+.prop-client-input:focus {
+  border-color: rgba(155,109,255,0.75);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.18);
+  background: rgba(255,255,255,0.05);
+}
+.prop-client-input.is-missing {
+  border-color: rgba(255,107,142,0.65);
+  box-shadow: 0 0 0 3px rgba(255,107,142,0.18);
+  animation: prop-client-shake 0.45s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes prop-client-shake {
+  0%, 100% { transform: translateX(0); }
+  18%, 58% { transform: translateX(-6px); }
+  38%, 78% { transform: translateX(6px); }
+}
+.prop-client-hint {
+  font-size: 11px;
+  color: var(--text-soft);
+  line-height: 1.4;
+}
 .prop-solutions { display: flex; flex-direction: column; gap: 8px; }
 .prop-sol-chip {
   display: flex;
@@ -8447,6 +8506,23 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
           <span class="prop-fixed-lock">🔒</span>
         </div>
+        <div class="prop-client-field">
+          <label class="prop-client-label" for="prop-client-name">
+            Nome do cliente <span class="prop-required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="prop-client-input"
+            id="prop-client-name"
+            type="text"
+            placeholder="Ex: Magazine Luiza"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="60"
+            required
+            aria-required="true"
+          >
+          <span class="prop-client-hint">Aparece grande na capa da proposta — obrigatório para baixar</span>
+        </div>
       </div>
       <div class="prop-section">
         <p class="prop-section-label">Soluções com apresentação</p>
@@ -13668,11 +13744,56 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   const externalCache = new Map();
   let previewDirty = true;
 
-  const $solutions = document.getElementById('prop-solutions');
-  const $frame     = document.getElementById('prop-preview-frame');
-  const $meta      = document.getElementById('prop-preview-meta');
-  const $download  = document.getElementById('prop-download');
-  const $refresh   = document.getElementById('prop-refresh');
+  const $solutions   = document.getElementById('prop-solutions');
+  const $frame       = document.getElementById('prop-preview-frame');
+  const $meta        = document.getElementById('prop-preview-meta');
+  const $download    = document.getElementById('prop-download');
+  const $refresh     = document.getElementById('prop-refresh');
+  const $clientInput = document.getElementById('prop-client-name');
+
+  // Nome do cliente — campo obrigatório para baixar. Persiste no localStorage
+  // para sobreviver a reloads (UX: ninguém quer digitar de novo).
+  let clientName = (localStorage.getItem('prop-client-name') || '').trim();
+  if ($clientInput) $clientInput.value = clientName;
+
+  // Debounce para regerar o preview enquanto o usuário digita o nome.
+  // 350ms é tempo suficiente para terminar uma palavra sem ficar regerando
+  // a cada tecla (cada build leva ~1s com inline de imagens).
+  let _previewDebounce = null;
+  function schedulePreviewRebuild() {
+    if (_previewDebounce) clearTimeout(_previewDebounce);
+    _previewDebounce = setTimeout(() => {
+      _previewDebounce = null;
+      previewDirty = true;
+      renderPreview();
+    }, 350);
+  }
+
+  if ($clientInput) {
+    $clientInput.addEventListener('input', () => {
+      clientName = $clientInput.value.trim();
+      localStorage.setItem('prop-client-name', clientName);
+      $clientInput.classList.remove('is-missing');
+      updateMeta();
+      schedulePreviewRebuild();
+    });
+    // Tab/click fora também tira o is-missing — feedback de erro só persiste
+    // enquanto o campo ainda está visivelmente errado.
+    $clientInput.addEventListener('blur', () => {
+      if ($clientInput.value.trim()) $clientInput.classList.remove('is-missing');
+    });
+  }
+
+  // Marca campo como faltando + foca + scrolla até ele. Usado quando o usuário
+  // tenta baixar sem ter preenchido. Re-trigger da animação shake via reflow.
+  function flagClientMissing() {
+    if (!$clientInput) return;
+    $clientInput.classList.remove('is-missing');
+    void $clientInput.offsetWidth;
+    $clientInput.classList.add('is-missing');
+    $clientInput.focus();
+    $clientInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 
   function renderSolutions() {
     if (!$solutions) return;
@@ -13705,11 +13826,14 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function updateMeta() {
     if (!$meta) return;
     const count = selected.size;
-    if (count === 0) {
+    if (!clientName) {
+      $meta.textContent = '⚠ Digite o nome do cliente para gerar a proposta';
+      $download.disabled = true;
+    } else if (count === 0) {
       $meta.textContent = '— selecione ao menos uma solução';
       $download.disabled = true;
     } else {
-      $meta.textContent = `Apresentação Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}`;
+      $meta.textContent = `Para ${clientName} · Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}`;
       $download.disabled = false;
     }
   }
@@ -13737,19 +13861,25 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     return m[1] + 'thumbs/' + m[2] + m[3] + '.jpg';
   }
 
+  // Escape HTML — evita que um nome de cliente com < > & quebre o markup.
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
   // Substitui o conteúdo da capa Turbo (.turbo-slide--cover) só no contexto da
-  // proposta — capa nova com saudação personalizada, logo decorativo à direita
-  // e as 3 tags antigas em canto sutil. Apresentação real fica intacta.
-  function replaceTurboCoverInProposal(html) {
+  // proposta — capa nova com saudação personalizada usando o nome do cliente.
+  // Apresentação real fica intacta. clientName: string (pode ser vazia, vira "cliente").
+  function replaceTurboCoverInProposal(html, clientName) {
     const doc = new DOMParser().parseFromString(html, 'text/html');
     const cover = doc.querySelector('.proposal-section--turbo .turbo-slide--cover');
     if (!cover) return html;
+    const safeName = escapeHtml((clientName || '').trim() || 'cliente');
     cover.innerHTML = `
       <div class="pc-bg"></div>
       <div class="pc-content">
         <img src="Logo-Turbo-branca (4).png" alt="Turbo Partners" class="pc-mark">
         <span class="pc-greeting">Olá,</span>
-        <h1 class="pc-name">cliente</h1>
+        <h1 class="pc-name">${safeName}</h1>
         <h1 class="pc-title">somos a <span class="pc-accent">Turbo!</span></h1>
         <div class="pc-divider"></div>
         <p class="pc-sub">Aceleramos o crescimento do seu negócio</p>
@@ -14317,7 +14447,9 @@ ${growthChartScript}
     html = replaceVideosWithThumbnails(html);
     // Sempre: substitui a capa Turbo pela versão da proposta (saudação +
     // logo decorativo + tags em canto sutil). Apresentação real intacta.
-    html = replaceTurboCoverInProposal(html);
+    // O nome do cliente vem via opts.clientName (input do usuário). Sem nome,
+    // mostra "cliente" como placeholder no preview — download é bloqueado.
+    html = replaceTurboCoverInProposal(html, opts.clientName);
 
     // Opcional: embute imagens como data URI (somente no download standalone,
     // não no preview — o iframe do preview carrega imagens via http-server).
@@ -14338,13 +14470,17 @@ ${growthChartScript}
     previewDirty = false;
     setBusy(true);
     try {
-      $frame.srcdoc = await buildProposalHTML();
+      // Preview pode rodar com nome vazio (mostra "cliente" como placeholder
+      // na capa); o bloqueio acontece só no download.
+      $frame.srcdoc = await buildProposalHTML({ clientName });
     } finally {
       setBusy(false);
     }
   }
 
   async function downloadHTML() {
+    // Validação obrigatória do nome do cliente — feedback visual no input.
+    if (!clientName) { flagClientMissing(); return; }
     if (selected.size === 0) return;
     setBusy(true);
     const setMeta = txt => { if ($meta) $meta.textContent = txt; };
@@ -14352,7 +14488,9 @@ ${growthChartScript}
       setMeta('Gerando proposta...');
       // inline: true → embute todas as imagens (logos, fotos, thumbs de vídeo)
       // como data URI, gerando um .html standalone que não depende do servidor.
-      const html = await buildProposalHTML({ inline: true,
+      const html = await buildProposalHTML({
+        clientName,
+        inline: true,
         onProgress: (d, t) => setMeta(`Embutindo imagens ${d}/${t}...`)
       });
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
@@ -14360,8 +14498,14 @@ ${growthChartScript}
       const a    = document.createElement('a');
       const ts   = new Date().toISOString().slice(0, 10);
       const sols = Array.from(selected).join('-');
+      // Sanitiza o nome do cliente pro filename: lowercase, sem acento,
+      // espaços viram hífen, remove qualquer caractere que não seja seguro.
+      // ̀-ͯ = combining diacritical marks (acentos depois de NFD).
+      const safeClient = clientName
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
       a.href = url;
-      a.download = `proposta-turbo-${sols}-${ts}.html`;
+      a.download = `proposta-${safeClient}-${sols}-${ts}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
