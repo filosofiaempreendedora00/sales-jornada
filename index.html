@@ -8454,7 +8454,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       </div>
       <div class="prop-actions">
         <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
-        <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
+        <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar proposta (.zip)</button>
       </div>
     </div>
     <div class="prop-preview-wrap">
@@ -14104,26 +14104,116 @@ ${growthChartScript}
     }
   }
 
-  async function downloadHTML() {
+  // Lazy-load JSZip (apenas no primeiro download). ~94KB.
+  let _jszipPromise = null;
+  function loadJSZip() {
+    if (window.JSZip) return Promise.resolve(window.JSZip);
+    if (_jszipPromise) return _jszipPromise;
+    _jszipPromise = new Promise((resolve, reject) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+      s.onload  = () => resolve(window.JSZip);
+      s.onerror = () => { _jszipPromise = null; reject(new Error('Não foi possível carregar JSZip')); };
+      document.head.appendChild(s);
+    });
+    return _jszipPromise;
+  }
+
+  // Extrai URLs locais (imagens, vídeos, posters, source, svg image) do HTML
+  // gerado. Ignora http(s), data:, blob:, #.
+  function extractLocalAssetUrls(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const urls = new Set();
+    const isLocal = u => !!u && !/^(https?:|data:|blob:|#)/.test(u);
+    const collect = (selector, attrs) => {
+      doc.querySelectorAll(selector).forEach(el => {
+        for (const a of attrs) {
+          const v = el.getAttribute(a);
+          if (isLocal(v)) urls.add(v);
+        }
+      });
+    };
+    collect('img',    ['src']);
+    collect('video',  ['src', 'poster']);
+    collect('source', ['src']);
+    collect('image',  ['href', 'xlink:href']);
+    return [...urls];
+  }
+
+  async function downloadProposalBundle() {
     if (selected.size === 0) return;
     setBusy(true);
+    const setMeta = txt => { if ($meta) $meta.textContent = txt; };
     try {
+      setMeta('Gerando proposta...');
       const html = await buildProposalHTML();
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url  = URL.createObjectURL(blob);
+
+      setMeta('Carregando empacotador...');
+      const JSZip = await loadJSZip();
+
+      const assets = extractLocalAssetUrls(html);
+      const zip = new JSZip();
+      // O HTML referencia assets via caminho relativo (ex: "logo.png",
+      // "Criativos/foo.mp4"). Mantemos os mesmos caminhos no zip, e o
+      // HTML no root extrai e abre normalmente.
+      zip.file('proposta.html', html);
+
+      let done = 0, failed = 0;
+      const total = assets.length;
+      // Concorrência limitada (8 fetches em paralelo) para não saturar a rede
+      // nem travar a UI. Vídeos UGC chegam a 80MB cada — sequencial demoraria
+      // demais; concorrência alta demais derruba o servidor.
+      const CONCURRENCY = 8;
+      async function worker(queue) {
+        while (queue.length) {
+          const url = queue.shift();
+          try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const blob = await res.blob();
+            // decodeURIComponent: "Criativos/Le%20Lis-4UGCs2.mp4" → "Criativos/Le Lis-4UGCs2.mp4"
+            zip.file(decodeURIComponent(url), blob);
+          } catch (e) {
+            console.warn('[proposta] Falhou baixar', url, e.message);
+            failed++;
+          }
+          done++;
+          setMeta(`Baixando arquivos ${done}/${total}${failed ? ` (${failed} falharam)` : ''}...`);
+        }
+      }
+      const queue = [...assets];
+      await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker(queue)));
+
+      setMeta('Compactando arquivo .zip...');
+      // Vídeos quase não comprimem — nível 1 acelera muito sem perder espaço.
+      const zipBlob = await zip.generateAsync(
+        { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 1 } },
+        meta => { setMeta(`Compactando... ${Math.round(meta.percent)}%`); }
+      );
+
+      const url  = URL.createObjectURL(zipBlob);
       const a    = document.createElement('a');
       const ts   = new Date().toISOString().slice(0, 10);
       const sols = Array.from(selected).join('-');
       a.href = url;
-      a.download = `proposta-turbo-${sols}-${ts}.html`;
+      a.download = `proposta-turbo-${sols}-${ts}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
+      if (failed > 0) {
+        console.warn(`[proposta] Download concluído com ${failed} arquivos faltando — veja warnings acima.`);
+      }
+    } catch (e) {
+      console.error('[proposta] Erro no download:', e);
+      setMeta('Erro ao gerar proposta — veja o console.');
     } finally {
       setBusy(false);
     }
   }
+
+  // Alias para compatibilidade com o handler antigo
+  const downloadHTML = downloadProposalBundle;
 
   function setBusy(busy) {
     if ($download) $download.disabled = busy || selected.size === 0;
