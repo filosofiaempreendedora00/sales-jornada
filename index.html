@@ -2390,6 +2390,162 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   #view-calculadora.is-active { height: calc(100vh - 65px); }
 }
 
+/* ── PROPOSTAS ────────────────────────────────────── */
+#view-propostas { display: none; }
+#view-propostas.is-active { display: block; height: 100vh; overflow: hidden; }
+@media (max-width: 760px) {
+  #view-propostas.is-active { height: calc(100vh - 65px); }
+}
+.prop-wrap {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: 100%;
+  gap: 0;
+}
+@media (max-width: 900px) {
+  .prop-wrap { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+}
+.prop-sidebar {
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 24px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.prop-section { display: flex; flex-direction: column; gap: 10px; }
+.prop-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-soft);
+  margin: 0;
+}
+.prop-fixed-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(155,109,255,0.12), rgba(77,141,255,0.10));
+  border: 1px solid rgba(155,109,255,0.32);
+  border-radius: 10px;
+}
+.prop-fixed-icon { font-size: 18px; }
+.prop-fixed-info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prop-fixed-name { font-size: 14px; font-weight: 600; color: var(--text); }
+.prop-fixed-hint { font-size: 11px; color: var(--text-soft); }
+.prop-fixed-lock { font-size: 12px; opacity: 0.55; }
+.prop-solutions { display: flex; flex-direction: column; gap: 8px; }
+.prop-sol-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  position: relative;
+  --chip-color: var(--text-soft);
+}
+.prop-sol-chip:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.18); }
+.prop-sol-chip.is-active {
+  background: color-mix(in srgb, var(--chip-color) 14%, transparent);
+  border-color: color-mix(in srgb, var(--chip-color) 55%, transparent);
+}
+.prop-sol-chip.is-disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.prop-sol-chip.is-disabled:hover { background: rgba(255,255,255,0.025); border-color: var(--border); }
+.prop-sol-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: transparent;
+  transition: all 0.18s ease;
+}
+.prop-sol-chip.is-active .prop-sol-check {
+  background: var(--chip-color);
+  border-color: var(--chip-color);
+  color: #0a0a0c;
+}
+.prop-sol-icon { font-size: 16px; flex-shrink: 0; }
+.prop-sol-name { font-size: 13.5px; font-weight: 600; color: var(--text); flex: 1; min-width: 0; }
+.prop-sol-badge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-soft);
+  flex-shrink: 0;
+}
+.prop-actions { display: flex; flex-direction: column; gap: 8px; margin-top: auto; }
+.prop-btn {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  font-family: inherit;
+}
+.prop-btn--ghost {
+  background: transparent;
+  color: var(--text-soft);
+  border-color: var(--border);
+}
+.prop-btn--ghost:hover { color: var(--text); border-color: rgba(255,255,255,0.22); }
+.prop-btn--primary {
+  background: linear-gradient(135deg, #9b6dff, #4d8dff);
+  color: #fff;
+  border-color: transparent;
+}
+.prop-btn--primary:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(77,141,255,0.32); }
+.prop-btn--primary:disabled, .prop-btn--ghost:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.prop-preview-wrap {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  min-height: 0;
+}
+.prop-preview-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.prop-preview-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.prop-preview-meta { font-size: 12px; color: var(--text-soft); }
+.prop-preview-frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #0a0a0c;
+  min-height: 0;
+}
+
 /* ── APRESENTAÇÃO ────────────────────────────────── */
 .apresentacao-wrap {
   display: flex;
@@ -7335,6 +7491,10 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="nav-item-icon">🧮</span>
       <span class="nav-item-label">Calculadora</span>
     </div>
+    <div class="nav-item" data-view="propostas">
+      <span class="nav-item-icon">📄</span>
+      <span class="nav-item-label">Propostas</span>
+    </div>
   </div>
 </nav>
 
@@ -7786,6 +7946,42 @@ a.xpto-pricing-btn { text-decoration: none; }
           <span class="summary-total-value" id="summary-total-value">R$ 0</span>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: PROPOSTAS                               -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view" id="view-propostas">
+  <div class="prop-wrap">
+    <div class="prop-sidebar">
+      <div class="prop-section">
+        <p class="prop-section-label">Estrutura da proposta</p>
+        <div class="prop-fixed-item">
+          <span class="prop-fixed-icon">🚀</span>
+          <div class="prop-fixed-info">
+            <span class="prop-fixed-name">Apresentação Turbo</span>
+            <span class="prop-fixed-hint">Sempre incluída</span>
+          </div>
+          <span class="prop-fixed-lock">🔒</span>
+        </div>
+      </div>
+      <div class="prop-section">
+        <p class="prop-section-label">Soluções com apresentação</p>
+        <div class="prop-solutions" id="prop-solutions"></div>
+      </div>
+      <div class="prop-actions">
+        <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
+        <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
+      </div>
+    </div>
+    <div class="prop-preview-wrap">
+      <div class="prop-preview-toolbar">
+        <span class="prop-preview-title">Preview da proposta</span>
+        <span class="prop-preview-meta" id="prop-preview-meta">— selecione ao menos uma solução</span>
+      </div>
+      <iframe class="prop-preview-frame" id="prop-preview-frame" title="Preview da proposta"></iframe>
     </div>
   </div>
 </div>
@@ -12759,6 +12955,182 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   });
 
   window.openCreatorsPres = openCreatorsPres;
+})();
+
+// ─────────────────────────────────────────────────
+//  PROPOSTAS — gerador de propostas concatenadas
+// ─────────────────────────────────────────────────
+(function () {
+  const SOLUTIONS = [
+    { id: 'performance', icon: '📈', name: 'Performance',   color: '#0dcfe8', sourceId: 'pp-inner' },
+    { id: 'creators',    icon: '🎬', name: 'Creators UGC',  color: '#ffa826', sourceId: 'cp-inner' },
+    { id: 'social',      icon: '📱', name: 'Social Media',  color: '#12d490', sourceId: null, disabled: true, disabledReason: 'Em breve' }
+  ];
+
+  const selected = new Set(['performance', 'creators']);
+  let previewDirty = true;
+
+  const $solutions = document.getElementById('prop-solutions');
+  const $frame     = document.getElementById('prop-preview-frame');
+  const $meta      = document.getElementById('prop-preview-meta');
+  const $download  = document.getElementById('prop-download');
+  const $refresh   = document.getElementById('prop-refresh');
+
+  function renderSolutions() {
+    if (!$solutions) return;
+    $solutions.innerHTML = SOLUTIONS.map(s => {
+      const active   = selected.has(s.id);
+      const disabled = s.disabled;
+      const badge    = disabled ? `<span class="prop-sol-badge">${s.disabledReason}</span>` : '';
+      const cls = `prop-sol-chip${active ? ' is-active' : ''}${disabled ? ' is-disabled' : ''}`;
+      return `<div class="${cls}" data-sol="${s.id}" style="--chip-color:${s.color}">
+        <div class="prop-sol-check">✓</div>
+        <span class="prop-sol-icon">${s.icon}</span>
+        <span class="prop-sol-name">${s.name}</span>
+        ${badge}
+      </div>`;
+    }).join('');
+    $solutions.querySelectorAll('.prop-sol-chip').forEach(chip => {
+      if (chip.classList.contains('is-disabled')) return;
+      chip.addEventListener('click', () => {
+        const id = chip.dataset.sol;
+        if (selected.has(id)) selected.delete(id);
+        else selected.add(id);
+        previewDirty = true;
+        renderSolutions();
+        updateMeta();
+        renderPreview();
+      });
+    });
+  }
+
+  function updateMeta() {
+    if (!$meta) return;
+    const count = selected.size;
+    if (count === 0) {
+      $meta.textContent = '— selecione ao menos uma solução';
+      $download.disabled = true;
+    } else {
+      $meta.textContent = `Apresentação Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}`;
+      $download.disabled = false;
+    }
+  }
+
+  function buildProposalHTML() {
+    // Capture all <style> tags from the host page so the standalone HTML looks identical.
+    const styles = Array.from(document.querySelectorAll('style'))
+      .map(s => s.outerHTML)
+      .join('\n');
+
+    const sections = [];
+    // 1. Apresentação Turbo (sempre)
+    const turboNode = document.getElementById('apres-sub-turbo');
+    if (turboNode) {
+      sections.push(`<section class="proposal-section proposal-section--turbo">
+        <div class="apres-subview is-active">${turboNode.innerHTML}</div>
+      </section>`);
+    }
+    // 2. Soluções selecionadas, na ordem de SOLUTIONS
+    SOLUTIONS.forEach(s => {
+      if (!selected.has(s.id) || !s.sourceId) return;
+      const node = document.getElementById(s.sourceId);
+      if (!node) return;
+      sections.push(`<section class="proposal-section proposal-section--${s.id}">
+        <div class="xpto-inner">${node.innerHTML}</div>
+      </section>`);
+    });
+
+    const extraCSS = `
+      html, body {
+        margin: 0 !important; padding: 0 !important;
+        background: var(--bg, #0a0a0c); color: var(--text, #fff);
+        display: block !important; height: auto !important; min-height: auto !important;
+        overflow-x: hidden !important; overflow-y: auto !important;
+      }
+      .proposal-section { position: relative; display: block; }
+      .proposal-section + .proposal-section { border-top: 1px solid rgba(255,255,255,0.05); }
+      /* Neutraliza chrome do app que não pertence à proposta */
+      .sidebar, .apres-subnav, .focus-nav, .header, .journey-tabs,
+      .xpto-overlay, .xpto-close, .xpto-scroll-hint, .perf-overlay, .lead-perf-overlay,
+      .turbo-scroll-hint, #xpto-value-bar, #panel, #overlay, .nav-item { display: none !important; }
+      /* Apresentação Turbo: era container scroll-snap → vira fluxo normal */
+      .apres-subview { display: block !important; padding: 0 !important; }
+      .turbo-slides {
+        height: auto !important; overflow: visible !important;
+        scroll-snap-type: none !important;
+      }
+      .turbo-slide {
+        height: auto !important; min-height: 100vh;
+        scroll-snap-align: none !important;
+      }
+      /* Apresentações pp/cp: tinham xpto-modal como container fixed/scroll */
+      .xpto-modal {
+        position: static !important; inset: auto !important;
+        opacity: 1 !important; pointer-events: auto !important;
+        height: auto !important; width: 100% !important; max-width: none !important;
+        transform: none !important; padding: 0 !important;
+        overflow: visible !important; scroll-snap-type: none !important;
+      }
+      .xpto-slide { scroll-snap-align: none !important; }
+    `;
+
+    return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proposta Turbo Partners</title>
+${styles}
+<style>${extraCSS}</style>
+</head>
+<body>
+${sections.join('\n')}
+</body>
+</html>`;
+  }
+
+  function renderPreview() {
+    if (!$frame) return;
+    if (selected.size === 0) {
+      $frame.srcdoc = `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#888;font-family:system-ui;display:grid;place-items:center;height:100vh;font-size:14px">Selecione ao menos uma solução à esquerda</body></html>`;
+      previewDirty = false;
+      return;
+    }
+    $frame.srcdoc = buildProposalHTML();
+    previewDirty = false;
+  }
+
+  function downloadHTML() {
+    if (selected.size === 0) return;
+    const html = buildProposalHTML();
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const ts   = new Date().toISOString().slice(0, 10);
+    const sols = Array.from(selected).join('-');
+    a.href = url;
+    a.download = `proposta-turbo-${sols}-${ts}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  $download?.addEventListener('click', downloadHTML);
+  $refresh?.addEventListener('click', renderPreview);
+
+  // Lazy-render preview the first time the tab is opened
+  document.querySelectorAll('.nav-item[data-view="propostas"]').forEach(item => {
+    item.addEventListener('click', () => {
+      if (previewDirty) {
+        // wait one tick so the view is visible (iframe sizes correctly)
+        requestAnimationFrame(() => renderPreview());
+      }
+    });
+  });
+
+  renderSolutions();
+  updateMeta();
 })();
 
 // ─────────────────────────────────────────────────
