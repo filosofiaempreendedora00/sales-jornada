@@ -13746,18 +13746,18 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     if (!cover) return html;
     cover.innerHTML = `
       <div class="pc-bg"></div>
-      <div class="pc-decor"><img src="Logo-Turbo-branca (4).png" alt=""></div>
       <div class="pc-content">
+        <img src="Logo-Turbo-branca (4).png" alt="Turbo Partners" class="pc-mark">
         <span class="pc-greeting">Olá,</span>
         <h1 class="pc-name">cliente</h1>
         <h1 class="pc-title">somos a <span class="pc-accent">Turbo!</span></h1>
         <div class="pc-divider"></div>
         <p class="pc-sub">Aceleramos o crescimento do seu negócio</p>
-      </div>
-      <div class="pc-tags">
-        <span class="pc-tag">E-commerce</span>
-        <span class="pc-tag">Lead Generation</span>
-        <span class="pc-tag">Growth</span>
+        <div class="pc-tags">
+          <span class="pc-tag">E-commerce</span>
+          <span class="pc-tag">Lead Generation</span>
+          <span class="pc-tag">Growth</span>
+        </div>
       </div>
     `;
     return '<!doctype html>\n' + doc.documentElement.outerHTML;
@@ -13990,19 +13990,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           radial-gradient(ellipse 22% 32% at 50% 92%, rgba(155,109,255,0.14) 0%, transparent 60%);
         pointer-events: none;
       }
-      .proposal-section--turbo .pc-decor {
-        position: absolute;
-        top: 50%; right: -6%;
-        transform: translateY(-50%);
-        width: 58%;
-        max-width: 760px;
-        opacity: 0.09;
-        pointer-events: none;
-        filter: brightness(1.4) drop-shadow(0 0 40px rgba(77,141,255,0.30));
-      }
-      .proposal-section--turbo .pc-decor img {
-        width: 100%; height: auto; display: block;
-      }
       .proposal-section--turbo .pc-content {
         position: relative;
         z-index: 2;
@@ -14011,6 +13998,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         align-self: flex-start;
         margin-top: auto;
         margin-bottom: auto;
+      }
+      .proposal-section--turbo .pc-mark {
+        width: clamp(120px, 13vw, 170px);
+        height: auto;
+        display: block;
+        margin-bottom: 26px;
+        filter: brightness(1.15) drop-shadow(0 0 20px rgba(77,141,255,0.35));
       }
       .proposal-section--turbo .pc-greeting {
         font-size: clamp(20px, 2.4vw, 30px);
@@ -14057,12 +14051,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         margin: 0;
       }
       .proposal-section--turbo .pc-tags {
-        position: absolute;
-        bottom: clamp(28px, 4vw, 44px);
-        left: clamp(40px, 7vw, 96px);
         display: flex; gap: 8px;
         flex-wrap: wrap;
-        z-index: 2;
+        margin-top: 28px;
       }
       .proposal-section--turbo .pc-tag {
         font-size: 9.5px;
@@ -14077,11 +14068,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         backdrop-filter: blur(6px);
         white-space: nowrap;
         line-height: 1.2;
-      }
-      @media (max-width: 700px) {
-        .proposal-section--turbo .pc-decor { opacity: 0.06; right: -22%; width: 100%; }
-        .proposal-section--turbo .pc-tags  { position: static; margin-top: 36px; left: auto; bottom: auto; }
-        .proposal-section--turbo .pc-content { padding-bottom: 0; }
       }
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
       .proposal-section--external { padding: 0; background: #0a0a0c; }
