@@ -5817,6 +5817,487 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 .xpto-inner { width: 100%; }
 
+/* ── Social Media presentation slides (sm-*) ───── */
+.sm-hero-accent {
+  background: linear-gradient(90deg, #c4a8ff, #0dcfe8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sm-section-header { margin-bottom: 30px; }
+.sm-section-title {
+  font-size: clamp(30px, 4.6vw, 50px);
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1.07;
+  margin-bottom: 14px;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 22px rgba(155,109,255,0.32));
+}
+.sm-section-sub {
+  font-size: 15px;
+  color: var(--text-2);
+  max-width: 620px;
+  line-height: 1.65;
+}
+
+/* Planos */
+.sm-plans-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.sm-plan-card {
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(155,109,255,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(13,207,232,0.07) 0%, transparent 55%),
+    rgba(255,255,255,0.025);
+  border: 1px solid rgba(155,109,255,0.18);
+  border-radius: 20px;
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(13,207,232,0.06),
+    0 8px 40px rgba(0,0,0,0.35),
+    0 1px 0 rgba(255,255,255,0.05) inset;
+  backdrop-filter: blur(6px);
+}
+.sm-plan-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(155,109,255,0.35) 40%, rgba(13,207,232,0.25) 60%, transparent);
+}
+.sm-plan-card.is-featured {
+  border-color: rgba(13,207,232,0.32);
+  background:
+    radial-gradient(ellipse at 100% 0%, rgba(13,207,232,0.14) 0%, transparent 55%),
+    radial-gradient(ellipse at 0% 100%, rgba(155,109,255,0.10) 0%, transparent 55%),
+    rgba(255,255,255,0.03);
+}
+.sm-plan-card.is-featured::before {
+  background: linear-gradient(90deg, transparent, rgba(13,207,232,0.45) 40%, rgba(155,109,255,0.30) 60%, transparent);
+}
+.sm-plan-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 99px;
+  margin-bottom: 14px;
+  background: rgba(155,109,255,0.14);
+  border: 1px solid rgba(155,109,255,0.30);
+  color: #c4a8ff;
+}
+.sm-plan-card.is-featured .sm-plan-tag {
+  background: rgba(13,207,232,0.12);
+  border-color: rgba(13,207,232,0.38);
+  color: #7ee4f5;
+}
+.sm-plan-name {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.8px;
+  margin-bottom: 6px;
+  line-height: 1.1;
+  color: var(--text);
+}
+.sm-plan-desc {
+  font-size: 13.5px;
+  color: var(--text-2);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.sm-plan-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 14px;
+}
+.sm-plan-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.sm-plan-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.82);
+  line-height: 1.45;
+}
+.sm-plan-features strong { color: var(--text); font-weight: 700; }
+.sm-feat-icon {
+  flex-shrink: 0;
+  width: 20px; height: 20px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+  background: rgba(155,109,255,0.18);
+  color: #c4a8ff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.sm-plan-card.is-featured .sm-feat-icon {
+  background: rgba(13,207,232,0.16);
+  color: #7ee4f5;
+}
+.sm-plan-highlight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(13,207,232,0.08);
+  border: 1px solid rgba(13,207,232,0.25);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.sm-plan-hi-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: rgba(13,207,232,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.sm-plan-hi-text {
+  font-size: 12.5px;
+  color: #7ee4f5;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+/* Setup 360 */
+.sm-setup-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 44px;
+  align-items: start;
+}
+.sm-setup-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(13,207,232,0.10);
+  border: 1px solid rgba(13,207,232,0.28);
+  color: #7ee4f5;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  margin-bottom: 18px;
+}
+.sm-setup-deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(155,109,255,0.10);
+  border: 1px solid rgba(155,109,255,0.25);
+  color: #c4a8ff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 10px;
+  margin-top: 16px;
+}
+.sm-setup-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sm-setup-item {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 14px 14px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.sm-setup-item:hover {
+  border-color: rgba(155,109,255,0.28);
+  transform: translateY(-2px);
+}
+.sm-setup-item-num {
+  font-size: 10px;
+  font-weight: 800;
+  color: #9b6dff;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+.sm-setup-item-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.sm-setup-item-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+/* Diferenciais */
+.sm-diff-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.sm-diff-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 20px 18px;
+  transition: border-color 0.25s, transform 0.25s;
+}
+.sm-diff-card:hover {
+  border-color: rgba(155,109,255,0.28);
+  transform: translateY(-3px);
+}
+.sm-diff-num {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-3);
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+.sm-diff-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 10px;
+  background: rgba(155,109,255,0.12);
+  border: 1px solid rgba(155,109,255,0.22);
+}
+.sm-diff-icon--alt {
+  background: rgba(13,207,232,0.10);
+  border-color: rgba(13,207,232,0.25);
+}
+.sm-diff-title {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  letter-spacing: -0.2px;
+  color: var(--text);
+}
+.sm-diff-text {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* Add-ons */
+.sm-addons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sm-addon-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 18px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.sm-addon-card:hover {
+  border-color: rgba(155,109,255,0.28);
+  transform: translateY(-2px);
+}
+.sm-addon-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  background: rgba(155,109,255,0.10);
+  border: 1px solid rgba(155,109,255,0.22);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sm-addon-body { flex: 1; min-width: 0; }
+.sm-addon-name {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+.sm-addon-desc {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.6;
+}
+.sm-addon-tag {
+  flex-shrink: 0;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(155,109,255,0.14);
+  border: 1px solid rgba(155,109,255,0.30);
+  color: #c4a8ff;
+  white-space: nowrap;
+}
+
+/* Escada */
+.sm-ladder {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 36px 30px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 30px;
+}
+.sm-ladder::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at bottom right, rgba(13,207,232,0.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+.sm-ladder-step {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+.sm-ladder-step:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  font-size: 20px;
+}
+.sm-ladder-bar {
+  width: 100%;
+  max-width: 140px;
+  border-radius: 12px 12px 0 0;
+  margin-bottom: 18px;
+}
+.sm-bar-starter {
+  height: 110px;
+  background: linear-gradient(180deg, rgba(155,109,255,0.50), rgba(155,109,255,0.10));
+  border: 1px solid rgba(155,109,255,0.32);
+}
+.sm-bar-scale {
+  height: 180px;
+  background: linear-gradient(180deg, rgba(13,207,232,0.55), rgba(13,207,232,0.10));
+  border: 1px solid rgba(13,207,232,0.32);
+}
+.sm-bar-addons {
+  height: 230px;
+  background: linear-gradient(180deg, rgba(77,141,255,0.50), rgba(77,141,255,0.10));
+  border: 1px solid rgba(77,141,255,0.30);
+}
+.sm-ladder-label {
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.sm-ladder-desc {
+  font-size: 12px;
+  color: var(--text-2);
+  max-width: 160px;
+  line-height: 1.5;
+}
+
+/* Pricing final */
+.sm-pricing-final {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(155,109,255,0.22);
+  border-radius: 20px;
+  padding: 28px 40px;
+  margin: 0 auto;
+  max-width: 560px;
+  backdrop-filter: blur(8px);
+}
+.sm-pricing-item { flex: 1; text-align: center; }
+.sm-pricing-plan-name {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.8px;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+.sm-pricing-value {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  line-height: 1;
+  color: var(--text);
+}
+.sm-pricing-value span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-2);
+  letter-spacing: 0;
+}
+.sm-pricing-value--accent {
+  background: linear-gradient(90deg, #c4a8ff, #0dcfe8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sm-pricing-divider {
+  width: 1px;
+  height: 48px;
+  background: rgba(255,255,255,0.08);
+  margin: 0 24px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .sm-plans-grid { grid-template-columns: 1fr; }
+  .sm-setup-grid { grid-template-columns: 1fr; gap: 30px; }
+  .sm-diff-grid { grid-template-columns: 1fr 1fr; }
+  .sm-addons-grid { grid-template-columns: 1fr; }
+  .sm-ladder { padding: 26px 18px; }
+  .sm-pricing-final { padding: 22px 24px; }
+  .sm-pricing-divider { margin: 0 14px; }
+}
+@media (max-width: 600px) {
+  .sm-diff-grid { grid-template-columns: 1fr; }
+  .sm-setup-items { grid-template-columns: 1fr; }
+  .sm-pricing-final { flex-direction: column; gap: 16px; }
+  .sm-pricing-divider { width: 60%; height: 1px; margin: 0; }
+}
+
 /* ── Value bar (âncora de preço) ──────────────────── */
 #xpto-value-bar {
   position: fixed;
@@ -8876,6 +9357,171 @@ a.xpto-pricing-btn { text-decoration: none; }
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  SOCIAL MEDIA PRESENTATION MODAL (sm-*)        -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="sm-overlay"></div>
+<button class="xpto-close" id="sm-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="sm-modal">
+  <div class="xpto-inner" id="sm-inner">
+
+    <!-- SLIDE 01 — HERO -->
+    <section class="xpto-slide xpto-slide-hero">
+      <div class="xpto-slide-inner" style="text-align:center;">
+        <div class="xpto-eyebrow"><span></span>Social Media Management</div>
+        <h1 class="xpto-title">Presença digital<br>que <span class="sm-hero-accent">vende de verdade.</span></h1>
+        <p class="xpto-subtitle">Dois planos desenhados para marcas que querem mais do que likes — querem posicionamento, crescimento mensurável e resultados reais.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 — PLANOS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="sm-section-header">
+          <div class="xpto-eyebrow"><span></span>Planos</div>
+          <h2 class="sm-section-title">Escolha o nível<br>certo para o seu momento.</h2>
+          <p class="sm-section-sub">Do primeiro posicionamento ao crescimento estruturado — existe um plano para onde você está agora.</p>
+        </div>
+
+        <div class="sm-plans-grid">
+          <!-- STARTER -->
+          <div class="sm-plan-card">
+            <div class="sm-plan-tag">⚡ Social Media Starter</div>
+            <h3 class="sm-plan-name">Starter</h3>
+            <p class="sm-plan-desc">Para marcas que querem começar com estratégia, sem improvisar. Presença consistente com intenção em cada post.</p>
+            <div class="sm-plan-divider"></div>
+            <ul class="sm-plan-features">
+              <li><span class="sm-feat-icon">✓</span><span>Planejamento mensal com pilares de comunicação definidos</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Copywriting estratégico — cada post tem intenção</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Organização estratégica do feed como vitrine do negócio</span></li>
+              <li><span class="sm-feat-icon">✓</span><span><strong>12 conteúdos mensais</strong> — consistência sem burocracia</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Relatório analítico mensal — você vê o que funciona</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Kickoff essencial para alinhamento de marca</span></li>
+            </ul>
+          </div>
+          <!-- SCALE -->
+          <div class="sm-plan-card is-featured">
+            <div class="sm-plan-tag">🚀 Social Media Scale</div>
+            <h3 class="sm-plan-name">Scale</h3>
+            <p class="sm-plan-desc">Para marcas que querem escalar com estrutura. Estratégia completa, creators integrados e presença autoral.</p>
+            <div class="sm-plan-divider"></div>
+            <ul class="sm-plan-features">
+              <li><span class="sm-feat-icon">✓</span><span>Planejamento estratégico mensal com meta de crescimento</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Relatório analítico mensal — você vê o que funciona</span></li>
+              <li><span class="sm-feat-icon">✓</span><span><strong>8 conteúdos fixos estratégicos</strong> + <strong>4 dinâmicos</strong> (1/semana)</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Stories Estratégicos PRO: calendário completo, 4 sequências/mês</span></li>
+              <li><span class="sm-feat-icon">✓</span><span>Reunião estratégica mensal com time especializado</span></li>
+              <li><span class="sm-feat-icon">✓</span><span><strong>Setup 360 incluso</strong> — estruturação estratégica completa</span></li>
+              <li><span class="sm-feat-icon">✓</span><span><strong>Presença Autoral inclusa</strong> — até 2 criadores/mês, 4 vídeos no total</span></li>
+            </ul>
+            <div class="sm-plan-highlight">
+              <div class="sm-plan-hi-icon">🎬</div>
+              <div class="sm-plan-hi-text">Creators integrados à estratégia — humanização como diferencial competitivo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 — SETUP 360 -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="sm-setup-grid">
+          <div>
+            <div class="sm-setup-badge">✦ Incluso no Scale</div>
+            <h2 class="sm-section-title" style="font-size: clamp(28px, 4vw, 44px);">Setup 360</h2>
+            <p class="sm-section-sub" style="margin-top: 14px;">
+              Antes de criar, a gente entende. O Setup 360 é a estruturação estratégica completa da sua presença digital — da análise de mercado ao plano de ação, tudo definido antes do primeiro post.
+            </p>
+            <div class="sm-setup-deadline">⏱ Entrega em até 15 dias após pré-kickoff</div>
+          </div>
+          <div class="sm-setup-items">
+            <div class="sm-setup-item"><div class="sm-setup-item-num">01</div><div class="sm-setup-item-name">Diagnóstico Digital</div><div class="sm-setup-item-desc">Radiografia completa da presença atual da marca</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">02</div><div class="sm-setup-item-name">Análise de Mercado</div><div class="sm-setup-item-desc">Mapeamento de concorrência e oportunidades</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">03</div><div class="sm-setup-item-name">Definição Estratégica</div><div class="sm-setup-item-desc">Posicionamento, tom de voz e direcionamento</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">04</div><div class="sm-setup-item-name">Estrutura de Conteúdo</div><div class="sm-setup-item-desc">Pilares, formatos e cadência editorial</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">05</div><div class="sm-setup-item-name">Estrutura de Conversão</div><div class="sm-setup-item-desc">Funil de conteúdo alinhado ao negócio</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">06</div><div class="sm-setup-item-name">Estratégia de Stories</div><div class="sm-setup-item-desc">Sequências e narrativas para engajamento diário</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">07</div><div class="sm-setup-item-name">Estrutura Visual</div><div class="sm-setup-item-desc">Identidade, paleta e coerência estética</div></div>
+            <div class="sm-setup-item"><div class="sm-setup-item-num">08</div><div class="sm-setup-item-name">Plano de Ação Inicial</div><div class="sm-setup-item-desc">Primeiros 30 dias com passos claros</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 — DIFERENCIAIS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="sm-section-header">
+          <div class="xpto-eyebrow"><span></span>Diferenciais</div>
+          <h2 class="sm-section-title">Por que isso é<br>diferente do resto.</h2>
+        </div>
+        <div class="sm-diff-grid">
+          <div class="sm-diff-card"><div class="sm-diff-num">01</div><div class="sm-diff-icon">🎯</div><h4 class="sm-diff-title">Posicionamento real</h4><p class="sm-diff-text">Do feed ao copywriting — cada detalhe comunica quem é a marca. Sem post genérico, sem estética de template.</p></div>
+          <div class="sm-diff-card"><div class="sm-diff-num">02</div><div class="sm-diff-icon sm-diff-icon--alt">📊</div><h4 class="sm-diff-title">Crescimento mensurável</h4><p class="sm-diff-text">Relatório analítico em ambos os planos. No Scale, metas definidas e reunião mensal para acompanhar cada métrica.</p></div>
+          <div class="sm-diff-card"><div class="sm-diff-num">03</div><div class="sm-diff-icon sm-diff-icon--alt">🎬</div><h4 class="sm-diff-title">Presença Autoral inclusa</h4><p class="sm-diff-text">Criadores integrados ao Scale — humanização como estratégia, não como extra. Até 2 criadores/mês com 4 vídeos.</p></div>
+          <div class="sm-diff-card"><div class="sm-diff-num">04</div><div class="sm-diff-icon">💸</div><h4 class="sm-diff-title">Sem custo de creator</h4><p class="sm-diff-text">Pagamento direto entre cliente e creator: financeiro, permuta ou collab. Você só paga o que já acordou.</p></div>
+          <div class="sm-diff-card"><div class="sm-diff-num">05</div><div class="sm-diff-icon sm-diff-icon--alt">📈</div><h4 class="sm-diff-title">Evolução natural</h4><p class="sm-diff-text">Do Starter ao Scale, uma escada clara. Você cresce junto com o serviço — sem burocracia para subir de nível.</p></div>
+          <div class="sm-diff-card"><div class="sm-diff-num">06</div><div class="sm-diff-icon">🔧</div><h4 class="sm-diff-title">Estrutura escalável</h4><p class="sm-diff-text">Add-ons de expansão disponíveis para volume, novos canais ou projetos especiais. O serviço cresce com a marca.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 — ADD-ONS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="sm-section-header">
+          <div class="xpto-eyebrow"><span></span>Expansão</div>
+          <h2 class="sm-section-title">Add-ons disponíveis<br>para qualquer plano.</h2>
+          <p class="sm-section-sub">Expanda o escopo conforme a marca cresce — sem trocar de plano, sem fricção.</p>
+        </div>
+        <div class="sm-addons-grid">
+          <div class="sm-addon-card"><div class="sm-addon-icon">⚙️</div><div class="sm-addon-body"><div class="sm-addon-name">Setup 360</div><div class="sm-addon-desc">Estruturação estratégica completa antes do início da execução. Add-on pontual para o Starter ou contratação avulsa.</div></div><div class="sm-addon-tag">Pontual</div></div>
+          <div class="sm-addon-card"><div class="sm-addon-icon">💼</div><div class="sm-addon-body"><div class="sm-addon-name">LinkedIn</div><div class="sm-addon-desc">4 posts mensais com estratégia editorial para LinkedIn — presença profissional com intenção.</div></div><div class="sm-addon-tag">Mensal</div></div>
+          <div class="sm-addon-card"><div class="sm-addon-icon">📲</div><div class="sm-addon-body"><div class="sm-addon-name">Stories Interativos</div><div class="sm-addon-desc">12 stories interativos/mês: caixas de pergunta, seleção e enquetes. Postagem realizada pelo próprio cliente.</div></div><div class="sm-addon-tag">Mensal</div></div>
+          <div class="sm-addon-card"><div class="sm-addon-icon">🚀</div><div class="sm-addon-body"><div class="sm-addon-name">Distribuição de Conteúdo</div><div class="sm-addon-desc">4 impulsionamentos/mês com acompanhamento estratégico. Cliente aporta R$ 400 em mídia.</div></div><div class="sm-addon-tag">Pontual</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 — ESCADA -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="sm-section-header">
+          <div class="xpto-eyebrow"><span></span>Evolução</div>
+          <h2 class="sm-section-title">A escada de crescimento<br>está traçada.</h2>
+          <p class="sm-section-sub">Você não precisa começar no topo para chegar lá. O caminho é claro.</p>
+        </div>
+        <div class="sm-ladder">
+          <div class="sm-ladder-step"><div class="sm-ladder-bar sm-bar-starter"></div><div class="sm-ladder-label">Starter</div><div class="sm-ladder-desc">Posicionamento e consistência nos primeiros 12 conteúdos</div></div>
+          <div class="sm-ladder-step"><div class="sm-ladder-bar sm-bar-scale"></div><div class="sm-ladder-label">Scale</div><div class="sm-ladder-desc">Estratégia completa + creators + Setup 360 incluso</div></div>
+          <div class="sm-ladder-step"><div class="sm-ladder-bar sm-bar-addons"></div><div class="sm-ladder-label">Add-ons</div><div class="sm-ladder-desc">Volume, novos canais e projetos especiais sem limite</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 — INVESTIMENTO -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner" style="text-align:center;">
+        <div class="xpto-eyebrow" style="margin-left:auto;margin-right:auto;"><span></span>Investimento</div>
+        <h2 class="xpto-title">Pronto para sua marca<br><span class="sm-hero-accent">parar de improvisar?</span></h2>
+        <p class="xpto-subtitle" style="margin-bottom: 36px;">Dois planos, uma escada clara, presença que vende.</p>
+        <div class="sm-pricing-final">
+          <div class="sm-pricing-item"><div class="sm-pricing-plan-name">Starter</div><div class="sm-pricing-value">R$&nbsp;3.397<span>/mês</span></div></div>
+          <div class="sm-pricing-divider"></div>
+          <div class="sm-pricing-item"><div class="sm-pricing-plan-name">Scale</div><div class="sm-pricing-value sm-pricing-value--accent">R$&nbsp;3.897<span>/mês</span></div></div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div class="xpto-scroll-hint" id="sm-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  SCRIPT                                        -->
 <!-- ══════════════════════════════════════════════ -->
 <script>
@@ -9870,6 +10516,7 @@ function openPanel(nodeId) {
   const color = node.stageColor;
   const isTrafego = nodeId === 'trafego' || nodeId === 'lead-trafego';
   const isCreators = nodeId === 'criativos';
+  const isSocial   = nodeId === 'organico' || nodeId === 'lead-organico';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -9900,6 +10547,13 @@ function openPanel(nodeId) {
     <button class="pres-launch-btn" onclick="if(window.openCreatorsPres) window.openCreatorsPres()">
       <span class="pres-launch-icon">🎬</span>
       <span class="pres-launch-title">Apresentação de Creators</span>
+      <span class="pres-launch-arrow">→</span>
+    </button>
+    ` : ''}
+    ${isSocial ? `
+    <button class="pres-launch-btn" onclick="if(window.openSocialPres) window.openSocialPres()">
+      <span class="pres-launch-icon">📱</span>
+      <span class="pres-launch-title">Apresentação de Social Media</span>
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
@@ -10842,6 +11496,8 @@ document.querySelectorAll('.nav-item').forEach(item => {
     // garantir que cp-overlay nunca fique preso ao navegar
     document.getElementById('cp-overlay')?.classList.remove('is-open');
     document.getElementById('cp-modal')?.classList.remove('is-open');
+    document.getElementById('sm-overlay')?.classList.remove('is-open');
+    document.getElementById('sm-modal')?.classList.remove('is-open');
     document.body.style.overflow = '';
   });
 });
@@ -12958,13 +13614,54 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 })();
 
 // ─────────────────────────────────────────────────
+//  SOCIAL MEDIA PRESENTATION
+// ─────────────────────────────────────────────────
+(function() {
+  const modal = document.getElementById('sm-modal');
+  const overlay = document.getElementById('sm-overlay');
+  const closeBtn = document.getElementById('sm-close');
+  const hint = document.getElementById('sm-scroll-hint');
+
+  function openSocialPres() {
+    overlay.classList.add('is-open');
+    modal.classList.add('is-open');
+    closeBtn.style.display = 'flex';
+    hint.style.display = 'flex';
+    modal.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSocialPres() {
+    overlay.classList.remove('is-open');
+    modal.classList.remove('is-open');
+    closeBtn.style.display = 'none';
+    hint.style.display = 'none';
+    document.body.style.overflow = '';
+    const jornadaNav = document.querySelector('.nav-item[data-view="jornada"]');
+    if (jornadaNav) jornadaNav.click();
+  }
+
+  closeBtn.style.display = 'none';
+  hint.style.display = 'none';
+
+  overlay.addEventListener('click', closeSocialPres);
+  closeBtn.addEventListener('click', closeSocialPres);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open'))
+      closeSocialPres();
+  });
+
+  window.openSocialPres = openSocialPres;
+})();
+
+// ─────────────────────────────────────────────────
 //  PROPOSTAS — gerador de propostas concatenadas
 // ─────────────────────────────────────────────────
 (function () {
   const SOLUTIONS = [
     { id: 'performance', icon: '📈', name: 'Performance',   color: '#0dcfe8', sourceId: 'pp-inner' },
     { id: 'creators',    icon: '🎬', name: 'Creators UGC',  color: '#ffa826', sourceId: 'cp-inner' },
-    { id: 'social',      icon: '📱', name: 'Social Media',  color: '#12d490', externalUrl: 'htmls/proposta-social-media.html' }
+    { id: 'social',      icon: '📱', name: 'Social Media',  color: '#12d490', sourceId: 'sm-inner' }
   ];
 
   const selected = new Set(['performance', 'creators']);
