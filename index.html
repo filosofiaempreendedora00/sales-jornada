@@ -2497,6 +2497,90 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   line-height: 1.4;
 }
 .prop-solutions { display: flex; flex-direction: column; gap: 8px; }
+.prop-invest { display: flex; flex-direction: column; gap: 10px; }
+.prop-invest-empty {
+  font-size: 11.5px;
+  color: var(--text-soft);
+  font-style: italic;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed rgba(255,255,255,0.10);
+  border-radius: 8px;
+  line-height: 1.4;
+}
+.prop-invest-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-left: 3px solid var(--card-color, rgba(155,109,255,0.5));
+  border-radius: 10px;
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.prop-invest-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.1px;
+}
+.prop-invest-icon { font-size: 14px; }
+.prop-invest-tiers {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+}
+.prop-invest-field {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.prop-invest-tier {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-soft);
+}
+.prop-invest-input {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+.prop-invest-input:hover { border-color: rgba(255,255,255,0.20); }
+.prop-invest-input:focus {
+  border-color: var(--card-color, rgba(155,109,255,0.65));
+  background: rgba(0,0,0,0.40);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 22%, transparent);
+}
+.prop-invest-input.is-edited {
+  border-color: color-mix(in srgb, var(--card-color, #9b6dff) 60%, transparent);
+}
+.prop-invest-reset {
+  align-self: flex-end;
+  background: none;
+  border: none;
+  font-size: 10.5px;
+  color: var(--text-soft);
+  cursor: pointer;
+  padding: 2px 0;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  transition: color 0.18s;
+}
+.prop-invest-reset:hover { color: var(--text); text-decoration: underline; }
 .prop-sol-chip {
   display: flex;
   align-items: center;
@@ -8528,6 +8612,10 @@ a.xpto-pricing-btn { text-decoration: none; }
         <p class="prop-section-label">Soluções com apresentação</p>
         <div class="prop-solutions" id="prop-solutions"></div>
       </div>
+      <div class="prop-section">
+        <p class="prop-section-label">Investimento</p>
+        <div class="prop-invest" id="prop-invest"></div>
+      </div>
       <div class="prop-actions">
         <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
         <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
@@ -13745,11 +13833,59 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   let previewDirty = true;
 
   const $solutions   = document.getElementById('prop-solutions');
+  const $invest      = document.getElementById('prop-invest');
   const $frame       = document.getElementById('prop-preview-frame');
   const $meta        = document.getElementById('prop-preview-meta');
   const $download    = document.getElementById('prop-download');
   const $refresh     = document.getElementById('prop-refresh');
   const $clientInput = document.getElementById('prop-client-name');
+
+  // Preços default por solução/tier — defaults vêm dos cards atuais.
+  // Quando o vendedor edita um campo, o valor sobrescreve aqui em memória
+  // e é salvo em localStorage para sobreviver a reloads. O preview da
+  // proposta usa estes valores ao renderizar os pacotes.
+  const DEFAULT_PRICES = {
+    performance: {
+      starter:    { label: 'Starter',    value: 'R$ 2.997,00' },
+      scale:      { label: 'Scale',      value: 'R$ 4.997,00' },
+      enterprise: { label: 'Enterprise', value: 'R$ 7.497,00' }
+    },
+    creators: {
+      starter:    { label: 'Starter',    value: 'R$ 5.497,00' },
+      scale:      { label: 'Scale',      value: 'R$ 6.497,00' },
+      enterprise: { label: 'Enterprise', value: 'R$ 11.997,00' }
+    },
+    social: {
+      starter: { label: 'Starter', value: 'R$ 3.397,00/mês' },
+      scale:   { label: 'Scale',   value: 'R$ 3.897,00/mês' }
+    }
+  };
+  // Deep-clone para que prices possa ser mutado sem afetar DEFAULT_PRICES.
+  const prices = JSON.parse(JSON.stringify(DEFAULT_PRICES));
+  // Carrega overrides do localStorage.
+  try {
+    const saved = JSON.parse(localStorage.getItem('prop-prices') || '{}');
+    for (const sol in saved) {
+      for (const tier in saved[sol]) {
+        if (prices[sol]?.[tier] && typeof saved[sol][tier] === 'string') {
+          prices[sol][tier].value = saved[sol][tier];
+        }
+      }
+    }
+  } catch (e) {}
+
+  function savePriceOverrides() {
+    const flat = {};
+    for (const sol in prices) {
+      flat[sol] = {};
+      for (const tier in prices[sol]) flat[sol][tier] = prices[sol][tier].value;
+    }
+    localStorage.setItem('prop-prices', JSON.stringify(flat));
+  }
+
+  function isPriceDefault(sol, tier) {
+    return prices[sol]?.[tier]?.value === DEFAULT_PRICES[sol]?.[tier]?.value;
+  }
 
   // Nome do cliente — campo obrigatório para baixar. Persiste no localStorage
   // para sobreviver a reloads (UX: ninguém quer digitar de novo).
@@ -13817,10 +13953,71 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         else selected.add(id);
         previewDirty = true;
         renderSolutions();
+        renderInvestimento();
         updateMeta();
         renderPreview();
       });
     });
+  }
+
+  // Renderiza os cards de Investimento — um por solução selecionada,
+  // com inputs para cada tier (Starter / Scale / Enterprise). Edição
+  // ao vivo: typing atualiza state + localStorage + dispara rebuild
+  // do preview (debounced) para refletir o novo preço nos pacotes.
+  function renderInvestimento() {
+    if (!$invest) return;
+    const visibleSols = SOLUTIONS.filter(s => selected.has(s.id) && prices[s.id]);
+    if (visibleSols.length === 0) {
+      $invest.innerHTML = '<p class="prop-invest-empty">Selecione ao menos uma solução para editar os preços dos pacotes.</p>';
+      return;
+    }
+    $invest.innerHTML = visibleSols.map(s => `
+      <div class="prop-invest-card" style="--card-color:${s.color}">
+        <div class="prop-invest-card-head">
+          <span class="prop-invest-icon">${s.icon}</span>
+          <span class="prop-invest-name">${s.name}</span>
+        </div>
+        <div class="prop-invest-tiers">
+          ${Object.entries(prices[s.id]).map(([tier, td]) => `
+            <label class="prop-invest-field">
+              <span class="prop-invest-tier">${td.label}</span>
+              <input type="text"
+                class="prop-invest-input${isPriceDefault(s.id, tier) ? '' : ' is-edited'}"
+                data-sol="${s.id}" data-tier="${tier}"
+                value="${escapeAttr(td.value)}"
+                spellcheck="false" autocomplete="off">
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    $invest.querySelectorAll('.prop-invest-input').forEach(input => {
+      input.addEventListener('input', () => {
+        const sol  = input.dataset.sol;
+        const tier = input.dataset.tier;
+        prices[sol][tier].value = input.value;
+        savePriceOverrides();
+        input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
+        schedulePreviewRebuild();
+      });
+    });
+  }
+
+  // Escape para atributo HTML (aspas duplas viram &quot;).
+  function escapeAttr(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // Formata o preço pro template do pacote: se o valor tem um sufixo
+  // como "/mês" ou "/ano", embrulha esse pedaço num <small> pra manter
+  // a hierarquia visual (número grande, sufixo menor) sem exigir que o
+  // vendedor digite tag HTML.
+  function formatPriceHtml(value) {
+    const v = String(value || '');
+    const m = v.match(/^(.+?)(\/[^/]+)\s*$/);
+    if (!m) return escapeHtml(v);
+    return escapeHtml(m[1].trimEnd()) + '<small>' + escapeHtml(m[2]) + '</small>';
   }
 
   function updateMeta() {
@@ -14041,7 +14238,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">STARTER</h3>
-                <div class="pacote-price">R$ 2.997,00</div>
+                <div class="pacote-price">${formatPriceHtml(prices.performance.starter.value)}</div>
                 <span class="pacote-tag">Investimento até R$ 5.000,00</span>
                 <ul class="pacote-features">
                   <li>Planejamento, gestão e estratégia dos anúncios online</li>
@@ -14056,7 +14253,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
                 <span class="pacote-badge">mais vendido</span>
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">SCALE</h3>
-                <div class="pacote-price">R$ 4.997,00</div>
+                <div class="pacote-price">${formatPriceHtml(prices.performance.scale.value)}</div>
                 <span class="pacote-tag">Investimento até R$ 20.000,00</span>
                 <ul class="pacote-features">
                   <li>Planejamento, gestão e estratégia dos anúncios online</li>
@@ -14070,7 +14267,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">ENTERPRISE</h3>
-                <div class="pacote-price">R$ 7.497,00</div>
+                <div class="pacote-price">${formatPriceHtml(prices.performance.enterprise.value)}</div>
                 <span class="pacote-tag">Investimento acima de R$ 20.000,00</span>
                 <span class="pacote-tag pacote-tag--alt">+ R$ 500 a cada R$ 10.000 de investimento</span>
                 <ul class="pacote-features">
@@ -14103,7 +14300,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">STARTER</h3>
-                <div class="pacote-price">R$ 5.497,00</div>
+                <div class="pacote-price">${formatPriceHtml(prices.creators.starter.value)}</div>
                 <span class="pacote-tag">18 Criativos UGC <small>(em vídeo)</small></span>
                 <ul class="pacote-features">
                   <li>3 Criadores de conteúdo</li>
@@ -14115,7 +14312,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card pacote-card--featured">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">SCALE</h3>
-                <div class="pacote-price">R$ 6.497,00</div>
+                <div class="pacote-price">${formatPriceHtml(prices.creators.scale.value)}</div>
                 <span class="pacote-tag">24 Criativos UGC <small>(em vídeo)</small></span>
                 <ul class="pacote-features">
                   <li>4 Criadores de conteúdo</li>
@@ -14127,7 +14324,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">ENTERPRISE</h3>
-                <div class="pacote-price">R$ 11.997,00</div>
+                <div class="pacote-price">${formatPriceHtml(prices.creators.enterprise.value)}</div>
                 <span class="pacote-tag">48 Criativos UGC <small>(em vídeo)</small></span>
                 <ul class="pacote-features">
                   <li>8 Criadores de conteúdo</li>
@@ -14155,7 +14352,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">STARTER</h3>
-                <div class="pacote-price">R$ 3.397,00<small>/mês</small></div>
+                <div class="pacote-price">${formatPriceHtml(prices.social.starter.value)}</div>
                 <span class="pacote-tag">12 conteúdos mensais</span>
                 <ul class="pacote-features">
                   <li>Planejamento mensal com pilares de comunicação definidos</li>
@@ -14168,7 +14365,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
               <div class="pacote-card pacote-card--featured">
                 <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
                 <h3 class="pacote-name">SCALE</h3>
-                <div class="pacote-price">R$ 3.897,00<small>/mês</small></div>
+                <div class="pacote-price">${formatPriceHtml(prices.social.scale.value)}</div>
                 <span class="pacote-tag">8 fixos + 4 dinâmicos <small>(1/semana)</small></span>
                 <ul class="pacote-features">
                   <li>Planejamento estratégico mensal com meta de crescimento</li>
@@ -14621,6 +14818,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         text-align: center;
         color: #ffffff;
         margin: -4px 0 4px;
+      }
+      .proposal-section--pacotes-perf .pacote-price small,
+      .proposal-section--pacotes-creators .pacote-price small,
+      .proposal-section--pacotes-social .pacote-price small {
+        font-size: 0.5em;
+        font-weight: 600;
+        letter-spacing: 0;
+        color: rgba(255,255,255,0.55);
+        margin-left: 2px;
       }
       .proposal-section--pacotes-perf .pacote-tag,
       .proposal-section--pacotes-creators .pacote-tag,
@@ -15283,6 +15489,7 @@ ${dnaAlignScript}
   });
 
   renderSolutions();
+  renderInvestimento();
   updateMeta();
 })();
 
