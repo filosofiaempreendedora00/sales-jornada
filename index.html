@@ -8454,7 +8454,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       </div>
       <div class="prop-actions">
         <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
-        <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar proposta (.zip)</button>
+        <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
       </div>
     </div>
     <div class="prop-preview-wrap">
@@ -13724,7 +13724,102 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     return p;
   }
 
-  async function buildProposalHTML() {
+  // Cache persistente entre builds para evitar refetch de logos/fotos/thumbs.
+  // Chave: URL relativa (ex: "logo.png"). Valor: data URI ou null (já tentou e falhou).
+  const _imgDataUriCache = new Map();
+
+  // "Criativos/Sulmel_Bruna.mp4" → "Criativos/thumbs/Sulmel_Bruna.jpg"
+  // "Criativos/ocean/foo.mp4"    → "Criativos/thumbs/ocean/foo.jpg"
+  // Preserva URL-encoding (espaços ficam %20).
+  function videoUrlToThumbnail(videoUrl) {
+    const m = videoUrl.match(/^(Criativos\/)((?:[^/]+\/)*)([^/]+)\.[^.]+$/);
+    if (!m) return videoUrl;
+    return m[1] + 'thumbs/' + m[2] + m[3] + '.jpg';
+  }
+
+  // Substitui todos os <video> por <img> apontando para o thumbnail estático.
+  // Mantém className, style e atributos data-*. O usuário não consegue dar play —
+  // é só preview. Quando voltarmos a permitir play (no futuro), reverter esta função.
+  function replaceVideosWithThumbnails(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    doc.querySelectorAll('video').forEach(video => {
+      let src = video.getAttribute('src');
+      if (!src) {
+        const srcEl = video.querySelector('source');
+        if (srcEl) src = srcEl.getAttribute('src');
+      }
+      if (!src) return;
+      const img = doc.createElement('img');
+      img.setAttribute('src', videoUrlToThumbnail(src));
+      if (video.className) img.className = video.className;
+      const styleAttr = video.getAttribute('style');
+      if (styleAttr) img.setAttribute('style', styleAttr);
+      if (video.hasAttribute('width'))  img.setAttribute('width',  video.getAttribute('width'));
+      if (video.hasAttribute('height')) img.setAttribute('height', video.getAttribute('height'));
+      for (const attr of video.attributes) {
+        if (attr.name.startsWith('data-')) img.setAttribute(attr.name, attr.value);
+      }
+      img.setAttribute('alt', video.getAttribute('aria-label') || 'Preview do vídeo');
+      img.setAttribute('loading', 'lazy');
+      video.replaceWith(img);
+    });
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+
+  // Embute todas as imagens locais como data URI (logos, fotos, thumbs de vídeo).
+  // Cache persistente entre builds — só baixa o que ainda não viu. Concorrência 8.
+  async function inlineLocalImages(html, onProgress) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const isLocal = u => !!u && !/^(https?:|data:|blob:|#)/.test(u);
+    const refs = [];
+    doc.querySelectorAll('img').forEach(el => {
+      const src = el.getAttribute('src');
+      if (isLocal(src)) refs.push({ el, attr: 'src', url: src });
+    });
+    doc.querySelectorAll('image').forEach(el => {
+      const href = el.getAttribute('href');
+      if (isLocal(href)) refs.push({ el, attr: 'href', url: href });
+      const xhref = el.getAttribute('xlink:href');
+      if (isLocal(xhref)) refs.push({ el, attr: 'xlink:href', url: xhref });
+    });
+    const uniqueUrls = [...new Set(refs.map(r => r.url))];
+    let done = 0;
+    const total = uniqueUrls.length;
+    const CONCURRENCY = 8;
+    const queue = [...uniqueUrls];
+    async function worker() {
+      while (queue.length) {
+        const url = queue.shift();
+        if (!_imgDataUriCache.has(url)) {
+          try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const blob = await res.blob();
+            const dataUri = await new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(reader.error);
+              reader.readAsDataURL(blob);
+            });
+            _imgDataUriCache.set(url, dataUri);
+          } catch (e) {
+            console.warn('[proposta] Falhou inline:', url, e.message);
+            _imgDataUriCache.set(url, null);
+          }
+        }
+        done++;
+        if (onProgress) onProgress(done, total);
+      }
+    }
+    await Promise.all(Array(CONCURRENCY).fill(0).map(worker));
+    for (const ref of refs) {
+      const dataUri = _imgDataUriCache.get(ref.url);
+      if (dataUri) ref.el.setAttribute(ref.attr, dataUri);
+    }
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+
+  async function buildProposalHTML(opts = {}) {
     // Capture all <style> tags from the host page so the standalone HTML looks identical.
     const styles = Array.from(document.querySelectorAll('style'))
       .map(s => s.outerHTML)
@@ -14071,7 +14166,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 })();
 <` + `/script>`;
 
-    return `<!doctype html>
+    let html = `<!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
@@ -14086,6 +14181,20 @@ ${autoResizeScript}
 ${growthChartScript}
 </body>
 </html>`;
+
+    // Sempre: substitui <video> por <img> com thumbnail estático.
+    // Vídeos UGC são pesados (~80MB cada × 16 vídeos = ~1GB) — usar thumbnails
+    // mantém o preview leve e permite download .html standalone. Quando o
+    // usuário quiser play de novo, esta linha deve ser removida ou condicionada.
+    html = replaceVideosWithThumbnails(html);
+
+    // Opcional: embute imagens como data URI (somente no download standalone,
+    // não no preview — o iframe do preview carrega imagens via http-server).
+    if (opts.inline) {
+      html = await inlineLocalImages(html, opts.onProgress);
+    }
+
+    return html;
   }
 
   async function renderPreview() {
@@ -14104,106 +14213,28 @@ ${growthChartScript}
     }
   }
 
-  // Lazy-load JSZip (apenas no primeiro download). ~94KB.
-  let _jszipPromise = null;
-  function loadJSZip() {
-    if (window.JSZip) return Promise.resolve(window.JSZip);
-    if (_jszipPromise) return _jszipPromise;
-    _jszipPromise = new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-      s.onload  = () => resolve(window.JSZip);
-      s.onerror = () => { _jszipPromise = null; reject(new Error('Não foi possível carregar JSZip')); };
-      document.head.appendChild(s);
-    });
-    return _jszipPromise;
-  }
-
-  // Extrai URLs locais (imagens, vídeos, posters, source, svg image) do HTML
-  // gerado. Ignora http(s), data:, blob:, #.
-  function extractLocalAssetUrls(html) {
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    const urls = new Set();
-    const isLocal = u => !!u && !/^(https?:|data:|blob:|#)/.test(u);
-    const collect = (selector, attrs) => {
-      doc.querySelectorAll(selector).forEach(el => {
-        for (const a of attrs) {
-          const v = el.getAttribute(a);
-          if (isLocal(v)) urls.add(v);
-        }
-      });
-    };
-    collect('img',    ['src']);
-    collect('video',  ['src', 'poster']);
-    collect('source', ['src']);
-    collect('image',  ['href', 'xlink:href']);
-    return [...urls];
-  }
-
-  async function downloadProposalBundle() {
+  async function downloadHTML() {
     if (selected.size === 0) return;
     setBusy(true);
     const setMeta = txt => { if ($meta) $meta.textContent = txt; };
     try {
       setMeta('Gerando proposta...');
-      const html = await buildProposalHTML();
-
-      setMeta('Carregando empacotador...');
-      const JSZip = await loadJSZip();
-
-      const assets = extractLocalAssetUrls(html);
-      const zip = new JSZip();
-      // O HTML referencia assets via caminho relativo (ex: "logo.png",
-      // "Criativos/foo.mp4"). Mantemos os mesmos caminhos no zip, e o
-      // HTML no root extrai e abre normalmente.
-      zip.file('proposta.html', html);
-
-      let done = 0, failed = 0;
-      const total = assets.length;
-      // Concorrência limitada (8 fetches em paralelo) para não saturar a rede
-      // nem travar a UI. Vídeos UGC chegam a 80MB cada — sequencial demoraria
-      // demais; concorrência alta demais derruba o servidor.
-      const CONCURRENCY = 8;
-      async function worker(queue) {
-        while (queue.length) {
-          const url = queue.shift();
-          try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const blob = await res.blob();
-            // decodeURIComponent: "Criativos/Le%20Lis-4UGCs2.mp4" → "Criativos/Le Lis-4UGCs2.mp4"
-            zip.file(decodeURIComponent(url), blob);
-          } catch (e) {
-            console.warn('[proposta] Falhou baixar', url, e.message);
-            failed++;
-          }
-          done++;
-          setMeta(`Baixando arquivos ${done}/${total}${failed ? ` (${failed} falharam)` : ''}...`);
-        }
-      }
-      const queue = [...assets];
-      await Promise.all(Array(CONCURRENCY).fill(0).map(() => worker(queue)));
-
-      setMeta('Compactando arquivo .zip...');
-      // Vídeos quase não comprimem — nível 1 acelera muito sem perder espaço.
-      const zipBlob = await zip.generateAsync(
-        { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 1 } },
-        meta => { setMeta(`Compactando... ${Math.round(meta.percent)}%`); }
-      );
-
-      const url  = URL.createObjectURL(zipBlob);
+      // inline: true → embute todas as imagens (logos, fotos, thumbs de vídeo)
+      // como data URI, gerando um .html standalone que não depende do servidor.
+      const html = await buildProposalHTML({ inline: true,
+        onProgress: (d, t) => setMeta(`Embutindo imagens ${d}/${t}...`)
+      });
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
       const ts   = new Date().toISOString().slice(0, 10);
       const sols = Array.from(selected).join('-');
       a.href = url;
-      a.download = `proposta-turbo-${sols}-${ts}.zip`;
+      a.download = `proposta-turbo-${sols}-${ts}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       setTimeout(() => URL.revokeObjectURL(url), 1000);
-      if (failed > 0) {
-        console.warn(`[proposta] Download concluído com ${failed} arquivos faltando — veja warnings acima.`);
-      }
     } catch (e) {
       console.error('[proposta] Erro no download:', e);
       setMeta('Erro ao gerar proposta — veja o console.');
@@ -14211,9 +14242,6 @@ ${growthChartScript}
       setBusy(false);
     }
   }
-
-  // Alias para compatibilidade com o handler antigo
-  const downloadHTML = downloadProposalBundle;
 
   function setBusy(busy) {
     if ($download) $download.disabled = busy || selected.size === 0;
