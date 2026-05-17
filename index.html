@@ -14669,12 +14669,17 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         flex-direction: column;
         gap: 10px;
       }
+      /* GRID em vez de FLEX: o conteúdo do li (texto + small) fica numa
+         única célula da grid, o que faz o <small> (display:block) ficar
+         ABAIXO do texto principal em vez de virar um flex-item separado
+         que ia pro LADO do texto, criando os "caminhos de rato". */
       .proposal-section--pacotes-perf .pacote-features li,
       .proposal-section--pacotes-creators .pacote-features li,
       .proposal-section--pacotes-social .pacote-features li {
-        display: flex;
-        align-items: flex-start;
+        display: grid;
+        grid-template-columns: 18px 1fr;
         gap: 9px;
+        align-items: start;
         font-size: 12.5px;
         line-height: 1.45;
         color: rgba(255,255,255,0.78);
@@ -14683,7 +14688,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       .proposal-section--pacotes-creators .pacote-features li::before,
       .proposal-section--pacotes-social .pacote-features li::before {
         content: '✓';
-        flex-shrink: 0;
         width: 18px; height: 18px;
         border-radius: 5px;
         background: rgba(13,207,232,0.14);
