@@ -13903,6 +13903,170 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 })();
 <` + `/script>`;
 
+    // Reproduz a animação da "Somos obcecados por resultado" dentro do
+    // documento da proposta. No app, o gatilho é o scroll de .turbo-slides
+    // (que não existe aqui). Como o iframe é redimensionado para a altura
+    // total, o "scroll" relevante é o do container pai (.view-propostas) —
+    // acessível via window.parent (srcdoc é same-origin).
+    const growthChartScript = `
+<` + `script>
+(function(){
+  var played = false, rafId = null;
+
+  function getSvg(){ return document.querySelector('.proposal-section--turbo .turbo-chart-svg'); }
+  function getSlide(){ return document.querySelector('.proposal-section--turbo .turbo-slide--growth'); }
+
+  function fmtBR(n){
+    if (n >= 1000) return Math.floor(n/1000) + '.' + String(n%1000).padStart(3,'0');
+    return String(n);
+  }
+
+  function animate(){
+    var svg = getSvg(); if (!svg) return;
+    var curve   = svg.querySelector('#growth-curve');
+    var dot     = svg.querySelector('#growth-dot');
+    var glowOut = svg.querySelector('#growth-glow-outer');
+    var glowMid = svg.querySelector('#growth-glow-mid');
+    var counter = svg.querySelector('#growth-dot-counter');
+    var logo    = svg.querySelector('#growth-dot-logo');
+    if (!curve || !dot) return;
+
+    var LOGO_SZ_MIN = 26, LOGO_SZ_MAX = 82, LOGO_NUM_GAP = 75;
+    var DOT_R = 9, NUM_GAP_BOT = 10, FADE_START = 0.96;
+
+    curve.style.transition = 'none';
+    var totalLen = curve.getTotalLength();
+    curve.style.strokeDasharray  = totalLen;
+    curve.style.strokeDashoffset = totalLen;
+
+    var milestones = [
+      { x: 30,  dotId:'gm-0',    lblId:'gml-0',    val: 0,    t: 0    },
+      { x: 138, dotId:'gm-100',  lblId:'gml-100',  val: 100,  t: null },
+      { x: 246, dotId:'gm-300',  lblId:'gml-300',  val: 300,  t: null },
+      { x: 354, dotId:'gm-1000', lblId:'gml-1000', val: 1000, t: null },
+      { x: 462, dotId:'gm-1300', lblId:'gml-1300', val: 1300, t: null }
+    ];
+    var SAMPLES = 600;
+    milestones.forEach(function(m){
+      if (m.t !== null) return;
+      var bestT = 0, bestD = Infinity;
+      for (var i = 0; i <= SAMPLES; i++) {
+        var t  = i / SAMPLES;
+        var pt = curve.getPointAtLength(totalLen * t);
+        var d  = Math.abs(pt.x - m.x);
+        if (d < bestD) { bestD = d; bestT = t; }
+      }
+      m.t = bestT;
+    });
+
+    var STEPS = 1200;
+    var pathPts = new Array(STEPS + 1);
+    for (var j = 0; j <= STEPS; j++) {
+      var p = curve.getPointAtLength(totalLen * j / STEPS);
+      pathPts[j] = { x: p.x, y: p.y };
+    }
+
+    // Reset milestone visibility (caso o slide já tenha animado e replay)
+    svg.querySelectorAll('.growth-milestone').forEach(function(el){ el.setAttribute('opacity','0'); });
+    dot.setAttribute('opacity','1');
+    glowOut.setAttribute('opacity','1');
+    glowMid.setAttribute('opacity','1');
+    counter.setAttribute('opacity','1');
+    if (logo) logo.setAttribute('opacity','1');
+
+    var duration = 2400, startTime = null;
+    var statClientes = svg.ownerDocument.getElementById('stat-clientes');
+    var statColab    = svg.ownerDocument.getElementById('stat-colab');
+
+    function frame(now){
+      if (startTime === null) startTime = now;
+      var raw   = Math.min((now - startTime) / duration, 1);
+      var eased = raw;
+      curve.style.strokeDashoffset = totalLen * (1 - eased);
+
+      var idx = Math.min(STEPS, Math.round(eased * STEPS));
+      var pt  = pathPts[idx];
+      [dot, glowOut, glowMid].forEach(function(el){
+        el.setAttribute('cx', pt.x);
+        el.setAttribute('cy', pt.y);
+      });
+
+      var val = Math.round(eased * 1300);
+      counter.textContent = fmtBR(val);
+      if (statClientes) statClientes.textContent = fmtBR(val) + '+';
+      if (statColab)    statColab.textContent    = Math.round(eased * 120) + '+';
+
+      var numY = Math.min(pt.y + DOT_R + NUM_GAP_BOT + 16, 636);
+      counter.setAttribute('x', pt.x);
+      counter.setAttribute('y', numY);
+
+      var logoSz  = LOGO_SZ_MIN + (LOGO_SZ_MAX - LOGO_SZ_MIN) * eased;
+      var logoBtm = numY - LOGO_NUM_GAP;
+      var logoY   = Math.max(-105, logoBtm - logoSz);
+      var logoX   = Math.min(Math.max(pt.x - logoSz/2, 0), 500 - logoSz);
+      if (logo) {
+        logo.setAttribute('width',  logoSz);
+        logo.setAttribute('height', logoSz);
+        logo.setAttribute('x', logoX);
+        logo.setAttribute('y', logoY);
+      }
+
+      var aAlpha = eased < FADE_START ? '1' : String(Math.max(0, 1 - (eased - FADE_START)/(1 - FADE_START)));
+      counter.setAttribute('opacity', aAlpha);
+      var sAlpha = eased < FADE_START ? '0' : String(Math.min(1, (eased - FADE_START)/(1 - FADE_START)));
+      var gml1300 = svg.querySelector('#gml-1300');
+      if (gml1300) gml1300.setAttribute('opacity', sAlpha);
+
+      milestones.forEach(function(m){
+        if (eased >= m.t) {
+          var d = svg.querySelector('#' + m.dotId); if (d) d.setAttribute('opacity','1');
+          if (m.lblId && m.lblId !== 'gml-1300') {
+            var l = svg.querySelector('#' + m.lblId); if (l) l.setAttribute('opacity','1');
+          }
+        }
+      });
+
+      if (raw < 1) {
+        rafId = requestAnimationFrame(frame);
+      } else {
+        dot.setAttribute('opacity','0');
+        glowOut.setAttribute('opacity','0');
+        glowMid.setAttribute('opacity','0');
+        counter.setAttribute('opacity','0');
+        if (gml1300) gml1300.setAttribute('opacity','1');
+        if (statClientes) statClientes.textContent = '1.300+';
+        if (statColab)    statColab.textContent    = '120+';
+        rafId = null;
+      }
+    }
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function init(){
+    var slide = getSlide(); if (!slide) return;
+    // IntersectionObserver com root = viewport do próprio documento
+    // (no preview o iframe tem scroll interno; standalone usa window scroll —
+    // ambos os casos funcionam com root=null).
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting && !played) {
+          played = true;
+          setTimeout(animate, 200);
+          io.disconnect();
+        }
+      });
+    }, { threshold: 0.35 });
+    io.observe(slide);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+<` + `/script>`;
+
     return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -13915,6 +14079,7 @@ ${styles}
 <body>
 ${sections.join('\n')}
 ${autoResizeScript}
+${growthChartScript}
 </body>
 </html>`;
   }
