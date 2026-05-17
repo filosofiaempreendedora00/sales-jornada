@@ -14916,14 +14916,17 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         background: rgba(255,255,255,0.20);
         color: #ffffff;
       }
+      /* <small> dentro dos features fica INLINE — flui na mesma linha do
+         texto principal, só visualmente menor e mais transparente. Antes
+         estava display:block e quebrava em linha separada, criando o
+         "(4 por mês) solto". Agora: "Direção e produção dos criativos de
+         venda (4 por mês)" tudo na mesma linha (com wrap natural). */
       .proposal-section--pacotes-perf .pacote-features li small,
       .proposal-section--pacotes-creators .pacote-features li small,
       .proposal-section--pacotes-social .pacote-features li small {
-        display: block;
-        font-size: 11px;
-        color: rgba(255,255,255,0.50);
+        font-size: 0.88em;
+        color: rgba(255,255,255,0.55);
         font-weight: 400;
-        margin-top: 2px;
       }
       .proposal-section--pacotes-perf .pacote-badge,
       .proposal-section--pacotes-creators .pacote-badge,
