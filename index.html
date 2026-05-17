@@ -14199,6 +14199,40 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         white-space: nowrap;
         line-height: 1.2;
       }
+      /* ── Growth slide ("Somos obcecados por resultado") ──
+         No app, padding lateral 52px funciona porque é fullscreen 100vh.
+         Na proposta com slides compactados, os elementos ficavam grudados
+         nas bordas. Aqui aumentamos o padding horizontal (escalando com vw)
+         e o gap entre header/gráfico — sem mexer no SVG, então a animação
+         segue intacta. Em viewports estreitos (<900px) stackamos vertical. */
+      .proposal-section--turbo .turbo-slide--growth {
+        padding-left: clamp(60px, 8vw, 140px) !important;
+        padding-right: clamp(60px, 8vw, 140px) !important;
+      }
+      .proposal-section--turbo .turbo-slide--growth .turbo-slide-inner {
+        gap: clamp(40px, 6vw, 80px);
+      }
+      @media (max-width: 900px) {
+        .proposal-section--turbo .turbo-slide--growth {
+          padding-left: clamp(28px, 5vw, 56px) !important;
+          padding-right: clamp(28px, 5vw, 56px) !important;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-slide-inner {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 28px !important;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-growth-header {
+          flex: 0 0 auto !important;
+          width: 100%;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-growth-chart {
+          width: 100%;
+          height: clamp(280px, 50vh, 480px);
+          padding-top: 30px;
+        }
+      }
+
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
       .proposal-section--external { padding: 0; background: #0a0a0c; }
       .proposal-external-frame {
