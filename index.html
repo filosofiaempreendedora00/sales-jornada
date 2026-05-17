@@ -13737,6 +13737,32 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     return m[1] + 'thumbs/' + m[2] + m[3] + '.jpg';
   }
 
+  // Substitui o conteúdo da capa Turbo (.turbo-slide--cover) só no contexto da
+  // proposta — capa nova com saudação personalizada, logo decorativo à direita
+  // e as 3 tags antigas em canto sutil. Apresentação real fica intacta.
+  function replaceTurboCoverInProposal(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const cover = doc.querySelector('.proposal-section--turbo .turbo-slide--cover');
+    if (!cover) return html;
+    cover.innerHTML = `
+      <div class="pc-bg"></div>
+      <div class="pc-decor"><img src="Logo-Turbo-branca (4).png" alt=""></div>
+      <div class="pc-content">
+        <span class="pc-greeting">Olá,</span>
+        <h1 class="pc-name">cliente</h1>
+        <h1 class="pc-title">somos a <span class="pc-accent">Turbo!</span></h1>
+        <div class="pc-divider"></div>
+        <p class="pc-sub">Aceleramos o crescimento do seu negócio</p>
+      </div>
+      <div class="pc-tags">
+        <span class="pc-tag">E-commerce</span>
+        <span class="pc-tag">Lead Generation</span>
+        <span class="pc-tag">Growth</span>
+      </div>
+    `;
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+
   // Substitui todos os <video> por <img> apontando para o thumbnail estático.
   // Mantém className, style e atributos data-*. O usuário não consegue dar play —
   // é só preview. Quando voltarmos a permitir play (no futuro), reverter esta função.
@@ -13940,6 +13966,122 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       .proposal-section--turbo .turbo-orbit-track,
       .proposal-section--turbo .turbo-orbit-bubble-counter {
         animation-play-state: running !important;
+      }
+
+      /* ── Capa da proposta: saudação à esquerda, logo decorativo à direita ──
+         Substitui a capa centralizada da apresentação por uma capa "carta"
+         alinhada à esquerda. O conteúdo HTML é trocado via JS
+         (replaceTurboCoverInProposal) — aqui só estilizamos o que ele insere. */
+      .proposal-section--turbo .turbo-slide--cover {
+        text-align: left !important;
+        align-items: stretch !important;
+        justify-content: center !important;
+        padding: 72px clamp(40px, 7vw, 96px) !important;
+        position: relative;
+        overflow: hidden;
+        background: #07080f !important;
+        gap: 0 !important;
+      }
+      .proposal-section--turbo .pc-bg {
+        position: absolute; inset: 0;
+        background:
+          radial-gradient(ellipse 38% 52% at 6% 18%, rgba(77,141,255,0.32) 0%, transparent 60%),
+          radial-gradient(ellipse 32% 44% at 80% 62%, rgba(13,207,232,0.22) 0%, transparent 65%),
+          radial-gradient(ellipse 22% 32% at 50% 92%, rgba(155,109,255,0.14) 0%, transparent 60%);
+        pointer-events: none;
+      }
+      .proposal-section--turbo .pc-decor {
+        position: absolute;
+        top: 50%; right: -6%;
+        transform: translateY(-50%);
+        width: 58%;
+        max-width: 760px;
+        opacity: 0.09;
+        pointer-events: none;
+        filter: brightness(1.4) drop-shadow(0 0 40px rgba(77,141,255,0.30));
+      }
+      .proposal-section--turbo .pc-decor img {
+        width: 100%; height: auto; display: block;
+      }
+      .proposal-section--turbo .pc-content {
+        position: relative;
+        z-index: 2;
+        max-width: 760px;
+        display: flex; flex-direction: column;
+        align-self: flex-start;
+        margin-top: auto;
+        margin-bottom: auto;
+      }
+      .proposal-section--turbo .pc-greeting {
+        font-size: clamp(20px, 2.4vw, 30px);
+        font-weight: 500;
+        letter-spacing: -0.3px;
+        color: rgba(255,255,255,0.82);
+        margin-bottom: 2px;
+      }
+      .proposal-section--turbo .pc-name,
+      .proposal-section--turbo .pc-title {
+        font-size: clamp(46px, 6vw, 80px);
+        font-weight: 900;
+        letter-spacing: -2.2px;
+        line-height: 0.95;
+        text-transform: uppercase;
+        color: #ffffff;
+        margin: 0;
+        text-shadow: 0 4px 32px rgba(0,0,0,0.45);
+      }
+      .proposal-section--turbo .pc-title {
+        margin-top: 6px;
+      }
+      .proposal-section--turbo .pc-accent {
+        background: linear-gradient(120deg, #c4a8ff 0%, #4d8dff 45%, #0dcfe8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        filter: drop-shadow(0 0 28px rgba(77,141,255,0.55));
+      }
+      .proposal-section--turbo .pc-divider {
+        width: 72px; height: 3px;
+        background: linear-gradient(90deg, #9b6dff, #0dcfe8);
+        border-radius: 99px;
+        margin: 30px 0 18px;
+      }
+      .proposal-section--turbo .pc-sub {
+        font-size: clamp(15px, 1.5vw, 19px);
+        font-style: italic;
+        font-weight: 400;
+        color: rgba(255,255,255,0.68);
+        letter-spacing: 0.2px;
+        max-width: 560px;
+        line-height: 1.5;
+        margin: 0;
+      }
+      .proposal-section--turbo .pc-tags {
+        position: absolute;
+        bottom: clamp(28px, 4vw, 44px);
+        left: clamp(40px, 7vw, 96px);
+        display: flex; gap: 8px;
+        flex-wrap: wrap;
+        z-index: 2;
+      }
+      .proposal-section--turbo .pc-tag {
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.55);
+        padding: 5px 11px;
+        border-radius: 99px;
+        background: rgba(255,255,255,0.035);
+        border: 1px solid rgba(255,255,255,0.10);
+        backdrop-filter: blur(6px);
+        white-space: nowrap;
+        line-height: 1.2;
+      }
+      @media (max-width: 700px) {
+        .proposal-section--turbo .pc-decor { opacity: 0.06; right: -22%; width: 100%; }
+        .proposal-section--turbo .pc-tags  { position: static; margin-top: 36px; left: auto; bottom: auto; }
+        .proposal-section--turbo .pc-content { padding-bottom: 0; }
       }
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
       .proposal-section--external { padding: 0; background: #0a0a0c; }
@@ -14187,6 +14329,9 @@ ${growthChartScript}
     // mantém o preview leve e permite download .html standalone. Quando o
     // usuário quiser play de novo, esta linha deve ser removida ou condicionada.
     html = replaceVideosWithThumbnails(html);
+    // Sempre: substitui a capa Turbo pela versão da proposta (saudação +
+    // logo decorativo + tags em canto sutil). Apresentação real intacta.
+    html = replaceTurboCoverInProposal(html);
 
     // Opcional: embute imagens como data URI (somente no download standalone,
     // não no preview — o iframe do preview carrega imagens via http-server).
