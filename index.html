@@ -15124,6 +15124,292 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         height: 100vh; /* fallback enquanto o auto-resize não rodou */
         background: #0a0a0c;
       }
+
+      /* ════════════════════════════════════════════════════════
+         MOBILE OVERRIDES — viewport até 700px.
+         Tudo escopado em .proposal-section* para não atingir o
+         app no desktop. Bloco fica no final do extraCSS para ter
+         prioridade sobre as regras desktop acima.
+         ════════════════════════════════════════════════════════ */
+      @media (max-width: 700px) {
+
+        /* ── slides em geral ── */
+        .proposal-section .xpto-slide,
+        .proposal-section .turbo-slide {
+          padding: 36px 18px !important;
+        }
+
+        /* ════ TURBO ════ */
+
+        /* Cover: paddding e fonte menores */
+        .proposal-section--turbo .turbo-slide--cover {
+          padding: 56px 22px !important;
+        }
+        .proposal-section--turbo .pc-mark { width: 100px; margin-bottom: 18px; }
+        .proposal-section--turbo .pc-greeting { font-size: 18px; }
+        .proposal-section--turbo .pc-name,
+        .proposal-section--turbo .pc-title { font-size: 38px; letter-spacing: -1.4px; }
+        .proposal-section--turbo .pc-divider { margin: 18px 0 14px; }
+        .proposal-section--turbo .pc-sub { font-size: 14px; }
+        .proposal-section--turbo .pc-tag { font-size: 9px; padding: 4px 9px; }
+
+        /* Orbit: ring + bubbles escalam pra caber sem overflow.
+           Antes o ring usava min(74vh, 700px) — em viewport mobile a vh
+           pode ser ~600px, fazendo o ring ter ~440px e estourar 360px. */
+        /* Garante que o slide do orbit não permite overflow horizontal */
+        .proposal-section--turbo .turbo-slide--missao-orbit {
+          overflow: hidden !important;
+        }
+        .proposal-section--turbo .turbo-slide--missao-orbit .turbo-orbit-ring {
+          width:  min(78vw, 300px) !important;
+          height: min(78vw, 300px) !important;
+          --r: clamp(95px, 30vw, 125px) !important;
+        }
+        .proposal-section--turbo .turbo-slide--missao-orbit .turbo-orbit-center-logo {
+          width: clamp(56px, 15vw, 78px);
+        }
+        .proposal-section--turbo .turbo-orbit-bubble-circle {
+          width: 46px !important;
+          height: 46px !important;
+          font-size: 19px;
+        }
+        .proposal-section--turbo .turbo-orbit-bubble-label {
+          font-size: 8.5px !important;
+          max-width: 72px;
+          line-height: 1.1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          letter-spacing: 0.2px !important;
+        }
+
+        /* Missão (texto grande): reduz para evitar truncar */
+        .proposal-section--turbo .turbo-missao-text-big {
+          font-size: clamp(28px, 8vw, 42px) !important;
+          letter-spacing: -1.2px !important;
+          line-height: 1.08 !important;
+        }
+
+        /* DNA: stack vertical (founders, mini-helix, team) */
+        .proposal-section--turbo .turbo-dna-photos {
+          flex-direction: column !important;
+          gap: 18px !important;
+          align-items: stretch !important;
+        }
+        .proposal-section--turbo .turbo-dna-founders-col,
+        .proposal-section--turbo .turbo-dna-photo-wrap--team {
+          flex: 0 0 auto !important;
+          max-width: 100% !important;
+          width: 100% !important;
+        }
+        .proposal-section--turbo .turbo-dna-helix {
+          width: 64px !important;
+          height: 28px !important;
+          transform: rotate(90deg);
+          margin: -4px auto !important;
+          opacity: 0.55;
+          flex: 0 0 auto !important;
+        }
+        .proposal-section--turbo .turbo-dna-tags { gap: 6px; }
+        .proposal-section--turbo .turbo-dna-tag {
+          font-size: 10.5px;
+          padding: 5px 10px;
+        }
+        /* DNA header alignment: stack faz founders ser full-width,
+           dnaAlignScript já computa offsetLeft = 0 nesse caso. */
+        .proposal-section--turbo .turbo-dna-title {
+          font-size: clamp(26px, 7vw, 38px) !important;
+        }
+
+        /* Brands ("...aproveitamos desse know-how..."): 3 cards
+           (Bready, flashCRM, Em breve) viram coluna no mobile pra
+           caberem confortavelmente */
+        .proposal-section--turbo .turbo-missao-brands {
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 12px !important;
+        }
+        .proposal-section--turbo .turbo-brand-card {
+          max-width: 100% !important;
+          flex: 0 0 auto !important;
+          width: 100% !important;
+        }
+        .proposal-section--turbo .turbo-slide--missao-brands .turbo-missao-text-big {
+          font-size: clamp(22px, 6.5vw, 36px) !important;
+          line-height: 1.15 !important;
+        }
+
+        /* Growth: força stack vertical + reduz padding (já tinha rule
+           parecida em 900px, mas garantimos pro 700px também) */
+        .proposal-section--turbo .turbo-slide--growth {
+          padding: 36px 20px !important;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-slide-inner {
+          flex-direction: column !important;
+          gap: 20px !important;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-growth-header {
+          flex: 0 0 auto !important;
+          width: 100%;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-growth-chart {
+          width: 100%;
+          height: clamp(240px, 50vh, 380px);
+          padding-top: 10px;
+        }
+        .proposal-section--turbo .turbo-growth-stats { gap: 8px; }
+        .proposal-section--turbo .turbo-growth-stat { padding: 12px 14px; }
+
+        /* Cases: a imagem é object-fit:contain — só garantir que ocupa */
+        .proposal-section--turbo .turbo-slide--cases {
+          padding: 12px !important;
+          min-height: auto !important;
+        }
+
+        /* ════ PERFORMANCE ════ */
+        /* Forçar 1 col em qualquer grid de 2 colunas que sobrou cramped */
+        .proposal-section--performance .pp-gameplan-rows,
+        .proposal-section--performance .pp-criativos-grid {
+          grid-template-columns: 1fr !important;
+        }
+        .proposal-section--performance .pp-criativos-left,
+        .proposal-section--performance .pp-criativos-right {
+          width: 100% !important;
+          min-width: 0 !important;
+        }
+
+        /* ════ CREATORS ════ */
+        /* VS slide (Plataforma vs Conta própria): stack */
+        .proposal-section--creators .cp-vs-wrap {
+          flex-direction: column !important;
+          gap: 14px !important;
+        }
+        .proposal-section--creators .cp-vs-col {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+          flex: 0 0 auto !important;
+        }
+        .proposal-section--creators .cp-vs-divider,
+        .proposal-section--creators .cp-vs-symbol {
+          display: none;
+        }
+        .proposal-section--creators .cp-vs-card {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+        }
+
+        /* Case slides: layout text/media side-by-side vira stack.
+           Importante: as variantes --dual (1fr 480px), --screenshot
+           (1fr 540px), --ocean (1fr 620px) sobrescrevem o grid base
+           e impedem o stack. Forçamos 1fr em todas. */
+        .proposal-section--creators .cp-case-grid,
+        .proposal-section--creators .cp-case-grid--dual,
+        .proposal-section--creators .cp-case-grid--screenshot,
+        .proposal-section--creators .cp-case-grid--ocean {
+          grid-template-columns: 1fr !important;
+          gap: 18px !important;
+        }
+        .proposal-section--creators .cp-case-left,
+        .proposal-section--creators .cp-case-right,
+        .proposal-section--creators .cp-case-dual-phones,
+        .proposal-section--creators .cp-case-ocean-phones,
+        .proposal-section--creators .cp-case-ocean-row {
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+          flex-wrap: wrap !important;
+          padding-left: 0 !important;
+          height: auto !important;
+        }
+        .proposal-section--creators .cp-case-ocean-row {
+          justify-content: center !important;
+          gap: 8px !important;
+        }
+        .proposal-section--creators .cp-case-title {
+          font-size: clamp(24px, 6.5vw, 34px) !important;
+        }
+        /* Métricas dos cases (cp-case-metric) em 2 cols ao invés de fila */
+        .proposal-section--creators .cp-case-metrics {
+          flex-wrap: wrap !important;
+        }
+        .proposal-section--creators .cp-case-metric {
+          flex: 1 1 calc(50% - 8px) !important;
+          min-width: 0 !important;
+        }
+        /* Há um <li style="white-space:nowrap"> hardcoded no Cacow que
+           força o cp-case-list pra ~543px, arrastando o título junto.
+           Sobrescrevemos no mobile pra permitir wrap natural. */
+        .proposal-section--creators .cp-case-list li[style*="nowrap"] {
+          white-space: normal !important;
+        }
+
+        /* ════ INVESTIMENTO ════ */
+        .proposal-section--investimento .invest-slide {
+          padding: 60px 22px !important;
+          min-height: 540px !important;
+        }
+        .proposal-section--investimento .invest-title {
+          font-size: clamp(46px, 13vw, 68px) !important;
+          letter-spacing: -1.8px !important;
+        }
+        .proposal-section--investimento .invest-eyebrow {
+          font-size: 10.5px;
+          letter-spacing: 3px;
+          margin-bottom: 14px;
+        }
+        .proposal-section--investimento .invest-sub {
+          font-size: 13.5px;
+          margin-top: 22px;
+        }
+
+        /* ════ PACOTES (todos) ════ */
+        .proposal-section--pacotes-perf .pacotes-slide,
+        .proposal-section--pacotes-creators .pacotes-slide,
+        .proposal-section--pacotes-social .pacotes-slide {
+          padding: 40px 18px !important;
+          gap: 22px;
+        }
+        .proposal-section--pacotes-perf .pacotes-title,
+        .proposal-section--pacotes-creators .pacotes-title,
+        .proposal-section--pacotes-social .pacotes-title {
+          font-size: clamp(26px, 7vw, 38px) !important;
+        }
+        .proposal-section--pacotes-perf .pacote-card,
+        .proposal-section--pacotes-creators .pacote-card,
+        .proposal-section--pacotes-social .pacote-card {
+          padding: 22px 18px !important;
+        }
+        .proposal-section--pacotes-perf .pacote-price,
+        .proposal-section--pacotes-creators .pacote-price,
+        .proposal-section--pacotes-social .pacote-price {
+          font-size: 26px !important;
+        }
+        .proposal-section--pacotes-social .pacotes-grid--two {
+          max-width: 100% !important;
+        }
+
+        /* ════ CLOSING ════ */
+        .proposal-section--closing .closing-slide {
+          overflow: hidden !important;
+        }
+        .proposal-section--closing .closing-bg-mark {
+          width: 80% !important;
+          right: -8% !important;
+          opacity: 0.05 !important;
+        }
+        .proposal-section--closing .closing-title {
+          font-size: clamp(38px, 10vw, 52px) !important;
+          margin-bottom: 32px;
+        }
+        .proposal-section--closing .closing-address {
+          font-size: 11px;
+        }
+        .proposal-section--closing .closing-brand-mark {
+          width: 120px !important;
+        }
+      }
     `;
 
     const autoResizeScript = `
