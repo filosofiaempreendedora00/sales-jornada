@@ -14424,6 +14424,39 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 })();
 <` + `/script>`;
 
+    // Alinha o header "Além do marketing / DNA de negócios" com a borda
+    // esquerda da foto dos fundadores. Como o layout interno usa
+    // justify-content:center, a posição da foto é dinâmica conforme o
+    // viewport — precisa medir. Rodando no iframe + resize listener.
+    const dnaAlignScript = `
+<` + `script>
+(function(){
+  function align(){
+    var header   = document.querySelector('.proposal-section--turbo .turbo-dna-header');
+    var founders = document.querySelector('.proposal-section--turbo .turbo-dna-founders-col');
+    if (!header || !founders) return;
+    var slide = header.closest('.turbo-slide--dna');
+    if (!slide) return;
+    var slideRect    = slide.getBoundingClientRect();
+    var foundersRect = founders.getBoundingClientRect();
+    var offset = Math.max(0, foundersRect.left - slideRect.left);
+    // O slide tem padding-left que já contribui; subtraímos pra não duplicar.
+    var pad = parseFloat(getComputedStyle(slide).paddingLeft) || 0;
+    var marginLeft = Math.max(0, offset - pad);
+    header.style.marginLeft = marginLeft + 'px';
+  }
+  function schedule(){ requestAnimationFrame(align); }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', schedule);
+  } else {
+    schedule();
+  }
+  // Re-mede após imagens carregarem (mudam o layout) e em resize.
+  window.addEventListener('load', schedule);
+  window.addEventListener('resize', schedule);
+})();
+<` + `/script>`;
+
     let html = `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -14437,6 +14470,7 @@ ${styles}
 ${sections.join('\n')}
 ${autoResizeScript}
 ${growthChartScript}
+${dnaAlignScript}
 </body>
 </html>`;
 
