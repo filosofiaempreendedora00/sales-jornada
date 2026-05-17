@@ -14145,15 +14145,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     // selecionadas). Contatos do Roberto + endereço da Turbo + branding.
     sections.push(`<section class="proposal-section proposal-section--closing">
       <div class="closing-slide">
-        <svg class="closing-decor" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <g fill="none" stroke-linejoin="round" stroke-linecap="round" stroke-width="0.45">
-            <path d="M 18 70 L 50 30 L 82 70" stroke="rgba(155,109,255,0.42)"/>
-            <path d="M 18 80 L 50 40 L 82 80" stroke="rgba(155,109,255,0.30)"/>
-            <path d="M 8  78 L 50 22 L 92 78" stroke="rgba(77,141,255,0.28)"/>
-            <path d="M 8  88 L 50 32 L 92 88" stroke="rgba(77,141,255,0.20)"/>
-            <path d="M -2 86 L 50 14 L 102 86" stroke="rgba(13,207,232,0.18)"/>
-          </g>
-        </svg>
+        <img src="logo.png" alt="" class="closing-bg-mark" aria-hidden="true">
         <div class="closing-content">
           <h1 class="closing-title">Vamos com<br><span class="closing-accent">Turbo!!</span></h1>
           <ul class="closing-contacts">
@@ -14184,8 +14176,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           Endereço: Sede da Rede Gazeta — R. Carlos Fernando Lindenberg Filho, 90 — 2° Andar — Monte Belo, Vitória — ES, 29050-901
         </p>
         <div class="closing-brand">
-          <img src="Logo-Turbo-branca (4).png" alt="" class="closing-brand-mark">
-          <span class="closing-brand-text">Turbo<small>partners</small></span>
+          <img src="Logo-Turbo-branca (4).png" alt="Turbo Partners" class="closing-brand-mark">
         </div>
       </div>
     </section>`);
@@ -14721,17 +14712,18 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           radial-gradient(ellipse 60% 70% at 80% 25%, rgba(13,80,200,0.32) 0%, transparent 62%),
           radial-gradient(ellipse 36% 48% at 18% 70%, rgba(155,109,255,0.10) 0%, transparent 65%);
       }
-      .proposal-section--closing .closing-decor {
+      /* Watermark da logo Turbo (só o arrow, sem texto) — bem translúcido,
+         posicionado à direita pra balancear o conteúdo à esquerda. */
+      .proposal-section--closing .closing-bg-mark {
         position: absolute;
         top: 50%;
         right: -6%;
         transform: translateY(-50%);
-        width: 70%;
-        max-width: 920px;
+        width: clamp(360px, 52%, 720px);
         height: auto;
-        aspect-ratio: 1 / 1;
+        opacity: 0.07;
         pointer-events: none;
-        opacity: 0.85;
+        filter: brightness(1.4);
       }
       .proposal-section--closing .closing-content {
         position: relative; z-index: 2;
@@ -14787,42 +14779,24 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       }
       .proposal-section--closing .closing-brand {
         position: absolute;
-        right: clamp(48px, 7vw, 96px);
-        bottom: clamp(40px, 5vw, 64px);
+        right: clamp(40px, 5vw, 80px);
+        bottom: clamp(36px, 4.5vw, 56px);
         z-index: 2;
-        display: flex;
-        align-items: center;
-        gap: 12px;
       }
       .proposal-section--closing .closing-brand-mark {
-        width: 40px;
+        width: clamp(140px, 13vw, 200px);
         height: auto;
-        filter: brightness(1.15) drop-shadow(0 0 12px rgba(77,141,255,0.40));
-      }
-      .proposal-section--closing .closing-brand-text {
-        font-size: 22px;
-        font-weight: 800;
-        line-height: 1;
-        letter-spacing: -0.8px;
-        color: rgba(255,255,255,0.92);
-      }
-      .proposal-section--closing .closing-brand-text small {
         display: block;
-        font-size: 11px;
-        font-weight: 600;
-        letter-spacing: 1.4px;
-        color: rgba(255,255,255,0.55);
-        margin-top: 3px;
-        text-transform: lowercase;
+        filter: brightness(1.1) drop-shadow(0 0 14px rgba(77,141,255,0.35));
       }
       @media (max-width: 700px) {
         .proposal-section--closing .closing-slide {
           min-height: 540px;
           padding: clamp(36px, 6vw, 56px) clamp(24px, 5vw, 40px);
         }
-        .proposal-section--closing .closing-decor {
-          opacity: 0.5;
-          width: 110%;
+        .proposal-section--closing .closing-bg-mark {
+          opacity: 0.05;
+          width: 120%;
           right: -30%;
         }
         .proposal-section--closing .closing-content { max-width: 100%; }
@@ -14830,6 +14804,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           position: static;
           margin-top: 32px;
           align-self: flex-end;
+        }
+        .proposal-section--closing .closing-brand-mark {
+          width: clamp(120px, 30vw, 160px);
         }
       }
 
