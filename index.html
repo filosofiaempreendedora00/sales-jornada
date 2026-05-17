@@ -13818,6 +13818,30 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           padding: 36px 18px !important;
         }
       }
+      /* ── Turbo / Missão: colapsar zoom-section e mostrar orbit já aberto + animado ──
+         No app, a sequência depende de scroll-driven JS:
+           - turbo-missao-zoom-section (200vh sticky) → zoom da palavra "fácil"
+           - turbo-missao-logo-overlay (sticky)       → crossfade logo
+           - turbo-orbit-intro                        → logo gigante fase 1
+           - JS anima --r de 0 até R_MAX (260) e play das animações
+         Sem o JS, a proposta fica com 200vh em branco + logo congelado.
+         Aqui colapsamos tudo isso e forçamos o orbit no estado final, animado. */
+      .proposal-section--turbo .turbo-missao-zoom-section { height: auto !important; }
+      .proposal-section--turbo .turbo-slide--missao-text { position: static !important; }
+      .proposal-section--turbo .turbo-missao-logo-overlay,
+      .proposal-section--turbo .turbo-missao-zoom-stop { display: none !important; }
+      .proposal-section--turbo .turbo-orbit-intro { display: none !important; }
+      .proposal-section--turbo .turbo-orbit-ring {
+        --r: 260px !important;
+        --bubble-scale: 1 !important;
+      }
+      .proposal-section--turbo .turbo-orbit-wrap,
+      .proposal-section--turbo .turbo-orbit-center { opacity: 1 !important; }
+      .proposal-section--turbo .turbo-orbit-center-logo { transform: scale(1) !important; }
+      .proposal-section--turbo .turbo-orbit-track,
+      .proposal-section--turbo .turbo-orbit-bubble-counter {
+        animation-play-state: running !important;
+      }
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
       .proposal-section--external { padding: 0; background: #0a0a0c; }
       .proposal-external-frame {
