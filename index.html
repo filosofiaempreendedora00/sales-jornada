@@ -13771,7 +13771,10 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         overflow-x: hidden !important; overflow-y: auto !important;
       }
       .proposal-section { position: relative; display: block; }
-      .proposal-section + .proposal-section { border-top: 1px solid rgba(255,255,255,0.05); }
+      /* Delimitador entre soluções (Turbo / Performance / Creators / Social) */
+      .proposal-section + .proposal-section {
+        border-top: 2px solid rgba(155,109,255,0.22);
+      }
       /* Neutraliza chrome do app que não pertence à proposta */
       .sidebar, .apres-subnav, .focus-nav, .header, .journey-tabs,
       .xpto-overlay, .xpto-close, .xpto-scroll-hint, .perf-overlay, .lead-perf-overlay,
@@ -13783,7 +13786,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         scroll-snap-type: none !important;
       }
       .turbo-slide {
-        height: auto !important; min-height: 100vh;
+        height: auto !important;
         scroll-snap-align: none !important;
       }
       /* Apresentações pp/cp: tinham xpto-modal como container fixed/scroll */
@@ -13795,6 +13798,26 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         overflow: visible !important; scroll-snap-type: none !important;
       }
       .xpto-slide { scroll-snap-align: none !important; }
+      /* ── Compactar slides para formato documento ───────
+         No app, cada slide ocupa 100vh com padding generoso (faz sentido
+         numa apresentação fullscreen). Na proposta/PDF isso gera espaço
+         em branco enorme entre seções. Aqui: altura por conteúdo + padding
+         reduzido + delimitador sutil entre slides. */
+      .proposal-section .xpto-slide,
+      .proposal-section .turbo-slide {
+        min-height: auto !important;
+        padding: 48px 32px !important;
+      }
+      .proposal-section .xpto-slide + .xpto-slide,
+      .proposal-section .turbo-slide + .turbo-slide {
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+      @media (max-width: 600px) {
+        .proposal-section .xpto-slide,
+        .proposal-section .turbo-slide {
+          padding: 36px 18px !important;
+        }
+      }
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
       .proposal-section--external { padding: 0; background: #0a0a0c; }
       .proposal-external-frame {
