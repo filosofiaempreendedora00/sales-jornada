@@ -15812,11 +15812,12 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         curve.style.strokeDashoffset = '0';
       }
       svg.querySelectorAll('.growth-milestone').forEach(function(el){ el.setAttribute('opacity','1'); });
-      svg.querySelector('#growth-dot')?.setAttribute('opacity', '0');
-      svg.querySelector('#growth-glow-outer')?.setAttribute('opacity', '0');
-      svg.querySelector('#growth-glow-mid')?.setAttribute('opacity', '0');
-      svg.querySelector('#growth-dot-counter')?.setAttribute('opacity', '0');
-      svg.querySelector('#growth-dot-logo')?.setAttribute('opacity', '1');
+      function setOp(id, op){ var el = svg.querySelector('#' + id); if (el) el.setAttribute('opacity', op); }
+      setOp('growth-dot', '0');
+      setOp('growth-glow-outer', '0');
+      setOp('growth-glow-mid', '0');
+      setOp('growth-dot-counter', '0');
+      setOp('growth-dot-logo', '1');
       // Logo no topo: pinned no marco 1.300 (x=462, y=30) com tamanho final 82px
       var logo = svg.querySelector('#growth-dot-logo');
       if (logo) {
