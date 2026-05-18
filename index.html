@@ -2414,6 +2414,251 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-direction: column;
   gap: 24px;
 }
+/* ── Mode switcher (Proposta padrão / personalizada) ─ */
+.prop-mode-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.prop-mode-switcher {
+  display: grid;
+  /* minmax(0, 1fr) impede que conteúdo nowrap empurre as colunas pra fora */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 4px;
+  width: 100%;
+  min-width: 0;
+}
+.prop-sidebar { padding-top: 18px; }
+.prop-mode-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  padding: 9px 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+}
+.prop-mode-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.prop-mode-btn.is-active {
+  background: linear-gradient(135deg, rgba(155,109,255,0.18), rgba(77,141,255,0.16));
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(155,109,255,0.32);
+}
+
+/* "Em construção" callout */
+.prop-mode-soon {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 14px;
+  background: rgba(255,168,38,0.07);
+  border: 1px solid rgba(255,168,38,0.28);
+  border-radius: 10px;
+}
+.prop-mode-soon[hidden] { display: none; }
+
+/* Em modo "personalizada", esconde o restante da sidebar */
+.prop-sidebar.is-custom-mode .prop-section,
+.prop-sidebar.is-custom-mode .prop-actions { display: none; }
+
+/* Campos extras do modo personalizada (dropdown de tipo) */
+.prop-custom-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.prop-custom-fields[hidden] { display: none; }
+.prop-select-wrap {
+  position: relative;
+}
+.prop-select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-right: 2px solid var(--text-2);
+  border-bottom: 2px solid var(--text-2);
+  transform: translateY(-70%) rotate(45deg);
+  pointer-events: none;
+  transition: border-color 0.15s;
+}
+.prop-select-wrap:hover::after { border-color: var(--text); }
+.prop-custom-select {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 36px 11px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  line-height: 1.3;
+}
+.prop-custom-select:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--border2);
+}
+.prop-custom-select:focus {
+  outline: none;
+  border-color: rgba(155,109,255,0.55);
+  background: rgba(155,109,255,0.06);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.12);
+}
+.prop-custom-select option {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.prop-custom-preview-btn {
+  appearance: none;
+  width: 100%;
+  margin-top: 6px;
+  background: linear-gradient(135deg, rgba(155,109,255,0.18), rgba(77,141,255,0.16));
+  border: 1px solid rgba(155,109,255,0.32);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.prop-custom-preview-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(155,109,255,0.28), rgba(77,141,255,0.24));
+  border-color: rgba(155,109,255,0.55);
+}
+.prop-custom-preview-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Transcrições da reunião de vendas */
+.prop-transcripts {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.prop-transcript-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.prop-transcript-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.prop-transcript-header[hidden] { display: none; }
+.prop-transcript-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text-2);
+}
+.prop-transcript-remove {
+  appearance: none;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.prop-transcript-remove:hover {
+  border-color: rgba(239,68,68,0.4);
+  color: #ef4444;
+  background: rgba(239,68,68,0.08);
+}
+.prop-transcript-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.55;
+  resize: vertical;
+  min-height: 110px;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.prop-transcript-input::placeholder { color: var(--text-3); }
+.prop-transcript-input:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--border2);
+}
+.prop-transcript-input:focus {
+  outline: none;
+  border-color: rgba(155,109,255,0.55);
+  background: rgba(155,109,255,0.06);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.12);
+}
+
+.prop-add-transcript {
+  appearance: none;
+  background: transparent;
+  border: 1px dashed rgba(155,109,255,0.35);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #c4a8ff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.prop-add-transcript:hover {
+  border-color: rgba(155,109,255,0.7);
+  background: rgba(155,109,255,0.06);
+  color: #d8c4ff;
+}
+.prop-mode-soon-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
+.prop-mode-soon-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.prop-mode-soon-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffc97a;
+  letter-spacing: 0.2px;
+}
+.prop-mode-soon-text {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
 .prop-section { display: flex; flex-direction: column; gap: 10px; }
 .prop-section-label {
   font-size: 11px;
@@ -8587,6 +8832,71 @@ a.xpto-pricing-btn { text-decoration: none; }
 <div class="view" id="view-propostas">
   <div class="prop-wrap">
     <div class="prop-sidebar">
+      <div class="prop-mode-wrap">
+        <p class="prop-section-label">Modo</p>
+        <div class="prop-mode-switcher" role="tablist" aria-label="Modo da proposta">
+          <button
+            type="button"
+            class="prop-mode-btn is-active"
+            role="tab"
+            aria-selected="true"
+            data-mode="padrao"
+            title="Proposta padrão"
+          >Padrão</button>
+          <button
+            type="button"
+            class="prop-mode-btn"
+            role="tab"
+            aria-selected="false"
+            data-mode="personalizada"
+            title="Proposta personalizada"
+          >Personalizada</button>
+        </div>
+      </div>
+      <div class="prop-mode-soon" id="prop-mode-soon" hidden>
+        <span class="prop-mode-soon-icon">🚧</span>
+        <div class="prop-mode-soon-body">
+          <strong class="prop-mode-soon-title">Em construção</strong>
+          <span class="prop-mode-soon-text">A proposta personalizada está sendo construída. Em breve você poderá montar do zero, escolhendo soluções, escopo e valores específicos pro cliente.</span>
+        </div>
+      </div>
+      <div class="prop-custom-fields" id="prop-custom-fields" hidden>
+        <p class="prop-section-label">Transcrição da reunião de vendas</p>
+        <div class="prop-transcripts" id="prop-transcripts">
+          <div class="prop-transcript-item">
+            <div class="prop-transcript-header" hidden>
+              <span class="prop-transcript-num">Transcrição 1</span>
+            </div>
+            <textarea
+              class="prop-transcript-input"
+              placeholder="Cole aqui a transcrição da reunião de vendas…"
+              rows="6"
+              spellcheck="false"
+            ></textarea>
+          </div>
+        </div>
+        <button type="button" class="prop-add-transcript" id="prop-add-transcript">
+          + Adicionar outra transcrição
+        </button>
+
+        <p class="prop-section-label" style="margin-top: 6px;">Tipo de proposta</p>
+        <div class="prop-select-wrap">
+          <select class="prop-custom-select" id="prop-custom-type" aria-label="Tipo de proposta">
+            <option value="">Selecione...</option>
+            <option value="00">00 — Proposta de lançamento</option>
+            <option value="01">01 — Proposta de Performance com MQL</option>
+            <option value="02">02 — Proposta de Réguas de Comunicação</option>
+          </select>
+        </div>
+        <button
+          type="button"
+          class="prop-custom-preview-btn"
+          id="prop-custom-preview-btn"
+          disabled
+        >
+          <span>👁️ Visualizar proposta</span>
+        </button>
+      </div>
       <div class="prop-section">
         <p class="prop-section-label">Estrutura da proposta</p>
         <div class="prop-fixed-item">
@@ -13829,6 +14139,154 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 // ─────────────────────────────────────────────────
 //  PROPOSTAS — gerador de propostas concatenadas
 // ─────────────────────────────────────────────────
+
+// Switcher: Proposta padrão / Proposta personalizada (em construção)
+(function () {
+  const buttons = document.querySelectorAll('.prop-mode-btn');
+  if (!buttons.length) return;
+  const soon = document.getElementById('prop-mode-soon');
+  const customFields = document.getElementById('prop-custom-fields');
+  const sidebar = document.querySelector('.prop-sidebar');
+  const frame = document.getElementById('prop-preview-frame');
+  const meta = document.getElementById('prop-preview-meta');
+
+  function setMode(mode) {
+    buttons.forEach(b => {
+      const active = b.dataset.mode === mode;
+      b.classList.toggle('is-active', active);
+      b.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    const isCustom = mode === 'personalizada';
+    if (soon) soon.hidden = !isCustom;
+    if (customFields) customFields.hidden = !isCustom;
+    if (sidebar) sidebar.classList.toggle('is-custom-mode', isCustom);
+
+    // Quando entra em "personalizada", mostra placeholder no preview.
+    // Quando volta pra "padrão", deixa o sistema padrão re-renderizar.
+    if (frame) {
+      if (isCustom) {
+        frame.removeAttribute('src');
+        frame.srcdoc = `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#888;font-family:system-ui;display:grid;place-items:center;height:100vh;font-size:14px;text-align:center;padding:20px;line-height:1.6">Selecione um <strong style="color:#c4a8ff">tipo de proposta</strong> e clique em<br><strong style="color:#c4a8ff">"👁️ Visualizar proposta"</strong> pra ver o preview aqui.</body></html>`;
+        if (meta) meta.textContent = '— modo personalizada';
+      } else {
+        // Volta pro preview padrão; o iframe atual pode estar com src do regua,
+        // então limpamos pra deixar o sistema padrão tomar conta via srcdoc.
+        frame.removeAttribute('src');
+        // Reativa o render do sistema padrão se disponível
+        if (typeof window.__propRenderPreview === 'function') {
+          window.__propRenderPreview();
+        }
+      }
+    }
+  }
+
+  buttons.forEach(b => {
+    b.addEventListener('click', () => setMode(b.dataset.mode));
+  });
+})();
+
+// Botão "Visualizar proposta" — habilitado quando tipo "02" é escolhido
+(function () {
+  const select  = document.getElementById('prop-custom-type');
+  const btn     = document.getElementById('prop-custom-preview-btn');
+  const frame   = document.getElementById('prop-preview-frame');
+  const meta    = document.getElementById('prop-preview-meta');
+  if (!select || !btn || !frame) return;
+
+  // Mapa de tipos → arquivo HTML standalone
+  const TYPE_TO_FILE = {
+    '00': 'proposta-lancamento.html',
+    '01': 'proposta-performance-mql.html',
+    '02': 'proposta-reguas.html'
+  };
+  const TYPE_TO_LABEL = {
+    '00': 'Proposta de lançamento',
+    '01': 'Proposta de Performance com MQL',
+    '02': 'Proposta de Réguas de Comunicação'
+  };
+
+  function sync() {
+    const v = select.value;
+    btn.disabled = !TYPE_TO_FILE[v];
+  }
+  select.addEventListener('change', sync);
+  sync();
+
+  btn.addEventListener('click', () => {
+    const v = select.value;
+    const file = TYPE_TO_FILE[v];
+    if (!file) return;
+    // O sistema padrão de propostas seta iframe.srcdoc, que sobrescreve src.
+    // Precisamos limpar srcdoc antes de setar src para o iframe carregar
+    // o arquivo standalone.
+    frame.removeAttribute('srcdoc');
+    frame.src = file + '?v=' + Date.now();
+    if (meta) meta.textContent = '— ' + (TYPE_TO_LABEL[v] || 'Proposta personalizada');
+  });
+})();
+
+// Múltiplas transcrições de reunião (modo personalizada)
+(function () {
+  const addBtn = document.getElementById('prop-add-transcript');
+  const wrap   = document.getElementById('prop-transcripts');
+  if (!addBtn || !wrap) return;
+
+  function renumber() {
+    const items = wrap.querySelectorAll('.prop-transcript-item');
+    const multiple = items.length > 1;
+    items.forEach((it, i) => {
+      const numEl = it.querySelector('.prop-transcript-num');
+      if (numEl) numEl.textContent = `Transcrição ${i + 1}`;
+      // Cabeçalho (número + botão remover) só aparece quando há mais de uma
+      const header = it.querySelector('.prop-transcript-header');
+      if (header) header.hidden = !multiple;
+    });
+  }
+
+  function attachRemoveHandler(btn, item) {
+    btn.addEventListener('click', () => {
+      item.remove();
+      renumber();
+    });
+  }
+
+  addBtn.addEventListener('click', () => {
+    const item = document.createElement('div');
+    item.className = 'prop-transcript-item';
+    item.innerHTML = `
+      <div class="prop-transcript-header">
+        <span class="prop-transcript-num"></span>
+        <button type="button" class="prop-transcript-remove" aria-label="Remover transcrição" title="Remover">×</button>
+      </div>
+      <textarea class="prop-transcript-input" placeholder="Cole aqui a transcrição da reunião de vendas…" rows="6" spellcheck="false"></textarea>
+    `;
+    wrap.appendChild(item);
+    attachRemoveHandler(item.querySelector('.prop-transcript-remove'), item);
+    renumber();
+    const ta = item.querySelector('textarea');
+    if (ta) ta.focus();
+  });
+
+  // Adicionar botão de remover também ao primeiro item (do HTML estático),
+  // pra que ele possa ser removido quando há mais de um.
+  const firstItem = wrap.querySelector('.prop-transcript-item');
+  if (firstItem && !firstItem.querySelector('.prop-transcript-remove')) {
+    const header = firstItem.querySelector('.prop-transcript-header');
+    if (header) {
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'prop-transcript-remove';
+      rm.setAttribute('aria-label', 'Remover transcrição');
+      rm.title = 'Remover';
+      rm.textContent = '×';
+      header.appendChild(rm);
+      attachRemoveHandler(rm, firstItem);
+    }
+  }
+
+  renumber();
+})();
+
 (function () {
   const SOLUTIONS = [
     { id: 'performance', icon: '📈', name: 'Performance',   color: '#0dcfe8', sourceId: 'pp-inner' },
@@ -16164,6 +16622,10 @@ ${dnaAlignScript}
   renderSolutions();
   renderInvestimento();
   updateMeta();
+
+  // Expõe renderPreview para que o switcher do modo possa re-renderizar
+  // ao voltar de "personalizada" para "padrão".
+  window.__propRenderPreview = renderPreview;
 })();
 
 // ─────────────────────────────────────────────────

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haira × Turbo Partners</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070707;--sf:#111111;
+  --br:rgba(255,255,255,.065);--br2:rgba(255,255,255,.11);
+  --fg:#f2ece4;--fg2:rgba(242,236,228,.5);--fg3:rgba(242,236,228,.25);
+  --au:#b9a88d;--au2:#d3c2a6;--gr:#7aaa8c;--rd:#b87878;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--fg);
+  font-family:'DM Sans',sans-serif;
+  cursor:none;overflow-x:hidden;
+}
+
+/* noise */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:900;opacity:.4;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+}
+
+/* cursor */
+#cur{position:fixed;width:5px;height:5px;border-radius:50%;background:var(--au2);pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s}
+#cur-r{position:fixed;width:28px;height:28px;border-radius:50%;border:1px solid rgba(185,168,141,.3);pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .18s ease,top .18s ease}
+
+/* chrome */
+#logo{position:fixed;top:28px;left:36px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.22em;color:var(--fg3);text-transform:uppercase;z-index:800}
+#bar{position:fixed;top:0;left:0;height:1px;background:linear-gradient(90deg,transparent,var(--au),transparent);z-index:801;opacity:.5;width:0;transition:width .1s linear}
+
+/* sections */
+.sec{
+  min-height:100vh;width:100%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:100px 10vw;
+  position:relative;overflow:visible;
+}
+
+/* orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(110px);pointer-events:none}
+.o-au{background:radial-gradient(circle,rgba(185,168,141,.2) 0%,transparent 70%);width:560px;height:560px}
+.o-gr{background:radial-gradient(circle,rgba(122,170,140,.14) 0%,transparent 70%);width:480px;height:480px}
+.o-rd{background:radial-gradient(circle,rgba(184,120,120,.12) 0%,transparent 70%);width:400px;height:400px}
+
+/* type */
+.ey{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--fg3);margin-bottom:26px}
+.ey.au{color:var(--au)}.ey.gr{color:var(--gr)}
+.hxl{font-family:'Cormorant Garamond',serif;font-size:clamp(54px,8vw,108px);font-weight:300;line-height:.97;letter-spacing:-.025em;color:var(--fg)}
+.hlg{font-family:'Cormorant Garamond',serif;font-size:clamp(38px,5.5vw,70px);font-weight:300;line-height:1.04;letter-spacing:-.02em;color:var(--fg)}
+.hmd{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,42px);font-weight:300;line-height:1.12;letter-spacing:-.015em;color:var(--fg)}
+.hxl i,.hlg i,.hmd i{font-style:italic;color:var(--au2)}
+.bd{font-size:clamp(14px,1.3vw,17px);font-weight:300;line-height:1.7;color:var(--fg2)}
+.cp{font-size:12px;font-weight:300;line-height:1.6;color:var(--fg3)}
+
+/* layout */
+.lft{display:flex;flex-direction:column;align-items:flex-start}
+.ctr{display:flex;flex-direction:column;align-items:center;text-align:center}
+.spl{display:grid;grid-template-columns:1fr 1fr;gap:72px;width:100%;max-width:1100px;align-items:center}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;width:100%}
+.mw-md{max-width:760px;width:100%}.mw-lg{max-width:980px;width:100%}
+.ln{width:34px;height:1px;background:var(--br2)}.ln.au{background:var(--au);opacity:.4}
+
+/* card */
+.card{background:var(--sf);border:1px solid var(--br);border-radius:13px;padding:26px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.018) 0%,transparent 55%);pointer-events:none}
+.card.au-c{background:linear-gradient(135deg,rgba(185,168,141,.08),rgba(185,168,141,.02));border-color:rgba(185,168,141,.22)}
+
+/* tag */
+.tag{display:inline-flex;align-items:center;padding:5px 13px;border:1px solid var(--br);border-radius:100px;font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.12em;color:var(--fg3);text-transform:uppercase}
+.tag.au-t{border-color:rgba(185,168,141,.25);color:var(--au)}
+.tag.gr-t{border-color:rgba(122,170,140,.25);color:var(--gr)}
+
+/* fade-up on scroll */
+.fu{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+.fu.vis{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.06s}.d2{transition-delay:.16s}.d3{transition-delay:.28s}.d4{transition-delay:.42s}.d5{transition-delay:.56s}
+
+/* cover line */
+.cln{width:0;height:1px;background:var(--au);opacity:.4;margin-top:26px;transition:width 1.6s cubic-bezier(.4,0,.2,1) .5s}
+.cln.vis{width:160px}
+
+/* feat row */
+.feat{display:flex;align-items:flex-start;gap:18px;padding:15px 0;border-bottom:1px solid var(--br)}
+.feat:last-child{border-bottom:none}
+.feat-n{font-family:'DM Mono',monospace;font-size:9px;color:var(--au);opacity:.65;letter-spacing:.1em;padding-top:2px;white-space:nowrap}
+.feat-t{font-family:'Cormorant Garamond',serif;font-size:clamp(17px,2vw,23px);font-weight:300;color:var(--fg);line-height:1.2}
+.feat-t i{font-style:italic;color:var(--au2)}
+.feat-s{font-size:12px;color:var(--fg3);margin-top:3px;font-weight:300}
+
+/* metric */
+.mn{font-family:'Cormorant Garamond',serif;font-size:clamp(42px,5.5vw,72px);font-weight:300;line-height:1;letter-spacing:-.03em;color:var(--fg)}
+.mn span{color:var(--au)}
+.ml{font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.18em;color:var(--fg3);text-transform:uppercase;margin-top:3px}
+
+/* eco */
+.eco{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:9px;width:min(440px,74vw);aspect-ratio:1}
+.en{background:var(--sf);border:1px solid var(--br);border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:12px;transition:border-color .25s}
+.en:hover{border-color:var(--br2)}
+.en.hub{background:linear-gradient(135deg,rgba(185,168,141,.1),rgba(185,168,141,.03));border-color:rgba(185,168,141,.24);grid-column:2;grid-row:2}
+.en .ei{font-size:15px;opacity:.6}
+.en .el{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg3);text-align:center}
+.en.hub .el{color:var(--au)}
+
+/* service card */
+.svc{background:var(--sf);border:1px solid var(--br);border-radius:13px;padding:24px;transition:border-color .25s,transform .25s;position:relative;overflow:hidden}
+.svc:hover{border-color:rgba(185,168,141,.2);transform:translateY(-2px)}
+.svc::after{content:'';position:absolute;top:0;right:0;width:50px;height:50px;background:radial-gradient(circle at top right,rgba(185,168,141,.07),transparent 70%);border-radius:0 13px 0 0}
+.svc-n{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--fg3);letter-spacing:.2em;margin-bottom:9px}
+.svc-t{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--fg);line-height:1.25;margin-bottom:7px}
+.svc-d{font-size:12px;color:var(--fg3);font-weight:300;line-height:1.55}
+
+/* offer */
+.oc{background:var(--sf);border:1px solid var(--br);border-radius:13px;padding:22px 26px}
+.oc.fc{background:linear-gradient(135deg,rgba(185,168,141,.08),rgba(185,168,141,.02));border-color:rgba(185,168,141,.22)}
+.oc-l{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--fg3);margin-bottom:9px}
+.oc.fc .oc-l{color:var(--au)}
+.oc-t{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300;color:var(--fg);margin-bottom:13px;line-height:1.2}
+.oc-its{display:flex;flex-direction:column;gap:6px}
+.oc-i{font-size:12px;color:var(--fg2);font-weight:300;padding-left:11px;position:relative}
+.oc-i::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:3px;border-radius:50%;background:var(--au);opacity:.4}
+
+/* cta */
+.cta{display:inline-flex;align-items:center;gap:8px;padding:13px 30px;background:var(--au);color:var(--bg);border-radius:100px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;border:none;cursor:none;transition:background .2s,transform .2s}
+.cta:hover{background:var(--au2);transform:translateY(-1px)}
+
+/* comparison */
+.cmp{display:grid;grid-template-columns:1fr 32px 1fr;width:100%;max-width:800px}
+.cmp-vs{font-family:'DM Mono',monospace;font-size:8px;color:var(--fg3);text-align:center;display:flex;align-items:center;justify-content:center}
+.cmp-col{display:flex;flex-direction:column;gap:10px}
+.ci{font-size:13px;font-weight:300;color:var(--fg2)}
+.cmp-col.bad .ci{text-decoration:line-through;color:var(--fg3);opacity:.5}
+.cmp-col.bad .ci::before{content:'× ';color:var(--rd);font-family:'DM Mono',monospace;font-size:9px}
+.cmp-col.good .ci::before{content:'+ ';color:var(--gr);font-family:'DM Mono',monospace;font-size:9px}
+
+/* section divider */
+.div-line{width:100%;max-width:980px;height:1px;background:var(--br);margin:0 auto}
+
+@media(max-width:768px){
+  .sec{padding:80px 24px}
+  .spl{grid-template-columns:1fr;gap:48px}
+  .g2,.g3{grid-template-columns:1fr}
+  .cmp{grid-template-columns:1fr;gap:20px}
+  .cmp-vs{display:none}
+  .eco{width:86vw}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur-r"></div>
+<div id="bar"></div>
+<div id="logo">Turbo Partners</div>
+
+<!-- ===== 00 COVER ===== -->
+<section class="sec" id="s0">
+  <div class="orb o-au" style="top:-80px;left:-80px;opacity:.42"></div>
+  <div class="orb o-gr" style="bottom:-120px;right:-80px;opacity:.2"></div>
+  <div class="lft" style="position:relative;z-index:2">
+    <div class="ey fu d1">Uma visão para</div>
+    <div class="hxl fu d2">HAI<i>R</i>A</div>
+    <div class="cln fu d3"></div>
+    <div style="margin-top:48px" class="fu d4">
+      <div class="cp">Turbo Partners · 2026</div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 01 DIAGNÓSTICO INTRO ===== -->
+<section class="sec" id="s1">
+  <div class="orb o-rd" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.42"></div>
+  <div class="ctr" style="position:relative;z-index:2;max-width:1000px;width:100%">
+    <div class="tag fu d1">I. Diagnóstico</div>
+    <div style="height:32px"></div>
+    <div class="hxl fu d2" style="text-align:center;font-size:clamp(52px,7.5vw,104px)">Lançar um app de assinatura<br>capilar não é <i>um problema de produto.</i></div>
+    <div style="height:24px"></div>
+    <div class="bd fu d3" style="text-align:center;max-width:480px">É um problema de confiança, recorrência e comunidade — antes do primeiro download.</div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 02 COMUNICAÇÃO ===== -->
+<section class="sec" id="s2">
+  <div class="ctr mw-lg" style="gap:0">
+    <div class="ey fu d1">O erro mais cometido no MVP</div>
+    <div class="hlg fu d2" style="text-align:center;margin-bottom:44px">A decisão de <i>assinar</i><br>se forma muito antes do checkout.</div>
+    <div class="cmp fu d3">
+      <div class="cmp-col bad">
+        <div class="ci">Lançar o app e esperar tração</div>
+        <div class="ci">Vender IA como feature</div>
+        <div class="ci">Tráfego pago em audiência fria</div>
+        <div class="ci">Métricas que não convencem investidor</div>
+      </div>
+      <div class="cmp-vs">vs</div>
+      <div class="cmp-col good">
+        <div class="ci">Comunidade pronta antes do lançamento</div>
+        <div class="ci">Tricologia e ciência narradas pelas fundadoras</div>
+        <div class="ci">Performance sobre base aquecida e qualificada</div>
+        <div class="ci">CAC, retenção e LTV legíveis no BP</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<div class="div-line"></div>
+
+<!-- ===== 04 VISÃO INTRO ===== -->
+<section class="sec" id="s4">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.24"></div>
+  <div class="ctr mw-md" style="position:relative;z-index:2">
+    <div class="tag au-t fu d1">II. Visão</div>
+    <div style="height:28px"></div>
+    <div class="hxl fu d2" style="text-align:center">O que a Haira<br>quer <i>construir.</i></div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 05 A TESE ===== -->
+<section class="sec" id="s5" style="background:linear-gradient(160deg,rgba(185,168,141,.07) 0%,transparent 55%),linear-gradient(340deg,rgba(122,170,140,.04) 0%,transparent 50%)">
+  <div class="orb o-au" style="top:-40px;right:8%;opacity:.55;width:700px;height:700px"></div>
+  <div class="orb o-gr" style="bottom:-80px;left:-60px;opacity:.18"></div>
+  <div style="position:absolute;inset:0;border-top:1px solid rgba(185,168,141,.1);border-bottom:1px solid rgba(185,168,141,.1);pointer-events:none;z-index:1"></div>
+  <div class="spl" style="position:relative;z-index:2">
+    <div class="lft" style="gap:22px">
+      <div class="ey au fu d1">A tese da marca</div>
+      <div class="hlg fu d2">Cuidado capilar<br>como <i>ritual íntimo.</i></div>
+      <div class="ln au fu d3"></div>
+      <div class="bd fu d4" style="max-width:360px">A maioria das marcas vende produto. A Haira oferece relação: uma rotina personalizada por IA e aprovada por tricologistas, que evolui mês a mês com a mulher.</div>
+    </div>
+    <div class="lft fu d3" style="gap:16px">
+      <div class="card au-c" style="padding:28px 30px">
+        <div class="hmd" style="font-size:20px;font-style:italic;line-height:1.3;color:var(--au2)">"O cabelo da mulher merece a mesma escuta que a pele já recebeu — feita de ciência, dados e acolhimento."</div>
+        <div class="cp" style="margin-top:14px">Posicionamento</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 06 FUNDADORAS ===== -->
+<section class="sec" id="s6">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.2"></div>
+  <div class="ctr mw-md" style="position:relative;z-index:2;gap:22px">
+    <div class="ey fu d1">O maior ativo da Haira</div>
+    <div class="hxl fu d2" style="text-align:center">A combinação<br><i>é</i> a diferenciação.</div>
+    <div class="bd fu d3" style="text-align:center;max-width:520px">Claudia e Frances lideram a marca. Médicos tricologistas sustentam a ciência. A IA personaliza a experiência. Esses três eixos juntos, num app de assinatura, ainda não existem no Brasil.</div>
+    <div class="g3 fu d4" style="max-width:560px">
+      <div style="text-align:center;padding:17px;border:1px solid var(--br);border-radius:10px">
+        <div class="cp" style="letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px">Fundadoras</div>
+        <div class="cp">Claudia e Fran à frente da marca</div>
+      </div>
+      <div style="text-align:center;padding:17px;border:1px solid rgba(185,168,141,.24);border-radius:10px;background:rgba(185,168,141,.04)">
+        <div class="cp" style="letter-spacing:.15em;text-transform:uppercase;color:var(--au);margin-bottom:5px">Tricologia</div>
+        <div class="cp">Fernanda e Daniel no comitê médico que treina a IA</div>
+      </div>
+      <div style="text-align:center;padding:17px;border:1px solid var(--br);border-radius:10px">
+        <div class="cp" style="letter-spacing:.15em;text-transform:uppercase;margin-bottom:5px">IA proprietária</div>
+        <div class="cp">Onboarding + scan + plano que evolui</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 07 COMPLEXIDADE ===== -->
+<section class="sec" id="s7">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.13"></div>
+  <div class="lft mw-lg" style="gap:0">
+    <div class="ey fu d1">III. Complexidade</div>
+    <div class="hlg fu d2" style="margin-bottom:32px">Um briefing<br><i>diferente.</i></div>
+    <div class="briefing-cards fu d3">
+      <div class="card" style="flex:1">
+        <div class="cp" style="color:var(--au);margin-bottom:11px;letter-spacing:.2em;text-transform:uppercase">01</div>
+        <div class="hmd" style="font-size:19px;margin-bottom:7px">Ciência<br>vira intimidade</div>
+        <div class="cp">Quem assina não quer saber o algoritmo. Quer sentir que alguém entende o cabelo dela.</div>
+      </div>
+      <div class="briefing-arrow">
+        <svg class="arr-right" width="20" height="20" fill="none" stroke="rgba(185,168,141,.35)" stroke-width="1.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <svg class="arr-down" width="20" height="20" fill="none" stroke="rgba(185,168,141,.35)" stroke-width="1.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg>
+      </div>
+      <div class="card" style="flex:1">
+        <div class="cp" style="color:var(--au);margin-bottom:11px;letter-spacing:.2em;text-transform:uppercase">02</div>
+        <div class="hmd" style="font-size:19px;margin-bottom:7px">Assinatura<br>vira hábito</div>
+        <div class="cp">A retenção começa na promessa que fizemos antes do primeiro pagamento.</div>
+      </div>
+      <div class="briefing-arrow">
+        <svg class="arr-right" width="20" height="20" fill="none" stroke="rgba(185,168,141,.35)" stroke-width="1.2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <svg class="arr-down" width="20" height="20" fill="none" stroke="rgba(185,168,141,.35)" stroke-width="1.2" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="5 12 12 19 19 12"/></svg>
+      </div>
+      <div class="card" style="flex:1">
+        <div class="cp" style="color:var(--au);margin-bottom:11px;letter-spacing:.2em;text-transform:uppercase">03</div>
+        <div class="hmd" style="font-size:19px;margin-bottom:7px">Comunidade<br>vira tração</div>
+        <div class="cp">Para o investidor, comunidade é a única métrica que antecipa LTV de verdade.</div>
+      </div>
+    </div>
+    <div class="fu d4" style="width:100%;display:flex;justify-content:center;margin-top:36px">
+      <a href="https://www.prose.com/" target="_blank" class="ref-link">
+        <div class="ref-inner">
+          <div class="ref-left">
+            <div class="ref-label">Referência de marca</div>
+            <div class="ref-name">Prose</div>
+            <div class="ref-sub">prose.com — assinatura capilar personalizada</div>
+          </div>
+          <div class="ref-arrow">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 08 VISÃO ESTRATÉGICA ===== -->
+<section class="sec" id="s8">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.2"></div>
+  <div class="ctr mw-md" style="position:relative;z-index:2">
+    <div class="tag au-t fu d1">IV. Visão Estratégica</div>
+    <div style="height:28px"></div>
+    <div class="hxl fu d2" style="text-align:center">Nossa visão<br>para a <i>Haira.</i></div>
+    <div style="height:18px"></div>
+    <div class="bd fu d3" style="text-align:center">Um lançamento enxuto, validatório e pronto para escalar.</div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 09 ECOSSISTEMA ===== -->
+<section class="sec" id="s9">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.15"></div>
+  <div style="display:flex;gap:68px;align-items:center;justify-content:center;width:100%;max-width:960px;flex-wrap:wrap;position:relative;z-index:2">
+    <div class="lft" style="max-width:280px;flex-shrink:0;gap:14px">
+      <div class="ey au fu d1">Cada pilar alimenta o próximo</div>
+      <div class="hmd fu d2">Comunidade. Creators.<br>Performance. Retenção.<br><i>Uma estratégia só.</i></div>
+      <div class="bd fu d3" style="font-size:13px">Para um produto recorrente, integração entre canais é o que separa LTV de churn.</div>
+    </div>
+    <div class="eco fu d3">
+      <div class="en"><span class="ei">✦</span><span class="el">Branding</span></div>
+      <div class="en"><span class="ei">◈</span><span class="el">Conteúdo</span></div>
+      <div class="en"><span class="ei">⬡</span><span class="el">Autoridade</span></div>
+      <div class="en"><span class="ei">◎</span><span class="el">Creators</span></div>
+      <div class="en hub"><span class="el" style="font-family:'Cormorant Garamond',serif;font-size:12px;font-style:italic">Haira</span></div>
+      <div class="en"><span class="ei">◇</span><span class="el">Comunidade</span></div>
+      <div class="en"><span class="ei">⊕</span><span class="el">Performance</span></div>
+      <div class="en"><span class="ei">⊙</span><span class="el">Social</span></div>
+      <div class="en"><span class="ei">⋄</span><span class="el">CRM</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 10 PRÉ-LANÇAMENTO ===== -->
+<section class="sec" id="s10" style="min-height:60vh">
+  <div class="orb o-au" style="bottom:-60px;left:10%;opacity:.25"></div>
+  <div class="lft mw-lg" style="position:relative;z-index:2">
+    <div class="ey au fu d1">Lançamento</div>
+    <div class="hlg fu d2">Antes de abrir assinaturas,<br><i>construir comunidade.</i></div>
+    <div style="height:30px"></div>
+    <div class="fu d3" style="width:100%;display:flex;flex-direction:column">
+      <div class="feat"><div class="feat-n">Fase 1</div><div><div class="feat-t">Aquecimento &amp; Educação</div><div class="feat-s">Conteúdo de tricologia e autoestima feminina antes do app aparecer</div></div></div>
+      <div class="feat"><div class="feat-n">Fase 2</div><div><div class="feat-t">Creators <i>nichados</i></div><div class="feat-s">Vozes que falam de cabelo com profundidade — não só beleza de feed</div></div></div>
+      <div class="feat"><div class="feat-n">Fase 3</div><div><div class="feat-t">Lista de espera &amp; contagem regressiva</div><div class="feat-s">Comunidade fechada, lista de espera e prova social antes do go-live</div></div></div>
+      <div class="feat"><div class="feat-n">Fase 4</div><div><div class="feat-t">Performance sobre audiência <i>aquecida</i></div><div class="feat-s">Tráfego pago ativado sobre base educada — CAC menor, conversão maior</div></div></div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===== 12 FORCELL CASE ===== -->
+<section class="sec" id="s12" style="min-height:60vh">
+  <div class="orb o-gr" style="top:-40px;right:8%;opacity:.22"></div>
+  <div class="spl" style="position:relative;z-index:2">
+    <div class="lft" style="gap:22px">
+      <div class="ey gr fu d1">V. Prova — Forcell</div>
+      <div class="hlg fu d2">Branding. Consistência.<br><i>Ecossistema.</i></div>
+      <div class="bd fu d3" style="max-width:340px">A Forcell não acumulou seguidores. Construiu percepção, autoridade e posição de mercado — canal por canal, mês a mês. O mesmo método aplicado à Haira.</div>
+    </div>
+    <div class="lft fu d4" style="gap:14px;width:100%">
+      <div class="cp" style="color:var(--gr);letter-spacing:.18em;text-transform:uppercase;font-family:'DM Mono',monospace;font-size:9px;margin-bottom:4px">Conferir</div>
+      <a href="https://forcellperformance.com.br/" target="_blank" style="text-decoration:none;width:100%">
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;transition:border-color .25s" onmouseover="this.style.borderColor='rgba(122,170,140,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.065)'">
+          <div style="width:32px;height:32px;border:1px solid rgba(122,170,140,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="14" height="14" fill="none" stroke="var(--gr)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </div>
+          <div>
+            <div class="cp" style="color:var(--gr);margin-bottom:2px">Site</div>
+            <div class="cp" style="opacity:.7">forcellperformance.com.br</div>
+          </div>
+        </div>
+      </a>
+      <a href="https://www.instagram.com/forcell___" target="_blank" style="text-decoration:none;width:100%">
+        <div class="card" style="display:flex;align-items:center;gap:16px;padding:20px 24px;cursor:pointer;transition:border-color .25s" onmouseover="this.style.borderColor='rgba(122,170,140,.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,.065)'">
+          <div style="width:32px;height:32px;border:1px solid rgba(122,170,140,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="14" height="14" fill="none" stroke="var(--gr)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          </div>
+          <div>
+            <div class="cp" style="color:var(--gr);margin-bottom:2px">Instagram</div>
+            <div class="cp" style="opacity:.7">@forcell___</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 13 SOLUÇÃO INTRO ===== -->
+<section class="sec" id="s13" style="min-height:50vh;padding-top:60px;padding-bottom:60px">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.2"></div>
+  <div class="ctr mw-md" style="position:relative;z-index:2">
+    <div class="tag au-t fu d1">VI. Estrutura</div>
+    <div style="height:28px"></div>
+    <div class="hxl fu d2" style="text-align:center">A estrutura para<br>a <i>Haira.</i></div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 14 SERVIÇOS ===== -->
+<section class="sec" id="s14">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.14"></div>
+  <div class="lft mw-lg" style="position:relative;z-index:2">
+    <div class="ey au fu d1">Os quatro pilares</div>
+    <div style="height:20px"></div>
+    <div class="g2 fu d2">
+      <div class="svc">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border:1px solid rgba(185,168,141,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="15" height="15" fill="none" stroke="var(--au)" stroke-width="1.4" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </div>
+          <div class="svc-n" style="margin:0">01 / 04</div>
+        </div>
+        <div class="svc-t">Estruturação de Presença &amp; Narrativa</div>
+        <div class="svc-d">Posicionamento, editorial, tom de voz e conteúdo. A fundação científica e emocional da marca.</div>
+      </div>
+      <div class="svc">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border:1px solid rgba(185,168,141,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="15" height="15" fill="none" stroke="var(--au)" stroke-width="1.4" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
+          <div class="svc-n" style="margin:0">02 / 04</div>
+        </div>
+        <div class="svc-t">Ecossistema de Creators &amp; Comunidade</div>
+        <div class="svc-d">Creators nichados em cabelo + comunidade fechada. Lista de espera virando assinante.</div>
+      </div>
+      <div class="svc">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border:1px solid rgba(185,168,141,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="15" height="15" fill="none" stroke="var(--au)" stroke-width="1.4" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          </div>
+          <div class="svc-n" style="margin:0">03 / 04</div>
+        </div>
+        <div class="svc-t">Aceleração de Aquisição via tráfego pago</div>
+        <div class="svc-d">Performance ativada sobre audiência aquecida. CAC validatório para o BP.</div>
+      </div>
+      <div class="svc">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+          <div style="width:34px;height:34px;border:1px solid rgba(185,168,141,.25);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg width="15" height="15" fill="none" stroke="var(--au)" stroke-width="1.4" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="svc-n" style="margin:0">04 / 04</div>
+        </div>
+        <div class="svc-t">Retenção &amp; Anti-churn</div>
+        <div class="svc-d">CRM, automações e ativação da base. O ponto que decide se a Haira é negócio recorrente de verdade.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 15 OFERTA INTRO ===== -->
+<section class="sec" id="s15">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.18"></div>
+  <div class="ctr mw-md" style="position:relative;z-index:2">
+    <div class="tag au-t fu d1">VII. Proposta</div>
+    <div style="height:28px"></div>
+    <div class="hxl fu d2" style="text-align:center">Arquitetura de<br>lançamento <i>completa.</i></div>
+  </div>
+</section>
+
+<div class="div-line"></div>
+
+<!-- ===== 16 OFERTA DETALHADA ===== -->
+<section class="sec" id="s16" style="padding-top:120px;padding-bottom:120px">
+  <div class="orb o-au" style="top:-40px;right:5%;opacity:.18"></div>
+  <div style="width:100%;max-width:960px;position:relative;z-index:2;padding-right:24px">
+    <div class="ey au fu d1" style="margin-bottom:24px">Composição</div>
+
+    <div class="comp-row fu d2">
+      <div class="comp-left">
+        <div class="comp-tag">Social Media</div>
+        <div class="comp-title">Estruturação de Presença &amp; Narrativa</div>
+      </div>
+      <div class="comp-price">R$2.997<span>/mês · 3 meses</span></div>
+    </div>
+    <div class="comp-deliverables fu d2">
+      <div class="comp-items">
+        <div class="comp-item">Construção da Linha Editorial</div>
+        <div class="comp-item">Elaboração do calendário promocional</div>
+        <div class="comp-item">Estudo do tom de voz da marca</div>
+        <div class="comp-item">Entendimento da comunicação visual da marca</div>
+        <div class="comp-item">Reunião de planejamento mensal de postagens</div>
+        <div class="comp-item">Envio de relatórios mensais</div>
+        <div class="comp-item">8 postagens estáticas para feed</div>
+        <div class="comp-item">4 postagens em vídeo para feed</div>
+        <div class="comp-item">Conteúdos replicados para story</div>
+        <div class="comp-item">Copywriting otimizado</div>
+        <div class="comp-item">Estratégia e planejamento de conteúdos digitais</div>
+      </div>
+    </div>
+    <div class="fu d2" style="margin-top:20px;margin-bottom:4px">
+      <div class="cp" style="color:var(--fg3);margin-bottom:14px">Ver referência de social →</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <a href="https://drive.google.com/file/d/1cKf7-AFdbUpq2VRAPS-ffdNwWF3WGfhd/view" target="_blank" class="ref-card">
+          <div class="ref-card-icon"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="ref-card-name">Proton</div>
+          <div class="ref-card-cta">Abrir PDF</div>
+        </a>
+      </div>
+    </div>
+
+    <div class="comp-section-gap"></div>
+
+    <!-- 2. ESTRATÉGIA DE LANÇAMENTO (subtopic) -->
+    <div class="sub-group fu d2">
+      <div class="comp-row">
+        <div class="comp-left">
+          <div class="comp-tag">Estratégia</div>
+          <div class="comp-title" style="font-size:clamp(15px,1.8vw,21px)">Estratégia de Lançamento</div>
+        </div>
+        <div class="comp-price" style="font-size:clamp(15px,1.7vw,20px)">R$2.997</div>
+      </div>
+      <div class="comp-deliverables">
+        <div class="comp-items">
+          <div class="comp-item">Plano de lançamento completo do MVP</div>
+          <div class="comp-item">Calendário de aquecimento pré-lançamento</div>
+          <div class="comp-item">Estratégia de lista de espera e contagem regressiva</div>
+          <div class="comp-item">Educação de mercado antes do app aparecer</div>
+          <div class="comp-item">Briefing para creators de lançamento</div>
+          <div class="comp-item">Ativação de audiência no dia do lançamento</div>
+          <div class="comp-item">Métricas-chave para o pitch de investidores</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PERFORMANCE -->
+    <div class="comp-row fu d3">
+      <div class="comp-left">
+        <div class="comp-tag">Performance</div>
+        <div class="comp-title">Aceleração de Aquisição via tráfego pago</div>
+      </div>
+      <div class="comp-price">R$3.997<span>/mês · 3 meses</span></div>
+    </div>
+    <div class="comp-deliverables fu d3">
+      <div class="comp-note">Investimento em mídia até R$5.000</div>
+      <div class="comp-items">
+        <div class="comp-item">Planejamento, gestão e estratégia dos anúncios online</div>
+        <div class="comp-item">Trackeamento dos resultados</div>
+        <div class="comp-item">Acompanhamento e otimização semanal</div>
+        <div class="comp-item">Direção e produção dos criativos de venda (4 por mês)</div>
+        <div class="comp-item">Plataforma Meta ADs (Atenção)</div>
+        <div class="comp-item">Plataforma Google ADs (Intenção)</div>
+      </div>
+    </div>
+
+    <!-- 4. FEE DE PERFORMANCE (subtopic) -->
+    <div class="sub-group fu d3">
+      <div class="comp-row">
+        <div class="comp-left">
+          <div class="comp-tag comp-tag-bonus">Bônus</div>
+          <div class="comp-title" style="font-size:clamp(15px,1.8vw,21px)">Fee de Performance</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div class="comp-price-old">R$2.997</div>
+          <div class="comp-price comp-price-free" style="font-size:clamp(15px,1.7vw,20px)">R$0,00 🎁</div>
+        </div>
+      </div>
+      <div class="comp-deliverables">
+        <div class="comp-items">
+          <div class="comp-item">Feedbacks das Redes Sociais</div>
+          <div class="comp-item">Feedbacks do Site</div>
+          <div class="comp-item">Feedbacks das Campanhas</div>
+          <div class="comp-item">Guia e Pedido de Criativos</div>
+          <div class="comp-item">Próximos Passos</div>
+          <div class="comp-item">Planejamento 3 meses — distribuição de verba, separação por canal (Meta + Google), topo, meio e fundo de funil</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. CREATORS STARTER -->
+    <div class="comp-row fu d4">
+      <div class="comp-left">
+        <div class="comp-tag">Creators</div>
+        <div class="comp-title">Creators Starter</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+        <div class="comp-price">R$6.997<span>pontual</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="cp" style="color:var(--fg3)">ou</div>
+          <div class="comp-price" style="font-size:clamp(15px,1.7vw,20px);color:var(--fg2)">R$5.997<span>mensal</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="comp-deliverables fu d4">
+      <div class="comp-note">18 Criativos UGC em vídeo</div>
+      <div class="comp-items">
+        <div class="comp-item">3 Criadoras de conteúdo nichadas em cabelo</div>
+        <div class="comp-item">18 Anúncios em vídeo (6 roteiros × 3 variações de ganchos)</div>
+        <div class="comp-item">Pesquisa do melhor creator &amp; estratégia</div>
+        <div class="comp-item">Copywriting otimizado para conversão em assinatura</div>
+      </div>
+    </div>
+
+    <!-- 6. ACCOUNT MANAGER -->
+    <div class="comp-row fu d4">
+      <div class="comp-left">
+        <div class="comp-tag">Gestão</div>
+        <div class="comp-title">Account Manager Dedicado</div>
+      </div>
+      <div class="comp-price">R$2.997<span>/mês · 3 meses</span></div>
+    </div>
+    <div class="comp-deliverables fu d4">
+      <div class="comp-items">
+        <div class="comp-item">Profissional sênior dedicado à conta</div>
+        <div class="comp-item">Centralização de toda a comunicação</div>
+        <div class="comp-item">Congruência entre todos os canais e entregas</div>
+        <div class="comp-item">Ditando estratégia e priorizando ações</div>
+        <div class="comp-item">Reunião semanal de alinhamento</div>
+        <div class="comp-item">Relatório mensal de performance</div>
+      </div>
+    </div>
+
+    <!-- 7. IMPLANTAÇÃO CRM -->
+    <div class="comp-row fu d5" style="border-bottom:none">
+      <div class="comp-left">
+        <div class="comp-tag comp-tag-bonus">Bônus</div>
+        <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+          <div class="comp-title">Implantação flashCRM</div>
+          <div class="cp" style="color:var(--gr);font-size:12px">+ 1 mês gratuito</div>
+        </div>
+        <a href="https://www.flashcrm.com.br/" target="_blank" style="text-decoration:none;display:inline-flex;align-items:center;gap:5px;margin-top:4px">
+          <svg width="10" height="10" fill="none" stroke="var(--fg3)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <span class="cp" style="opacity:.5;transition:opacity .2s" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='.5'">flashcrm.com.br</span>
+        </a>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="comp-price-old">R$2.997</div>
+        <div class="comp-price comp-price-free">R$0,00 🎁</div>
+      </div>
+    </div>
+
+    <!-- TOTALS -->
+    <!-- SWITCHERS -->
+    <div class="fu d5" style="margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:12px">
+
+      <!-- Creators -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);width:72px;text-align:right">Creators</div>
+        <div class="plan-switcher">
+          <button class="plan-btn active" id="btn-cpon" onclick="setCreators('pontual')">Pontual</button>
+          <button class="plan-btn"        id="btn-crec" onclick="setCreators('recorrente')">Recorrente</button>
+        </div>
+      </div>
+
+      <!-- Plano -->
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--fg3);width:72px;text-align:right">Parceria</div>
+        <div class="plan-switcher">
+          <button class="plan-btn active" id="btn-3m" onclick="setPlan(3)">3 meses</button>
+          <button class="plan-btn"        id="btn-6m" onclick="setPlan(6)">
+            6 meses
+            <span class="plan-badge">5% off</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="comp-totals fu d5" id="totals-block">
+      <div class="comp-total-item">
+        <div class="comp-total-label">Mensais</div>
+        <div class="comp-total-value" id="val-mensal">R$8.991<span>/mês</span></div>
+        <div class="comp-total-sub" id="sub-mensal">Social Media + Performance + Account Manager</div>
+      </div>
+      <div class="comp-total-divider"></div>
+      <div class="comp-total-item">
+        <div class="comp-total-label">Pontuais</div>
+        <div class="comp-total-value" id="val-pontual">R$36.488</div>
+        <div class="comp-total-sub" id="sub-pontual" style="margin-bottom:8px">Creators Starter + Estratégia de Lançamento</div>
+        <div style="display:flex;align-items:baseline;gap:6px;margin-top:4px">
+          <div style="font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--au);opacity:.7">ou</div>
+          <div class="comp-total-value" id="val-parcel" style="font-size:clamp(20px,2.5vw,30px);color:var(--au2)">6× R$6.082<span>sem juros</span></div>
+        </div>
+      </div>
+      <div class="comp-total-divider"></div>
+      <div class="comp-total-item">
+        <div class="comp-total-label" style="color:var(--gr)">Bônus incluso</div>
+        <div class="comp-total-value" style="color:var(--gr);text-decoration:line-through;opacity:.6">R$5.994</div>
+        <div class="comp-total-sub">Fee de Performance + Implantação flashCRM</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<style>
+.plan-switcher{display:flex;background:var(--sf);border:1px solid var(--br);border-radius:100px;padding:4px;gap:4px}
+.plan-btn{background:none;border:none;padding:8px 22px;border-radius:100px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--fg3);cursor:none;transition:all .25s;display:flex;align-items:center;gap:8px}
+.plan-btn.active{background:linear-gradient(135deg,rgba(185,168,141,.18),rgba(185,168,141,.08));color:var(--au);border:1px solid rgba(185,168,141,.25)}
+.plan-btn:hover:not(.active){color:var(--fg2)}
+.plan-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;background:rgba(122,170,140,.15);color:var(--gr);border:1px solid rgba(122,170,140,.25);border-radius:100px;padding:2px 7px}
+</style>
+
+<script>
+const PRICES = {
+  socialMedia:  2997,
+  performance:  3997,
+  accountMgr:   2997,
+  idVisual:     8497,
+  shopify:      17997,
+  estrategia:   2997,
+  creatorsPon:  6997,
+  creatorsRec:  5997,
+};
+
+let creatorsMode = 'pontual';
+let planMonths   = 3;
+function fmt(n){
+  return 'R$' + n.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:0});
+}
+
+function recalc(){
+  const disc = planMonths === 6 ? 0.95 : 1;
+
+  let mensal  = PRICES.socialMedia + PRICES.performance + PRICES.accountMgr;
+  let pontual = PRICES.estrategia;
+  let subMensal  = 'Social Media + Performance + Account Manager';
+  let subParts   = ['Estratégia de Lançamento'];
+
+  if(creatorsMode === 'pontual'){
+    pontual += PRICES.creatorsPon;
+    subParts.push('Creators Starter');
+  } else {
+    mensal += PRICES.creatorsRec;
+    subMensal += ' + Creators';
+  }
+
+  const mensalFinal  = Math.round(mensal  * disc);
+  const pontualFinal = Math.round(pontual * disc);
+  const parcelFinal  = Math.round(pontualFinal / 6);
+
+  document.getElementById('val-mensal').innerHTML    = fmt(mensalFinal)  + '<span>/mês</span>';
+  document.getElementById('val-pontual').innerHTML   = fmt(pontualFinal);
+  document.getElementById('val-parcel').innerHTML    = '6× ' + fmt(parcelFinal) + '<span>sem juros</span>';
+  document.getElementById('sub-mensal').textContent  = subMensal;
+  document.getElementById('sub-pontual').textContent = subParts.join(' + ');
+
+  document.getElementById('btn-3m').classList.toggle('active',      planMonths === 3);
+  document.getElementById('btn-6m').classList.toggle('active',      planMonths === 6);
+  document.getElementById('btn-cpon').classList.toggle('active',    creatorsMode === 'pontual');
+  document.getElementById('btn-crec').classList.toggle('active',    creatorsMode === 'recorrente');
+}
+
+function setPlan(m)        { planMonths   = m;    recalc(); }
+function setCreators(mode) { creatorsMode = mode; recalc(); }
+</script>
+
+<style>
+.comp-totals{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;gap:0;margin-top:32px;padding:28px 32px;background:linear-gradient(135deg,rgba(185,168,141,.07),rgba(185,168,141,.02));border:1px solid rgba(185,168,141,.18);border-radius:14px}
+.comp-total-item{display:flex;flex-direction:column;gap:6px;padding:0 24px}
+.comp-total-item:first-child{padding-left:0}
+.comp-total-item:last-child{padding-right:0}
+.comp-total-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--au)}
+.comp-total-value{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,36px);font-weight:300;color:var(--fg);line-height:1}
+.comp-total-value span{font-family:'DM Mono',monospace;font-size:10px;color:var(--fg3);letter-spacing:.1em}
+.comp-total-sub{font-size:11px;color:var(--fg3);font-weight:300;line-height:1.4}
+.comp-total-divider{width:1px;background:var(--br);margin:0}
+@media(max-width:680px){.comp-totals{grid-template-columns:1fr;gap:20px}.comp-total-divider{display:none}.comp-total-item{padding:0}}
+</style>
+
+<style>
+.comp-row{display:flex;align-items:center;justify-content:space-between;padding:20px 32px 20px 0;border-bottom:1px solid var(--br);gap:20px;flex-wrap:nowrap}
+.comp-left{display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0;flex:1}
+.comp-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--au);background:rgba(185,168,141,.1);border:1px solid rgba(185,168,141,.28);border-radius:100px;padding:5px 14px;white-space:nowrap;flex-shrink:0}
+.comp-tag-bonus{color:var(--gr);background:rgba(122,170,140,.08);border-color:rgba(122,170,140,.3)}
+.comp-badge{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg3);border:1px solid var(--br);border-radius:100px;padding:3px 10px}
+.comp-title{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.2vw,26px);font-weight:300;color:var(--fg);line-height:1.2}
+.comp-price{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2vw,24px);font-weight:300;color:var(--au2);white-space:nowrap;text-align:right;flex-shrink:0;padding-right:4px}
+.comp-price span{font-family:'DM Mono',monospace;font-size:9px;color:var(--fg3);display:block;letter-spacing:.1em;margin-top:2px;text-align:right}
+.comp-price-old{font-family:'DM Mono',monospace;font-size:11px;color:var(--fg3);text-decoration:line-through;white-space:nowrap}
+.comp-price-free{color:var(--gr)}
+.briefing-cards{display:flex;align-items:stretch;gap:0;width:100%;margin-bottom:32px}
+.briefing-arrow{display:flex;align-items:center;justify-content:center;padding:0 12px;flex-shrink:0}
+.arr-down{display:none}
+@media(max-width:640px){
+  .briefing-cards{flex-direction:column;gap:0}
+  .briefing-arrow{padding:10px 0}
+  .arr-right{display:none}
+  .arr-down{display:block}
+}
+.comp-sub{margin-left:0;padding-left:0;border-left:none;position:relative}
+.comp-sub .comp-row,.comp-sub.comp-row{
+  margin-left:24px;padding-left:20px;border-left:none;position:relative;
+}
+.comp-sub .comp-row::before,.comp-sub.comp-row::before{
+  content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:8px;height:1px;background:var(--br2);
+}
+.sub-group{
+  border-left:2px solid rgba(185,168,141,.12);margin-top:-1px;background:rgba(185,168,141,.015);
+  border-radius:0 0 8px 8px;overflow:visible;box-sizing:border-box;width:100%;
+}
+.sub-group .comp-row{padding-left:28px;padding-right:32px;border-bottom-color:rgba(255,255,255,.04);flex-wrap:nowrap;width:100%;box-sizing:border-box;}
+.sub-group .comp-deliverables{padding-left:28px;padding-right:32px;box-sizing:border-box;}
+.ref-link{display:inline-flex;text-decoration:none;cursor:none;position:relative}
+.ref-link::before{content:'';position:absolute;inset:-1px;border-radius:13px;background:linear-gradient(135deg,rgba(185,168,141,.35),rgba(185,168,141,.1),rgba(185,168,141,.25));padding:1px;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.ref-link::after{content:'';position:absolute;inset:-8px;border-radius:18px;background:radial-gradient(ellipse,rgba(185,168,141,.18) 0%,transparent 70%);pointer-events:none;z-index:-1;transition:opacity .3s}
+.ref-link:hover::after{opacity:1.6}
+.ref-inner{display:flex;align-items:center;gap:24px;padding:20px 32px;border-radius:12px;background:linear-gradient(135deg,rgba(185,168,141,.09),rgba(185,168,141,.03));transition:background .25s}
+.ref-link:hover .ref-inner{background:linear-gradient(135deg,rgba(185,168,141,.14),rgba(185,168,141,.05))}
+.ref-left{display:flex;flex-direction:column;gap:4px}
+.ref-label{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--au);opacity:.7}
+.ref-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--fg);letter-spacing:-.01em;font-style:italic}
+.ref-sub{font-size:11px;color:var(--fg3);font-weight:300}
+.ref-arrow{color:var(--au);opacity:.6;transition:opacity .25s,transform .25s}
+.ref-link:hover .ref-arrow{opacity:1;transform:translate(2px,-2px)}
+.ref-card{display:flex;flex-direction:column;gap:10px;padding:16px 20px;background:var(--sf);border:1px solid var(--br);border-radius:12px;text-decoration:none;min-width:120px;transition:border-color .2s,background .2s,transform .2s}
+.ref-card:hover{border-color:rgba(185,168,141,.3);background:rgba(185,168,141,.05);transform:translateY(-2px)}
+.ref-card-icon{color:var(--fg3);display:flex}
+.ref-card-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;color:var(--fg);line-height:1}
+.ref-card-cta{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--au);opacity:.7}
+.comp-deliverables{padding:12px 0 20px 0;border-bottom:1px solid var(--br);margin-top:-1px}
+.comp-section-gap{height:36px;border-bottom:1px solid var(--br)}
+.comp-note{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--fg3);margin-bottom:12px}
+.comp-items{display:grid;grid-template-columns:1fr 1fr;gap:6px 24px}
+.comp-item{font-size:12px;font-weight:300;color:var(--fg2);padding-left:12px;position:relative;line-height:1.5}
+.comp-item::before{content:'';position:absolute;left:0;top:7px;width:3px;height:3px;border-radius:50%;background:var(--au);opacity:.4}
+@media(max-width:600px){.comp-items{grid-template-columns:1fr}}
+</style>
+
+
+
+<!-- ===== FINAL ===== -->
+<section class="sec" id="s18">
+  <div class="orb o-au" style="top:50%;left:50%;transform:translate(-50%,-50%);opacity:.28;width:600px;height:600px"></div>
+  <div class="orb o-gr" style="bottom:-100px;right:8%;opacity:.14"></div>
+  <div class="ctr mw-md" style="position:relative;z-index:2;gap:0">
+    <div class="ey fu d1">Próximo passo</div>
+    <div style="height:18px"></div>
+    <div class="hxl fu d2" style="text-align:center">Vamos com<br><i>Turbo.</i></div>
+    <div style="height:36px"></div>
+    <a href="https://wa.me/5527998001953" target="_blank" style="text-decoration:none">
+      <button class="cta fu d3" style="gap:10px">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        Falar com a Turbo
+      </button>
+    </a>
+  </div>
+</section>
+
+<script>
+const cur=document.getElementById('cur'),crr=document.getElementById('cur-r');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+  requestAnimationFrame(()=>{crr.style.left=e.clientX+'px';crr.style.top=e.clientY+'px';});
+});
+
+const bar=document.getElementById('bar');
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  bar.style.width=pct+'%';
+},{ passive:true });
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('vis');
+      obs.unobserve(e.target);
+    }
+  });
+},{threshold:.15});
+
+document.querySelectorAll('.fu,.cln').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>

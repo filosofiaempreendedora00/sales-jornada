@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Performance com MQL — Proposta Luma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Paleta espelhada do Lovable (oklch convertido para hex preciso) */
+  --background: #0c1019;        /* oklch(0.14 0.012 240) */
+  --foreground: #f6f6f3;        /* oklch(0.97 0.005 100) */
+  --surface: #181d27;            /* oklch(0.18 0.014 240) */
+  --surface-elevated: #1e2531;  /* oklch(0.22 0.016 240) */
+  --hairline: rgba(255,255,255,0.10);
+  --hairline-strong: rgba(255,255,255,0.16);
+  --muted: #1c222c;              /* oklch(0.22 0.012 240) */
+  --muted-foreground: #a5acb5;  /* oklch(0.68 0.012 240) */
+  --primary: #c5f636;            /* oklch(0.92 0.19 122) — lime electric */
+  --primary-dim: rgba(197,246,54,0.15);
+  --primary-soft: rgba(197,246,54,0.06);
+  --primary-foreground: #0c1019;
+  --max-w: 1400px;
+
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+::selection { background: var(--primary); color: var(--primary-foreground); }
+em, i { font-style: italic; }
+
+.font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+.font-mono { font-family: var(--font-mono); }
+.text-primary { color: var(--primary); }
+.text-muted { color: var(--muted-foreground); }
+.italic { font-style: italic; }
+
+/* Progress bar */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--primary);
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 60;
+  transition: transform 80ms linear;
+}
+
+/* Nav */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  background: color-mix(in oklab, var(--background) 80%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+  text-decoration: none;
+}
+.nav-links {
+  display: none;
+  gap: 24px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.nav-links a { color: inherit; text-decoration: none; transition: color .15s; }
+.nav-links a:hover { color: var(--foreground); }
+@media (min-width: 1000px) { .nav-links { display: flex; } }
+.nav-stamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Section */
+.section {
+  position: relative;
+  padding: 112px 24px;
+  border-top: 1px solid var(--hairline);
+}
+@media (min-width: 768px) { .section { padding: 144px 24px; } }
+.section-inner { max-width: var(--max-w); margin: 0 auto; }
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.eyebrow::before {
+  content: '';
+  height: 1px;
+  width: 32px;
+  background: var(--primary);
+}
+.eyebrow-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lede {
+  max-width: 760px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .lede { font-size: 20px; } }
+
+.gradient-radial {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: radial-gradient(80% 50% at 50% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 70%);
+}
+
+/* ── HERO ───────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 160px 24px 112px;
+}
+@media (min-width: 768px) { .hero { padding: 208px 24px 144px; } }
+.hero-grid-bg {
+  position: absolute; inset: 0;
+  opacity: 0.07;
+  background-image:
+    linear-gradient(var(--foreground) 1px, transparent 1px),
+    linear-gradient(90deg, var(--foreground) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center top, #000 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center top, #000 30%, transparent 70%);
+  pointer-events: none;
+}
+.hero-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  backdrop-filter: blur(14px);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 40px;
+}
+.hero-stamp-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+.hero-stamp-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 10vw, 136px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.hero-sub {
+  max-width: 720px;
+  margin-top: 40px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .hero-sub { font-size: 20px; } }
+.hero-grid {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .hero-grid { grid-template-columns: repeat(4, 1fr); } }
+.hero-grid-cell { background: var(--background); padding: 24px; }
+.hero-grid-cell-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.hero-grid-cell-v { margin-top: 12px; font-size: 16px; }
+@media (min-width: 768px) { .hero-grid-cell-v { font-size: 18px; } }
+
+/* ── CHALLENGE TAGS ─────────────────────────────── */
+.challenge-tags {
+  margin-top: 48px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.challenge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+  backdrop-filter: blur(4px);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  color: rgba(246,245,238,0.9);
+}
+.challenge-tag-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+
+/* ── PILLARS (GrowthOS) ─────────────────────────── */
+.pillars {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .pillars { grid-template-columns: repeat(3, 1fr); } }
+.pillar {
+  background: var(--background);
+  padding: 40px;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: background .15s;
+}
+.pillar:hover { background: var(--surface); }
+.pillar-n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.pillar-title {
+  margin-top: 24px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.1;
+}
+@media (min-width: 768px) { .pillar-title { font-size: 36px; } }
+.pillar-desc {
+  margin-top: 16px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+@media (min-width: 768px) { .pillar-desc { font-size: 16px; } }
+.pillar-cta {
+  margin-top: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: rgba(246,245,238,0.7);
+  transition: gap .2s, color .2s;
+}
+.pillar:hover .pillar-cta { gap: 12px; color: var(--primary); }
+
+/* ── SERVICE BLOCK ──────────────────────────────── */
+.svc-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+}
+@media (min-width: 1024px) { .svc-grid { grid-template-columns: 7fr 5fr; gap: 48px; } }
+.svc-num {
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.svc-lede {
+  margin-top: 32px;
+  max-width: 600px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .svc-lede { font-size: 20px; } }
+.svc-scope-list {
+  margin-top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+.svc-scope-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.svc-scope-items {
+  margin-top: 20px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border-left: 1px solid var(--hairline);
+  padding-left: 24px;
+}
+.svc-scope-item {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(246,245,238,0.85);
+}
+@media (min-width: 768px) { .svc-scope-item { font-size: 16px; } }
+.svc-scope-bullet {
+  margin-top: 8px;
+  width: 6px; height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 12px rgba(215,255,58,0.6);
+}
+.svc-card {
+  position: sticky;
+  top: 112px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius: 24px;
+  padding: 32px;
+  overflow: hidden;
+  position: relative;
+}
+@media (min-width: 768px) { .svc-card { padding: 40px; } }
+.svc-card-glow {
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 224px;
+  height: 224px;
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  filter: blur(48px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.svc-card-inner { position: relative; }
+.svc-card-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.svc-prices {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.svc-price-block { padding-top: 24px; border-top: 1px solid var(--hairline); }
+.svc-price-block:first-child { padding-top: 0; border-top: 0; }
+.svc-price-label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.svc-price-label.is-secondary { color: rgba(154,160,168,0.7); }
+.svc-price-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.svc-price-rs {
+  font-family: var(--font-display);
+  font-size: 24px;
+  color: rgba(246,245,238,0.8);
+}
+.svc-price-val {
+  font-family: var(--font-display);
+  font-size: 48px;
+  line-height: 1;
+  color: var(--primary);
+}
+@media (min-width: 768px) { .svc-price-val { font-size: 60px; } }
+.svc-price-secondary .svc-price-val { font-size: 28px; }
+@media (min-width: 768px) { .svc-price-secondary .svc-price-val { font-size: 36px; } }
+.svc-price-secondary .svc-price-rs { font-size: 18px; }
+.svc-price-inlinenote {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: rgba(246,245,238,0.7);
+}
+.svc-price-note {
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(246,245,238,0.7);
+}
+.svc-card-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--muted-foreground);
+}
+.svc-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: gap .2s, background .2s;
+}
+.svc-cta:hover { gap: 16px; background: color-mix(in oklab, var(--primary) 15%, transparent); }
+.svc-cta-icon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+/* ── DASH PREVIEW (CRM) ─────────────────────────── */
+.dash {
+  margin-bottom: 24px;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  padding: 24px;
+}
+.dash-head {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dash-head-left {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.dash-head-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+.dash-head-right {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.4);
+}
+.dash-kpis {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (min-width: 768px) { .dash-kpis { grid-template-columns: repeat(4, 1fr); } }
+.dash-kpi {
+  border-radius: 12px;
+  border: 1px solid var(--hairline);
+  background: var(--background);
+  padding: 16px;
+}
+.dash-kpi-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.dash-kpi-v {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+.dash-kpi-delta { margin-top: 4px; font-size: 11px; color: var(--primary); }
+.dash-bars-wrap {
+  margin-top: 24px;
+  border-radius: 12px;
+  border: 1px solid var(--hairline);
+  background: var(--background);
+  padding: 16px;
+}
+.dash-bars-head {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.dash-bars-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.dash-bars-stat {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.dash-bars {
+  margin-top: 16px;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 96px;
+}
+.dash-bar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(to top, color-mix(in oklab, var(--primary) 30%, transparent), var(--primary));
+  transform-origin: bottom;
+  animation: bar-grow 0.6s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes bar-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+/* ── PERFORMANCE BLOCK (tier selector) ──────────── */
+.perf-tier-group {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--background) 60%, transparent);
+  padding: 4px;
+}
+.perf-tier-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all .2s;
+}
+.perf-tier-btn:hover { color: var(--foreground); }
+.perf-tier-btn.is-active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.perf-creatives-badge {
+  display: inline-flex;
+  align-items: baseline;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  padding: 2px 8px;
+  font-weight: 600;
+  color: var(--primary);
+  box-shadow: 0 0 18px rgba(215,255,58,0.45);
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+}
+.perf-strike {
+  display: flex; align-items: center; gap: 8px;
+}
+.perf-strike-val {
+  font-family: var(--font-display);
+  font-size: 20px;
+  color: rgba(246,245,238,0.4);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--primary) 70%, transparent);
+  text-decoration-thickness: 2px;
+}
+.perf-gift {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  border-radius: 999px;
+  padding: 0 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.perf-italic-note { font-size: 14px; font-style: italic; color: rgba(246,245,238,0.7); }
+
+/* ── BUNDLE ─────────────────────────────────────── */
+.bundle-grid {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 1024px) { .bundle-grid { grid-template-columns: 2fr 1fr; } }
+.bundle-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  padding: 40px;
+}
+.bundle-card-glow {
+  position: absolute;
+  top: -96px;
+  right: -96px;
+  width: 288px;
+  height: 288px;
+  background: color-mix(in oklab, var(--primary) 15%, transparent);
+  filter: blur(48px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.bundle-card-inner { position: relative; }
+.bundle-card-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.bundle-card-title {
+  margin-top: 16px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 28px;
+}
+@media (min-width: 768px) { .bundle-card-title { font-size: 36px; } }
+.bundle-items {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 640px) { .bundle-items { grid-template-columns: repeat(3, 1fr); } }
+.bundle-item {
+  position: relative;
+  border-radius: 16px;
+  border: 1px solid var(--hairline);
+  background: var(--background);
+  padding: 20px;
+}
+.bundle-item.is-gift {
+  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--primary) 20%, transparent);
+}
+.bundle-item-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.bundle-item-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.bundle-item-strike {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: rgba(246,245,238,0.4);
+  text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--primary) 70%, transparent);
+  text-decoration-thickness: 2px;
+}
+.bundle-item-price {
+  margin-top: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.bundle-item-rs { font-family: var(--font-display); font-size: 16px; color: rgba(246,245,238,0.7); }
+.bundle-item-val { font-family: var(--font-display); font-size: 32px; color: var(--primary); }
+.bundle-item-suffix {
+  margin-top: 4px;
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(246,245,238,0.6);
+}
+.bundle-total {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--hairline);
+}
+.bundle-total-label {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.bundle-total-row {
+  margin-top: 12px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.bundle-total-rs { font-family: var(--font-display); font-size: 32px; color: rgba(246,245,238,0.8); }
+.bundle-total-val {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  color: var(--primary);
+}
+@media (min-width: 768px) { .bundle-total-val { font-size: 72px; } }
+.bundle-total-suffix {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 20px;
+  color: rgba(246,245,238,0.7);
+}
+.bundle-total-note {
+  margin-top: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: rgba(246,245,238,0.6);
+}
+.bundle-validity {
+  margin-top: 40px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.5);
+}
+
+/* ── CLOSING ────────────────────────────────────── */
+.closing {
+  position: relative;
+  overflow: hidden;
+  padding: 128px 24px;
+  border-top: 1px solid var(--hairline);
+}
+@media (min-width: 768px) { .closing { padding: 176px 24px; } }
+.closing-title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 100px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.closing-sub {
+  margin-top: 48px;
+  max-width: 720px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .closing-sub { font-size: 20px; } }
+.closing-steps {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .closing-steps { grid-template-columns: repeat(3, 1fr); } }
+.closing-step { background: var(--background); padding: 32px; }
+.closing-step-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.closing-step-v { margin-top: 16px; font-size: 16px; }
+@media (min-width: 768px) { .closing-step-v { font-size: 18px; } }
+.closing-cta-wrap {
+  margin-top: 64px;
+  display: flex; flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+}
+@media (min-width: 768px) {
+  .closing-cta-wrap { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+.closing-cta-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.closing-cta-text {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+@media (min-width: 768px) { .closing-cta-text { font-size: 28px; } }
+.closing-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 16px 28px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: gap .2s;
+}
+.closing-cta-btn:hover { gap: 16px; }
+
+/* Reveal-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+.reveal-stagger.is-visible > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 80ms; }
+.reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 160ms; }
+.reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 240ms; }
+.reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 320ms; }
+.reveal-stagger.is-visible > *:nth-child(6) { transition-delay: 400ms; }
+.reveal-stagger.is-visible > *:nth-child(7) { transition-delay: 480ms; }
+.reveal-stagger.is-visible > *:nth-child(8) { transition-delay: 560ms; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress-bar"></div>
+
+<!-- ═════════════ NAV ═════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-brand">Luma × Turbo</a>
+    <div class="nav-links">
+      <a href="#desafio">01 · Desafio</a>
+      <a href="#growth-os">02 · Arquitetura</a>
+      <a href="#landing">03 · Landing</a>
+      <a href="#crm">04 · CRM</a>
+      <a href="#performance">05 · Performance</a>
+      <a href="#investimento">06 · Bundle</a>
+    </div>
+    <span class="nav-stamp">Proposta · 2026</span>
+  </div>
+</nav>
+
+<!-- ═════════════ HERO ═════════════ -->
+<section class="hero" id="hero">
+  <div class="gradient-radial"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="section-inner" style="position:relative;">
+    <div class="hero-stamp reveal">
+      <span class="hero-stamp-dot"></span>
+      <span class="hero-stamp-text">Proposta confidencial · Luma · 2026</span>
+    </div>
+    <h1 class="hero-title reveal">
+      Growth <em class="italic text-primary">O.S.</em><br>
+      para a Luma.
+    </h1>
+    <p class="hero-sub reveal">
+      Três frentes integradas — aquisição, ativação e performance — para tornar o
+      braço B2C da Luma financeiramente rentável e relevante em 2026.
+    </p>
+    <div class="hero-grid reveal-stagger reveal">
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Foco</div>
+        <div class="hero-grid-cell-v">B2C · 2026</div>
+      </div>
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Modelo</div>
+        <div class="hero-grid-cell-v">Aquisição → Conversão</div>
+      </div>
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Stack</div>
+        <div class="hero-grid-cell-v">Landing · CRM · Mídia</div>
+      </div>
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Output</div>
+        <div class="hero-grid-cell-v">Growth Operational System</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 01 — CHALLENGE ═════════════ -->
+<section class="section" id="desafio">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">01 — O desafio</span></div>
+    <h2 class="heading reveal">
+      Tornar o braço B2C da Luma <em class="italic text-primary">financeiramente rentável</em> e relevante em 2026.
+    </h2>
+    <div class="challenge-tags reveal">
+      <span class="challenge-tag"><span class="challenge-tag-dot"></span>Aquisição previsível</span>
+      <span class="challenge-tag"><span class="challenge-tag-dot"></span>Conversão mensurável</span>
+      <span class="challenge-tag"><span class="challenge-tag-dot"></span>Operação enxuta</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 02 — GROWTH OS ═════════════ -->
+<section class="section" id="growth-os">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">02 — A arquitetura</span></div>
+    <h2 class="heading reveal">
+      O <em class="italic text-primary">Growth O.S.</em> em três camadas.
+    </h2>
+    <p class="lede reveal" style="margin-top: 40px;">
+      As camadas podem até ser contratadas separadamente, mas o verdadeiro
+      potencial é destravado quando operam como um sistema único: encurtando
+      o caminho entre o lead e o lucro.
+    </p>
+
+    <div class="pillars reveal-stagger reveal">
+      <a class="pillar" href="#landing">
+        <div class="pillar-n">01</div>
+        <h3 class="pillar-title">Landing Page</h3>
+        <p class="pillar-desc">A porta de entrada otimizada para conversão — copy, design e dev.</p>
+        <div class="pillar-cta">Ver escopo <span>→</span></div>
+      </a>
+      <a class="pillar" href="#crm">
+        <div class="pillar-n">02</div>
+        <h3 class="pillar-title">CRM + Dash</h3>
+        <p class="pillar-desc">Implantação do Turbo Funnels com automações, e-mail, WhatsApp e KPIs.</p>
+        <div class="pillar-cta">Ver escopo <span>→</span></div>
+      </a>
+      <a class="pillar" href="#performance">
+        <div class="pillar-n">03</div>
+        <h3 class="pillar-title">Performance</h3>
+        <p class="pillar-desc">Gestão recorrente de mídia, ligando o funil ao CAC e ao ROAS.</p>
+        <div class="pillar-cta">Ver escopo <span>→</span></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 03 — LANDING ═════════════ -->
+<section class="section" id="landing">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">03 — Camada 1</span></div>
+    <div class="svc-grid">
+      <div>
+        <div class="svc-num reveal">Serviço 01</div>
+        <h2 class="heading reveal">
+          Landing Page <em class="italic text-primary">de alta conversão.</em>
+        </h2>
+        <div class="svc-lede reveal">
+          <p>A porta de entrada do funil B2C: uma página construída para converter tráfego pago em lead qualificado, integrada ao CRM desde o primeiro clique.</p>
+          <a href="https://lp.turbopartners.com.br/commerce/creators-lp" target="_blank" rel="noopener" class="svc-cta">
+            <span class="svc-cta-icon">↗</span>
+            Ver exemplo de Landing Page
+          </a>
+        </div>
+        <div class="svc-scope-list">
+          <div class="reveal">
+            <div class="svc-scope-label">Escopo</div>
+            <ul class="svc-scope-items">
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Copywriting otimizado para conversão</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Layout visual (UI/UX) sob medida</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Desenvolvimento responsivo e performático</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Integração com formulário e CRM</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="svc-card reveal">
+          <div class="svc-card-glow"></div>
+          <div class="svc-card-inner">
+            <div class="svc-card-label">Investimento</div>
+            <div class="svc-prices">
+              <div class="svc-price-block">
+                <div class="svc-price-label">1 Landing Page</div>
+                <div class="svc-price-row">
+                  <span class="svc-price-rs">R$</span>
+                  <span class="svc-price-val">3.997</span>
+                </div>
+                <div class="svc-price-note">valor por LP</div>
+              </div>
+              <div class="svc-price-block svc-price-secondary">
+                <div class="svc-price-label is-secondary">Pacote 2 LPs</div>
+                <div class="svc-price-row">
+                  <span class="svc-price-rs">R$</span>
+                  <span class="svc-price-val">6.997</span>
+                </div>
+                <div class="svc-price-note">total — economia vs. avulso</div>
+              </div>
+              <div class="svc-price-block svc-price-secondary">
+                <div class="svc-price-label is-secondary">Pacote 3 LPs</div>
+                <div class="svc-price-row">
+                  <span class="svc-price-rs">R$</span>
+                  <span class="svc-price-val">9.997</span>
+                </div>
+                <div class="svc-price-note">total — melhor condição por LP</div>
+              </div>
+            </div>
+            <div class="svc-card-footer">Entrega em até 21 dias úteis.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 04 — CRM ═════════════ -->
+<section class="section" id="crm">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">04 — Camada 2</span></div>
+    <div class="svc-grid">
+      <div>
+        <div class="svc-num reveal">Serviço 02</div>
+        <h2 class="heading reveal">
+          CRM Turbo Funnels <em class="italic text-primary">+ Dash de KPIs.</em>
+        </h2>
+        <p class="svc-lede reveal">
+          A engrenagem que conecta lead, conversa e venda. Implantação completa do Turbo Funnels com automações de e-mail e WhatsApp, mais um dashboard estratégico com as métricas que importam.
+        </p>
+        <div class="svc-scope-list">
+          <div class="reveal">
+            <div class="svc-scope-label">Implantação técnica</div>
+            <ul class="svc-scope-items">
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Configuração de SPF, DKIM e DMARC (entregabilidade dos e-mails)</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Implantação do SendGrid (disparador de e-mail)</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Integração com WhatsApp</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Integração do formulário "Leads MQLs"</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Configuração do Kanban personalizado</li>
+            </ul>
+          </div>
+          <div class="reveal">
+            <div class="svc-scope-label">Automações</div>
+            <ul class="svc-scope-items">
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Funil de 3x copies de WhatsApp</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Funil de 3x e-mails</li>
+            </ul>
+          </div>
+          <div class="reveal">
+            <div class="svc-scope-label">Dash de KPIs</div>
+            <ul class="svc-scope-items">
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Leads — CPL e CPMQL</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Clientes — CAC</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Retorno — Receita e ROAS</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="dash reveal">
+          <div class="dash-head">
+            <div class="dash-head-left">
+              <span class="dash-head-dot"></span>
+              <span>Dash de KPIs · preview</span>
+            </div>
+            <div class="dash-head-right">últimos 30 dias</div>
+          </div>
+          <div class="dash-kpis">
+            <div class="dash-kpi"><div class="dash-kpi-k">CPL</div><div class="dash-kpi-v">R$ 18,40</div><div class="dash-kpi-delta">↓ -12% vs. mês anterior</div></div>
+            <div class="dash-kpi"><div class="dash-kpi-k">CPMQL</div><div class="dash-kpi-v">R$ 64,20</div><div class="dash-kpi-delta">↓ -9% vs. mês anterior</div></div>
+            <div class="dash-kpi"><div class="dash-kpi-k">CAC</div><div class="dash-kpi-v">R$ 312</div><div class="dash-kpi-delta">↓ -7% vs. mês anterior</div></div>
+            <div class="dash-kpi"><div class="dash-kpi-k">ROAS</div><div class="dash-kpi-v">4,8x</div><div class="dash-kpi-delta">↑ +22% vs. mês anterior</div></div>
+          </div>
+          <div class="dash-bars-wrap">
+            <div class="dash-bars-head">
+              <span class="dash-bars-label">Receita semanal</span>
+              <span class="dash-bars-stat">+38% MoM</span>
+            </div>
+            <div class="dash-bars">
+              <div class="dash-bar" style="height:38%; animation-delay:0ms;"></div>
+              <div class="dash-bar" style="height:52%; animation-delay:60ms;"></div>
+              <div class="dash-bar" style="height:44%; animation-delay:120ms;"></div>
+              <div class="dash-bar" style="height:61%; animation-delay:180ms;"></div>
+              <div class="dash-bar" style="height:73%; animation-delay:240ms;"></div>
+              <div class="dash-bar" style="height:68%; animation-delay:300ms;"></div>
+              <div class="dash-bar" style="height:84%; animation-delay:360ms;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="svc-card reveal">
+          <div class="svc-card-glow"></div>
+          <div class="svc-card-inner">
+            <div class="svc-card-label">Investimento</div>
+            <div class="svc-prices">
+              <div class="svc-price-block">
+                <div class="svc-price-label">Implantação (one-time)</div>
+                <div class="svc-price-row">
+                  <span class="svc-price-rs">R$</span>
+                  <span class="svc-price-val">9.997</span>
+                </div>
+                <div class="svc-price-note">em até 3x sem juros</div>
+              </div>
+              <div class="svc-price-block">
+                <div class="svc-price-label">Ferramenta — até 25.000 contatos</div>
+                <div class="svc-price-row">
+                  <span class="svc-price-rs">R$</span>
+                  <span class="svc-price-val">297</span>
+                  <span class="svc-price-inlinenote">/mês</span>
+                </div>
+              </div>
+            </div>
+            <div class="svc-card-footer">Implantação em até 30 dias. Mensalidade da ferramenta cobrada a partir do go-live.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 05 — PERFORMANCE ═════════════ -->
+<section class="section" id="performance">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">05 — Camada 3</span></div>
+    <div class="svc-grid">
+      <div>
+        <div class="svc-num reveal">Serviço 03</div>
+        <h2 class="heading reveal">
+          Gestão de <em class="italic text-primary">Performance.</em>
+        </h2>
+        <p class="svc-lede reveal">
+          A operação contínua de mídia paga: planejamento, execução e leitura semanal dos números — fechando o ciclo entre investimento e receita.
+        </p>
+        <div class="svc-scope-list">
+          <div class="reveal">
+            <div class="svc-scope-label">Escopo</div>
+            <ul class="svc-scope-items">
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Estratégia de mídia paga (Meta ADs · atenção + Google ADs · intenção)</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Estruturação e gestão das campanhas</li>
+              <li class="svc-scope-item">
+                <span class="svc-scope-bullet"></span>
+                <span>Direção e produção dos criativos de venda (<span class="perf-creatives-badge" id="perf-creatives">4</span> por mês)</span>
+              </li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Otimização semanal por CPL, CPMQL e ROAS</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Trackeamento dos resultados</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Report mensal integrado ao Dash de KPIs</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Alinhamento quinzenal de calendário e ofertas</li>
+              <li class="svc-scope-item"><span class="svc-scope-bullet"></span>Liberdade total para testar pacotes de aulas e preços</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="svc-card reveal">
+          <div class="svc-card-glow"></div>
+          <div class="svc-card-inner">
+            <div class="svc-card-label">Verba mensal de mídia</div>
+            <div class="perf-tier-group" id="perf-tier-group">
+              <button class="perf-tier-btn is-active" data-tier="t1">até R$ 10k</button>
+              <button class="perf-tier-btn" data-tier="t2">até R$ 20k</button>
+              <button class="perf-tier-btn" data-tier="t3">acima R$ 20k</button>
+            </div>
+
+            <div style="margin-top: 32px;">
+              <div class="svc-price-label">Implantação</div>
+              <div class="perf-strike" style="margin-top: 8px;">
+                <span class="perf-strike-val">R$ 2.997</span>
+                <span class="perf-gift">🎁 cortesia</span>
+              </div>
+              <div class="svc-price-row" style="margin-top: 8px;">
+                <span class="svc-price-rs">R$</span>
+                <span class="svc-price-val">0</span>
+              </div>
+              <div class="perf-italic-note" style="margin-top: 8px;">Isenção de implantação</div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--hairline);">
+              <div class="svc-price-label">Recorrente</div>
+              <div class="svc-price-row" style="margin-top: 8px;">
+                <span class="svc-price-rs">R$</span>
+                <span class="svc-price-val" id="perf-price">3.997</span>
+                <span class="svc-price-inlinenote">/mês</span>
+              </div>
+              <div class="perf-italic-note" style="margin-top: 8px;" id="perf-budget">
+                Até R$ 10.000/mês · 4 criativos/mês
+              </div>
+            </div>
+
+            <div class="svc-card-footer">
+              Investimento em mídia (verba) é separado e fica sob conta da Luma.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ 06 — BUNDLE ═════════════ -->
+<section class="section" id="investimento">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">06 — Bundle Growth OS</span></div>
+    <h2 class="heading reveal">
+      Tudo junto, <em class="italic text-primary">operando como um sistema.</em>
+    </h2>
+
+    <div class="bundle-grid">
+      <div class="bundle-card reveal">
+        <div class="bundle-card-glow"></div>
+        <div class="bundle-card-inner">
+          <div class="bundle-card-tag">Setup completo</div>
+          <h3 class="bundle-card-title">Landing + CRM + Implantação de Performance</h3>
+
+          <div class="bundle-items">
+            <div class="bundle-item">
+              <div class="bundle-item-head">
+                <div class="bundle-item-k">Landing Page</div>
+              </div>
+              <div class="bundle-item-price">
+                <span class="bundle-item-rs">R$</span>
+                <span class="bundle-item-val">3.997</span>
+              </div>
+              <div class="bundle-item-suffix">à vista</div>
+            </div>
+            <div class="bundle-item">
+              <div class="bundle-item-head">
+                <div class="bundle-item-k">CRM Turbo Funnels</div>
+              </div>
+              <div class="bundle-item-price">
+                <span class="bundle-item-rs">R$</span>
+                <span class="bundle-item-val">9.997</span>
+              </div>
+              <div class="bundle-item-suffix">implantação</div>
+            </div>
+            <div class="bundle-item is-gift">
+              <div class="bundle-item-head">
+                <div class="bundle-item-k">Fee de implantação de Performance</div>
+                <span class="perf-gift">🎁 cortesia</span>
+              </div>
+              <div class="bundle-item-strike">R$ 2.997</div>
+              <div class="bundle-item-price">
+                <span class="bundle-item-rs">R$</span>
+                <span class="bundle-item-val">0</span>
+              </div>
+              <div class="bundle-item-suffix">isento na contratação do bundle</div>
+            </div>
+          </div>
+
+          <div class="bundle-total">
+            <div class="bundle-total-label">Total de implantação</div>
+            <div class="bundle-total-row">
+              <span class="bundle-total-rs">R$</span>
+              <span class="bundle-total-val">13.994</span>
+              <span class="bundle-total-suffix">à vista</span>
+            </div>
+            <div class="bundle-total-note">
+              ou em até <span class="text-primary" style="font-style:normal;">3x sem juros</span> na implantação
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bundle-card reveal">
+        <div class="bundle-card-glow"></div>
+        <div class="bundle-card-inner">
+          <div class="bundle-card-tag">Recorrente mensal</div>
+          <h3 class="bundle-card-title">Operação contínua</h3>
+
+          <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 24px;">
+            <div>
+              <div class="svc-price-label">Gestão de Performance</div>
+              <div class="perf-tier-group" id="bundle-tier-group" style="margin-top: 12px;">
+                <button class="perf-tier-btn is-active" data-tier="t1">até R$ 10k</button>
+                <button class="perf-tier-btn" data-tier="t2">até R$ 20k</button>
+                <button class="perf-tier-btn" data-tier="t3">acima R$ 20k</button>
+              </div>
+              <div class="svc-price-row" style="margin-top: 12px;">
+                <span class="svc-price-rs">R$</span>
+                <span class="svc-price-val" id="bundle-perf-price">3.997</span>
+                <span class="svc-price-inlinenote">/mês</span>
+              </div>
+              <div class="perf-italic-note" style="margin-top: 4px;" id="bundle-perf-budget">
+                Até R$ 10.000/mês
+              </div>
+            </div>
+
+            <div style="padding-top: 24px; border-top: 1px solid var(--hairline);">
+              <div class="svc-price-label">Ferramenta CRM</div>
+              <div class="svc-price-row" style="margin-top: 8px;">
+                <span class="svc-price-rs">R$</span>
+                <span class="svc-price-val">297</span>
+                <span class="svc-price-inlinenote">/mês</span>
+              </div>
+              <div class="perf-italic-note" style="margin-top: 4px;">até 25.000 contatos</div>
+            </div>
+
+            <div style="padding-top: 24px; border-top: 1px solid var(--hairline);">
+              <div class="svc-price-label">Total recorrente</div>
+              <div class="svc-price-row" style="margin-top: 8px;">
+                <span class="svc-price-rs">R$</span>
+                <span class="svc-price-val" id="bundle-total">4.294</span>
+                <span class="svc-price-inlinenote">/mês</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="bundle-validity">
+      <span class="text-primary">*</span> Validade desta proposta: 15 dias
+    </p>
+  </div>
+</section>
+
+<!-- ═════════════ CLOSING ═════════════ -->
+<section class="closing" id="fechamento">
+  <div class="gradient-radial"></div>
+  <div class="section-inner" style="position:relative;">
+    <div class="eyebrow reveal"><span class="eyebrow-text">07 — O próximo movimento</span></div>
+    <h2 class="closing-title reveal">
+      Ainda dá tempo de <em class="italic text-primary">virar 2026.</em>
+    </h2>
+    <p class="closing-sub reveal">
+      O ano já está em andamento, mas ainda há mais de meio 2026 pela
+      frente: e, com isso, o potencial do B2C da Luma virar rentabilidade
+      e relevância no mercado de educação brasileiro.
+    </p>
+    <div class="closing-steps reveal">
+      <div class="closing-step">
+        <div class="closing-step-k">Semana 1–2</div>
+        <div class="closing-step-v">Aprovação, briefing e kickoff</div>
+      </div>
+      <div class="closing-step">
+        <div class="closing-step-k">Semana 3–5</div>
+        <div class="closing-step-v">Entrega da landing + implantação do CRM</div>
+      </div>
+      <div class="closing-step">
+        <div class="closing-step-k">Semana 6+</div>
+        <div class="closing-step-v">Performance no ar e iteração mensal</div>
+      </div>
+    </div>
+    <div class="closing-cta-wrap reveal">
+      <div>
+        <div class="closing-cta-label">Próxima conversa</div>
+        <div class="closing-cta-text">Sessão de fechamento — 45 minutos.</div>
+      </div>
+      <a href="#desafio" class="closing-cta-btn">Vamos começar <span>→</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+// ───────── DATA ─────────
+const PERF_TIERS = {
+  t1: { budget: "Até R$ 10.000/mês", price: "3.997", total: "4.294", creatives: 4 },
+  t2: { budget: "Até R$ 20.000/mês", price: "5.497", total: "5.794", creatives: 12 },
+  t3: { budget: "Acima de R$ 20.000/mês", price: "7.997", total: "8.294", creatives: 16 }
+};
+
+// ───────── PERFORMANCE TIER (sticky card) ─────────
+(function () {
+  const group = document.getElementById('perf-tier-group');
+  if (!group) return;
+  group.addEventListener('click', e => {
+    const btn = e.target.closest('.perf-tier-btn');
+    if (!btn) return;
+    const id = btn.dataset.tier;
+    const tier = PERF_TIERS[id];
+    if (!tier) return;
+    group.querySelectorAll('.perf-tier-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.getElementById('perf-price').textContent = tier.price;
+    document.getElementById('perf-budget').textContent = `${tier.budget} · ${tier.creatives} criativos/mês`;
+    document.getElementById('perf-creatives').textContent = tier.creatives;
+  });
+})();
+
+// ───────── BUNDLE TIER ─────────
+(function () {
+  const group = document.getElementById('bundle-tier-group');
+  if (!group) return;
+  group.addEventListener('click', e => {
+    const btn = e.target.closest('.perf-tier-btn');
+    if (!btn) return;
+    const id = btn.dataset.tier;
+    const tier = PERF_TIERS[id];
+    if (!tier) return;
+    group.querySelectorAll('.perf-tier-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.getElementById('bundle-perf-price').textContent = tier.price;
+    document.getElementById('bundle-perf-budget').textContent = tier.budget;
+    document.getElementById('bundle-total').textContent = tier.total;
+  });
+})();
+
+// ───────── PROGRESS BAR ─────────
+(function () {
+  const bar = document.getElementById('progress-bar');
+  if (!bar) return;
+  function update() {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const p = total > 0 ? window.scrollY / total : 0;
+    bar.style.transform = `scaleX(${Math.min(Math.max(p, 0), 1)})`;
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// ───────── REVEAL ON SCROLL ─────────
+(function () {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>

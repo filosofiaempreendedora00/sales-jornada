@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Réguas de Comunicação — Proposta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Paleta espelhada do Lovable (oklch convertido para hex preciso) */
+  --background: #0c1019;        /* oklch(0.14 0.012 240) */
+  --foreground: #f6f6f3;        /* oklch(0.97 0.005 100) */
+  --surface: #181d27;            /* oklch(0.18 0.014 240) */
+  --surface-elevated: #1e2531;  /* oklch(0.22 0.016 240) */
+  --hairline: rgba(255,255,255,0.10);
+  --hairline-strong: rgba(255,255,255,0.16);
+  --muted: #1c222c;              /* oklch(0.22 0.012 240) */
+  --muted-foreground: #a5acb5;  /* oklch(0.68 0.012 240) */
+  --primary: #c5f636;            /* oklch(0.92 0.19 122) — lime electric */
+  --primary-dim: rgba(197,246,54,0.15);
+  --primary-soft: rgba(197,246,54,0.06);
+  --primary-foreground: #0c1019;
+  --destructive: #ef5350;
+  --warning: #f59e0b;
+  --max-w: 1400px;
+
+  --font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  line-height: 1.5;
+}
+::selection { background: var(--primary); color: var(--primary-foreground); }
+img { max-width: 100%; display: block; }
+em, i { font-style: italic; }
+
+.font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+.font-mono { font-family: var(--font-mono); }
+.text-primary { color: var(--primary); }
+.text-muted { color: var(--muted-foreground); }
+.italic { font-style: italic; }
+
+/* Progress bar fixa */
+.progress-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--primary);
+  transform-origin: left;
+  transform: scaleX(0);
+  z-index: 60;
+  transition: transform 80ms linear;
+}
+
+/* Nav fixa */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 50;
+  background: color-mix(in oklab, var(--background) 80%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--hairline);
+}
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.nav-brand {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.nav-links {
+  display: none;
+  gap: 24px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.nav-links a { color: inherit; text-decoration: none; transition: color .15s; }
+.nav-links a:hover { color: var(--foreground); }
+@media (min-width: 900px) { .nav-links { display: flex; } }
+.nav-stamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+/* Section wrapper */
+.section {
+  position: relative;
+  padding: 112px 24px;
+  border-top: 1px solid var(--hairline);
+}
+@media (min-width: 768px) {
+  .section { padding: 144px 24px; }
+}
+.section-inner { max-width: var(--max-w); margin: 0 auto; }
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+.eyebrow::before {
+  content: '';
+  height: 1px;
+  width: 32px;
+  background: var(--primary);
+}
+.eyebrow-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.heading {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 6vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.lede {
+  max-width: 760px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .lede { font-size: 20px; } }
+
+/* Chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-foreground);
+  background: color-mix(in oklab, var(--surface) 70%, transparent);
+  backdrop-filter: blur(8px);
+}
+.chip-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 12px var(--primary);
+}
+
+/* Gradient radial backdrop */
+.gradient-radial {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  background: radial-gradient(80% 50% at 50% 0%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 70%);
+}
+
+/* ── HERO ───────────────────────────────────────── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 160px 24px 128px;
+}
+@media (min-width: 768px) {
+  .hero { padding: 208px 24px 176px; }
+}
+.hero-grid-bg {
+  position: absolute; inset: 0;
+  opacity: 0.07;
+  background-image:
+    linear-gradient(var(--foreground) 1px, transparent 1px),
+    linear-gradient(90deg, var(--foreground) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center top, #000 30%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center top, #000 30%, transparent 70%);
+  pointer-events: none;
+}
+.hero-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  backdrop-filter: blur(14px);
+  border-radius: 999px;
+  padding: 6px 14px;
+  margin-bottom: 40px;
+}
+.hero-stamp-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+.hero-stamp-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(64px, 11vw, 148px);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.hero-sub {
+  max-width: 720px;
+  margin-top: 48px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .hero-sub { font-size: 20px; } }
+.hero-grid {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .hero-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.hero-grid-cell { background: var(--background); padding: 24px; }
+.hero-grid-cell-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.hero-grid-cell-v {
+  margin-top: 12px;
+  font-size: 16px;
+}
+@media (min-width: 768px) { .hero-grid-cell-v { font-size: 18px; } }
+.hero-rule {
+  margin-top: 96px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.hero-rule-line { flex: 1; height: 1px; background: var(--hairline); }
+
+/* ── CONTEXT ────────────────────────────────────── */
+.context-grid {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) {
+  .context-grid { grid-template-columns: repeat(3, 1fr); }
+}
+.context-cell {
+  background: var(--background);
+  padding: 32px;
+  position: relative;
+  transition: background .15s;
+}
+.context-cell:hover { background: var(--surface); }
+.context-cell-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.context-cell-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.context-cell-check { width: 14px; height: 14px; color: var(--primary); }
+.context-cell-label {
+  margin-top: 32px;
+  font-family: var(--font-display);
+  font-size: 32px;
+}
+@media (min-width: 768px) { .context-cell-label { font-size: 36px; } }
+.context-cell-note { margin-top: 8px; font-size: 14px; color: var(--muted-foreground); }
+.context-quote {
+  margin-top: 80px;
+  max-width: 760px;
+  border-left: 2px solid var(--primary);
+  padding-left: 24px;
+}
+.context-quote p {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 3.2vw, 32px);
+  line-height: 1.25;
+  color: var(--foreground);
+}
+
+/* ── DIAGNOSIS ──────────────────────────────────── */
+.diag-grid {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 1024px) {
+  .diag-grid { grid-template-columns: 1.1fr 1fr; }
+}
+.diag-funnel {
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius: 18px;
+  padding: 32px;
+}
+.diag-funnel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 32px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.diag-stage {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--hairline);
+  margin-bottom: 12px;
+  transition: all .25s ease;
+}
+.diag-stage-left { display: flex; align-items: center; gap: 12px; }
+.diag-stage-dot { width: 8px; height: 8px; border-radius: 999px; }
+.diag-stage-label { font-size: 14px; font-weight: 500; }
+@media (min-width: 768px) { .diag-stage-label { font-size: 16px; } }
+.diag-stage-note {
+  display: none;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+@media (min-width: 768px) { .diag-stage-note { display: block; } }
+.diag-stage.is-ok    { width: 100%;  background: color-mix(in oklab, var(--primary) 8%, transparent); border-color: color-mix(in oklab, var(--primary) 35%, var(--hairline)); }
+.diag-stage.is-warn  { width: 87%;   background: color-mix(in oklab, #f59e0b 8%, transparent); border-color: color-mix(in oklab, #f59e0b 35%, var(--hairline)); }
+.diag-stage.is-warn2 { width: 74%;   background: color-mix(in oklab, #f59e0b 8%, transparent); border-color: color-mix(in oklab, #f59e0b 35%, var(--hairline)); }
+.diag-stage.is-bad   { width: 61%;   background: color-mix(in oklab, var(--destructive) 8%, transparent); border-color: color-mix(in oklab, var(--destructive) 35%, var(--hairline)); }
+.diag-stage.is-bad2  { width: 48%;   background: color-mix(in oklab, var(--destructive) 8%, transparent); border-color: color-mix(in oklab, var(--destructive) 35%, var(--hairline)); }
+.diag-stage.is-bad3  { width: 35%;   background: color-mix(in oklab, var(--destructive) 8%, transparent); border-color: color-mix(in oklab, var(--destructive) 35%, var(--hairline)); }
+.diag-stage.is-ok .diag-stage-dot    { background: var(--primary); }
+.diag-stage.is-warn .diag-stage-dot,
+.diag-stage.is-warn2 .diag-stage-dot { background: #f59e0b; }
+.diag-stage.is-bad .diag-stage-dot,
+.diag-stage.is-bad2 .diag-stage-dot,
+.diag-stage.is-bad3 .diag-stage-dot  { background: var(--destructive); }
+.diag-funnel-footer {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--hairline);
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+.diag-symptoms-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  margin-bottom: 16px;
+}
+.diag-symptoms {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+@media (min-width: 640px) { .diag-symptoms { grid-template-columns: 1fr 1fr; } }
+.diag-symptom {
+  border: 1px solid var(--hairline);
+  background: var(--background);
+  border-radius: 12px;
+  padding: 20px;
+}
+.diag-symptom-bar {
+  width: 24px; height: 4px;
+  background: color-mix(in oklab, var(--destructive) 70%, transparent);
+  margin-bottom: 12px;
+}
+.diag-symptom-text { font-size: 14px; line-height: 1.4; }
+.diag-final {
+  margin-top: 80px;
+  border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
+  background: color-mix(in oklab, var(--primary) 4%, transparent);
+  border-radius: 18px;
+  padding: 32px;
+}
+@media (min-width: 768px) { .diag-final { padding: 48px; } }
+.diag-final-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.diag-final-text {
+  margin-top: 24px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.15;
+}
+.diag-final-attrib {
+  margin-top: 24px;
+  font-size: 14px;
+  color: var(--muted-foreground);
+}
+
+/* ── VISION ─────────────────────────────────────── */
+.vision-grid {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .vision-grid { grid-template-columns: 1fr 1fr; } }
+.vision-cell {
+  background: var(--background);
+  padding: 40px;
+  transition: background .15s;
+}
+@media (min-width: 768px) { .vision-cell { padding: 56px; } }
+.vision-cell:hover { background: var(--surface); }
+.vision-cell-head {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+.vision-cell-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--primary);
+}
+.vision-cell-line { height: 1px; flex: 1; background: var(--hairline); }
+.vision-cell-title {
+  margin-top: 32px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 1.18;
+}
+@media (min-width: 768px) { .vision-cell-title { font-size: 36px; } }
+.vision-cell-body {
+  margin-top: 24px;
+  max-width: 480px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+
+/* ── SYSTEM ─────────────────────────────────────── */
+.system-head {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+  align-items: end;
+}
+@media (min-width: 1024px) { .system-head { grid-template-columns: 1fr auto; } }
+.system-pre {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.system-heading {
+  margin-top: 24px;
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+}
+.system-heading-sub {
+  display: block;
+  font-size: clamp(24px, 3.5vw, 40px);
+  color: var(--muted-foreground);
+}
+.system-lede { margin-top: 40px; }
+.system-orb {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  display: none;
+}
+@media (min-width: 1024px) { .system-orb { display: block; } }
+.system-orb-glow {
+  position: absolute; inset: 0;
+  border-radius: 50%;
+  background: color-mix(in oklab, var(--primary) 22%, transparent);
+  filter: blur(40px);
+  animation: pulse 3s ease-in-out infinite;
+}
+.system-orb-ring {
+  position: absolute;
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
+  border-radius: 50%;
+}
+.system-orb-ring-1 { inset: 16px; }
+.system-orb-ring-2 { inset: 40px; border-color: color-mix(in oklab, var(--primary) 30%, transparent); }
+.system-orb-ring-3 { inset: 64px; border-color: color-mix(in oklab, var(--primary) 20%, transparent); }
+.system-orb-label {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 0.5; }
+}
+
+.system-layers {
+  margin-top: 96px;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid var(--hairline);
+}
+.system-layer {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  background: var(--background);
+  border-top: 1px solid var(--hairline);
+  transition: background .15s;
+}
+@media (min-width: 768px) {
+  .system-layer { grid-template-columns: 120px 1fr auto; padding: 40px; }
+}
+.system-layer:first-child { border-top: 0; }
+.system-layer:hover { background: var(--surface); }
+.system-layer-n {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--primary);
+}
+.system-layer-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) {
+  .system-layer-content { grid-template-columns: 280px 1fr; gap: 48px; }
+}
+.system-layer-label {
+  font-family: var(--font-display);
+  font-size: 26px;
+}
+@media (min-width: 768px) { .system-layer-label { font-size: 32px; } }
+.system-layer-desc { font-size: 14px; line-height: 1.65; color: var(--muted-foreground); }
+@media (min-width: 768px) { .system-layer-desc { font-size: 16px; } }
+.system-layer-arrow {
+  width: 20px; height: 20px;
+  stroke: var(--muted-foreground);
+  transition: transform .2s, stroke .2s;
+}
+.system-layer:hover .system-layer-arrow {
+  transform: translateX(4px);
+  stroke: var(--primary);
+}
+.system-loop-head {
+  margin-top: 96px;
+  margin-bottom: 40px;
+  display: flex; justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.system-loop {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .system-loop { grid-template-columns: repeat(6, 1fr); } }
+.system-loop-step { background: var(--background); padding: 24px; }
+.system-loop-step-n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--primary);
+}
+.system-loop-step-label { margin-top: 16px; font-size: 16px; }
+
+/* ── REGUAS ─────────────────────────────────────── */
+.reguas-grid {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 1024px) {
+  .reguas-grid { grid-template-columns: 380px 1fr; gap: 32px; }
+}
+.reguas-list { display: flex; flex-direction: column; gap: 8px; }
+.regua-btn {
+  appearance: none;
+  background: var(--background);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 16px;
+  font-family: var(--font-sans);
+  text-align: left;
+  display: flex; align-items: center; justify-content: space-between;
+  cursor: pointer;
+  transition: all .15s;
+  width: 100%;
+  color: var(--foreground);
+}
+.regua-btn:hover { background: var(--surface); }
+.regua-btn.is-active {
+  background: color-mix(in oklab, var(--primary) 5%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+}
+.regua-btn-left { display: flex; align-items: center; gap: 16px; }
+.regua-btn-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+.regua-btn.is-active .regua-btn-code { color: var(--primary); }
+.regua-btn-name { font-size: 14px; }
+@media (min-width: 768px) { .regua-btn-name { font-size: 16px; } }
+.regua-btn-arrow {
+  font-size: 14px;
+  color: var(--muted-foreground);
+  transition: transform .15s, color .15s;
+}
+.regua-btn.is-active .regua-btn-arrow {
+  transform: translateX(4px);
+  color: var(--primary);
+}
+
+.regua-detail {
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  padding: 32px;
+  transition: opacity .35s ease;
+}
+@media (min-width: 768px) { .regua-detail { padding: 40px; } }
+.regua-detail-head {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.regua-detail-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--primary);
+}
+.regua-detail-name {
+  margin-top: 24px;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1.1;
+}
+.regua-detail-psych {
+  margin-top: 16px;
+  max-width: 600px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+}
+.regua-fields {
+  margin-top: 40px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  overflow: hidden;
+}
+@media (min-width: 640px) { .regua-fields { grid-template-columns: 1fr 1fr; } }
+.regua-field { background: var(--background); padding: 20px; }
+.regua-field-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.regua-field-v {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.regua-extras {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 768px) { .regua-extras { grid-template-columns: 1fr 1fr; } }
+.regua-extra-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.regua-chips {
+  margin-top: 12px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.regua-comm-list {
+  margin-top: 12px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.regua-comm-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.regua-comm-bullet {
+  margin-top: 9px;
+  width: 12px;
+  height: 1px;
+  background: var(--primary);
+  flex-shrink: 0;
+}
+
+/* ── BROADCASTS ─────────────────────────────────── */
+.broad-purpose {
+  margin-top: 80px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .broad-purpose { grid-template-columns: repeat(4, 1fr); } }
+.broad-purpose-cell { background: var(--background); padding: 24px; }
+.broad-purpose-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.broad-purpose-v { margin-top: 12px; font-size: 14px; }
+@media (min-width: 768px) { .broad-purpose-v { font-size: 16px; } }
+.broad-grid {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+@media (min-width: 768px) { .broad-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1024px) { .broad-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.broad-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--background);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  padding: 24px;
+  transition: border-color .25s;
+}
+.broad-card:hover { border-color: color-mix(in oklab, var(--primary) 40%, transparent); }
+.broad-card-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.broad-card-name {
+  margin-top: 16px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 1.15;
+}
+.broad-card-divider {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.broad-card-field-k {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.broad-card-field-v { margin-top: 4px; font-size: 14px; }
+
+/* ── CREATIVE ───────────────────────────────────── */
+.creative-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 64px;
+}
+@media (min-width: 1024px) { .creative-grid { grid-template-columns: 1fr 1fr; } }
+.creative-types {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (min-width: 768px) { .creative-types { grid-template-columns: 1fr 1fr 1fr; } }
+.creative-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  padding: 16px;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color .25s, background .25s;
+}
+@media (min-width: 640px) { .creative-card { min-height: 160px; } }
+@media (min-width: 768px) { .creative-card { aspect-ratio: 1; padding: 20px; } }
+.creative-card:hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+}
+.creative-card-head {
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.creative-card-icon {
+  width: 40px; height: 40px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--background) 60%, transparent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--primary);
+  font-size: 18px;
+  transition: all .25s;
+}
+.creative-card:hover .creative-card-icon {
+  transform: scale(1.08);
+  border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--primary) 35%, transparent);
+}
+.creative-card-n {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.creative-card-label {
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+@media (min-width: 640px) { .creative-card-label { font-size: 14px; } }
+
+/* ── INVESTMENT ─────────────────────────────────── */
+.inv-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid color-mix(in oklab, var(--primary) 30%, transparent);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  border-radius: 999px;
+  padding: 4px 12px;
+  margin-bottom: 24px;
+}
+.inv-stamp-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--primary);
+  box-shadow: 0 0 8px var(--primary);
+}
+.inv-stamp-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.inv-plans {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 32px;
+}
+@media (min-width: 768px) { .inv-plans { grid-template-columns: 1fr 1fr; } }
+.inv-plan {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius: 24px;
+  padding: 40px;
+}
+@media (min-width: 768px) { .inv-plan { padding: 48px; } }
+.inv-plan-glow {
+  position: absolute;
+  top: -96px; right: -96px;
+  width: 256px; height: 256px;
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  filter: blur(48px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.inv-plan-label {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 28px;
+  position: relative;
+}
+@media (min-width: 768px) { .inv-plan-label { font-size: 36px; } }
+.inv-plan-label-star { color: var(--primary); }
+.inv-plan-oldprice {
+  margin-top: 32px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: rgba(246,245,238,0.4);
+}
+.inv-plan-oldprice-currency { font-family: var(--font-display); font-size: 18px; }
+.inv-plan-oldprice-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+}
+@media (min-width: 768px) {
+  .inv-plan-oldprice-currency { font-size: 20px; }
+  .inv-plan-oldprice-value { font-size: 36px; }
+}
+.inv-plan-oldprice2 { margin-top: 8px; }
+.inv-plan-oldprice2 .inv-plan-oldprice-currency { font-size: 16px; }
+.inv-plan-oldprice2 .inv-plan-oldprice-value { font-size: 22px; }
+@media (min-width: 768px) {
+  .inv-plan-oldprice2 .inv-plan-oldprice-currency { font-size: 18px; }
+  .inv-plan-oldprice2 .inv-plan-oldprice-value { font-size: 28px; }
+}
+.inv-plan-price {
+  margin-top: 12px;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.inv-plan-price-currency {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: rgba(246,245,238,0.8);
+}
+@media (min-width: 768px) { .inv-plan-price-currency { font-size: 28px; } }
+.inv-plan-price-value {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+  color: var(--primary);
+}
+@media (min-width: 768px) { .inv-plan-price-value { font-size: 72px; } }
+@media (min-width: 1024px) { .inv-plan-price-value { font-size: 88px; } }
+.inv-plan-suffix {
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: rgba(246,245,238,0.7);
+}
+@media (min-width: 768px) { .inv-plan-suffix { font-size: 22px; } }
+.inv-plan-altprice {
+  margin-top: 12px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  color: rgba(246,245,238,0.7);
+}
+.inv-plan-install {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.inv-plan-install-line {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--primary);
+}
+@media (min-width: 768px) { .inv-plan-install-line { font-size: 18px; } }
+.inv-plan-tiers {
+  margin-top: 32px;
+}
+.inv-plan-tiers-label {
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.5);
+}
+.inv-tier-group {
+  display: inline-flex;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--background) 60%, transparent);
+  border-radius: 999px;
+  padding: 4px;
+}
+.inv-tier-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(246,245,238,0.7);
+  cursor: pointer;
+  transition: all .2s;
+}
+.inv-tier-btn:hover { color: var(--foreground); }
+.inv-tier-btn.is-active {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+.inv-plan-divider {
+  height: 1px;
+  background: var(--hairline);
+  margin: 32px 0;
+}
+.inv-plan-items {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.inv-plan-item {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(246,245,238,0.85);
+}
+@media (min-width: 768px) { .inv-plan-item { font-size: 16px; } }
+.inv-plan-item-bullet {
+  width: 6px; height: 6px;
+  margin-top: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  box-shadow: 0 0 12px rgba(215,255,58,0.6);
+  flex-shrink: 0;
+}
+.inv-plan-item.is-emphasis {
+  font-size: 16px;
+  color: var(--foreground);
+  font-weight: 500;
+}
+@media (min-width: 768px) { .inv-plan-item.is-emphasis { font-size: 18px; } }
+.inv-plan-item.is-emphasis .inv-plan-item-bullet {
+  width: 8px; height: 8px;
+  box-shadow: 0 0 16px rgba(215,255,58,0.9);
+}
+.inv-plan-item-tier { color: var(--primary); }
+.inv-plan-item-paren { color: rgba(246,245,238,0.7); }
+
+.inv-footer {
+  margin: 40px auto 0;
+  max-width: 760px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.inv-footer-fine {
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(246,245,238,0.6);
+}
+.inv-footer-validity {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.5);
+}
+
+/* ── PROJECTION ─────────────────────────────────── */
+.proj-section {
+  position: relative;
+  margin-top: -80px;
+  padding: 0 24px 112px;
+}
+@media (min-width: 768px) {
+  .proj-section { margin-top: -112px; padding: 0 24px 144px; }
+}
+.proj-inner { max-width: var(--max-w); margin: 0 auto; }
+.proj-controls {
+  margin-top: 48px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+@media (min-width: 768px) { .proj-controls { grid-template-columns: 1fr 1fr; } }
+.proj-control {
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 40%, transparent);
+  border-radius: 18px;
+  padding: 24px;
+}
+.proj-control-label {
+  margin-bottom: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.5);
+}
+.proj-control-note {
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(246,245,238,0.6);
+}
+
+.proj-card {
+  margin-top: 40px;
+  border: 1px solid var(--hairline);
+  background: color-mix(in oklab, var(--surface) 30%, transparent);
+  border-radius: 24px;
+  padding: 24px;
+}
+@media (min-width: 768px) { .proj-card { padding: 40px; } }
+.proj-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+}
+.proj-legend-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+  color: rgba(246,245,238,0.7);
+}
+@media (min-width: 768px) { .proj-legend-left { font-size: 14px; } }
+.proj-legend-item { display: flex; align-items: center; gap: 8px; }
+.proj-legend-dot { width: 12px; height: 12px; border-radius: 3px; }
+.proj-legend-dot--rec {
+  background: var(--primary);
+  box-shadow: 0 0 10px var(--primary);
+}
+.proj-legend-dot--ins { background: #f59e0b; }
+.proj-legend-right { text-align: right; }
+.proj-legend-right-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.5);
+}
+.proj-legend-right-total {
+  font-family: var(--font-display);
+  font-size: 20px;
+}
+@media (min-width: 768px) { .proj-legend-right-total { font-size: 24px; } }
+.proj-chart {
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 4px;
+}
+@media (min-width: 768px) { .proj-chart { gap: 10px; } }
+.proj-month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+}
+.proj-bar-wrap {
+  position: relative;
+  width: 100%;
+  height: 224px;
+  background: color-mix(in oklab, var(--background) 40%, transparent);
+  border-radius: 8px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .proj-bar-wrap { height: 240px; } }
+.proj-bar-stack {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: height .45s cubic-bezier(.22,1,.36,1);
+}
+.proj-bar-label {
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  transform: translateX(-50%);
+  z-index: 2;
+  background: rgba(26,29,32,0.85);
+  border-radius: 3px;
+  padding: 2px 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  backdrop-filter: blur(4px);
+}
+@media (min-width: 768px) {
+  .proj-bar-label { top: 8px; border-radius: 999px; padding: 2px 6px; font-size: 10px; }
+}
+.proj-bar-rec {
+  background: var(--primary);
+  box-shadow: 0 0 20px color-mix(in oklab, var(--primary) 35%, transparent);
+  transition: flex-grow .45s;
+}
+.proj-bar-ins {
+  background: #f59e0b;
+  transition: flex-grow .45s;
+}
+.proj-month-label {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(246,245,238,0.6);
+}
+@media (min-width: 768px) { .proj-month-label { font-size: 10px; } }
+.proj-month-label-mobile { display: inline; }
+.proj-month-label-desktop { display: none; }
+@media (min-width: 768px) {
+  .proj-month-label-mobile { display: none; }
+  .proj-month-label-desktop { display: inline; }
+}
+
+/* ── CLOSING ────────────────────────────────────── */
+.closing {
+  position: relative;
+  overflow: hidden;
+  padding: 128px 24px;
+  border-top: 1px solid var(--hairline);
+}
+@media (min-width: 768px) { .closing { padding: 176px 24px; } }
+.closing-title {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 7vw, 100px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.closing-sub {
+  margin-top: 48px;
+  max-width: 720px;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--muted-foreground);
+  text-wrap: balance;
+}
+@media (min-width: 768px) { .closing-sub { font-size: 20px; } }
+.closing-steps {
+  margin-top: 64px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: 18px;
+  overflow: hidden;
+}
+@media (min-width: 768px) { .closing-steps { grid-template-columns: repeat(3, 1fr); } }
+.closing-step { background: var(--background); padding: 32px; }
+.closing-step-k {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.closing-step-v {
+  margin-top: 16px;
+  font-size: 16px;
+}
+@media (min-width: 768px) { .closing-step-v { font-size: 18px; } }
+.closing-cta-wrap {
+  margin-top: 64px;
+  display: flex; flex-direction: column;
+  gap: 24px;
+  align-items: flex-start;
+}
+@media (min-width: 768px) {
+  .closing-cta-wrap { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+.closing-cta-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.closing-cta-text {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: 22px;
+}
+@media (min-width: 768px) { .closing-cta-text { font-size: 28px; } }
+.closing-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 16px 28px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: gap .2s;
+}
+.closing-cta-btn:hover { gap: 16px; }
+
+/* Reveal-on-scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .55s ease, transform .55s ease;
+}
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-stagger.is-visible > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.is-visible > *:nth-child(2) { transition-delay: 70ms; }
+.reveal-stagger.is-visible > *:nth-child(3) { transition-delay: 140ms; }
+.reveal-stagger.is-visible > *:nth-child(4) { transition-delay: 210ms; }
+.reveal-stagger.is-visible > *:nth-child(5) { transition-delay: 280ms; }
+.reveal-stagger.is-visible > *:nth-child(6) { transition-delay: 350ms; }
+.reveal-stagger.is-visible > *:nth-child(7) { transition-delay: 420ms; }
+.reveal-stagger.is-visible > *:nth-child(8) { transition-delay: 490ms; }
+.reveal-stagger.is-visible > *:nth-child(9) { transition-delay: 560ms; }
+.reveal-stagger.is-visible > *:nth-child(10){ transition-delay: 630ms; }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress-bar"></div>
+
+<!-- ═════════════ NAV ═════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="#hero" class="nav-brand">Digital Aligner</a>
+    <div class="nav-links">
+      <a href="#contexto">01 · Contexto</a>
+      <a href="#diagnostico">02 · Diagnóstico</a>
+      <a href="#visao">03 · Visão</a>
+      <a href="#sistema">04 · Sistema</a>
+      <a href="#reguas">05 · Réguas</a>
+      <a href="#broadcasts">06 · Broadcasts</a>
+      <a href="#criativos">07 · Criativos</a>
+      <a href="#investimento">08 · Investimento</a>
+    </div>
+    <span class="nav-stamp">Proposta · 2026</span>
+  </div>
+</nav>
+
+<!-- ═════════════ HERO ═════════════ -->
+<section class="hero" id="hero">
+  <div class="gradient-radial"></div>
+  <div class="hero-grid-bg"></div>
+  <div class="section-inner" style="position:relative;">
+    <div class="hero-stamp reveal">
+      <span class="hero-stamp-dot"></span>
+      <span class="hero-stamp-text">Proposta confidencial · 2026</span>
+    </div>
+    <h1 class="hero-title reveal">
+      A próxima<br>
+      camada de <em class="italic text-primary">crescimento</em><br>
+      da Digital Aligner.
+    </h1>
+    <p class="hero-sub reveal">
+      A Digital Aligner não vende alinhadores. Ela transforma dentistas em
+      clínicas modernas, digitais e mais lucrativas. Esta é a proposta de uma
+      infraestrutura estratégica para que esse crescimento aconteça em escala
+      — e em recorrência.
+    </p>
+    <div class="hero-grid reveal-stagger reveal">
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Foco</div>
+        <div class="hero-grid-cell-v">Lifecycle &amp; Revenue</div>
+      </div>
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Modelo</div>
+        <div class="hero-grid-cell-v">B2B2C — dentistas</div>
+      </div>
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Camada</div>
+        <div class="hero-grid-cell-v">Pós-aquisição</div>
+      </div>
+      <div class="hero-grid-cell">
+        <div class="hero-grid-cell-k">Output</div>
+        <div class="hero-grid-cell-v">Sistema Operacional</div>
+      </div>
+    </div>
+    <div class="hero-rule reveal">
+      <div class="hero-rule-line"></div>
+      <span>Role para começar</span>
+      <div class="hero-rule-line"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ CONTEXT ═════════════ -->
+<section class="section" id="contexto">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">01 — O que já está pronto</span></div>
+    <h2 class="heading reveal">
+      Trazer dentista <em class="italic text-muted">já está</em> rodando.
+    </h2>
+    <div style="margin-top:40px;" class="reveal">
+      <p class="lede">
+        Antes de qualquer recomendação, vamos reconhecer o que a Digital
+        Aligner construiu. Existe uma máquina de aquisição operando — e ela
+        funciona. Esta proposta começa exatamente onde essa máquina termina.
+      </p>
+    </div>
+    <div class="context-grid reveal-stagger reveal">
+      <div class="context-cell">
+        <div class="context-cell-head">
+          <span class="context-cell-tag">Operando</span>
+          <svg class="context-cell-check" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <div class="context-cell-label">Aquisição</div>
+        <div class="context-cell-note">Funil ativo, previsível</div>
+      </div>
+      <div class="context-cell">
+        <div class="context-cell-head">
+          <span class="context-cell-tag">Operando</span>
+          <svg class="context-cell-check" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <div class="context-cell-label">Tráfego pago</div>
+        <div class="context-cell-note">Operando em escala</div>
+      </div>
+      <div class="context-cell">
+        <div class="context-cell-head">
+          <span class="context-cell-tag">Operando</span>
+          <svg class="context-cell-check" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <div class="context-cell-label">SDR + IA</div>
+        <div class="context-cell-note">Qualificação automatizada</div>
+      </div>
+      <div class="context-cell">
+        <div class="context-cell-head">
+          <span class="context-cell-tag">Operando</span>
+          <svg class="context-cell-check" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <div class="context-cell-label">CAC</div>
+        <div class="context-cell-note">Sob controle</div>
+      </div>
+      <div class="context-cell">
+        <div class="context-cell-head">
+          <span class="context-cell-tag">Operando</span>
+          <svg class="context-cell-check" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <div class="context-cell-label">LTV</div>
+        <div class="context-cell-note">Razoavelmente previsível</div>
+      </div>
+      <div class="context-cell">
+        <div class="context-cell-head">
+          <span class="context-cell-tag">Operando</span>
+          <svg class="context-cell-check" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.5"/></svg>
+        </div>
+        <div class="context-cell-label">Time comercial</div>
+        <div class="context-cell-note">Estruturado</div>
+      </div>
+    </div>
+    <div class="context-quote reveal">
+      <p>
+        Então a pergunta deixa de ser
+        <span class="text-muted">"como trazer mais dentistas?"</span> e passa a ser:
+        <em class="italic text-primary">o que acontece depois que eles entram?</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ DIAGNOSIS ═════════════ -->
+<section class="section" id="diagnostico">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">02 — Onde está o gargalo</span></div>
+    <h2 class="heading reveal">
+      O problema não é entrada.<br>
+      É o que <em class="italic text-primary">acontece depois.</em>
+    </h2>
+    <div style="margin-top:40px;" class="reveal">
+      <p class="lede">
+        Hoje existe um aquário gigante de dentistas dentro da Digital. A
+        maioria entra com energia, mas perde tração nas semanas seguintes. A
+        retenção depende de esforço manual do comercial — e o marketing,
+        ocupado em trazer mais gente, não consegue sustentar essa base.
+      </p>
+    </div>
+
+    <div class="diag-grid">
+      <div class="diag-funnel reveal">
+        <div class="diag-funnel-head">
+          <span>Jornada atual do dentista</span>
+          <span>Pós-aquisição</span>
+        </div>
+        <div class="diag-stage is-ok">
+          <div class="diag-stage-left"><span class="diag-stage-dot"></span><span class="diag-stage-label">Entrou</span></div>
+          <span class="diag-stage-note">Credenciado pela Digital</span>
+        </div>
+        <div class="diag-stage is-warn">
+          <div class="diag-stage-left"><span class="diag-stage-dot"></span><span class="diag-stage-label">Ativou?</span></div>
+          <span class="diag-stage-note">Muitos não chegam aqui</span>
+        </div>
+        <div class="diag-stage is-warn2">
+          <div class="diag-stage-left"><span class="diag-stage-dot"></span><span class="diag-stage-label">Vendeu o 1º caso?</span></div>
+          <span class="diag-stage-note">Insegurança trava</span>
+        </div>
+        <div class="diag-stage is-bad">
+          <div class="diag-stage-left"><span class="diag-stage-dot"></span><span class="diag-stage-label">Repetiu?</span></div>
+          <span class="diag-stage-note">Sem rotina comercial</span>
+        </div>
+        <div class="diag-stage is-bad2">
+          <div class="diag-stage-left"><span class="diag-stage-dot"></span><span class="diag-stage-label">Esfriou?</span></div>
+          <span class="diag-stage-note">Concorrência assedia</span>
+        </div>
+        <div class="diag-stage is-bad3">
+          <div class="diag-stage-left"><span class="diag-stage-dot"></span><span class="diag-stage-label">Saiu?</span></div>
+          <span class="diag-stage-note">Churn silencioso</span>
+        </div>
+        <div class="diag-funnel-footer">
+          Cada degrau perdido aqui é um LTV que nunca acontece — e um CAC que nunca se paga.
+        </div>
+      </div>
+
+      <div>
+        <div class="diag-symptoms-label">Sintomas que o comercial sente todo dia</div>
+        <div class="diag-symptoms reveal-stagger reveal">
+          <div class="diag-symptom"><div class="diag-symptom-bar"></div><p class="diag-symptom-text">Comercial pedindo materiais que não existem</p></div>
+          <div class="diag-symptom"><div class="diag-symptom-bar"></div><p class="diag-symptom-text">Campanhas sazonais montadas no improviso</p></div>
+          <div class="diag-symptom"><div class="diag-symptom-bar"></div><p class="diag-symptom-text">Reativação dependente de esforço manual</p></div>
+          <div class="diag-symptom"><div class="diag-symptom-bar"></div><p class="diag-symptom-text">Dentistas que somem sem ninguém perceber</p></div>
+          <div class="diag-symptom"><div class="diag-symptom-bar"></div><p class="diag-symptom-text">Base enorme — monetização fragmentada</p></div>
+          <div class="diag-symptom"><div class="diag-symptom-bar"></div><p class="diag-symptom-text">Marketing rodando aquisição, não vendas</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diag-final reveal">
+      <div class="diag-final-label">A frase que define a operação hoje</div>
+      <p class="diag-final-text">
+        "Minha maior demanda hoje é <em class="italic text-primary">marketing para vendas</em>."
+      </p>
+      <p class="diag-final-attrib">— Dor verbalizada pelo time. É exatamente disso que esta proposta trata.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ VISION ═════════════ -->
+<section class="section" id="visao">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">03 — A nova visão</span></div>
+    <h2 class="heading reveal">
+      Parar de vender alinhador.<br>
+      Começar a vender <em class="italic text-primary">crescimento</em>.
+    </h2>
+
+    <div class="vision-grid reveal-stagger reveal">
+      <div class="vision-cell">
+        <div class="vision-cell-head">
+          <span class="vision-cell-num">01</span>
+          <div class="vision-cell-line"></div>
+        </div>
+        <h3 class="vision-cell-title">Dentista não é vendedor.</h3>
+        <p class="vision-cell-body">Ele é técnico. Tem insegurança comercial, medo de objeção e nenhuma rotina de vendas. Vende quando se sente seguro — e some quando não se sente.</p>
+      </div>
+      <div class="vision-cell">
+        <div class="vision-cell-head">
+          <span class="vision-cell-num">02</span>
+          <div class="vision-cell-line"></div>
+        </div>
+        <h3 class="vision-cell-title">Quanto mais ele cresce, menos ele sai.</h3>
+        <p class="vision-cell-body">A retenção não nasce de um contrato. Nasce da sensação de que a Digital é parceira do crescimento dele. Lifecycle é defesa de receita.</p>
+      </div>
+      <div class="vision-cell">
+        <div class="vision-cell-head">
+          <span class="vision-cell-num">03</span>
+          <div class="vision-cell-line"></div>
+        </div>
+        <h3 class="vision-cell-title">A base atual é maior que a próxima safra.</h3>
+        <p class="vision-cell-body">O dentista que já está dentro custa zero para reativar. O próximo custa CAC inteiro. A oportunidade óbvia é monetizar quem já entrou.</p>
+      </div>
+      <div class="vision-cell">
+        <div class="vision-cell-head">
+          <span class="vision-cell-num">04</span>
+          <div class="vision-cell-line"></div>
+        </div>
+        <h3 class="vision-cell-title">Marketing precisa servir vendas.</h3>
+        <p class="vision-cell-body">Não como campanha solta — como um sistema contínuo de munição: scripts, campanhas, materiais, cadências, broadcasts, suporte ao comercial.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ SYSTEM ═════════════ -->
+<section class="section" id="sistema">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">04 — A solução</span></div>
+    <div class="system-head">
+      <div>
+        <div class="system-pre">Apresentamos</div>
+        <h2 class="system-heading reveal">
+          <span style="display:block;">Growth OS</span>
+          <span class="system-heading-sub">Sistema operacional de<br>crescimento da base.</span>
+        </h2>
+        <div class="system-lede reveal" style="max-width: 640px;">
+          <p class="lede">
+            Não é uma automação. Não é um disparo. É uma infraestrutura
+            estratégica que ativa, retém, reativa e monetiza a base de
+            dentistas — e dá ao comercial, todos os dias, exatamente o que
+            ele precisa para vender mais.
+          </p>
+        </div>
+      </div>
+      <div class="system-orb reveal">
+        <div class="system-orb-glow"></div>
+        <div class="system-orb-ring system-orb-ring-1"></div>
+        <div class="system-orb-ring system-orb-ring-2"></div>
+        <div class="system-orb-ring system-orb-ring-3"></div>
+        <div class="system-orb-label">Growth · OS</div>
+      </div>
+    </div>
+
+    <div class="system-layers reveal-stagger reveal">
+      <div class="system-layer">
+        <div class="system-layer-n">01</div>
+        <div class="system-layer-content">
+          <div class="system-layer-label">Inteligência</div>
+          <p class="system-layer-desc">Segmentação viva da base, triggers comportamentais, leitura de sinais de ativação, esfriamento e oportunidade.</p>
+        </div>
+        <svg class="system-layer-arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke-width="1.5"/></svg>
+      </div>
+      <div class="system-layer">
+        <div class="system-layer-n">02</div>
+        <div class="system-layer-content">
+          <div class="system-layer-label">Lifecycle</div>
+          <p class="system-layer-desc">Réguas de relacionamento orquestradas por momento da jornada — onboarding, ativação, recorrência, retenção, reativação.</p>
+        </div>
+        <svg class="system-layer-arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke-width="1.5"/></svg>
+      </div>
+      <div class="system-layer">
+        <div class="system-layer-n">03</div>
+        <div class="system-layer-content">
+          <div class="system-layer-label">Revenue Enablement</div>
+          <p class="system-layer-desc">Munição contínua para o comercial: scripts, materiais, cadências, campanhas sazonais, suporte de vendas.</p>
+        </div>
+        <svg class="system-layer-arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke-width="1.5"/></svg>
+      </div>
+      <div class="system-layer">
+        <div class="system-layer-n">04</div>
+        <div class="system-layer-content">
+          <div class="system-layer-label">Camada Visual</div>
+          <p class="system-layer-desc">Criativos estratégicos para sustentar campanhas, broadcasts e relacionamento — com identidade premium consistente.</p>
+        </div>
+        <svg class="system-layer-arrow" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+
+    <div class="system-loop-head">
+      <span>Como o sistema opera</span>
+      <span>Loop contínuo</span>
+    </div>
+    <div class="system-loop reveal-stagger reveal">
+      <div class="system-loop-step"><div class="system-loop-step-n">↳ 01</div><div class="system-loop-step-label">Sinal</div></div>
+      <div class="system-loop-step"><div class="system-loop-step-n">↳ 02</div><div class="system-loop-step-label">Segmentação</div></div>
+      <div class="system-loop-step"><div class="system-loop-step-n">↳ 03</div><div class="system-loop-step-label">Régua</div></div>
+      <div class="system-loop-step"><div class="system-loop-step-n">↳ 04</div><div class="system-loop-step-label">Broadcast</div></div>
+      <div class="system-loop-step"><div class="system-loop-step-n">↳ 05</div><div class="system-loop-step-label">Comercial</div></div>
+      <div class="system-loop-step"><div class="system-loop-step-n">↳ 06</div><div class="system-loop-step-label">Resultado</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ REGUAS ═════════════ -->
+<section class="section" id="reguas">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">05 — Réguas de Lifecycle</span></div>
+    <h2 class="heading reveal">
+      Nove réguas. Uma jornada<br>
+      <em class="italic text-primary">desenhada para o dentista.</em>
+    </h2>
+    <div style="margin-top:40px;" class="reveal">
+      <p class="lede">
+        Cada régua nasce de um momento específico da vida do dentista —
+        inseguro, recém-ativado, em crescimento, esfriando, prestes a sair.
+        Não são fluxos. São conversas com intenção psicológica.
+      </p>
+    </div>
+
+    <div class="reguas-grid">
+      <div class="reguas-list" id="reguas-list"></div>
+      <div class="regua-detail" id="regua-detail"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ BROADCASTS ═════════════ -->
+<section class="section" id="broadcasts">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">06 — Broadcasts estratégicos</span></div>
+    <h2 class="heading reveal">
+      Não é disparo.<br>
+      É <em class="italic text-primary">presença com intenção</em>.
+    </h2>
+    <div style="margin-top:40px;" class="reveal">
+      <p class="lede">
+        Cada broadcast tem propósito, timing e papel comercial. É a forma da
+        Digital ocupar diariamente o espaço mental do dentista — entregando
+        valor, sustentando vínculo e criando reciprocidade contínua.
+      </p>
+    </div>
+
+    <div class="broad-purpose reveal">
+      <div class="broad-purpose-cell">
+        <div class="broad-purpose-k">Intenção</div>
+        <div class="broad-purpose-v">Definida antes do envio</div>
+      </div>
+      <div class="broad-purpose-cell">
+        <div class="broad-purpose-k">Objetivo</div>
+        <div class="broad-purpose-v">Ligado a métrica de receita</div>
+      </div>
+      <div class="broad-purpose-cell">
+        <div class="broad-purpose-k">Timing</div>
+        <div class="broad-purpose-v">Calendário orquestrado</div>
+      </div>
+      <div class="broad-purpose-cell">
+        <div class="broad-purpose-k">Contexto</div>
+        <div class="broad-purpose-v">Segmentado pela jornada</div>
+      </div>
+    </div>
+
+    <div class="broad-grid reveal-stagger reveal" id="broad-grid"></div>
+  </div>
+</section>
+
+<!-- ═════════════ CREATIVE ═════════════ -->
+<section class="section" id="criativos">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">07 — Camada visual estratégica</span></div>
+    <div class="creative-grid">
+      <div>
+        <h2 class="heading reveal">
+          Design não decora.<br>
+          <em class="italic text-primary">Sustenta percepção</em> de marca.
+        </h2>
+        <div style="margin-top:40px;" class="reveal">
+          <p class="lede">
+            Toda comunicação acima precisa de uma camada visual à altura do
+            posicionamento da Digital. Não falamos de design operacional — e
+            sim de uma camada estratégica que carrega tom, autoridade e
+            consistência por toda a jornada.
+          </p>
+        </div>
+      </div>
+      <div class="creative-types reveal-stagger reveal" id="creative-types"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ INVESTMENT ═════════════ -->
+<section class="section" id="investimento">
+  <div class="section-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">08 — Investimento</span></div>
+    <div class="inv-stamp">
+      <span class="inv-stamp-dot"></span>
+      <span class="inv-stamp-text">Proposta V3</span>
+    </div>
+    <h2 class="heading reveal">Investimento</h2>
+
+    <div class="inv-plans">
+      <!-- Plan: Implantação -->
+      <div class="inv-plan reveal">
+        <div class="inv-plan-glow"></div>
+        <h3 class="inv-plan-label">Implantação<span class="inv-plan-label-star">*</span></h3>
+        <div class="inv-plan-oldprice">
+          <span class="inv-plan-oldprice-currency">R$</span>
+          <span class="inv-plan-oldprice-value">35.000</span>
+        </div>
+        <div class="inv-plan-oldprice inv-plan-oldprice2">
+          <span class="inv-plan-oldprice-currency">R$</span>
+          <span class="inv-plan-oldprice-value">27.997</span>
+        </div>
+        <div class="inv-plan-price">
+          <span class="inv-plan-price-currency">R$</span>
+          <span class="inv-plan-price-value">11.997</span>
+        </div>
+        <div class="inv-plan-altprice">à vista</div>
+        <div class="inv-plan-install">
+          <div class="inv-plan-install-line">Até 6x de R$ 2.000 no boleto</div>
+          <div class="inv-plan-install-line">ou até 10x de R$ 1.200 no cartão (sem juros)</div>
+        </div>
+        <div class="inv-plan-divider"></div>
+        <ul class="inv-plan-items">
+          <li class="inv-plan-item"><span class="inv-plan-item-bullet"></span>Imersão estratégica e mapeamento da base</li>
+          <li class="inv-plan-item"><span class="inv-plan-item-bullet"></span>Implementação de todas as 09 réguas, com respectivas cadências (até 3x comunicações por régua)</li>
+        </ul>
+      </div>
+
+      <!-- Plan: Operação contínua -->
+      <div class="inv-plan reveal">
+        <div class="inv-plan-glow"></div>
+        <h3 class="inv-plan-label">Operação contínua<span class="inv-plan-label-star">*</span></h3>
+        <div class="inv-plan-oldprice">
+          <span class="inv-plan-oldprice-currency">R$</span>
+          <span class="inv-plan-oldprice-value">6.500</span>
+        </div>
+        <div class="inv-plan-price">
+          <span class="inv-plan-price-currency">R$</span>
+          <span class="inv-plan-price-value" id="inv-tier-price">5.497</span>
+          <span class="inv-plan-suffix">/mês</span>
+        </div>
+        <div class="inv-plan-tiers">
+          <div class="inv-plan-tiers-label">Volume de criativos / mês</div>
+          <div class="inv-tier-group" id="inv-tier-group">
+            <button class="inv-tier-btn" data-tier="0" data-creatives="4" data-price="3.497">4x</button>
+            <button class="inv-tier-btn" data-tier="1" data-creatives="6" data-price="4.497">6x</button>
+            <button class="inv-tier-btn is-active" data-tier="2" data-creatives="8" data-price="5.497">8x</button>
+          </div>
+        </div>
+        <div class="inv-plan-divider"></div>
+        <ul class="inv-plan-items">
+          <li class="inv-plan-item"><span class="inv-plan-item-bullet"></span>Plano estratégico mensal de envios</li>
+          <li class="inv-plan-item"><span class="inv-plan-item-bullet"></span>Segmentação &amp; oxigenação da base</li>
+          <li class="inv-plan-item is-emphasis">
+            <span class="inv-plan-item-bullet"></span>
+            <span>
+              <span class="inv-plan-item-tier" id="inv-item-tier">8x</span>
+              comunicações mensais
+              <span class="inv-plan-item-paren">(direito a 1x arte gráfica por disparo)</span>
+            </span>
+          </li>
+          <li class="inv-plan-item"><span class="inv-plan-item-bullet"></span>Copywriting otimizado para conversão</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="inv-footer">
+      <p class="inv-footer-fine">
+        <span class="text-primary">*</span> Nosso escopo cobre o racional das réguas, gatilhos, copys e criativos. A operacionalização no CRM fica a cargo do time da Digital Aligner.
+      </p>
+      <p class="inv-footer-validity">Validade da proposta: 20/05/2026</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ PROJECTION ═════════════ -->
+<section class="proj-section" id="projecao-v3">
+  <div class="proj-inner">
+    <div class="eyebrow reveal"><span class="eyebrow-text">08.1 — Simulação interativa</span></div>
+    <h2 class="heading reveal">
+      Projeção <em class="italic text-primary">mês a mês</em>
+    </h2>
+    <p class="lede" style="margin-top:24px;">
+      Combine modalidade de pagamento da implantação com o volume de criativos da operação contínua. O gráfico recalcula em tempo real.
+    </p>
+
+    <div class="proj-controls">
+      <div class="proj-control">
+        <div class="proj-control-label">Implantação — modalidade</div>
+        <div class="inv-tier-group" id="proj-pay-group">
+          <button class="inv-tier-btn is-active" data-mode="boleto">Boleto · 6x</button>
+          <button class="inv-tier-btn" data-mode="cartao">Cartão · 10x</button>
+        </div>
+        <div class="proj-control-note" id="proj-pay-note">6x de R$ 2.000</div>
+      </div>
+      <div class="proj-control">
+        <div class="proj-control-label">Operação — volume de criativos / mês</div>
+        <div class="inv-tier-group" id="proj-tier-group">
+          <button class="inv-tier-btn" data-tier="0">4x</button>
+          <button class="inv-tier-btn" data-tier="1">6x</button>
+          <button class="inv-tier-btn is-active" data-tier="2">8x</button>
+        </div>
+        <div class="proj-control-note" id="proj-tier-note">R$ 5.497 /mês</div>
+      </div>
+    </div>
+
+    <div class="proj-card">
+      <div class="proj-legend">
+        <div class="proj-legend-left">
+          <div class="proj-legend-item">
+            <span class="proj-legend-dot proj-legend-dot--rec"></span>
+            <span id="proj-legend-rec">Recorrente · R$ 5.497/mês</span>
+          </div>
+          <div class="proj-legend-item">
+            <span class="proj-legend-dot proj-legend-dot--ins"></span>
+            <span id="proj-legend-ins">Parcela implantação · R$ 2.000 × 6</span>
+          </div>
+        </div>
+        <div class="proj-legend-right">
+          <div class="proj-legend-right-label">Implantação total</div>
+          <div class="proj-legend-right-total" id="proj-total">R$ 12.000</div>
+        </div>
+      </div>
+      <div class="proj-chart" id="proj-chart"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════ CLOSING ═════════════ -->
+<section class="closing" id="fechamento">
+  <div class="gradient-radial"></div>
+  <div class="section-inner" style="position:relative;">
+    <div class="eyebrow reveal"><span class="eyebrow-text">09 — O próximo movimento</span></div>
+    <h2 class="closing-title reveal">
+      A base já está lá.<br>
+      <em class="italic text-primary">Resta operá-la.</em>
+    </h2>
+    <p class="closing-sub reveal">
+      Esta proposta é o desenho de uma transformação estrutural — não de um
+      serviço. O Growth OS é a infraestrutura que dá ao comercial o que ele
+      pede, à Juliana o que ela precisa, e à Digital o que falta para
+      monetizar tudo o que já foi construído.
+    </p>
+    <div class="closing-steps reveal">
+      <div class="closing-step">
+        <div class="closing-step-k">Etapa 1</div>
+        <div class="closing-step-v">Imersão estratégica e mapeamento da base</div>
+      </div>
+      <div class="closing-step">
+        <div class="closing-step-k">Etapa 2</div>
+        <div class="closing-step-v">Desenho das réguas e do calendário comercial</div>
+      </div>
+      <div class="closing-step">
+        <div class="closing-step-k">Etapa 3</div>
+        <div class="closing-step-v">Operação contínua e iteração mensal</div>
+      </div>
+    </div>
+    <div class="closing-cta-wrap reveal">
+      <div>
+        <div class="closing-cta-label">Próxima conversa</div>
+        <div class="closing-cta-text">Sessão de desenho conjunto — 90 minutos.</div>
+      </div>
+      <a href="#contexto" class="closing-cta-btn">Vamos começar <span>→</span></a>
+    </div>
+  </div>
+</section>
+
+<script>
+// ───────── DATA ─────────
+const REGUAS = [
+  { code: "R01", name: "Onboarding & Ativação",  trigger:"Novo dentista credenciado", goal:"Levar à primeira venda em até 30 dias",
+    psych:"Reduzir insegurança inicial e criar identidade de pertencimento à Digital.",
+    cadence:"Diária na 1ª semana → semanal por 30 dias",
+    channels:["WhatsApp","E-mail","Comercial humano"],
+    comm:["Boas-vindas com posicionamento premium","Tour pelo ecossistema da Digital","Roteiro do 1º caso clínico","Mini-treinamento de objeções comuns","Check-in humano do consultor"],
+    role:"Imprimir ritmo desde o dia zero. Ativar antes que esfrie.",
+    human:"Ligação do consultor no dia 7 e dia 21" },
+  { code: "R02", name: "Dentista sem ativação",  trigger:"30 dias sem 1º pedido", goal:"Quebrar a inércia e identificar bloqueio real",
+    psych:"Remover medo. Mostrar caminho seguro. Endossar com prova social.",
+    cadence:"3 toques em 14 dias",
+    channels:["WhatsApp","Comercial","Conteúdo curto em vídeo"],
+    comm:["Caso clínico de dentista com perfil parecido","Roteiro 'apresentando alinhador em 5 min'","Convite para sessão 1:1 com especialista","Quebra de objeção mais comum (preço/medo)"],
+    role:"Diagnosticar — é insegurança técnica, comercial ou de demanda?",
+    human:"Diagnóstico ativo do consultor em call" },
+  { code: "R03", name: "Recém-ativado",          trigger:"1ª venda confirmada", goal:"Transformar 1ª venda em 2ª venda em ≤45 dias",
+    psych:"Celebrar. Reforçar identidade de 'dentista que vende alinhador'.",
+    cadence:"5 toques em 45 dias",
+    channels:["WhatsApp","E-mail","Material de marca"],
+    comm:["Celebração + reconhecimento público interno","Como apresentar o 2º caso para outro paciente","Materiais para divulgar a clínica","Roteiro de upsell e indicação"],
+    role:"Estabelecer rotina comercial — não deixar o ímpeto morrer.",
+    human:"Mensagem nominal do gerente Juliana" },
+  { code: "R04", name: "Engajamento contínuo",   trigger:"Dentista ativo, recorrente", goal:"Manter presença, frequência e topo de mente",
+    psych:"Reciprocidade. A Digital aparece dando — não pedindo.",
+    cadence:"Semanal leve + mensal aprofundado",
+    channels:["Broadcast","Conteúdos clínicos","Tendências"],
+    comm:["Insights clínicos curtos","Tendências de mercado e preço","Histórias de dentistas-destaque","Conteúdos de posicionamento da clínica"],
+    role:"Construir vínculo. Tornar saída emocionalmente cara.",
+    human:"Curadoria mensal assinada por especialista" },
+  { code: "R05", name: "Aumento de recorrência", trigger:"Dentista comprando, mas abaixo do potencial", goal:"Elevar frequência e ticket médio",
+    psych:"Mostrar o gap entre onde está e onde poderia estar.",
+    cadence:"Quinzenal por 60 dias",
+    channels:["WhatsApp","Comercial","Material visual"],
+    comm:["Benchmark anônimo com dentistas similares","Plano de meta personalizado","Materiais sazonais para puxar demanda","Campanhas de aceleração trimestrais"],
+    role:"Expandir LTV sem novo CAC.",
+    human:"Reunião de 'plano de crescimento' trimestral" },
+  { code: "R06", name: "Queda de recorrência",   trigger:"Frequência caindo vs. baseline", goal:"Intervir antes do esfriamento virar churn",
+    psych:"Cuidado genuíno. 'Notamos algo' — não 'volta a comprar'.",
+    cadence:"3 toques em 10 dias",
+    channels:["WhatsApp humano","Call do consultor"],
+    comm:["Pergunta diagnóstica honesta","Oferta de suporte clínico ou comercial","Material para destravar agenda"],
+    role:"Sinal precoce. Defesa de receita.",
+    human:"Call obrigatória do consultor" },
+  { code: "R07", name: "Reativação",             trigger:"60+ dias sem pedido", goal:"Trazer de volta com motivo, não com desconto",
+    psych:"Mostrar que algo mudou e vale revisitar.",
+    cadence:"Campanha de 21 dias em ondas",
+    channels:["Broadcast segmentado","WhatsApp","Comercial"],
+    comm:["Novidades do produto / processo","Cases recentes de retorno","Convite para reunião de retomada","Campanha sazonal âncora"],
+    role:"Recuperar receita dormente.",
+    human:"Consultor liga no dia 14" },
+  { code: "R08", name: "Retenção preventiva",    trigger:"Sinais de risco (uso, NPS, sentiment)", goal:"Blindar antes que a concorrência apareça",
+    psych:"Antecipação. A Digital age antes do dentista pensar em sair.",
+    cadence:"Contextual — disparada por sinal",
+    channels:["Consultor","Conteúdo VIP","Benefício surpresa"],
+    comm:["Reconhecimento personalizado","Acesso a algo exclusivo","Conversa sincera de relacionamento"],
+    role:"Proteção de base de alto valor.",
+    human:"Liderança assina o contato" },
+  { code: "R09", name: "Advocacy — Dentistas destaque", trigger:"Top performers e fãs de marca", goal:"Transformar em prova social e canal de indicação",
+    psych:"Status. Pertencimento a um clube.",
+    cadence:"Mensal + ativações pontuais",
+    channels:["Programa nomeado","Conteúdo co-criado","Eventos"],
+    comm:["Selo / nível premium de relacionamento","Convite para conteúdos co-produzidos","Programa estruturado de indicação"],
+    role:"Receita por boca-a-boca + brand equity.",
+    human:"Curadoria pessoal da liderança" }
+];
+
+const BROADCASTS = [
+  { name:"Campanhas sazonais",       intent:"Criar picos previsíveis de demanda",            timing:"Calendário anual orquestrado" },
+  { name:"Materiais comerciais",     intent:"Munição pronta para o dentista vender",          timing:"Banco vivo, sempre disponível" },
+  { name:"Scripts de vendas",        intent:"Reduzir insegurança e tempo de resposta",        timing:"Atualização contínua" },
+  { name:"Quebra de objeções",       intent:"Dar repertório para o 'preço', 'medo', 'tempo'", timing:"Por gatilho de objeção identificada" },
+  { name:"Casos clínicos",           intent:"Prova social técnica e comercial",                timing:"Quinzenal" },
+  { name:"Tendências de mercado",    intent:"Posicionar a Digital como referência",            timing:"Mensal" },
+  { name:"Posicionamento premium",   intent:"Elevar percepção de valor da rede",               timing:"Trimestral, alta produção" },
+  { name:"Reconhecimento de dentistas", intent:"Status, reciprocidade, advocacy",              timing:"Mensal nominal" },
+  { name:"Campanhas de ativação",    intent:"Empurrar quem ainda não vendeu",                  timing:"Por coorte de entrada" },
+  { name:"Campanhas de reativação",  intent:"Recuperar base dormente",                         timing:"Em ondas estratégicas" }
+];
+
+const CREATIVES = [
+  { label:"Criativos estáticos para campanhas", icon:"🖼️" },
+  { label:"Banners e peças sazonais",           icon:"📅" },
+  { label:"Artes comerciais para o dentista",   icon:"📣" },
+  { label:"Materiais para WhatsApp",            icon:"💬" },
+  { label:"Apoio visual de broadcasts",         icon:"📡" },
+  { label:"Criativos de ativação",              icon:"✨" },
+  { label:"Criativos de reativação",            icon:"🔁" },
+  { label:"Conteúdo de reconhecimento",         icon:"🏆" },
+  { label:"Templates premium para a clínica",   icon:"🪟" }
+];
+
+// ───────── RENDER: Réguas ─────────
+(function () {
+  const list   = document.getElementById('reguas-list');
+  const detail = document.getElementById('regua-detail');
+  if (!list || !detail) return;
+
+  list.innerHTML = REGUAS.map((r, i) => `
+    <button class="regua-btn ${i === 0 ? 'is-active' : ''}" data-i="${i}">
+      <span class="regua-btn-left">
+        <span class="regua-btn-code">${r.code}</span>
+        <span class="regua-btn-name">${r.name}</span>
+      </span>
+      <span class="regua-btn-arrow">→</span>
+    </button>
+  `).join('');
+
+  function renderDetail(i) {
+    const r = REGUAS[i];
+    detail.style.opacity = '0';
+    setTimeout(() => {
+      detail.innerHTML = `
+        <div class="regua-detail-head">
+          <span class="regua-detail-code">${r.code}</span>
+          <span class="chip"><span class="chip-dot"></span>${r.cadence}</span>
+        </div>
+        <h3 class="regua-detail-name">${r.name}</h3>
+        <p class="regua-detail-psych">${r.psych}</p>
+        <div class="regua-fields">
+          <div class="regua-field"><div class="regua-field-k">Trigger</div><div class="regua-field-v">${r.trigger}</div></div>
+          <div class="regua-field"><div class="regua-field-k">Objetivo</div><div class="regua-field-v">${r.goal}</div></div>
+          <div class="regua-field"><div class="regua-field-k">Papel estratégico</div><div class="regua-field-v">${r.role}</div></div>
+          <div class="regua-field"><div class="regua-field-k">Momento humano</div><div class="regua-field-v">${r.human}</div></div>
+        </div>
+        <div class="regua-extras">
+          <div>
+            <div class="regua-extra-label">Canais</div>
+            <div class="regua-chips">${r.channels.map(c => `<span class="chip">${c}</span>`).join('')}</div>
+          </div>
+          <div>
+            <div class="regua-extra-label">Exemplos de comunicação</div>
+            <ul class="regua-comm-list">
+              ${r.comm.map(c => `<li class="regua-comm-item"><span class="regua-comm-bullet"></span>${c}</li>`).join('')}
+            </ul>
+          </div>
+        </div>
+      `;
+      detail.style.opacity = '1';
+    }, 180);
+  }
+  renderDetail(0);
+
+  list.addEventListener('click', e => {
+    const btn = e.target.closest('.regua-btn');
+    if (!btn) return;
+    list.querySelectorAll('.regua-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    renderDetail(+btn.dataset.i);
+  });
+})();
+
+// ───────── RENDER: Broadcasts ─────────
+(function () {
+  const grid = document.getElementById('broad-grid');
+  if (!grid) return;
+  grid.innerHTML = BROADCASTS.map((c, i) => `
+    <div class="broad-card">
+      <div class="broad-card-tag">${String(i + 1).padStart(2,'0')} · Categoria</div>
+      <h3 class="broad-card-name">${c.name}</h3>
+      <div class="broad-card-divider">
+        <div>
+          <div class="broad-card-field-k">Intenção</div>
+          <div class="broad-card-field-v">${c.intent}</div>
+        </div>
+        <div>
+          <div class="broad-card-field-k">Timing</div>
+          <div class="broad-card-field-v">${c.timing}</div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+})();
+
+// ───────── RENDER: Creatives ─────────
+(function () {
+  const grid = document.getElementById('creative-types');
+  if (!grid) return;
+  grid.innerHTML = CREATIVES.map((c, i) => `
+    <div class="creative-card">
+      <div class="creative-card-head">
+        <div class="creative-card-icon">${c.icon}</div>
+        <div class="creative-card-n">${String(i + 1).padStart(2,'0')}</div>
+      </div>
+      <div class="creative-card-label">${c.label}</div>
+    </div>
+  `).join('');
+})();
+
+// ───────── INVESTMENT TIER TOGGLE ─────────
+(function () {
+  const group = document.getElementById('inv-tier-group');
+  if (!group) return;
+  group.addEventListener('click', e => {
+    const btn = e.target.closest('.inv-tier-btn');
+    if (!btn) return;
+    group.querySelectorAll('.inv-tier-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.getElementById('inv-tier-price').textContent = btn.dataset.price;
+    document.getElementById('inv-item-tier').textContent = btn.dataset.creatives + 'x';
+  });
+})();
+
+// ───────── PROJECTION ─────────
+(function () {
+  const tiers = [
+    { creatives: 4, price: 3497 },
+    { creatives: 6, price: 4497 },
+    { creatives: 8, price: 5497 }
+  ];
+  const payModes = {
+    boleto: { label: "Boleto · 6x", months: 6, installment: 2000 },
+    cartao: { label: "Cartão · 10x", months: 10, installment: 1200 }
+  };
+  let tierIdx = 2;
+  let payMode = "boleto";
+
+  const fmtBRL = n => n.toLocaleString("pt-BR", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const fmtK = n => n >= 1000 ? `R$${(n/1000).toFixed(1).replace(/\.0$/,'')}k` : `R$${n}`;
+
+  function render() {
+    const tier = tiers[tierIdx];
+    const pay = payModes[payMode];
+    const months = Array.from({ length: 12 }, (_, i) => {
+      const idx = i + 1;
+      const recurring = tier.price;
+      const installment = idx <= pay.months ? pay.installment : 0;
+      return { idx, recurring, installment, total: recurring + installment };
+    });
+    const maxTotal = Math.max(...months.map(m => m.total));
+    const totalImpl = pay.months * pay.installment;
+
+    document.getElementById('proj-pay-note').textContent = `${pay.months}x de R$ ${fmtBRL(pay.installment)}`;
+    document.getElementById('proj-tier-note').textContent = `R$ ${fmtBRL(tier.price)} /mês`;
+    document.getElementById('proj-legend-rec').textContent = `Recorrente · R$ ${fmtBRL(tier.price)}/mês`;
+    document.getElementById('proj-legend-ins').textContent = `Parcela implantação · R$ ${fmtBRL(pay.installment)} × ${pay.months}`;
+    document.getElementById('proj-total').textContent = `R$ ${fmtBRL(totalImpl)}`;
+
+    const chart = document.getElementById('proj-chart');
+    chart.innerHTML = months.map(m => {
+      const pct = (m.total / maxTotal) * 100;
+      const recFlex = m.recurring;
+      const insFlex = m.installment;
+      return `
+        <div class="proj-month">
+          <div class="proj-bar-wrap">
+            <div class="proj-bar-stack" style="height:${pct}%">
+              <span class="proj-bar-label">${fmtK(m.total)}</span>
+              ${ m.installment > 0 ? `<div class="proj-bar-ins" style="flex-basis:0;flex-grow:${insFlex};"></div>` : '' }
+              <div class="proj-bar-rec" style="flex-basis:0;flex-grow:${recFlex};"></div>
+            </div>
+          </div>
+          <div class="proj-month-label">
+            <span class="proj-month-label-mobile">${m.idx}</span>
+            <span class="proj-month-label-desktop">Mês ${m.idx}</span>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  document.getElementById('proj-pay-group').addEventListener('click', e => {
+    const btn = e.target.closest('.inv-tier-btn');
+    if (!btn) return;
+    document.querySelectorAll('#proj-pay-group .inv-tier-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    payMode = btn.dataset.mode;
+    render();
+  });
+  document.getElementById('proj-tier-group').addEventListener('click', e => {
+    const btn = e.target.closest('.inv-tier-btn');
+    if (!btn) return;
+    document.querySelectorAll('#proj-tier-group .inv-tier-btn').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    tierIdx = +btn.dataset.tier;
+    render();
+  });
+  render();
+})();
+
+// ───────── PROGRESS BAR ─────────
+(function () {
+  const bar = document.getElementById('progress-bar');
+  if (!bar) return;
+  function update() {
+    const total = document.documentElement.scrollHeight - window.innerHeight;
+    const p = total > 0 ? window.scrollY / total : 0;
+    bar.style.transform = `scaleX(${Math.min(Math.max(p, 0), 1)})`;
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+
+// ───────── REVEAL ON SCROLL ─────────
+(function () {
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('is-visible');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => io.observe(el));
+})();
+</script>
+</body>
+</html>
