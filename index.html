@@ -2680,7 +2680,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-shrink: 0;
 }
 .prop-preview-title { font-size: 13px; font-weight: 600; color: var(--text); }
-.prop-preview-meta { font-size: 12px; color: var(--text-soft); }
+.prop-preview-meta { font-size: 12px; color: var(--text-soft); flex: 1; }
+.prop-btn--compact {
+  width: auto !important;
+  padding: 8px 14px !important;
+  font-size: 12.5px !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
 .prop-preview-frame {
   flex: 1;
   width: 100%;
@@ -8625,6 +8632,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       <div class="prop-preview-toolbar">
         <span class="prop-preview-title">Preview da proposta</span>
         <span class="prop-preview-meta" id="prop-preview-meta">— selecione ao menos uma solução</span>
+        <button class="prop-btn prop-btn--primary prop-btn--compact" id="prop-download-top" type="button">⬇ Baixar HTML</button>
       </div>
       <iframe class="prop-preview-frame" id="prop-preview-frame" title="Preview da proposta"></iframe>
     </div>
@@ -13837,6 +13845,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   const $frame       = document.getElementById('prop-preview-frame');
   const $meta        = document.getElementById('prop-preview-meta');
   const $download    = document.getElementById('prop-download');
+  const $downloadTop = document.getElementById('prop-download-top');
   const $refresh     = document.getElementById('prop-refresh');
   const $clientInput = document.getElementById('prop-client-name');
 
@@ -14020,18 +14029,22 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     return escapeHtml(m[1].trimEnd()) + '<small>' + escapeHtml(m[2]) + '</small>';
   }
 
+  function setDownloadDisabled(v) {
+    if ($download)    $download.disabled    = v;
+    if ($downloadTop) $downloadTop.disabled = v;
+  }
   function updateMeta() {
     if (!$meta) return;
     const count = selected.size;
     if (!clientName) {
       $meta.textContent = '⚠ Digite o nome do cliente para gerar a proposta';
-      $download.disabled = true;
+      setDownloadDisabled(true);
     } else if (count === 0) {
       $meta.textContent = '— selecione ao menos uma solução';
-      $download.disabled = true;
+      setDownloadDisabled(true);
     } else {
       $meta.textContent = `Para ${clientName} · Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}`;
-      $download.disabled = false;
+      setDownloadDisabled(false);
     }
   }
 
@@ -16032,7 +16045,7 @@ ${dnaAlignScript}
   }
 
   function setBusy(busy) {
-    if ($download) $download.disabled = busy || selected.size === 0;
+    setDownloadDisabled(busy || selected.size === 0);
     if ($refresh)  $refresh.disabled = busy;
     if ($meta) {
       if (busy) $meta.textContent = 'Gerando proposta...';
@@ -16041,6 +16054,7 @@ ${dnaAlignScript}
   }
 
   $download?.addEventListener('click', downloadHTML);
+  $downloadTop?.addEventListener('click', downloadHTML);
   $refresh?.addEventListener('click', renderPreview);
 
   // Lazy-render preview the first time the tab is opened
