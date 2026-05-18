@@ -14076,6 +14076,52 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  // Prepara o DNA helix pra ser responsivo: cria o wrapper .turbo-dna-helix-pair
+  // com o helix original + um clone, e adiciona um SVG vertical (escondido no
+  // desktop via CSS, mostrado no mobile). Tudo BAKED no HTML — sem depender
+  // de JS runtime. Desktop mantém layout antigo via display:contents no pair
+  // e clone hidden.
+  function prepareDnaHelixForProposal(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const helix = doc.querySelector('.proposal-section--turbo .turbo-dna-helix');
+    if (!helix || helix.dataset.dnaPrepared === '1') return html;
+    helix.dataset.dnaPrepared = '1';
+
+    // Substitui o SVG do helix original por uma versão que tem AMBOS:
+    // a horizontal (para desktop) e a vertical (para mobile).
+    // CSS controla visibilidade por viewport.
+    const origSvg = helix.querySelector('.turbo-dna-helix-svg');
+    if (origSvg) {
+      // Marca o SVG original como horizontal (desktop)
+      origSvg.classList.add('turbo-dna-helix-svg--h');
+      // Cria um SVG vertical (mobile) como sibling — strands de y=0 a y=200
+      const verticalSvg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      verticalSvg.setAttribute('class', 'turbo-dna-helix-svg turbo-dna-helix-svg--v');
+      verticalSvg.setAttribute('viewBox', '0 0 60 200');
+      verticalSvg.innerHTML =
+        '<line class="helix-rung" x1="20" y1="40"  x2="40" y2="40"/>' +
+        '<line class="helix-rung" x1="20" y1="80"  x2="40" y2="80"/>' +
+        '<line class="helix-rung" x1="20" y1="120" x2="40" y2="120"/>' +
+        '<line class="helix-rung" x1="20" y1="160" x2="40" y2="160"/>' +
+        '<path class="helix-s1" d="M 30 0 C 60 35, 60 65, 30 100 C 0 135, 0 165, 30 200"/>' +
+        '<path class="helix-s2" d="M 30 0 C 0 35, 0 65, 30 100 C 60 135, 60 165, 30 200"/>' +
+        '<circle class="helix-dot" cx="30" cy="50"/>' +
+        '<circle class="helix-dot" cx="30" cy="150"/>';
+      origSvg.parentNode.insertBefore(verticalSvg, origSvg.nextSibling);
+    }
+
+    // Cria o pair wrapper + clona o helix preparado pra ter 2 verticais lado-a-lado no mobile
+    const pair = doc.createElement('div');
+    pair.className = 'turbo-dna-helix-pair';
+    const clone = helix.cloneNode(true);
+    clone.classList.add('turbo-dna-helix--clone');
+    helix.parentNode.insertBefore(pair, helix);
+    pair.appendChild(helix);
+    pair.appendChild(clone);
+
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+
   // Pinna o gráfico "Somos obcecados por resultado" no ESTADO FINAL direto
   // no HTML — sem depender de JS no momento de exibição. resetChart() do
   // host deixou a curva oculta (stroke-dashoffset = comprimento) e os
@@ -15168,12 +15214,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         }
       }
 
-      /* Helix duplicado: gerado pelo dnaAlignScript pra dobrar o helix
-         no mobile. Desktop: wrapper pair fica invisível via display:contents
-         (helix original participa do flex normalmente como antes), clone
-         hidden. Layout desktop preservado idêntico ao anterior. */
+      /* DNA helix responsivo: pair + clone + 2 SVGs (horizontal e
+         vertical) são gerados via prepareDnaHelixForProposal no build.
+         Desktop: pair vira display:contents (some), clone hidden,
+         só o SVG horizontal aparece. Layout desktop preservado. */
       .proposal-section--turbo .turbo-dna-helix-pair { display: contents; }
       .proposal-section--turbo .turbo-dna-helix--clone { display: none; }
+      .proposal-section--turbo .turbo-dna-helix-svg--v { display: none; }
 
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
       .proposal-section--external { padding: 0; background: #0a0a0c; }
@@ -15260,38 +15307,42 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           max-width: 100% !important;
           width: 100% !important;
         }
-        /* Mobile: O SVG do helix foi REESCRITO via JS pra ser nativamente
-           vertical (strands top-to-bottom). 2 helices lado-a-lado, ambos
-           verticais, atuando como PONTE entre a foto dos founders (em
-           cima) e do time (embaixo). Simétricos em relação ao eixo
-           vertical do slide. */
+        /* Mobile: pair fica visível como grid 2-col centralizado.
+           Clone aparece, SVG horizontal some, SVG vertical aparece.
+           2 helices verticais como ponte entre founders e team. */
         .proposal-section--turbo .turbo-dna-helix-pair {
-          display: flex !important;
-          flex-direction: row !important;
-          align-items: center !important;
+          display: grid !important;
+          grid-template-columns: 80px 80px !important;
+          column-gap: 70px !important;
           justify-content: center !important;
-          gap: 48px !important;
+          align-items: center !important;
           width: 100% !important;
-          padding: 4px 0 !important;
-          margin: 0 !important;
+          margin: 10px 0 !important;
+          padding: 0 !important;
           flex: 0 0 auto !important;
+        }
+        .proposal-section--turbo .turbo-dna-helix--clone {
+          display: block !important;
         }
         .proposal-section--turbo .turbo-dna-helix,
         .proposal-section--turbo .turbo-dna-helix--clone {
-          width: 36px !important;
-          height: 110px !important;
-          flex: 0 0 36px !important;
+          width: 80px !important;
+          height: 200px !important;
           margin: 0 !important;
           padding: 0 !important;
           transform: none !important;
-          overflow: visible !important;
-          opacity: 0.90 !important;
-          display: flex !important;
+          overflow: hidden !important;
+          opacity: 0.92 !important;
+          display: block !important;
+          flex: 0 0 auto !important;
         }
-        .proposal-section--turbo .turbo-dna-helix-svg {
+        /* Esconde o SVG horizontal, mostra o vertical */
+        .proposal-section--turbo .turbo-dna-helix-svg--h { display: none !important; }
+        .proposal-section--turbo .turbo-dna-helix-svg--v {
+          display: block !important;
           width: 100% !important;
           height: 100% !important;
-          overflow: visible !important;
+          overflow: hidden !important;
         }
         .proposal-section--turbo .turbo-dna-tags {
           gap: 6px;
@@ -16047,6 +16098,9 @@ ${dnaAlignScript}
     // mantém o preview leve e permite download .html standalone. Quando o
     // usuário quiser play de novo, esta linha deve ser removida ou condicionada.
     html = replaceVideosWithThumbnails(html);
+    // Sempre: prepara o helix do DNA pra ser responsivo (clone + SVG vertical
+    // como sibling). CSS controla qual orientação aparece por viewport.
+    html = prepareDnaHelixForProposal(html);
     // Sempre: pinna o gráfico growth no estado final direto no HTML.
     // Evita depender de JS no momento de exibição (era o que estava
     // falhando inexplicavelmente em mobile real).
