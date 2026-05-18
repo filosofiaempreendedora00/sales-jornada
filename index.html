@@ -14095,14 +14095,17 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     // Esconde elementos da animação intermediária
     ['growth-dot','growth-glow-outer','growth-glow-mid','growth-dot-counter']
       .forEach(id => { const el = svg.querySelector('#' + id); if (el) el.setAttribute('opacity', '0'); });
-    // Logo Turbo: posicionada no marco final (1.300 / 2026) com tamanho 82px
+    // Logo Turbo: pinada no marco final (1.300 / 2026), 82px de lado.
+    // Texto "1.300" (#gml-1300) tem baseline em y=5 com font-size 18, ou seja,
+    // ocupa de ~y=-13 a y=5. Logo precisa ficar ACIMA disso com folga:
+    // y=-110 → logo de y=-110 a y=-28 (gap ~15px do topo do texto).
     const logo = svg.querySelector('#growth-dot-logo');
     if (logo) {
       logo.setAttribute('opacity', '1');
       logo.setAttribute('width', '82');
       logo.setAttribute('height', '82');
       logo.setAttribute('x', '421');
-      logo.setAttribute('y', '-52');
+      logo.setAttribute('y', '-110');
     }
     // Big numbers no valor final
     const sc = doc.getElementById('stat-clientes');
