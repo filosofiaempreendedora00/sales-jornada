@@ -15116,9 +15116,11 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         }
       }
 
-      /* Helix clone: gerado pelo dnaAlignScript pra dobrar o helix no
-         mobile (2 simétricos entre as fotos). No desktop escondemos —
-         desktop usa o layout original com 1 helix horizontal. */
+      /* Helix duplicado: gerado pelo dnaAlignScript pra dobrar o helix
+         no mobile. Desktop: wrapper pair fica invisível via display:contents
+         (helix original participa do flex normalmente como antes), clone
+         hidden. Layout desktop preservado idêntico ao anterior. */
+      .proposal-section--turbo .turbo-dna-helix-pair { display: contents; }
       .proposal-section--turbo .turbo-dna-helix--clone { display: none; }
 
       /* Seções externas: iframe full-width que se auto-redimensiona via script */
@@ -15206,19 +15208,36 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           max-width: 100% !important;
           width: 100% !important;
         }
-        /* Mobile: o JS clonou o helix como sibling. Mostramos os 2,
-           empilhados verticalmente, ambos pequenos e centralizados.
-           Resultado: dupla helix simétrica entre as fotos dos founders
-           e do time, sem invadir as imagens. */
+        /* Mobile: pair vira flex-row com os 2 helices lado-a-lado,
+           simétricos em relação ao eixo vertical do slide. Mantém a
+           orientação ORIGINAL (vertical) e tamanho próximo do original
+           (~50px largura). Overflow:hidden poda as pontinhas que
+           extrapolavam para cima/baixo. */
+        .proposal-section--turbo .turbo-dna-helix-pair {
+          display: flex !important;
+          flex-direction: row !important;
+          align-items: center !important;
+          justify-content: center !important;
+          gap: 32vw !important;
+          width: 100% !important;
+          padding: 6px 0 !important;
+          flex: 0 0 auto !important;
+        }
         .proposal-section--turbo .turbo-dna-helix,
         .proposal-section--turbo .turbo-dna-helix--clone {
-          width: 32px !important;
-          height: 44px !important;
+          width: 50px !important;
+          height: 84px !important;
+          flex: 0 0 50px !important;
+          margin: 0 !important;
           transform: none !important;
-          margin: 6px auto !important;
-          opacity: 0.60 !important;
-          flex: 0 0 auto !important;
-          display: block !important;
+          overflow: hidden !important;
+          opacity: 0.85 !important;
+          display: flex !important;
+        }
+        .proposal-section--turbo .turbo-dna-helix-svg {
+          height: 100% !important;
+          width: 100% !important;
+          overflow: hidden !important;
         }
         .proposal-section--turbo .turbo-dna-tags {
           gap: 6px;
@@ -15406,8 +15425,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         .proposal-section--pacotes-social .pacote-price {
           font-size: 26px !important;
         }
+        /* Social bundles no mobile: stack vertical igual Performance/
+           Creators (antes ficavam lado-a-lado com texto esmagado pq o
+           grid--two forçava 2 cols). */
         .proposal-section--pacotes-social .pacotes-grid--two {
+          grid-template-columns: 1fr !important;
           max-width: 100% !important;
+          gap: 16px !important;
         }
 
         /* ════ CLOSING ════ */
@@ -15540,21 +15564,30 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           max-width: 100% !important;
         }
 
-        /* Cronograma (cp-timeline): o link verde "processo ponta a ponta"
-           era position:absolute com bottom:68px/right:32px no desktop
-           (flutuando no canto inferior direito). No mobile, voltamos
-           pra fluxo normal — sem absolute, sem bottom/right offsets,
-           pra não sobrepor o card "Seu anúncio está pronto!". */
+        /* Cronograma: timeline com fim claro + link verde "processo ponta
+           a ponta" SEPARADO por respiro generoso + divisor sutil acima
+           pra deixar visualmente óbvio que é um complemento, não parte
+           do timeline. */
         .proposal-section--creators .cp-timeline {
-          margin-bottom: 22px !important;
+          margin-bottom: 40px !important;
         }
         .proposal-section--creators .cp-timeline-process-link {
           position: static !important;
           bottom: auto !important;
           right: auto !important;
           width: 100% !important;
-          margin-top: 24px !important;
+          margin-top: 48px !important;
+          padding-top: 18px !important;
           flex-wrap: wrap !important;
+          border-top-width: 1px !important;
+        }
+        /* Linha sutil acima do tag verde reforçando que é complemento */
+        .proposal-section--creators .cp-timeline-process-link::after {
+          content: '';
+          position: absolute;
+          top: -24px; left: 10%; right: 10%;
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
         }
         .proposal-section--creators .cp-timeline-process-link .link-row {
           flex-wrap: wrap !important;
@@ -15763,21 +15796,64 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   function play(){
     if (played) return;
     played = true;
-    try { animate(); } catch(e) { console.warn('[growth] animate failed', e); }
+    try { animate(); } catch(e) { console.warn('[growth] animate failed', e); showFinalState(); }
+  }
+
+  // Mostra direto o estado final do gráfico — sem animação, sem dependência
+  // de SVG-path-math. Usado em mobile (animação tava falhando) e como
+  // fallback se animate() lançar erro.
+  function showFinalState(){
+    try {
+      var svg = getSvg(); if (!svg) return;
+      var curve = svg.querySelector('#growth-curve');
+      if (curve) {
+        curve.style.transition = 'none';
+        curve.style.strokeDasharray = 'none';
+        curve.style.strokeDashoffset = '0';
+      }
+      svg.querySelectorAll('.growth-milestone').forEach(function(el){ el.setAttribute('opacity','1'); });
+      svg.querySelector('#growth-dot')?.setAttribute('opacity', '0');
+      svg.querySelector('#growth-glow-outer')?.setAttribute('opacity', '0');
+      svg.querySelector('#growth-glow-mid')?.setAttribute('opacity', '0');
+      svg.querySelector('#growth-dot-counter')?.setAttribute('opacity', '0');
+      svg.querySelector('#growth-dot-logo')?.setAttribute('opacity', '1');
+      // Logo no topo: pinned no marco 1.300 (x=462, y=30) com tamanho final 82px
+      var logo = svg.querySelector('#growth-dot-logo');
+      if (logo) {
+        logo.setAttribute('width', '82');
+        logo.setAttribute('height', '82');
+        logo.setAttribute('x', '421');
+        logo.setAttribute('y', '-52');
+      }
+      var sc = (svg.ownerDocument || document).getElementById('stat-clientes');
+      var sb = (svg.ownerDocument || document).getElementById('stat-colab');
+      if (sc) sc.textContent = '1.300+';
+      if (sb) sb.textContent = '120+';
+      played = true;
+    } catch(e){ console.warn('[growth] showFinalState failed', e); }
+  }
+
+  function isMobile(){
+    try { return window.matchMedia('(max-width: 700px)').matches; } catch(_) { return false; }
   }
 
   function init(){
-    // Fallback agressivo SEMPRE armado — independente de slide existir
-    // já ou não, em 2.5s a animação dispara. Garante que big numbers
-    // e curva sempre aparecem mesmo se IO falhar/atrasar no mobile.
+    // MOBILE: sem animação. Mostra direto o estado final. Sem deps de IO,
+    // sem timing — os números aparecem garantidamente assim que o script
+    // executa. Animação na proposta era complicação desnecessária no mobile.
+    if (isMobile()) {
+      // tenta agora; se SVG ainda não existe, repete em curto loop
+      function tryShow(){
+        if (getSvg()) showFinalState();
+        else setTimeout(tryShow, 200);
+      }
+      tryShow();
+      return;
+    }
+
+    // DESKTOP: animação completa via IO + fallbacks.
     setTimeout(play, 2500);
-
-    // Se o slide ainda não existe, tenta de novo em 200ms (race condition
-    // com imagens carregando ou outro DOM atrasado).
     if (!getSlide()) { setTimeout(init, 200); return; }
-
-    // IntersectionObserver pra disparar mais cedo se o slide ficar
-    // visível antes do fallback de 2.5s.
     try {
       var io = new IntersectionObserver(function(entries){
         entries.forEach(function(e){
@@ -15786,9 +15862,6 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       }, { threshold: 0.05, rootMargin: '0px 0px 80px 0px' });
       io.observe(getSlide());
     } catch(_) {}
-
-    // Backup: scroll listener próprio + window listener pra cobrir
-    // ambientes onde IO falha. Custa pouco e dá uma segurança extra.
     function checkOnScroll(){
       var s = getSlide(); if (!s) return;
       var r = s.getBoundingClientRect();
@@ -15807,8 +15880,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   } else {
     init();
   }
-  // Mais um sino: dispara depois de window.load (todas imagens carregadas)
-  window.addEventListener('load', function(){ setTimeout(play, 500); });
+  window.addEventListener('load', function(){ setTimeout(function(){
+    if (isMobile()) showFinalState(); else play();
+  }, 500); });
 })();
 <` + `/script>`;
 
@@ -15833,16 +15907,21 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     header.style.marginLeft = marginLeft + 'px';
   }
 
-  // Clona o helix como sibling. CSS mostra só o original no desktop e
-  // ambos no mobile — dando ao mobile 2 helices simétricos no caminho
-  // entre as fotos dos founders e do time.
+  // Embrulha o helix original num wrapper que vira o "rail" do par
+  // de helices simétricos no mobile (clone vai ao lado). No desktop
+  // CSS força o wrapper a display:contents (some) e o clone hidden —
+  // layout original preservado.
   function duplicateHelix(){
     var helix = document.querySelector('.proposal-section--turbo .turbo-dna-helix');
     if (!helix || helix.dataset.dnaCloned === '1') return;
     helix.dataset.dnaCloned = '1';
+    var pair = document.createElement('div');
+    pair.className = 'turbo-dna-helix-pair';
     var clone = helix.cloneNode(true);
     clone.classList.add('turbo-dna-helix--clone');
-    helix.parentNode.insertBefore(clone, helix.nextSibling);
+    helix.parentNode.insertBefore(pair, helix);
+    pair.appendChild(helix);
+    pair.appendChild(clone);
   }
 
   function schedule(){ requestAnimationFrame(function(){ duplicateHelix(); align(); }); }
