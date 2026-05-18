@@ -15260,36 +15260,38 @@ document.getElementById('avatar-input').addEventListener('change', e => {
           max-width: 100% !important;
           width: 100% !important;
         }
-        /* Mobile: pair vira flex-row com os 2 helices lado-a-lado,
-           simétricos em relação ao eixo vertical do slide. Mantém a
-           orientação ORIGINAL (vertical) e tamanho próximo do original
-           (~50px largura). Overflow:hidden poda as pontinhas que
-           extrapolavam para cima/baixo. */
+        /* Mobile: O SVG do helix foi REESCRITO via JS pra ser nativamente
+           vertical (strands top-to-bottom). 2 helices lado-a-lado, ambos
+           verticais, atuando como PONTE entre a foto dos founders (em
+           cima) e do time (embaixo). Simétricos em relação ao eixo
+           vertical do slide. */
         .proposal-section--turbo .turbo-dna-helix-pair {
           display: flex !important;
           flex-direction: row !important;
           align-items: center !important;
           justify-content: center !important;
-          gap: 32vw !important;
+          gap: 48px !important;
           width: 100% !important;
-          padding: 6px 0 !important;
+          padding: 4px 0 !important;
+          margin: 0 !important;
           flex: 0 0 auto !important;
         }
         .proposal-section--turbo .turbo-dna-helix,
         .proposal-section--turbo .turbo-dna-helix--clone {
-          width: 50px !important;
-          height: 84px !important;
-          flex: 0 0 50px !important;
+          width: 36px !important;
+          height: 110px !important;
+          flex: 0 0 36px !important;
           margin: 0 !important;
+          padding: 0 !important;
           transform: none !important;
-          overflow: hidden !important;
-          opacity: 0.85 !important;
+          overflow: visible !important;
+          opacity: 0.90 !important;
           display: flex !important;
         }
         .proposal-section--turbo .turbo-dna-helix-svg {
-          height: 100% !important;
           width: 100% !important;
-          overflow: hidden !important;
+          height: 100% !important;
+          overflow: visible !important;
         }
         .proposal-section--turbo .turbo-dna-tags {
           gap: 6px;
@@ -15977,14 +15979,50 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     pair.appendChild(clone);
   }
 
-  function schedule(){ requestAnimationFrame(function(){ duplicateHelix(); align(); }); }
+  // O SVG do helix original é horizontal (strands de x=0 a x=120). No
+  // mobile precisamos de vertical (strands de y=0 a y=200) pra fazer a
+  // "ponte" entre as fotos empilhadas. Reescreve o conteúdo de cada SVG.
+  // Salva o original em dataset pra poder reverter em resize.
+  var VERTICAL_HELIX =
+    '<line class="helix-rung" x1="20" y1="40"  x2="40" y2="40"/>' +
+    '<line class="helix-rung" x1="20" y1="80"  x2="40" y2="80"/>' +
+    '<line class="helix-rung" x1="20" y1="120" x2="40" y2="120"/>' +
+    '<line class="helix-rung" x1="20" y1="160" x2="40" y2="160"/>' +
+    '<path class="helix-s1" d="M 30 0 C 60 35, 60 65, 30 100 C 0 135, 0 165, 30 200"/>' +
+    '<path class="helix-s2" d="M 30 0 C 0 35, 0 65, 30 100 C 60 135, 60 165, 30 200"/>' +
+    '<circle class="helix-dot" cx="30" cy="50"/>' +
+    '<circle class="helix-dot" cx="30" cy="150"/>';
+  function setHelixOrientation(){
+    var isMobile = false;
+    try { isMobile = window.matchMedia('(max-width: 700px)').matches; } catch(_){}
+    var svgs = document.querySelectorAll('.proposal-section--turbo .turbo-dna-helix-svg');
+    svgs.forEach(function(svg){
+      if (isMobile) {
+        if (svg.dataset.orient !== 'v') {
+          if (!svg.dataset.origViewBox) svg.dataset.origViewBox = svg.getAttribute('viewBox') || '0 0 120 160';
+          if (!svg.dataset.origContent) svg.dataset.origContent = svg.innerHTML;
+          svg.setAttribute('viewBox', '0 0 60 200');
+          svg.innerHTML = VERTICAL_HELIX;
+          svg.dataset.orient = 'v';
+        }
+      } else {
+        if (svg.dataset.orient === 'v') {
+          svg.setAttribute('viewBox', svg.dataset.origViewBox || '0 0 120 160');
+          svg.innerHTML = svg.dataset.origContent || '';
+          svg.dataset.orient = 'h';
+        }
+      }
+    });
+  }
+
+  function schedule(){ requestAnimationFrame(function(){ duplicateHelix(); setHelixOrientation(); align(); }); }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', schedule);
   } else {
     schedule();
   }
   window.addEventListener('load', schedule);
-  window.addEventListener('resize', align);
+  window.addEventListener('resize', function(){ setHelixOrientation(); align(); });
 })();
 <` + `/script>`;
 
