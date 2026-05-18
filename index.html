@@ -14076,6 +14076,42 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
 
+  // Pinna o gráfico "Somos obcecados por resultado" no ESTADO FINAL direto
+  // no HTML — sem depender de JS no momento de exibição. resetChart() do
+  // host deixou a curva oculta (stroke-dashoffset = comprimento) e os
+  // marcos com opacity=0; aqui revertemos pra mostrar tudo já desenhado.
+  // Funciona em qualquer mobile/browser sem precisar de animação.
+  function pinGrowthChartFinalState(html) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const svg = doc.querySelector('.proposal-section--turbo .turbo-chart-svg');
+    if (!svg) return html;
+    const curve = svg.querySelector('#growth-curve');
+    if (curve) {
+      curve.removeAttribute('style');
+      // Garante o estilo limpo sem inline strokeDasharray/Offset
+      curve.style.transition = 'none';
+    }
+    svg.querySelectorAll('.growth-milestone').forEach(el => el.setAttribute('opacity', '1'));
+    // Esconde elementos da animação intermediária
+    ['growth-dot','growth-glow-outer','growth-glow-mid','growth-dot-counter']
+      .forEach(id => { const el = svg.querySelector('#' + id); if (el) el.setAttribute('opacity', '0'); });
+    // Logo Turbo: posicionada no marco final (1.300 / 2026) com tamanho 82px
+    const logo = svg.querySelector('#growth-dot-logo');
+    if (logo) {
+      logo.setAttribute('opacity', '1');
+      logo.setAttribute('width', '82');
+      logo.setAttribute('height', '82');
+      logo.setAttribute('x', '421');
+      logo.setAttribute('y', '-52');
+    }
+    // Big numbers no valor final
+    const sc = doc.getElementById('stat-clientes');
+    const sb = doc.getElementById('stat-colab');
+    if (sc) sc.textContent = '1.300+';
+    if (sb) sb.textContent = '120+';
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+
   // Substitui o conteúdo da capa Turbo (.turbo-slide--cover) só no contexto da
   // proposta — capa nova com saudação personalizada usando o nome do cliente.
   // Apresentação real fica intacta. clientName: string (pode ser vazia, vira "cliente").
@@ -15961,7 +15997,6 @@ ${styles}
 <body>
 ${sections.join('\n')}
 ${autoResizeScript}
-${growthChartScript}
 ${dnaAlignScript}
 </body>
 </html>`;
@@ -15971,6 +16006,10 @@ ${dnaAlignScript}
     // mantém o preview leve e permite download .html standalone. Quando o
     // usuário quiser play de novo, esta linha deve ser removida ou condicionada.
     html = replaceVideosWithThumbnails(html);
+    // Sempre: pinna o gráfico growth no estado final direto no HTML.
+    // Evita depender de JS no momento de exibição (era o que estava
+    // falhando inexplicavelmente em mobile real).
+    html = pinGrowthChartFinalState(html);
     // Sempre: substitui a capa Turbo pela versão da proposta (saudação +
     // logo decorativo + tags em canto sutil). Apresentação real intacta.
     // O nome do cliente vem via opts.clientName (input do usuário). Sem nome,
