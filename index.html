@@ -14611,6 +14611,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     if (!doc || !win || !doc.head || !doc.body) return;
     // Evita injeção dupla
     if (doc.querySelector('script[data-sm-edit-loader]')) return;
+    // Cache-bust pra garantir versão fresh do editor.js (muda com frequência).
+    // Pra Sortable que é estável, deixamos cachear.
+    const editorBust = '?v=' + (window.__smBuildTs || Date.now());
     // 1) Sortable
     const s1 = doc.createElement('script');
     s1.src = window.location.origin + '/sortable.min.js';
@@ -14618,7 +14621,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     doc.head.appendChild(s1);
     // 2) Editor (depende do Sortable; editor.js espera com retries)
     const s2 = doc.createElement('script');
-    s2.src = window.location.origin + '/editor.js';
+    s2.src = window.location.origin + '/editor.js' + editorBust;
     s2.dataset.smEdit = 'editor';
     s2.dataset.smEditLoader = '1';
     doc.head.appendChild(s2);

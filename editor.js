@@ -361,8 +361,12 @@
     // Remove drag handles
     cloneDoc.querySelectorAll('.' + NS + '-handle').forEach(el => el.remove());
 
-    // Remove o script editor.js (se foi adicionado) e sortable
-    cloneDoc.querySelectorAll('script[data-' + NS + ']').forEach(el => el.remove());
+    // Remove os scripts injetados pelo parent (editor.js + sortable.min.js).
+    // Atributos `data-sm-edit` e `data-sm-edit-loader` (kebab-case do
+    // dataset.smEdit / dataset.smEditLoader).
+    cloneDoc.querySelectorAll('script[data-sm-edit], script[data-sm-edit-loader]').forEach(el => el.remove());
+    // Safety: qualquer outro <script src="*editor.js"> ou *sortable* residual
+    cloneDoc.querySelectorAll('script[src*="/editor.js"], script[src*="/sortable.min.js"], script[src*="/sortable"]').forEach(el => el.remove());
 
     // Remove contenteditable attributes e classes
     cloneDoc.querySelectorAll('[contenteditable]').forEach(el => {
@@ -371,6 +375,12 @@
       el.classList.remove(NS + '-editable');
       // Limpa atributo class se ficou vazio
       if (el.classList.length === 0) el.removeAttribute('class');
+    });
+
+    // Remove data-edit-id (interno do pipeline de patches, não tem
+    // valor pro HTML final que o cliente vai ver)
+    cloneDoc.querySelectorAll('[data-edit-id]').forEach(el => {
+      el.removeAttribute('data-edit-id');
     });
 
     // Limpa style="position: relative" que adicionamos no section
