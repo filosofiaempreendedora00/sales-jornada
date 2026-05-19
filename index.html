@@ -2605,6 +2605,63 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-custom-generate-btn.is-loading .prop-gen-spinner { display: inline-block; }
 @keyframes prop-spin { to { transform: rotate(360deg); } }
 
+/* Divisor "ou" entre Gerar e Carregar HTML */
+.prop-or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 14px 0 8px;
+  color: var(--text-3);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.prop-or-divider::before,
+.prop-or-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* Botão "Carregar HTML existente" */
+.prop-custom-import-btn {
+  appearance: none;
+  width: 100%;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(155,109,255,0.42);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: #c4a8ff;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.prop-custom-import-btn:hover {
+  background: rgba(155,109,255,0.08);
+  border-color: rgba(155,109,255,0.75);
+  color: #d8c4ff;
+}
+.prop-custom-import-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.prop-import-hint {
+  margin: 6px 0 0;
+  font-size: 11px;
+  color: var(--text-3);
+  line-height: 1.5;
+}
+.prop-import-hint strong {
+  color: var(--text-2);
+  font-weight: 700;
+}
+
 /* MOCK warning */
 .prop-gen-mock-note {
   margin: 8px 0 0;
@@ -9077,6 +9134,22 @@ a.xpto-pricing-btn { text-decoration: none; }
           ⚠️ Modo MOCK: backend rodando sem ANTHROPIC_API_KEY. Configure a key no Render pra geração real.
         </p>
 
+        <!-- Divisor "ou" — separa geração da IA do import de HTML -->
+        <div class="prop-or-divider"><span>ou</span></div>
+
+        <!-- Upload de HTML já gerado pra continuar editando -->
+        <input type="file" id="prop-custom-import-file" accept=".html,text/html" hidden>
+        <button
+          type="button"
+          class="prop-custom-import-btn"
+          id="prop-custom-import-btn"
+        >
+          <span>📂 Carregar HTML existente</span>
+        </button>
+        <p class="prop-import-hint">
+          Já tem um HTML de proposta? Sobe aqui pra editar e baixar de novo — <strong>sem consumir créditos</strong> da IA.
+        </p>
+
         <!-- Botão Baixar HTML — só aparece depois da primeira geração -->
         <button
           type="button"
@@ -14551,6 +14624,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         <span class="step-text">Clique em <strong>Visualizar</strong> ou <strong>Gerar com IA</strong></span>
       </div>
     </div>
+    <p class="footnote" style="margin-top: 20px;">
+      ou <strong style="color:#c4a8ff;">📂 Carregar HTML existente</strong> pra continuar editando uma proposta já gerada (sem consumir créditos).
+    </p>
     <p class="footnote">A proposta gerada vai aparecer neste painel.</p>
   </div>
 </body>
@@ -14589,6 +14665,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   const clientInput = document.getElementById('prop-custom-client-name');
   const frame       = document.getElementById('prop-preview-frame');
   const previewBtn  = document.getElementById('prop-custom-preview-btn');
+  const meta        = document.getElementById('prop-preview-meta');
 
   if (!generateBtn || !typeSelect || !frame) return;
 
@@ -14922,6 +14999,72 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
   // Exposta pro FAB dentro do iframe (editor.js chama via window.parent)
   window.__smRequestDownload = downloadCurrentProposal;
+
+  // ── Importar HTML existente (sem consumir créditos) ──
+  const importBtn = document.getElementById('prop-custom-import-btn');
+  const importFile = document.getElementById('prop-custom-import-file');
+  if (importBtn && importFile) {
+    importBtn.addEventListener('click', () => importFile.click());
+
+    importFile.addEventListener('change', async () => {
+      const file = importFile.files && importFile.files[0];
+      if (!file) return;
+      // Validações básicas
+      const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+      if (file.size > MAX_SIZE) {
+        showStatus('✕ Arquivo muito grande. Limite: 5MB.', 'error');
+        importFile.value = '';
+        return;
+      }
+      if (!/\.html?$/i.test(file.name) && !/html/i.test(file.type)) {
+        showStatus('✕ Selecione um arquivo .html', 'error');
+        importFile.value = '';
+        return;
+      }
+
+      showStatus(`Carregando "${file.name}"…`, 'info');
+      try {
+        const text = await file.text();
+        // Sanity check de HTML
+        if (!/<!DOCTYPE\s+html|<html[\s>]/i.test(text.slice(0, 2000))) {
+          throw new Error('O arquivo não parece ser uma página HTML válida.');
+        }
+
+        // Auto-detect do tipo de proposta pelo título (afeta o nome
+        // do arquivo no download seguinte). Default 02 se não detectar.
+        const titleMatch = text.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+        const title = titleMatch ? titleMatch[1].toLowerCase() : '';
+        let detectedType = '02';
+        if (/lan[çc]amento|haira/i.test(title)) detectedType = '00';
+        else if (/performance|mql|growth\s*o\.?s/i.test(title)) detectedType = '01';
+        else if (/r[ée]guas?|comunica/i.test(title)) detectedType = '02';
+        // Não tentamos auto-preencher o nome do cliente (heurísticas
+        // de título são frágeis e podem virar "Réguas de Comunicação"
+        // como nome do cliente). Usuário preenche se for refinar.
+
+        state.lastProposalType = detectedType;
+        state.lastGeneratedHtml = text;
+
+        // Renderiza no iframe — editor.js vai injetar o modo edição
+        renderInFrame(text);
+
+        // Mostra controles de download + refinamento (se IA disponível)
+        if (downloadBtn) downloadBtn.hidden = false;
+        if (refineWrap) refineWrap.hidden = false;
+        if (meta) meta.textContent = `— editando ${file.name}`;
+
+        showStatus(
+          `✓ "${file.name}" carregado. Edite à vontade clicando nos textos, arraste seções, e baixe novamente quando estiver pronto.`,
+          'success'
+        );
+      } catch (e) {
+        console.error('[import]', e);
+        showStatus('✕ ' + (e.message || 'Falha ao carregar o HTML.'), 'error');
+      } finally {
+        importFile.value = ''; // permite re-selecionar o mesmo arquivo
+      }
+    });
+  }
 
   // ── Health check (feature flag) ────────────────
   // Detecta se o backend de IA está disponível. Se sim, revela o botão GERAR.
