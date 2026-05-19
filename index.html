@@ -2556,6 +2556,129 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   cursor: not-allowed;
 }
 
+/* ─── Botão GERAR (IA) ─── */
+.prop-custom-generate-btn {
+  appearance: none;
+  width: 100%;
+  margin-top: 8px;
+  background: linear-gradient(135deg, rgba(13,207,232,0.22), rgba(155,109,255,0.22));
+  border: 1px solid rgba(13,207,232,0.45);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.prop-custom-generate-btn[hidden] { display: none; }
+.prop-custom-generate-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(13,207,232,0.32), rgba(155,109,255,0.32));
+  border-color: rgba(13,207,232,0.65);
+}
+.prop-custom-generate-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.prop-custom-generate-btn.is-loading {
+  opacity: 0.8;
+  cursor: progress;
+}
+.prop-custom-generate-btn.is-loading .prop-gen-label { opacity: 0.5; }
+.prop-gen-spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-top-color: var(--text);
+  animation: prop-spin 0.8s linear infinite;
+  flex-shrink: 0;
+}
+.prop-custom-generate-btn.is-loading .prop-gen-spinner { display: inline-block; }
+@keyframes prop-spin { to { transform: rotate(360deg); } }
+
+/* MOCK warning */
+.prop-gen-mock-note {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: rgba(255,168,38,0.08);
+  border: 1px solid rgba(255,168,38,0.30);
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #ffc97a;
+}
+.prop-gen-mock-note[hidden] { display: none; }
+
+/* Refine textarea */
+.prop-refine-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(155,109,255,0.18);
+}
+.prop-refine-wrap[hidden] { display: none; }
+.prop-refine-input {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 11px 13px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 90px;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.prop-refine-input::placeholder { color: var(--text-3); }
+.prop-refine-input:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--border2);
+}
+.prop-refine-input:focus {
+  outline: none;
+  border-color: rgba(13,207,232,0.55);
+  background: rgba(13,207,232,0.06);
+  box-shadow: 0 0 0 3px rgba(13,207,232,0.12);
+}
+
+/* Status / erro */
+.prop-gen-status {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.prop-gen-status[hidden] { display: none; }
+.prop-gen-status.is-info {
+  background: rgba(13,207,232,0.08);
+  border: 1px solid rgba(13,207,232,0.30);
+  color: #7ee4f5;
+}
+.prop-gen-status.is-error {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.32);
+  color: #ff8888;
+}
+.prop-gen-status.is-success {
+  background: rgba(18,212,144,0.08);
+  border: 1px solid rgba(18,212,144,0.32);
+  color: #6ee5b8;
+}
+
 /* Transcrições da reunião de vendas */
 .prop-transcripts {
   display: flex;
@@ -8896,6 +9019,47 @@ a.xpto-pricing-btn { text-decoration: none; }
         >
           <span>👁️ Visualizar proposta</span>
         </button>
+
+        <!-- Botão GERAR — só visível quando /api/health responde (feature flag) -->
+        <button
+          type="button"
+          class="prop-custom-generate-btn"
+          id="prop-custom-generate-btn"
+          hidden
+          disabled
+        >
+          <span class="prop-gen-label">⚡ Gerar proposta com IA</span>
+          <span class="prop-gen-spinner" aria-hidden="true"></span>
+        </button>
+
+        <!-- Aviso de modo MOCK (se o backend respondeu mas sem API key) -->
+        <p class="prop-gen-mock-note" id="prop-gen-mock-note" hidden>
+          ⚠️ Modo MOCK: backend rodando sem ANTHROPIC_API_KEY. Configure a key no Render pra geração real.
+        </p>
+
+        <!-- Refinamento — só aparece depois da primeira geração -->
+        <div class="prop-refine-wrap" id="prop-refine-wrap" hidden>
+          <p class="prop-section-label" style="margin-top: 6px;">Refinar proposta</p>
+          <textarea
+            class="prop-refine-input"
+            id="prop-refine-input"
+            placeholder="Ex: deixa o tom mais agressivo na seção de preços, enfatiza que o cliente citou Nubank como referência…"
+            rows="4"
+            spellcheck="false"
+          ></textarea>
+          <button
+            type="button"
+            class="prop-custom-generate-btn"
+            id="prop-custom-refine-btn"
+            disabled
+          >
+            <span class="prop-gen-label">✨ Aplicar refinamento</span>
+            <span class="prop-gen-spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+
+        <!-- Status / erro da última operação -->
+        <p class="prop-gen-status" id="prop-gen-status" hidden></p>
       </div>
       <div class="prop-section">
         <p class="prop-section-label">Estrutura da proposta</p>
@@ -14183,6 +14347,213 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   buttons.forEach(b => {
     b.addEventListener('click', () => setMode(b.dataset.mode));
   });
+})();
+
+// ─────────────────────────────────────────────────
+//  Geração de propostas com IA (Claude/Anthropic)
+//  Feature-flag: só ativa se /api/health responder.
+// ─────────────────────────────────────────────────
+(function () {
+  const generateBtn = document.getElementById('prop-custom-generate-btn');
+  const refineBtn   = document.getElementById('prop-custom-refine-btn');
+  const refineWrap  = document.getElementById('prop-refine-wrap');
+  const refineInput = document.getElementById('prop-refine-input');
+  const mockNote    = document.getElementById('prop-gen-mock-note');
+  const status      = document.getElementById('prop-gen-status');
+  const typeSelect  = document.getElementById('prop-custom-type');
+  const frame       = document.getElementById('prop-preview-frame');
+  const previewBtn  = document.getElementById('prop-custom-preview-btn');
+
+  if (!generateBtn || !typeSelect || !frame) return;
+
+  // Estado da sessão atual de personalização
+  const state = {
+    aiAvailable: false,
+    aiMode: null,        // 'live' | 'mock'
+    lastGeneratedHtml: null,
+    lastProposalType: null,
+    inFlight: false,
+  };
+
+  function showStatus(message, kind = 'info') {
+    if (!status) return;
+    status.textContent = message;
+    status.className = 'prop-gen-status is-' + kind;
+    status.hidden = false;
+  }
+  function hideStatus() {
+    if (!status) return;
+    status.hidden = true;
+    status.textContent = '';
+  }
+
+  function getTranscripts() {
+    const items = document.querySelectorAll('.prop-transcript-input');
+    return Array.from(items)
+      .map(t => (t.value || '').trim())
+      .filter(t => t.length > 0);
+  }
+
+  function syncGenerateEnabled() {
+    const hasType = !!typeSelect.value;
+    const hasTranscript = getTranscripts().length > 0;
+    generateBtn.disabled = !(state.aiAvailable && hasType && hasTranscript && !state.inFlight);
+  }
+
+  function setLoading(btn, on) {
+    if (!btn) return;
+    if (on) btn.classList.add('is-loading');
+    else btn.classList.remove('is-loading');
+    btn.disabled = on;
+  }
+
+  // Renderiza HTML no iframe usando srcdoc (mesma técnica do sistema padrão)
+  function renderInFrame(html) {
+    frame.removeAttribute('src');
+    frame.srcdoc = html;
+    state.lastGeneratedHtml = html;
+  }
+
+  // Reset do estado quando muda o tipo de proposta
+  typeSelect.addEventListener('change', () => {
+    state.lastGeneratedHtml = null;
+    state.lastProposalType = null;
+    if (refineWrap) refineWrap.hidden = true;
+    if (refineInput) refineInput.value = '';
+    hideStatus();
+    syncGenerateEnabled();
+  });
+
+  // Detecta mudanças nas transcrições pra atualizar o disabled
+  document.addEventListener('input', e => {
+    if (e.target.classList?.contains('prop-transcript-input')) {
+      syncGenerateEnabled();
+    }
+  });
+  // Detecta também mudanças via clique em Adicionar/Remover transcrição
+  const transcriptsWrap = document.getElementById('prop-transcripts');
+  if (transcriptsWrap) {
+    new MutationObserver(syncGenerateEnabled).observe(transcriptsWrap, {
+      childList: true, subtree: true,
+    });
+  }
+
+  // ── API call ────────────────────────────────────
+  async function callGenerate(body) {
+    const ctrl = new AbortController();
+    const timeout = setTimeout(() => ctrl.abort(), 130_000); // 2min10s
+    try {
+      const r = await fetch('/api/generate-proposal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        signal: ctrl.signal,
+      });
+      const json = await r.json().catch(() => ({ ok: false, error: 'Resposta inválida do servidor.' }));
+      if (!r.ok || !json.ok) {
+        const msg = json?.error || `Erro ${r.status}`;
+        throw new Error(msg);
+      }
+      return json;
+    } finally {
+      clearTimeout(timeout);
+    }
+  }
+
+  // ── Generate (do zero) ─────────────────────────
+  generateBtn.addEventListener('click', async () => {
+    const proposalType = typeSelect.value;
+    const transcripts = getTranscripts();
+    if (!proposalType || transcripts.length === 0) {
+      showStatus('Selecione um tipo de proposta e cole ao menos uma transcrição.', 'error');
+      return;
+    }
+    state.inFlight = true;
+    setLoading(generateBtn, true);
+    showStatus('Gerando proposta com IA — pode demorar ~30s a 2min…', 'info');
+
+    try {
+      const json = await callGenerate({ transcripts, proposalType });
+      renderInFrame(json.html);
+      state.lastProposalType = proposalType;
+      // Mostra refinamento
+      if (refineWrap) refineWrap.hidden = false;
+      const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
+      const modeNote = json.mode === 'mock' ? ' — modo MOCK (sem API key)' : '';
+      showStatus(`✓ Proposta gerada${elapsed}${modeNote}. Use o campo abaixo pra refinar.`, 'success');
+    } catch (e) {
+      console.error('[gerar]', e);
+      const msg = e.name === 'AbortError'
+        ? 'Tempo esgotado. A IA demorou demais — tente uma transcrição mais curta.'
+        : (e.message || 'Erro inesperado.');
+      showStatus('✕ ' + msg, 'error');
+    } finally {
+      state.inFlight = false;
+      setLoading(generateBtn, false);
+      syncGenerateEnabled();
+    }
+  });
+
+  // ── Refinement ─────────────────────────────────
+  if (refineInput && refineBtn) {
+    refineInput.addEventListener('input', () => {
+      refineBtn.disabled = !(state.lastGeneratedHtml && refineInput.value.trim().length > 0 && !state.inFlight);
+    });
+
+    refineBtn.addEventListener('click', async () => {
+      const refinement = refineInput.value.trim();
+      const transcripts = getTranscripts();
+      const proposalType = state.lastProposalType || typeSelect.value;
+      if (!refinement || !state.lastGeneratedHtml || !proposalType) return;
+
+      state.inFlight = true;
+      setLoading(refineBtn, true);
+      showStatus('Aplicando refinamento — ~10s a 1min…', 'info');
+
+      try {
+        const json = await callGenerate({
+          transcripts,
+          proposalType,
+          refinement,
+          currentHtml: state.lastGeneratedHtml,
+        });
+        renderInFrame(json.html);
+        refineInput.value = '';
+        refineBtn.disabled = true;
+        const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
+        const modeNote = json.mode === 'mock' ? ' — modo MOCK' : '';
+        showStatus(`✓ Refinamento aplicado${elapsed}${modeNote}. Pode continuar refinando.`, 'success');
+      } catch (e) {
+        console.error('[refinar]', e);
+        const msg = e.name === 'AbortError'
+          ? 'Tempo esgotado.'
+          : (e.message || 'Erro inesperado.');
+        showStatus('✕ ' + msg, 'error');
+      } finally {
+        state.inFlight = false;
+        setLoading(refineBtn, false);
+      }
+    });
+  }
+
+  // ── Health check (feature flag) ────────────────
+  // Detecta se o backend de IA está disponível. Se sim, revela o botão GERAR.
+  // Se não (deploy estático antigo), o botão fica escondido e a UI segue como antes.
+  (async function probeAPI() {
+    try {
+      const r = await fetch('/api/health', { method: 'GET', signal: AbortSignal.timeout(3000) });
+      if (!r.ok) return;
+      const j = await r.json();
+      if (!j?.ok) return;
+      state.aiAvailable = true;
+      state.aiMode = j.ai || 'mock';
+      generateBtn.hidden = false;
+      if (state.aiMode === 'mock' && mockNote) mockNote.hidden = false;
+      syncGenerateEnabled();
+    } catch {
+      // Backend não responde — UI continua sem o botão Gerar (modo legacy).
+    }
+  })();
 })();
 
 // Botão "Visualizar proposta" — habilitado quando tipo "02" é escolhido

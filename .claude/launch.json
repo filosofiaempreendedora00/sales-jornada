@@ -2,6 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
+      "name": "Jornada Turbo (node)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["server.js"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
       "name": "Jornada Turbo (http-server)",
       "runtimeExecutable": "npx",
       "runtimeArgs": ["http-server", ".", "--cors", "-c-1", "--symlink"],
