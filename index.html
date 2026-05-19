@@ -14330,7 +14330,177 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     if (frame) {
       if (isCustom) {
         frame.removeAttribute('src');
-        frame.srcdoc = `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#888;font-family:system-ui;display:grid;place-items:center;height:100vh;font-size:14px;text-align:center;padding:20px;line-height:1.6">Selecione um <strong style="color:#c4a8ff">tipo de proposta</strong> e clique em<br><strong style="color:#c4a8ff">"👁️ Visualizar proposta"</strong> pra ver o preview aqui.</body></html>`;
+        frame.srcdoc = `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  :root {
+    --bg: #07070f;
+    --surface: #0f0f1c;
+    --text: #e6e8f2;
+    --text-2: #8e93b0;
+    --text-3: #4a4e6a;
+    --c1: #9b6dff;
+    --c2: #4d8dff;
+    --c3: #0dcfe8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text-2);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  body::before {
+    content: '';
+    position: absolute;
+    inset: -10% 0 auto 0;
+    height: 80%;
+    background: radial-gradient(ellipse at 50% 30%,
+      rgba(155,109,255,0.14) 0%,
+      rgba(155,109,255,0.04) 28%,
+      transparent 60%);
+    pointer-events: none;
+  }
+  body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, #000 25%, transparent 65%);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 25%, transparent 65%);
+    pointer-events: none;
+  }
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 460px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(155,109,255,0.10);
+    border: 1px solid rgba(155,109,255,0.22);
+    border-radius: 99px;
+    padding: 5px 14px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #b89aff;
+    margin-bottom: 22px;
+  }
+  .eyebrow::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--c1);
+    box-shadow: 0 0 10px var(--c1);
+  }
+  .title {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    margin-bottom: 10px;
+    background: linear-gradient(160deg, #ffffff 30%, rgba(200,185,255,0.75));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .sub {
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-2);
+    margin-bottom: 28px;
+    max-width: 380px;
+  }
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 380px;
+  }
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    font-size: 13px;
+    text-align: left;
+    color: rgba(230,232,242,0.82);
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .step:hover {
+    border-color: rgba(155,109,255,0.20);
+    background: rgba(155,109,255,0.05);
+  }
+  .step-n {
+    width: 24px; height: 24px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, rgba(155,109,255,0.18), rgba(77,141,255,0.14));
+    border: 1px solid rgba(155,109,255,0.32);
+    color: #c4a8ff;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-text strong { color: var(--text); font-weight: 600; }
+  .footnote {
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text-3);
+    letter-spacing: 0.2px;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">Modo personalizada</div>
+    <h1 class="title">Configure à esquerda<br>pra começar.</h1>
+    <p class="sub">O preview da proposta personalizada vai aparecer aqui assim que você escolher um tipo e visualizar ou gerar.</p>
+    <div class="steps">
+      <div class="step">
+        <span class="step-n">1</span>
+        <span class="step-text">Cole a <strong>transcrição</strong> da reunião de vendas</span>
+      </div>
+      <div class="step">
+        <span class="step-n">2</span>
+        <span class="step-text">Selecione o <strong>tipo de proposta</strong></span>
+      </div>
+      <div class="step">
+        <span class="step-n">3</span>
+        <span class="step-text">Clique em <strong>Visualizar</strong> ou <strong>Gerar com IA</strong></span>
+      </div>
+    </div>
+    <p class="footnote">A proposta gerada vai aparecer neste painel.</p>
+  </div>
+</body>
+</html>`;
         if (meta) meta.textContent = '— modo personalizada';
       } else {
         // Volta pro preview padrão; o iframe atual pode estar com src do regua,
