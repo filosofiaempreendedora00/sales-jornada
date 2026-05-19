@@ -2618,6 +2618,30 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .prop-gen-mock-note[hidden] { display: none; }
 
+/* Download button (modo personalizada) */
+.prop-custom-download-btn {
+  appearance: none;
+  width: 100%;
+  margin-top: 8px;
+  background: linear-gradient(135deg, rgba(18,212,144,0.20), rgba(13,207,232,0.18));
+  border: 1px solid rgba(18,212,144,0.40);
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, opacity 0.15s;
+}
+.prop-custom-download-btn[hidden] { display: none; }
+.prop-custom-download-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(18,212,144,0.30), rgba(13,207,232,0.26));
+  border-color: rgba(18,212,144,0.65);
+}
+.prop-custom-download-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
 /* Refine textarea */
 .prop-refine-wrap {
   display: flex;
@@ -8984,7 +9008,23 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
       <div class="prop-custom-fields" id="prop-custom-fields" hidden>
-        <p class="prop-section-label">Transcrição da reunião de vendas</p>
+        <div class="prop-client-field" style="margin-bottom: 0;">
+          <label class="prop-client-label" for="prop-custom-client-name">
+            Nome do cliente <span class="prop-required" aria-hidden="true">*</span>
+          </label>
+          <input
+            class="prop-client-input"
+            id="prop-custom-client-name"
+            type="text"
+            placeholder="Ex: Magazine Luiza"
+            autocomplete="off"
+            spellcheck="false"
+            maxlength="60"
+          >
+          <span class="prop-client-hint">Aparece na proposta gerada e no nome do arquivo baixado</span>
+        </div>
+
+        <p class="prop-section-label" style="margin-top: 6px;">Transcrição da reunião de vendas</p>
         <div class="prop-transcripts" id="prop-transcripts">
           <div class="prop-transcript-item">
             <div class="prop-transcript-header" hidden>
@@ -9036,6 +9076,16 @@ a.xpto-pricing-btn { text-decoration: none; }
         <p class="prop-gen-mock-note" id="prop-gen-mock-note" hidden>
           ⚠️ Modo MOCK: backend rodando sem ANTHROPIC_API_KEY. Configure a key no Render pra geração real.
         </p>
+
+        <!-- Botão Baixar HTML — só aparece depois da primeira geração -->
+        <button
+          type="button"
+          class="prop-custom-download-btn"
+          id="prop-custom-download-btn"
+          hidden
+        >
+          <span>⬇ Baixar HTML editado</span>
+        </button>
 
         <!-- Refinamento — só aparece depois da primeira geração -->
         <div class="prop-refine-wrap" id="prop-refine-wrap" hidden>
@@ -14486,14 +14536,18 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     <div class="steps">
       <div class="step">
         <span class="step-n">1</span>
-        <span class="step-text">Cole a <strong>transcrição</strong> da reunião de vendas</span>
+        <span class="step-text">Informe o <strong>nome do cliente</strong></span>
       </div>
       <div class="step">
         <span class="step-n">2</span>
-        <span class="step-text">Selecione o <strong>tipo de proposta</strong></span>
+        <span class="step-text">Cole a <strong>transcrição</strong> da reunião de vendas</span>
       </div>
       <div class="step">
         <span class="step-n">3</span>
+        <span class="step-text">Selecione o <strong>tipo de proposta</strong></span>
+      </div>
+      <div class="step">
+        <span class="step-n">4</span>
         <span class="step-text">Clique em <strong>Visualizar</strong> ou <strong>Gerar com IA</strong></span>
       </div>
     </div>
@@ -14526,11 +14580,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 (function () {
   const generateBtn = document.getElementById('prop-custom-generate-btn');
   const refineBtn   = document.getElementById('prop-custom-refine-btn');
+  const downloadBtn = document.getElementById('prop-custom-download-btn');
   const refineWrap  = document.getElementById('prop-refine-wrap');
   const refineInput = document.getElementById('prop-refine-input');
   const mockNote    = document.getElementById('prop-gen-mock-note');
   const status      = document.getElementById('prop-gen-status');
   const typeSelect  = document.getElementById('prop-custom-type');
+  const clientInput = document.getElementById('prop-custom-client-name');
   const frame       = document.getElementById('prop-preview-frame');
   const previewBtn  = document.getElementById('prop-custom-preview-btn');
 
@@ -14544,6 +14600,29 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     lastProposalType: null,
     inFlight: false,
   };
+
+  // ── Injetor do edit-mode no iframe ─────────────
+  // Carrega Sortable.js + editor.js dentro do iframe pra ligar
+  // contenteditable + drag-and-drop nas sections.
+  // Sempre injeta APÓS o iframe carregar o novo srcdoc.
+  function injectEditMode(targetFrame) {
+    const doc = targetFrame.contentDocument;
+    const win = targetFrame.contentWindow;
+    if (!doc || !win || !doc.head || !doc.body) return;
+    // Evita injeção dupla
+    if (doc.querySelector('script[data-sm-edit-loader]')) return;
+    // 1) Sortable
+    const s1 = doc.createElement('script');
+    s1.src = window.location.origin + '/sortable.min.js';
+    s1.dataset.smEdit = 'sortable';
+    doc.head.appendChild(s1);
+    // 2) Editor (depende do Sortable; editor.js espera com retries)
+    const s2 = doc.createElement('script');
+    s2.src = window.location.origin + '/editor.js';
+    s2.dataset.smEdit = 'editor';
+    s2.dataset.smEditLoader = '1';
+    doc.head.appendChild(s2);
+  }
 
   function showStatus(message, kind = 'info') {
     if (!status) return;
@@ -14564,10 +14643,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       .filter(t => t.length > 0);
   }
 
+  function getClientName() {
+    return (clientInput?.value || '').trim();
+  }
+
   function syncGenerateEnabled() {
     const hasType = !!typeSelect.value;
     const hasTranscript = getTranscripts().length > 0;
-    generateBtn.disabled = !(state.aiAvailable && hasType && hasTranscript && !state.inFlight);
+    const hasClient = getClientName().length > 0;
+    generateBtn.disabled = !(state.aiAvailable && hasType && hasTranscript && hasClient && !state.inFlight);
   }
 
   function setLoading(btn, on) {
@@ -14577,11 +14661,27 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     btn.disabled = on;
   }
 
-  // Renderiza HTML no iframe usando srcdoc (mesma técnica do sistema padrão)
+  // Renderiza HTML no iframe usando srcdoc + injeta edit-mode
+  // Espera o load do NOVO srcdoc antes de injetar (caso contrário,
+  // os scripts vão pro DOM antigo que será substituído).
   function renderInFrame(html) {
     frame.removeAttribute('src');
-    frame.srcdoc = html;
     state.lastGeneratedHtml = html;
+    const onLoaded = () => injectEditMode(frame);
+    frame.addEventListener('load', onLoaded, { once: true });
+    frame.srcdoc = html;
+  }
+
+  // Pega o HTML atual do iframe (com edições do usuário), limpo do edit-mode
+  function getCurrentIframeHtml() {
+    try {
+      const win = frame.contentWindow;
+      if (win && typeof win.__exportClean === 'function') {
+        return win.__exportClean();
+      }
+    } catch {}
+    // fallback: HTML da última geração da IA
+    return state.lastGeneratedHtml || '';
   }
 
   // Reset do estado quando muda o tipo de proposta
@@ -14590,9 +14690,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     state.lastProposalType = null;
     if (refineWrap) refineWrap.hidden = true;
     if (refineInput) refineInput.value = '';
+    if (downloadBtn) downloadBtn.hidden = true;
     hideStatus();
     syncGenerateEnabled();
   });
+
+  // Liga mudanças no nome do cliente
+  if (clientInput) {
+    clientInput.addEventListener('input', syncGenerateEnabled);
+  }
 
   // Detecta mudanças nas transcrições pra atualizar o disabled
   document.addEventListener('input', e => {
@@ -14634,8 +14740,9 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   generateBtn.addEventListener('click', async () => {
     const proposalType = typeSelect.value;
     const transcripts = getTranscripts();
-    if (!proposalType || transcripts.length === 0) {
-      showStatus('Selecione um tipo de proposta e cole ao menos uma transcrição.', 'error');
+    const clientName = getClientName();
+    if (!proposalType || transcripts.length === 0 || !clientName) {
+      showStatus('Preencha nome do cliente, tipo e ao menos uma transcrição.', 'error');
       return;
     }
     state.inFlight = true;
@@ -14643,14 +14750,15 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     showStatus('Gerando proposta com IA — pode demorar ~30s a 2min…', 'info');
 
     try {
-      const json = await callGenerate({ transcripts, proposalType });
+      const json = await callGenerate({ transcripts, proposalType, clientName });
       renderInFrame(json.html);
       state.lastProposalType = proposalType;
-      // Mostra refinamento
+      // Mostra refinamento + download
       if (refineWrap) refineWrap.hidden = false;
+      if (downloadBtn) downloadBtn.hidden = false;
       const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
       const modeNote = json.mode === 'mock' ? ' — modo MOCK (sem API key)' : '';
-      showStatus(`✓ Proposta gerada${elapsed}${modeNote}. Use o campo abaixo pra refinar.`, 'success');
+      showStatus(`✓ Proposta gerada${elapsed}${modeNote}. Edite os textos clicando neles, arraste o ⋮⋮ pra reordenar seções, ou refine com IA abaixo.`, 'success');
     } catch (e) {
       console.error('[gerar]', e);
       const msg = e.name === 'AbortError'
@@ -14674,6 +14782,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       const refinement = refineInput.value.trim();
       const transcripts = getTranscripts();
       const proposalType = state.lastProposalType || typeSelect.value;
+      const clientName = getClientName();
       if (!refinement || !state.lastGeneratedHtml || !proposalType) return;
 
       state.inFlight = true;
@@ -14681,18 +14790,21 @@ document.getElementById('avatar-input').addEventListener('change', e => {
       showStatus('Aplicando refinamento — ~10s a 1min…', 'info');
 
       try {
+        // Pega o HTML ATUAL (com edições inline do usuário), limpo do edit-mode
+        const currentHtml = getCurrentIframeHtml();
         const json = await callGenerate({
           transcripts,
           proposalType,
+          clientName,
           refinement,
-          currentHtml: state.lastGeneratedHtml,
+          currentHtml,
         });
         renderInFrame(json.html);
         refineInput.value = '';
         refineBtn.disabled = true;
         const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
         const modeNote = json.mode === 'mock' ? ' — modo MOCK' : '';
-        showStatus(`✓ Refinamento aplicado${elapsed}${modeNote}. Pode continuar refinando.`, 'success');
+        showStatus(`✓ Refinamento aplicado${elapsed}${modeNote}. Pode continuar refinando ou editar inline.`, 'success');
       } catch (e) {
         console.error('[refinar]', e);
         const msg = e.name === 'AbortError'
@@ -14703,6 +14815,39 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         state.inFlight = false;
         setLoading(refineBtn, false);
       }
+    });
+  }
+
+  // ── Download HTML editado ──────────────────────
+  if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+      const html = getCurrentIframeHtml();
+      if (!html || html.length < 500) {
+        showStatus('Nada pra baixar — gere uma proposta primeiro.', 'error');
+        return;
+      }
+      const clientName = getClientName() || 'cliente';
+      const proposalType = state.lastProposalType || 'proposta';
+      const TYPE_FILE_NAME = {
+        '00': 'lancamento',
+        '01': 'performance-mql',
+        '02': 'reguas',
+      };
+      const safe = clientName
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
+      const tsuffix = TYPE_FILE_NAME[proposalType] || proposalType;
+      const ts = new Date().toISOString().slice(0, 10);
+      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `proposta-${safe}-${tsuffix}-${ts}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      showStatus(`✓ Baixado como ${a.download}`, 'success');
     });
   }
 

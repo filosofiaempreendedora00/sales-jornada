@@ -93,12 +93,16 @@ function validateGenerateInput(body) {
   if (!PROPOSAL_FILES[proposalType]) {
     errors.push('Tipo de proposta inválido. Use 00, 01 ou 02.');
   }
+  const clientName = (typeof body.clientName === 'string' ? body.clientName : '').trim().slice(0, 80);
+  if (!clientName) {
+    errors.push('Nome do cliente é obrigatório.');
+  }
   const refinement = typeof body.refinement === 'string' ? body.refinement.trim() : '';
   if (refinement.length > MAX_REFINEMENT_CHARS) {
     errors.push(`Instrução de refinamento muito longa (limite: ${MAX_REFINEMENT_CHARS} chars).`);
   }
   const currentHtml = typeof body.currentHtml === 'string' ? body.currentHtml : '';
-  return { errors, transcripts, proposalType, refinement, currentHtml };
+  return { errors, transcripts, proposalType, clientName, refinement, currentHtml };
 }
 
 async function loadTemplate(proposalType) {
@@ -118,10 +122,11 @@ REGRAS RÍGIDAS:
 3. Mantenha os preços, tabelas de investimento e valores do template a menos que o cliente claramente sinalize um budget diferente OU peça especificamente.
 4. Mantenha URLs externos, links e referências técnicas.
 5. ALTERE apenas conteúdo textual relevante: nome do cliente, indústria/segmento, dores específicas mencionadas, referências citadas pelo cliente, tom de voz, e adaptações de copy que façam a proposta soar específica para ele.
-6. Quando o cliente cita empresas como referência (Nubank, iFood, etc.), incorpore essas referências sutilmente nos textos relevantes.
-7. Quando o cliente menciona dores específicas (CAC alto, churn, baixa retenção), faça as headlines, parágrafos e diferenciais ressoarem com essas dores.
-8. Preserve o tom premium e profissional do template — não fique informal demais nem "vendedor".
-9. Se a transcrição estiver vazia em informações relevantes, faça mudanças mínimas (só nome do cliente se mencionado).
+6. SEMPRE substitua o nome do cliente original do template (Digital Aligner / Luma / Haira / etc.) pelo nome real do cliente fornecido. Isso inclui o <title>, headings, parágrafos, navegação, qualquer lugar onde apareça.
+7. Quando o cliente cita empresas como referência (Nubank, iFood, etc.), incorpore essas referências sutilmente nos textos relevantes.
+8. Quando o cliente menciona dores específicas (CAC alto, churn, baixa retenção), faça as headlines, parágrafos e diferenciais ressoarem com essas dores.
+9. Preserve o tom premium e profissional do template — não fique informal demais nem "vendedor".
+10. Se a transcrição estiver vazia em informações relevantes, faça mudanças mínimas (mas SEMPRE atualize o nome do cliente).
 
 FORMATO DE RESPOSTA:
 - Retorne APENAS o HTML completo modificado, começando com <!DOCTYPE html> e terminando com </html>.
@@ -173,7 +178,7 @@ app.post('/api/generate-proposal', async (req, res) => {
   req.setTimeout(REQUEST_TIMEOUT_MS);
   res.setTimeout(REQUEST_TIMEOUT_MS);
 
-  const { errors, transcripts, proposalType, refinement, currentHtml } =
+  const { errors, transcripts, proposalType, clientName, refinement, currentHtml } =
     validateGenerateInput(req.body || {});
 
   if (errors.length) {
@@ -228,7 +233,7 @@ app.post('/api/generate-proposal', async (req, res) => {
           { type: 'text', text: SYSTEM_PROMPT_REFINE },
           {
             type: 'text',
-            text: `TRANSCRIÇÃO ORIGINAL DA REUNIÃO (para contexto):\n\n${transcriptsBlock}`,
+            text: `CONTEXTO DO CLIENTE:\nNome: ${clientName}\n\nTRANSCRIÇÃO ORIGINAL DA REUNIÃO:\n\n${transcriptsBlock}`,
             cache_control: { type: 'ephemeral' },
           },
         ],
@@ -256,7 +261,7 @@ app.post('/api/generate-proposal', async (req, res) => {
         messages: [
           {
             role: 'user',
-            content: `TRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nGere a proposta personalizada para este cliente com base no que foi conversado.`,
+            content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nGere a proposta personalizada para ${clientName} com base no que foi conversado. Substitua nomes de clientes do template (Digital Aligner / Luma / Haira) pelo nome do cliente real (${clientName}).`,
           },
         ],
       });
