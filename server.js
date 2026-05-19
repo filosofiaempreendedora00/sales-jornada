@@ -106,31 +106,40 @@ app.get('/api/health-stream', (req, res) => {
 // ── Helpers ─────────────────────────────────────────────
 function validateGenerateInput(body) {
   const errors = [];
+
+  const refinement = typeof body.refinement === 'string' ? body.refinement.trim() : '';
+  const currentHtml = typeof body.currentHtml === 'string' ? body.currentHtml : '';
+  // Refinement = quando o usuário fornece instrução E o HTML atual.
+  // Nesse modo, transcrição/cliente são OPCIONAIS — pode estar refinando
+  // um HTML importado sem ter feito a reunião dentro do app.
+  const isRefinement = refinement.length > 0 && currentHtml.length > 0;
+
   const transcripts = Array.isArray(body.transcripts)
     ? body.transcripts.filter(t => typeof t === 'string' && t.trim().length > 0)
     : [];
-  if (transcripts.length === 0) {
-    errors.push('Forneça ao menos uma transcrição com conteúdo.');
-  }
   for (const t of transcripts) {
     if (t.length > MAX_TRANSCRIPT_CHARS) {
       errors.push(`Transcrição muito longa (limite: ${MAX_TRANSCRIPT_CHARS} chars).`);
       break;
     }
   }
+  if (!isRefinement && transcripts.length === 0) {
+    errors.push('Forneça ao menos uma transcrição com conteúdo.');
+  }
+
   const proposalType = String(body.proposalType || '').trim();
   if (!PROPOSAL_FILES[proposalType]) {
     errors.push('Tipo de proposta inválido. Use 00, 01 ou 02.');
   }
+
   const clientName = (typeof body.clientName === 'string' ? body.clientName : '').trim().slice(0, 80);
-  if (!clientName) {
+  if (!isRefinement && !clientName) {
     errors.push('Nome do cliente é obrigatório.');
   }
-  const refinement = typeof body.refinement === 'string' ? body.refinement.trim() : '';
+
   if (refinement.length > MAX_REFINEMENT_CHARS) {
     errors.push(`Instrução de refinamento muito longa (limite: ${MAX_REFINEMENT_CHARS} chars).`);
   }
-  const currentHtml = typeof body.currentHtml === 'string' ? body.currentHtml : '';
   return { errors, transcripts, proposalType, clientName, refinement, currentHtml };
 }
 
@@ -622,6 +631,16 @@ app.post('/api/generate-proposal', async (req, res) => {
 
   let messageRequest;
   if (isRefinement) {
+    // Refinamento aceita ausência de cliente/transcrição (HTML importado).
+    const contextParts = [];
+    if (clientName) contextParts.push(`Nome do cliente: ${clientName}`);
+    if (transcripts.length > 0) {
+      contextParts.push(`Transcrição original da reunião:\n\n${transcriptsBlock}`);
+    }
+    const contextBlock = contextParts.length
+      ? `CONTEXTO:\n${contextParts.join('\n\n')}`
+      : 'CONTEXTO: (sem contexto adicional — refinar somente baseado na instrução do usuário e na proposta atual)';
+
     messageRequest = {
       model: ANTHROPIC_MODEL,
       max_tokens: 4_000,
@@ -629,7 +648,7 @@ app.post('/api/generate-proposal', async (req, res) => {
         { type: 'text', text: SYSTEM_PROMPT_REFINE },
         {
           type: 'text',
-          text: `CONTEXTO DO CLIENTE:\nNome: ${clientName}\n\nTRANSCRIÇÃO ORIGINAL DA REUNIÃO:\n\n${transcriptsBlock}`,
+          text: contextBlock,
           cache_control: { type: 'ephemeral' },
         },
       ],
