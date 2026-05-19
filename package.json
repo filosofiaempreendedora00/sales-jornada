@@ -1,11 +1,11 @@
 {
-    "name": "sales-jornada",
-    "version": "1.0.0",
-    "description": "Sales Jornada static site",
-    "scripts": {
-          "start": "npx serve . -l $PORT"
-    },
-    "engines": {
-          "node": ">=18"
-    }
+      "name": "sales-jornada",
+      "version": "1.0.0",
+      "description": "Sales Jornada static site",
+      "scripts": {
+              "start": "npx serve -l tcp://0.0.0.0:$PORT"
+      },
+      "engines": {
+              "node": ">=18"
+      }
 }
