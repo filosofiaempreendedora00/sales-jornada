@@ -73,7 +73,33 @@ app.get('/api/health', (req, res) => {
     ai: HAS_AI ? 'live' : 'mock',
     model: HAS_AI ? ANTHROPIC_MODEL : null,
     ts: Date.now(),
+    streaming: true, // marca a versão com streaming SSE
   });
+});
+
+// ── Health stream — testa SSE sem chamar Anthropic ──────
+// Útil pra diagnosticar se proxy/streaming está OK independente da IA.
+app.get('/api/health-stream', (req, res) => {
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no');
+  if (typeof res.flushHeaders === 'function') res.flushHeaders();
+  res.write(':' + ' '.repeat(2048) + '\n\n');
+  if (typeof res.flush === 'function') res.flush();
+  let i = 0;
+  const t = setInterval(() => {
+    i++;
+    res.write(`data: ${JSON.stringify({ type: 'tick', n: i, ts: Date.now() })}\n\n`);
+    if (typeof res.flush === 'function') res.flush();
+    if (i >= 5) {
+      clearInterval(t);
+      res.write(`data: ${JSON.stringify({ type: 'done', total: i })}\n\n`);
+      res.end();
+    }
+  }, 1000);
+  req.on('close', () => clearInterval(t));
 });
 
 // ── Helpers ─────────────────────────────────────────────
@@ -227,25 +253,38 @@ app.post('/api/generate-proposal', async (req, res) => {
   }
 
   // ── MODO LIVE (Anthropic streaming via SSE) ─────────
-  // Headers SSE
-  res.writeHead(200, {
-    'Content-Type': 'text/event-stream',
-    'Cache-Control': 'no-cache, no-transform',
-    'Connection': 'keep-alive',
-    'X-Accel-Buffering': 'no', // desabilita buffering em proxies (nginx-style)
-  });
+  // Headers SSE. flushHeaders() força o envio imediato pro proxy;
+  // sem isso, Render/Cloudflare bufferizam aguardando mais dados.
+  res.statusCode = 200;
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache, no-transform');
+  res.setHeader('Connection', 'keep-alive');
+  res.setHeader('X-Accel-Buffering', 'no'); // nginx/Render no-buffer hint
+  if (typeof res.flushHeaders === 'function') {
+    res.flushHeaders();
+  }
+  // Padding inicial — alguns proxies só liberam o stream depois de
+  // 1-2KB de dados. 2KB de comentário SSE é seguro e ignorado pelos
+  // clients EventSource/SSE parsers.
+  const padding = ':' + ' '.repeat(2048) + '\n\n';
+  res.write(padding);
+  if (typeof res.flush === 'function') res.flush();
 
-  // Heartbeat: comentário SSE a cada 10s pra manter conexão viva
+  // Heartbeat: comentário SSE a cada 8s pra manter conexão viva
   // mesmo se a IA estiver "pensando" sem produzir tokens.
   const heartbeat = setInterval(() => {
-    try { res.write(': heartbeat\n\n'); } catch {}
-  }, 10_000);
+    try {
+      res.write(': heartbeat\n\n');
+      if (typeof res.flush === 'function') res.flush();
+    } catch {}
+  }, 8_000);
 
   const transcriptsBlock = buildTranscriptsBlock(transcripts);
   const startedAt = Date.now();
 
-  // Avisa o cliente que começou
+  // Avisa o cliente que começou (e força mais um flush)
   sseSend(res, { type: 'start', isRefinement });
+  if (typeof res.flush === 'function') res.flush();
 
   let messageRequest;
   if (isRefinement) {
@@ -303,6 +342,7 @@ app.post('/api/generate-proposal', async (req, res) => {
         charsSent = fullText.length;
         try {
           sseSend(res, { type: 'progress', chars: charsSent });
+          if (typeof res.flush === 'function') res.flush();
         } catch {}
       }
     });
