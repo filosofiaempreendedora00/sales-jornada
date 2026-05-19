@@ -252,6 +252,55 @@ const TEMPLATE_LEAK_TERMS = {
   ],
 };
 
+// Hard replacements: aplicados no HTML inteiro (inclui scripts JS,
+// atributos, etc.). Usado pra terminar termos do template que ficam
+// "presos" em arrays JavaScript embedded (REGUAS, BROADCASTS, etc.)
+// que a IA não vê na pipeline de DOM patching.
+// Pattern → [regex, replacement(clientName)]
+const HARD_REPLACEMENTS = {
+  '00': (clientName) => [
+    [/\bHaira\b/g, clientName],
+  ],
+  '01': (clientName) => [
+    [/\bLuma\b/g, clientName],
+  ],
+  '02': (clientName) => [
+    [/\bDigital Aligner\b/g, clientName],
+    // Substituições de segmento "dentista" — agressivo, mas
+    // necessário pra arrays JS embutidos que falam de dentistas
+    [/\bdentistas?\b/gi, 'cliente'],
+    [/\balinhador(es)?\b/gi, 'produto'],
+    [/\bortodontistas?\b/gi, 'especialista'],
+    [/\bortodontia\b/gi, 'área'],
+    [/\bortodôntic[oa]s?\b/gi, 'da área'],
+    [/\bodontológic[oa]s?\b/gi, 'do setor'],
+    [/\bodontologia\b/gi, 'setor'],
+    [/\bclínicas? odontológicas?\b/gi, 'empresa'],
+    [/\bclínicas?\b/gi, 'empresa'],
+    [/\bpacientes?\b/gi, 'usuário'],
+    [/\bconsultórios?\b/gi, 'escritório'],
+    [/\bJuliana\b/g, 'o time'],
+  ],
+};
+
+function applyHardReplacements(html, proposalType, clientName) {
+  const fn = HARD_REPLACEMENTS[proposalType];
+  if (!fn || !clientName) return { html, replacements: 0 };
+  let out = html;
+  let total = 0;
+  for (const [pattern, replacement] of fn(clientName)) {
+    const before = out;
+    out = out.replace(pattern, replacement);
+    if (out !== before) {
+      // Conta matches aproximadamente
+      const re = new RegExp(pattern.source, pattern.flags);
+      const matches = before.match(re);
+      total += matches ? matches.length : 0;
+    }
+  }
+  return { html: out, replacements: total };
+}
+
 // Procura por termos vazados do template no HTML pós-patch.
 // Retorna { 'id': { html, found: ['term1', 'term2'] } } pros IDs afetados.
 function findLeakIds(htmlWithIds, terms) {
@@ -696,9 +745,20 @@ app.post('/api/generate-proposal', async (req, res) => {
           }
         }
       }
+
+      // ── HARD REPLACEMENTS: pega o que vazou em JS arrays embedded ──
+      // A IA não vê strings dentro de <script>const REGUAS = [...]</script>
+      // mas o usuário VÊ porque o JS renderiza esses dados na UI.
+      // Aplicamos substituições determinísticas no HTML inteiro.
+      let hardReplaced = 0;
+      if (!isRefinement) {
+        const hr = applyHardReplacements(finalHtml, proposalType, clientName);
+        finalHtml = hr.html;
+        hardReplaced = hr.replacements;
+      }
       const elapsedTotal = Date.now() - startedAt;
 
-      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — type ${proposalType}, ${elapsedTotal}ms total, ${numTexts} texts → ${applied} patches + ${leakFixed} leak-fixes (${leakIds} ids), input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t${leakUsage ? `, audit input ${leakUsage.input_tokens}t output ${leakUsage.output_tokens}t` : ''}`);
+      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — type ${proposalType}, ${elapsedTotal}ms total, ${numTexts} texts → ${applied} patches + ${leakFixed} leak-fixes (${leakIds} ids) + ${hardReplaced} hard-replacements, input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t${leakUsage ? `, audit input ${leakUsage.input_tokens}t output ${leakUsage.output_tokens}t` : ''}`);
       sseSend(res, {
         type: 'done',
         html: finalHtml,
@@ -711,6 +771,7 @@ app.post('/api/generate-proposal', async (req, res) => {
           patchesApplied: applied,
           leakIdsFound: leakIds,
           leakFixed,
+          hardReplaced,
           usage: finalUsage,
           auditUsage: leakUsage,
         },
