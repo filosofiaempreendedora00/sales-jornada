@@ -22,6 +22,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
 import Anthropic from '@anthropic-ai/sdk';
+import * as cheerio from 'cheerio';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -140,42 +141,165 @@ async function loadTemplate(proposalType) {
   return await readFile(filePath, 'utf8');
 }
 
-const SYSTEM_PROMPT_GENERATE = `Você é um copywriter sênior especialista em propostas comerciais B2B da Turbo Partners.
+// ── Extração de textos editáveis (DIFF strategy) ────────
+// Em vez de pedir pra IA reescrever 25k tokens de HTML, marcamos
+// cada texto editável com data-edit-id e mandamos só o JSON dos
+// textos. IA retorna JSON com as substituições. Server aplica.
+// Resultado: ~5x menos output, ~10x mais rápido, ~10x mais barato.
 
-Sua tarefa: receber uma transcrição (ou várias) de reunião de vendas + um template HTML de proposta comercial, e produzir uma nova versão do HTML adaptando a copy para refletir o cliente específico baseado no que foi conversado.
+// IDs com totais computados / valores controlados por tier — NÃO editáveis.
+const PROTECTED_IDS = new Set([
+  'perf-creatives', 'perf-price', 'perf-budget',
+  'bundle-perf-price', 'bundle-perf-budget', 'bundle-total',
+  'inv-tier-price', 'inv-item-tier',
+  'proj-pay-note', 'proj-tier-note',
+  'proj-legend-rec', 'proj-legend-ins', 'proj-total',
+]);
 
-REGRAS RÍGIDAS:
-1. Mantenha TODA a estrutura HTML, classes CSS, scripts, IDs, atributos e ordem das seções. Não remova nem adicione seções, divs ou elementos.
-2. Mantenha todos os ícones, SVGs, gráficos interativos e blocos visuais como estão.
-3. Mantenha os preços, tabelas de investimento e valores do template a menos que o cliente claramente sinalize um budget diferente OU peça especificamente.
-4. Mantenha URLs externos, links e referências técnicas.
-5. ALTERE apenas conteúdo textual relevante: nome do cliente, indústria/segmento, dores específicas mencionadas, referências citadas pelo cliente, tom de voz, e adaptações de copy que façam a proposta soar específica para ele.
-6. SEMPRE substitua o nome do cliente original do template (Digital Aligner / Luma / Haira / etc.) pelo nome real do cliente fornecido. Isso inclui o <title>, headings, parágrafos, navegação, qualquer lugar onde apareça.
-7. Quando o cliente cita empresas como referência (Nubank, iFood, etc.), incorpore essas referências sutilmente nos textos relevantes.
-8. Quando o cliente menciona dores específicas (CAC alto, churn, baixa retenção), faça as headlines, parágrafos e diferenciais ressoarem com essas dores.
-9. Preserve o tom premium e profissional do template — não fique informal demais nem "vendedor".
-10. Se a transcrição estiver vazia em informações relevantes, faça mudanças mínimas (mas SEMPRE atualize o nome do cliente).
+// Selectors a inspecionar
+const EDITABLE_SELECTOR = 'h1, h2, h3, h4, h5, h6, p, li, span, div, em, strong, button';
 
-FORMATO DE RESPOSTA:
-- Retorne APENAS o HTML completo modificado, começando com <!DOCTYPE html> e terminando com </html>.
-- NÃO envolva em \`\`\`html ou qualquer markdown.
-- NÃO inclua comentários, explicações, prefácios ou epílogos.
-- O output deve ser HTML válido que pode ser servido direto.`;
+// Tags inline aceitáveis dentro de um leaf editável
+const INLINE_TAGS = new Set(['strong','em','i','b','small','br','u','mark','sup','sub','span']);
 
-const SYSTEM_PROMPT_REFINE = `Você está refinando uma proposta comercial B2B da Turbo Partners que já foi gerada para um cliente específico.
+// Tags que NUNCA são editáveis (containers estruturais, controles, mídia)
+const NEVER_EDITABLE = new Set(['nav','svg','script','style','iframe','video','img','input','select','textarea']);
 
-Sua tarefa: receber a transcrição original da reunião + a versão atual da proposta (HTML) + uma instrução de refinamento do usuário, e aplicar APENAS a mudança solicitada.
+function isLeafEditable($, el) {
+  const $el = $(el);
+  // Forbidden by ID
+  const id = $el.attr('id');
+  if (id && PROTECTED_IDS.has(id)) return false;
+  // Dentro de container proibido?
+  if ($el.closest('nav, script, style, iframe, video, svg').length > 0) return false;
+  // Dentro de outro elemento já marcado? evita parent + child duplicado
+  if ($el.parents('[data-edit-id]').length > 0) return false;
+  // Tem que ter texto
+  const text = $el.text().trim();
+  if (text.length === 0) return false;
+  // Texto não pode ser absurdamente longo (provavelmente é container)
+  if (text.length > 800) return false;
+  // Children devem ser só inline simples (ou texto)
+  const childTags = $el.children().toArray().map(c => (c.tagName || '').toLowerCase());
+  for (const tag of childTags) {
+    if (!INLINE_TAGS.has(tag)) return false;
+  }
+  return true;
+}
+
+function extractEditableTexts(html) {
+  const $ = cheerio.load(html, { decodeEntities: false });
+  const texts = {};
+  let counter = 0;
+  $(EDITABLE_SELECTOR).each((_, el) => {
+    if (!isLeafEditable($, el)) return;
+    counter++;
+    const id = `t-${String(counter).padStart(3, '0')}`;
+    $(el).attr('data-edit-id', id);
+    // Preserva HTML inline interno (strong, em, br) pra Claude poder
+    // reescrever mantendo emphasis. Tira o data-edit-id do próprio HTML
+    // retornado (que vai pro JSON).
+    const innerHtml = $(el).html().trim();
+    texts[id] = innerHtml;
+  });
+  return { html: $.html(), texts };
+}
+
+function applyPatches(htmlWithIds, patches, clientName) {
+  const $ = cheerio.load(htmlWithIds, { decodeEntities: false });
+  let applied = 0;
+  for (const [id, newHtml] of Object.entries(patches)) {
+    if (typeof newHtml !== 'string') continue;
+    const $el = $(`[data-edit-id="${id}"]`);
+    if ($el.length === 0) continue;
+    $el.html(newHtml);
+    applied++;
+  }
+  // Atualiza o <title> também (caso não tenha vindo nos patches)
+  // pra refletir o cliente.
+  if (clientName) {
+    const currentTitle = $('title').text();
+    // Heurística: troca menções a Digital Aligner / Luma / Haira no title
+    const updatedTitle = currentTitle
+      .replace(/Digital Aligner/gi, clientName)
+      .replace(/\bLuma\b/g, clientName)
+      .replace(/\bHaira\b/g, clientName);
+    if (updatedTitle !== currentTitle) {
+      $('title').text(updatedTitle);
+    }
+  }
+  return { html: $.html(), applied };
+}
+
+// Tenta extrair JSON de uma string que pode ter prefácio/markdown.
+function extractJson(text) {
+  if (!text) return null;
+  // Remove fences markdown
+  let s = String(text).trim()
+    .replace(/^```(?:json)?\s*\n?/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+  // Tenta parse direto
+  try { return JSON.parse(s); } catch {}
+  // Procura primeiro { e último }
+  const first = s.indexOf('{');
+  const last = s.lastIndexOf('}');
+  if (first < 0 || last <= first) return null;
+  try { return JSON.parse(s.slice(first, last + 1)); } catch {}
+  return null;
+}
+
+const SYSTEM_PROMPT_GENERATE = `Você é um copywriter sênior da Turbo Partners, especialista em personalizar propostas comerciais B2B premium.
+
+Você vai receber:
+1. Nome do cliente
+2. Transcrição(ões) da reunião de vendas
+3. Um JSON com os textos editáveis da proposta atual (template). Cada texto tem um ID. Alguns contêm HTML inline (<strong>, <em>, <br>, etc.).
+
+Sua tarefa: retornar um JSON com APENAS os IDs cujos textos você quer mudar para personalizar a proposta para esse cliente. Para textos que devem ficar iguais ao template, NÃO inclua no JSON de retorno.
 
 REGRAS:
-1. Aplique EXATAMENTE o que foi pedido na instrução, nada mais.
-2. Mantenha tudo o resto da proposta intacto — estrutura, classes, IDs, outros textos, preços (a menos que a instrução seja sobre eles), seções.
-3. Se a instrução for ambígua, faça a interpretação mais conservadora.
-4. Preserve o tom premium e profissional.
+1. Sempre substitua menções a Digital Aligner / Luma / Haira (clientes do template) pelo nome real do cliente fornecido. Isso é OBRIGATÓRIO em todos os textos onde aparecer.
+2. Preserve TODAS as tags HTML inline (<strong>, <em>, <i>, <br>, <span>) com as MESMAS classes/atributos. Não remova nem adicione novas tags. Mantenha quebras de linha (<br>) idênticas.
+3. Mantenha preços, valores, datas — não invente novos números (a menos que o cliente claramente peça).
+4. Quando o cliente cita empresas-referência (Nubank, iFood, etc.) ou dores específicas (CAC alto, churn), incorpore-as sutilmente nos textos relevantes — headlines, parágrafos de contexto/diagnóstico, descrições de soluções.
+5. Mantenha o tom premium, profissional e sóbrio do template. Nada "vendedor" ou casual demais.
+6. Texto curto (chips, labels, tags) geralmente não muda — concentre-se em headings, parágrafos descritivos e CTAs.
+7. Se um texto não tem nada para personalizar, NÃO o inclua na resposta.
 
-FORMATO DE RESPOSTA:
-- Retorne APENAS o HTML completo modificado, começando com <!DOCTYPE html> e terminando com </html>.
-- NÃO envolva em \`\`\`html ou qualquer markdown.
-- NÃO inclua comentários, explicações, prefácios ou epílogos.`;
+FORMATO DA RESPOSTA:
+Retorne SOMENTE um objeto JSON válido (sem markdown, sem prefácio, sem comentários) no formato:
+{
+  "t-001": "Novo texto com <em class=\\"italic text-primary\\">tags inline</em> preservadas.",
+  "t-014": "Outro texto novo.",
+  ...
+}
+
+Apenas os IDs que mudam. O JSON pode ser bem pequeno (10-30 entradas é o comum).`;
+
+const SYSTEM_PROMPT_REFINE = `Você está refinando uma proposta comercial B2B da Turbo Partners.
+
+Você vai receber:
+1. Nome do cliente
+2. Transcrição(ões) da reunião de vendas (contexto)
+3. Um JSON com os textos editáveis atuais da proposta (já personalizada anteriormente)
+4. Uma instrução de refinamento do usuário (em linguagem natural)
+
+Sua tarefa: aplicar APENAS o que o usuário pediu, e retornar um JSON com os IDs cujos textos você está alterando.
+
+REGRAS:
+1. Aplique exatamente o que foi pedido, nada mais. Se a instrução for ambígua, prefira interpretação conservadora.
+2. Preserve tags HTML inline (<strong>, <em>, <br>, etc.) com as mesmas classes.
+3. Para textos que não precisam mudar, NÃO inclua na resposta.
+4. Mantenha o tom premium da marca.
+
+FORMATO DA RESPOSTA:
+SOMENTE JSON válido no formato:
+{
+  "t-XXX": "novo texto",
+  ...
+}
+Sem markdown, sem prefácio.`;
 
 function buildTranscriptsBlock(transcripts) {
   if (transcripts.length === 1) {
@@ -282,15 +406,35 @@ app.post('/api/generate-proposal', async (req, res) => {
   const transcriptsBlock = buildTranscriptsBlock(transcripts);
   const startedAt = Date.now();
 
+  // ─── DIFF strategy: extrai textos editáveis do HTML base ───
+  // Ao invés da IA reescrever 25k tokens de HTML, ela retorna
+  // só o JSON de mudanças. Isso é ~10x mais rápido e barato.
+  let baseHtmlWithIds, baseTexts;
+  let sourceHtml = isRefinement ? currentHtml : baseHtml;
+  try {
+    const extracted = extractEditableTexts(sourceHtml);
+    baseHtmlWithIds = extracted.html;
+    baseTexts = extracted.texts;
+  } catch (e) {
+    console.error('[api] erro extraindo textos:', e?.message);
+    sseSend(res, { type: 'error', error: 'Erro processando template.' });
+    clearInterval(heartbeat);
+    try { res.end(); } catch {}
+    return;
+  }
+
+  const textsJson = JSON.stringify(baseTexts, null, 2);
+  const numTexts = Object.keys(baseTexts).length;
+
   // Avisa o cliente que começou (e força mais um flush)
-  sseSend(res, { type: 'start', isRefinement });
+  sseSend(res, { type: 'start', isRefinement, numTexts });
   if (typeof res.flush === 'function') res.flush();
 
   let messageRequest;
   if (isRefinement) {
     messageRequest = {
       model: ANTHROPIC_MODEL,
-      max_tokens: 32_000,
+      max_tokens: 16_000,
       system: [
         { type: 'text', text: SYSTEM_PROMPT_REFINE },
         {
@@ -302,26 +446,26 @@ app.post('/api/generate-proposal', async (req, res) => {
       messages: [
         {
           role: 'user',
-          content: `PROPOSTA ATUAL (HTML):\n\n${currentHtml}\n\n---\n\nINSTRUÇÃO DE REFINAMENTO:\n${refinement}\n\nRetorne o HTML completo modificado.`,
+          content: `TEXTOS ATUAIS DA PROPOSTA (JSON, ${numTexts} itens):\n\n${textsJson}\n\n---\n\nINSTRUÇÃO DE REFINAMENTO DO USUÁRIO:\n${refinement}\n\nRetorne SOMENTE um JSON com os IDs cujos textos você alterou (não inclua IDs sem mudança).`,
         },
       ],
     };
   } else {
     messageRequest = {
       model: ANTHROPIC_MODEL,
-      max_tokens: 32_000,
+      max_tokens: 16_000,
       system: [
         { type: 'text', text: SYSTEM_PROMPT_GENERATE },
         {
           type: 'text',
-          text: `TEMPLATE HTML DA PROPOSTA (use como base — mantenha estrutura, altere copy):\n\n${baseHtml}`,
+          text: `TEXTOS ORIGINAIS DA PROPOSTA (JSON com ${numTexts} itens — IDs estáveis):\n\n${textsJson}`,
           cache_control: { type: 'ephemeral' },
         },
       ],
       messages: [
         {
           role: 'user',
-          content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nGere a proposta personalizada para ${clientName} com base no que foi conversado. Substitua nomes de clientes do template (Digital Aligner / Luma / Haira) pelo nome do cliente real (${clientName}).`,
+          content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nPersonalize a proposta para ${clientName}. Retorne SOMENTE um JSON com os IDs cujos textos você quer alterar (omita os que ficam iguais). Lembre-se: substitua menções a Digital Aligner / Luma / Haira pelo nome ${clientName}.`,
         },
       ],
     };
@@ -337,8 +481,8 @@ app.post('/api/generate-proposal', async (req, res) => {
     // Event: cada delta de texto
     stream.on('text', (text) => {
       fullText += text;
-      // Notifica progresso a cada ~500 chars pra não inundar o cliente
-      if (fullText.length - charsSent >= 500) {
+      // Notifica progresso a cada ~300 chars (output total agora é ~3-8KB)
+      if (fullText.length - charsSent >= 300) {
         charsSent = fullText.length;
         try {
           sseSend(res, { type: 'progress', chars: charsSent });
@@ -351,25 +495,29 @@ app.post('/api/generate-proposal', async (req, res) => {
     const finalMessage = await stream.finalMessage();
     finalUsage = finalMessage.usage;
 
-    const html = sanitizeAIHtml(fullText);
+    const patches = extractJson(fullText);
     const elapsed = Date.now() - startedAt;
 
-    if (!html) {
-      console.error('[api] AI retornou HTML inválido. Primeiros 300 chars:', fullText.slice(0, 300));
+    if (!patches || typeof patches !== 'object') {
+      console.error('[api] IA retornou JSON inválido. Primeiros 300 chars:', fullText.slice(0, 300));
       sseSend(res, {
         type: 'error',
-        error: 'A IA retornou conteúdo inválido. Tente novamente ou ajuste a transcrição.',
+        error: 'A IA retornou conteúdo inválido. Tente novamente.',
       });
     } else {
-      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — proposal ${proposalType}, ${elapsed}ms, input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t`);
+      // Aplica patches no HTML base (com data-edit-ids)
+      const { html: finalHtml, applied } = applyPatches(baseHtmlWithIds, patches, clientName);
+      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — type ${proposalType}, ${elapsed}ms, ${numTexts} editable texts → ${applied} patches applied, input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t`);
       sseSend(res, {
         type: 'done',
-        html,
+        html: finalHtml,
         meta: {
           model: ANTHROPIC_MODEL,
           elapsedMs: elapsed,
           transcripts: transcripts.length,
           isRefinement,
+          numTexts,
+          patchesApplied: applied,
           usage: finalUsage,
         },
       });
