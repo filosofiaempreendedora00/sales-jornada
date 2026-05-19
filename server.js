@@ -251,31 +251,37 @@ function extractJson(text) {
 
 const SYSTEM_PROMPT_GENERATE = `Você é um copywriter sênior da Turbo Partners, especialista em personalizar propostas comerciais B2B premium.
 
-Você vai receber:
+Você recebe:
 1. Nome do cliente
 2. Transcrição(ões) da reunião de vendas
-3. Um JSON com os textos editáveis da proposta atual (template). Cada texto tem um ID. Alguns contêm HTML inline (<strong>, <em>, <br>, etc.).
+3. Um JSON com TODOS os textos editáveis do template ({"t-001":"...","t-002":"..."})
 
-Sua tarefa: retornar um JSON com APENAS os IDs cujos textos você quer mudar para personalizar a proposta para esse cliente. Para textos que devem ficar iguais ao template, NÃO inclua no JSON de retorno.
+SUA TAREFA: retornar um JSON COMPACTO contendo APENAS os IDs cujos textos você está alterando para personalizar a proposta.
 
-REGRAS:
-1. Sempre substitua menções a Digital Aligner / Luma / Haira (clientes do template) pelo nome real do cliente fornecido. Isso é OBRIGATÓRIO em todos os textos onde aparecer.
-2. Preserve TODAS as tags HTML inline (<strong>, <em>, <i>, <br>, <span>) com as MESMAS classes/atributos. Não remova nem adicione novas tags. Mantenha quebras de linha (<br>) idênticas.
-3. Mantenha preços, valores, datas — não invente novos números (a menos que o cliente claramente peça).
-4. Quando o cliente cita empresas-referência (Nubank, iFood, etc.) ou dores específicas (CAC alto, churn), incorpore-as sutilmente nos textos relevantes — headlines, parágrafos de contexto/diagnóstico, descrições de soluções.
-5. Mantenha o tom premium, profissional e sóbrio do template. Nada "vendedor" ou casual demais.
-6. Texto curto (chips, labels, tags) geralmente não muda — concentre-se em headings, parágrafos descritivos e CTAs.
-7. Se um texto não tem nada para personalizar, NÃO o inclua na resposta.
+REGRA #1 — TAMANHO MÁXIMO:
+O JSON de resposta deve ter ENTRE 8 e 30 entradas. Se você está incluindo mais de 30, está fazendo errado: está incluindo textos que não precisariam mudar. PARE e revise.
+
+REGRA #2 — SÓ INCLUA SE MUDOU DE FATO:
+Antes de incluir cada ID, COMPARE o novo texto com o original. Se forem idênticos OU diferirem só por um espaço, NÃO inclua. Inclua APENAS se a mudança é semanticamente relevante (mudou substantivo, frase, número, nome).
+
+REGRA #3 — PRIORIDADES:
+- Headings (h1, h2, h3) que mencionam Digital Aligner / Luma / Haira → SUBSTITUIR pelo cliente real.
+- Parágrafos de contexto / diagnóstico → personalizar com a dor do cliente real.
+- CTAs e textos de fechamento → mencionar o cliente real.
+- Labels curtos (chips, tags, "Foco", "Modelo", "01") → NÃO MUDAR (mesma palavra serve).
+- Preços, datas, números → NÃO MUDAR (a menos que cliente peça explicitamente).
+
+REGRA #4 — PRESERVAÇÃO DE TAGS:
+Mantenha exatamente as mesmas tags HTML inline (<em>, <strong>, <i>, <br>, <span>) com as MESMAS classes/atributos. Quebras de linha (<br>) onde havia no original.
+
+REGRA #5 — TOM:
+Premium, profissional, sóbrio. Igual ao template original. Nunca "vendedor" ou exclamativo.
 
 FORMATO DA RESPOSTA:
-Retorne SOMENTE um objeto JSON válido (sem markdown, sem prefácio, sem comentários) no formato:
-{
-  "t-001": "Novo texto com <em class=\\"italic text-primary\\">tags inline</em> preservadas.",
-  "t-014": "Outro texto novo.",
-  ...
-}
+SOMENTE JSON válido, sem markdown, sem prefácio, sem comentários, sem aspas externas. Exemplo:
+{"t-002":"A próxima<br>camada de <em class=\\"italic text-primary\\">crescimento</em><br>da {CLIENTE}.","t-008":"..."}
 
-Apenas os IDs que mudam. O JSON pode ser bem pequeno (10-30 entradas é o comum).`;
+Lembre-se: 8 a 30 entradas no MÁXIMO. Se você está hesitando se deve incluir um ID, NÃO INCLUA.`;
 
 const SYSTEM_PROMPT_REFINE = `Você está refinando uma proposta comercial B2B da Turbo Partners.
 
@@ -434,7 +440,7 @@ app.post('/api/generate-proposal', async (req, res) => {
   if (isRefinement) {
     messageRequest = {
       model: ANTHROPIC_MODEL,
-      max_tokens: 16_000,
+      max_tokens: 4_000,
       system: [
         { type: 'text', text: SYSTEM_PROMPT_REFINE },
         {
@@ -453,7 +459,7 @@ app.post('/api/generate-proposal', async (req, res) => {
   } else {
     messageRequest = {
       model: ANTHROPIC_MODEL,
-      max_tokens: 16_000,
+      max_tokens: 8_000,
       system: [
         { type: 'text', text: SYSTEM_PROMPT_GENERATE },
         {
@@ -475,6 +481,7 @@ app.post('/api/generate-proposal', async (req, res) => {
   let charsSent = 0;
   let finalUsage = null;
 
+  let streamError = null;
   try {
     const stream = anthropic.messages.stream(messageRequest);
 
@@ -491,9 +498,24 @@ app.post('/api/generate-proposal', async (req, res) => {
       }
     });
 
+    // Captura erros que possam ocorrer no stream
+    stream.on('error', (err) => {
+      streamError = err;
+      console.error('[api] stream error event:', err?.message || err);
+    });
+
+    // Avisa quando o stream realmente começa a receber a primeira mensagem
+    stream.on('connect', () => {
+      try {
+        sseSend(res, { type: 'connected' });
+        if (typeof res.flush === 'function') res.flush();
+      } catch {}
+    });
+
     // Aguarda mensagem final completa
     const finalMessage = await stream.finalMessage();
     finalUsage = finalMessage.usage;
+    if (streamError) throw streamError;
 
     const patches = extractJson(fullText);
     const elapsed = Date.now() - startedAt;
