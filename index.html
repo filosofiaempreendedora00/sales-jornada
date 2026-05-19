@@ -9220,6 +9220,24 @@ a.xpto-pricing-btn { text-decoration: none; }
         <p class="prop-section-label">Investimento</p>
         <div class="prop-invest" id="prop-invest"></div>
       </div>
+      <div class="prop-section">
+        <p class="prop-section-label">Closer</p>
+        <div class="prop-select-wrap">
+          <select class="prop-custom-select" id="prop-closer" aria-label="Closer responsável">
+            <option value="">Selecione...</option>
+            <option value="1">Roberto Fachetti</option>
+            <option value="2">Matheus Scalfoni</option>
+            <option value="3">Fábio Richard</option>
+            <option value="4">Arthur Zon</option>
+            <option value="5">Daniel Basilio</option>
+            <option value="6">Ramon Reis</option>
+            <option value="7">João Guarçoni</option>
+            <option value="8">Gustavo Dias</option>
+            <option value="9">Lucas Pereira</option>
+          </select>
+        </div>
+        <span class="prop-client-hint">Aparece no slide de fechamento da proposta com o telefone</span>
+      </div>
       <div class="prop-actions">
         <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
         <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
@@ -15195,9 +15213,26 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     { id: 'social',      icon: '📱', name: 'Social Media',  color: '#12d490', sourceId: 'sm-inner' }
   ];
 
+  // Closers — aparecem no slide de fechamento (nome + telefone).
+  // ID === valor do <option> no #prop-closer
+  const CLOSERS = {
+    '1': { name: 'Roberto Fachetti', phone: '(27) 99800-1953' },
+    '2': { name: 'Matheus Scalfoni', phone: '(27) 99247-5297' },
+    '3': { name: 'Fábio Richard',    phone: '(27) 99246-9698' },
+    '4': { name: 'Arthur Zon',       phone: '(27) 99911-1888' },
+    '5': { name: 'Daniel Basilio',   phone: '(27) 99524-2121' },
+    '6': { name: 'Ramon Reis',       phone: '(27) 98848-6510' },
+    '7': { name: 'João Guarçoni',    phone: '(27) 99772-2380' },
+    '8': { name: 'Gustavo Dias',     phone: '(27) 99977-5458' },
+    '9': { name: 'Lucas Pereira',    phone: '(27) 99804-7494' },
+  };
+  const DEFAULT_CLOSER_ID = '1'; // Roberto Fachetti (default antigo)
+
   const selected = new Set(['performance', 'creators']);
   const externalCache = new Map();
   let previewDirty = true;
+  let closerId = localStorage.getItem('prop-closer') || DEFAULT_CLOSER_ID;
+  if (!CLOSERS[closerId]) closerId = DEFAULT_CLOSER_ID;
 
   const $solutions   = document.getElementById('prop-solutions');
   const $invest      = document.getElementById('prop-invest');
@@ -15207,6 +15242,7 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   const $downloadTop = document.getElementById('prop-download-top');
   const $refresh     = document.getElementById('prop-refresh');
   const $clientInput = document.getElementById('prop-client-name');
+  const $closer      = document.getElementById('prop-closer');
 
   // Preços default por solução/tier — defaults vêm dos cards atuais.
   // Quando o vendedor edita um campo, o valor sobrescreve aqui em memória
@@ -15285,6 +15321,24 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     // enquanto o campo ainda está visivelmente errado.
     $clientInput.addEventListener('blur', () => {
       if ($clientInput.value.trim()) $clientInput.classList.remove('is-missing');
+    });
+  }
+
+  // Closer — persiste seleção e dispara re-render do slide de fechamento.
+  if ($closer) {
+    $closer.value = closerId;
+    $closer.addEventListener('change', () => {
+      const v = $closer.value;
+      if (CLOSERS[v]) {
+        closerId = v;
+        localStorage.setItem('prop-closer', closerId);
+      } else {
+        // "Selecione..." → volta pro default
+        closerId = DEFAULT_CLOSER_ID;
+        localStorage.removeItem('prop-closer');
+      }
+      previewDirty = true;
+      renderPreview();
     });
   }
 
@@ -15847,7 +15901,8 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     }
 
     // 4. Slide de fechamento (sempre o último, independente das soluções
-    // selecionadas). Contatos do Roberto + endereço da Turbo + branding.
+    // selecionadas). Contatos do closer selecionado + endereço da Turbo + branding.
+    const closer = CLOSERS[closerId] || CLOSERS[DEFAULT_CLOSER_ID];
     sections.push(`<section class="proposal-section proposal-section--closing">
       <div class="closing-slide">
         <img src="logo.png" alt="" class="closing-bg-mark" aria-hidden="true">
@@ -15859,13 +15914,13 @@ document.getElementById('avatar-input').addEventListener('change', e => {
                 <rect x="3" y="5" width="18" height="14" rx="2"/>
                 <path d="M3 7l9 6 9-6"/>
               </svg>
-              <span>Roberto Fachetti</span>
+              <span>${closer.name}</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.86 19.86 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.86 19.86 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
               </svg>
-              <span>(27) 99800-1953</span>
+              <span>${closer.phone}</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
