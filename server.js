@@ -231,6 +231,82 @@ function applyPatches(htmlWithIds, patches, clientName) {
   return { html: $.html(), applied };
 }
 
+// Termos do template original que NÃO devem sobrar na proposta gerada.
+// Detectados pós-geração; se sobrarem, segunda passada na IA corrige.
+const TEMPLATE_LEAK_TERMS = {
+  '00': [ // Lançamento — Haira
+    'Haira',
+  ],
+  '01': [ // Performance com MQL — Luma
+    'Luma',
+  ],
+  '02': [ // Réguas — Digital Aligner
+    'Digital Aligner',
+    'dentista', 'dentistas',
+    'alinhador', 'alinhadores',
+    'ortodontia', 'ortodontista', 'ortodôntic',
+    'odontológic', 'odontologia',
+    'paciente', 'pacientes',
+    'consultório', 'clínica odontológica',
+    'Juliana',
+  ],
+};
+
+// Procura por termos vazados do template no HTML pós-patch.
+// Retorna { 'id': { html, found: ['term1', 'term2'] } } pros IDs afetados.
+function findLeakIds(htmlWithIds, terms) {
+  if (!terms?.length) return {};
+  const $ = cheerio.load(htmlWithIds, { decodeEntities: false });
+  const leaks = {};
+  // Regex de cada termo (case-insensitive, escape de chars especiais)
+  const escaped = terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  const re = new RegExp('\\b(' + escaped.join('|') + ')', 'i');
+  $('[data-edit-id]').each((_, el) => {
+    const $el = $(el);
+    const id = $el.attr('data-edit-id');
+    const text = $el.text();
+    if (re.test(text)) {
+      const found = terms.filter(t => new RegExp(t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i').test(text));
+      leaks[id] = { html: $el.html(), found };
+    }
+  });
+  return leaks;
+}
+
+// Segunda passada na IA pra corrigir os leaks detectados.
+// Recebe só os IDs que vazaram + lista de termos a evitar.
+async function callAIForLeakFix({ leaks, terms, clientName, transcriptsBlock }) {
+  const leakJson = Object.fromEntries(
+    Object.entries(leaks).map(([id, v]) => [id, v.html])
+  );
+  const termsList = terms.join(', ');
+  const systemPrompt = `Você é copywriter da Turbo Partners. Recebe um JSON de textos que ainda contêm termos do template original que DEVEM ser substituídos para refletir o cliente real.
+
+CLIENTE: ${clientName}
+TERMOS A SUBSTITUIR: ${termsList}
+
+Para cada texto:
+- Substitua os termos antigos por contexto apropriado ao cliente ${clientName}
+- Mantenha TODAS as tags HTML inline (<em>, <strong>, <br>, <span>) com mesmas classes/atributos
+- Tom premium, profissional, sóbrio
+- NÃO invente dados sobre o cliente — use linguagem genérica se não houver info específica
+- Retorne SOMENTE JSON {id: novoTexto}, sem markdown nem prefácio`;
+
+  const response = await anthropic.messages.create({
+    model: ANTHROPIC_MODEL,
+    max_tokens: 4_000,
+    system: systemPrompt,
+    messages: [{
+      role: 'user',
+      content: `CONTEXTO DA REUNIÃO:\n${transcriptsBlock}\n\nTEXTOS COM LEAKS (${Object.keys(leakJson).length} itens):\n${JSON.stringify(leakJson, null, 2)}\n\nReescreva TODOS removendo os termos listados. Retorne JSON puro.`,
+    }],
+  });
+
+  const text = response.content?.[0]?.text || '';
+  const patches = extractJson(text);
+  return { patches: patches || {}, usage: response.usage };
+}
+
 // Tenta extrair JSON de uma string que pode ter prefácio/markdown.
 function extractJson(text) {
   if (!text) return null;
@@ -587,19 +663,56 @@ app.post('/api/generate-proposal', async (req, res) => {
       });
     } else {
       // Aplica patches no HTML base (com data-edit-ids)
-      const { html: finalHtml, applied } = applyPatches(baseHtmlWithIds, patches, clientName);
-      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — type ${proposalType}, ${elapsed}ms, ${numTexts} editable texts → ${applied} patches applied, input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t`);
+      let { html: finalHtml, applied } = applyPatches(baseHtmlWithIds, patches, clientName);
+
+      // ── AUDIT PASS: detecta e corrige leaks do template ────
+      // Em gerações iniciais (não refinamento) é comum a IA deixar
+      // passar termos do segmento original (dentista, alinhador, etc.).
+      // Aqui scaneamos o HTML pós-patch, e se houver leaks, fazemos
+      // uma segunda chamada à IA forçando o fix dos IDs afetados.
+      let leakFixed = 0;
+      let leakUsage = null;
+      let leakIds = 0;
+      if (!isRefinement) {
+        const leakTerms = TEMPLATE_LEAK_TERMS[proposalType] || [];
+        const leaks = findLeakIds(finalHtml, leakTerms);
+        leakIds = Object.keys(leaks).length;
+        if (leakIds > 0) {
+          try {
+            sseSend(res, { type: 'progress', chars: charsSent, audit: true, leakCount: leakIds });
+            if (typeof res.flush === 'function') res.flush();
+            const fix = await callAIForLeakFix({
+              leaks,
+              terms: leakTerms,
+              clientName,
+              transcriptsBlock,
+            });
+            const applied2 = applyPatches(finalHtml, fix.patches, clientName);
+            finalHtml = applied2.html;
+            leakFixed = applied2.applied;
+            leakUsage = fix.usage;
+          } catch (auditErr) {
+            console.error('[api] audit pass falhou (ignorando):', auditErr?.message);
+          }
+        }
+      }
+      const elapsedTotal = Date.now() - startedAt;
+
+      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — type ${proposalType}, ${elapsedTotal}ms total, ${numTexts} texts → ${applied} patches + ${leakFixed} leak-fixes (${leakIds} ids), input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t${leakUsage ? `, audit input ${leakUsage.input_tokens}t output ${leakUsage.output_tokens}t` : ''}`);
       sseSend(res, {
         type: 'done',
         html: finalHtml,
         meta: {
           model: ANTHROPIC_MODEL,
-          elapsedMs: elapsed,
+          elapsedMs: elapsedTotal,
           transcripts: transcripts.length,
           isRefinement,
           numTexts,
           patchesApplied: applied,
+          leakIdsFound: leakIds,
+          leakFixed,
           usage: finalUsage,
+          auditUsage: leakUsage,
         },
       });
     }
