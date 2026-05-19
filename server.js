@@ -41,7 +41,9 @@ const PROPOSAL_FILES = {
 const MAX_JSON_BODY = '8mb';
 const MAX_TRANSCRIPT_CHARS = 200_000; // ~50k tokens por transcrição
 const MAX_REFINEMENT_CHARS = 5_000;
-const REQUEST_TIMEOUT_MS = 120_000;   // 2 min — gerações podem demorar
+// Gerações podem demorar 3-5min facilmente (Sonnet produzindo HTML grande).
+// Usamos SSE/streaming pra que o proxy do Render não derrube por idle.
+const REQUEST_TIMEOUT_MS = 10 * 60_000; // 10 min
 
 // ── Anthropic client (lazy) ─────────────────────────────
 let anthropic = null;
@@ -172,9 +174,17 @@ function sanitizeAIHtml(text) {
   return s;
 }
 
-// ── Endpoint: GERAR / REFINAR proposta ──────────────────
+// ── Helper: envia evento SSE ──────────────────────────
+function sseSend(res, data) {
+  // SSE format: "data: {json}\n\n"
+  res.write(`data: ${JSON.stringify(data)}\n\n`);
+}
+
+// ── Endpoint: GERAR / REFINAR proposta (STREAMING via SSE) ──
+// Streaming é OBRIGATÓRIO porque gerações grandes (HTML de 80kb)
+// podem levar 3-5min — sem streaming, proxies (Render/Cloudflare)
+// derrubam a conexão por idle ou por timeout duro de ~100s.
 app.post('/api/generate-proposal', async (req, res) => {
-  // Set timeout pra não pendurar resposta indefinidamente
   req.setTimeout(REQUEST_TIMEOUT_MS);
   res.setTimeout(REQUEST_TIMEOUT_MS);
 
@@ -188,121 +198,155 @@ app.post('/api/generate-proposal', async (req, res) => {
   // Decidir modo: gerar do zero ou refinar.
   const isRefinement = refinement.length > 0 && currentHtml.length > 0;
 
+  let baseHtml;
   try {
-    let baseHtml;
-    try {
-      baseHtml = await loadTemplate(proposalType);
-    } catch (e) {
-      console.error('[api] erro lendo template', proposalType, e);
-      return res.status(500).json({ ok: false, error: 'Template não encontrado.' });
-    }
+    baseHtml = await loadTemplate(proposalType);
+  } catch (e) {
+    console.error('[api] erro lendo template', proposalType, e);
+    return res.status(500).json({ ok: false, error: 'Template não encontrado.' });
+  }
 
-    // ── MODO MOCK (sem API key) ────────────────────────
-    if (!HAS_AI) {
-      console.log(`[api] MOCK ${isRefinement ? 'refine' : 'generate'} — proposal ${proposalType}, transcripts: ${transcripts.length}, refinement: ${refinement.length} chars`);
-      // Retorna o template (ou currentHtml se for refinement) sem mudanças,
-      // adicionando um banner discreto pra deixar claro que é mock.
-      const html = isRefinement ? currentHtml : baseHtml;
-      const banner = `<!-- [MOCK MODE] Servidor sem ANTHROPIC_API_KEY. Esta resposta é o template/HTML atual sem alterações. -->\n`;
-      const out = html.startsWith('<!DOCTYPE') ? banner + html : html;
-      return res.json({
-        ok: true,
-        mode: 'mock',
-        html: out,
+  // ── MODO MOCK (sem API key) ────────────────────────
+  // Mantém JSON simples pra mock — não precisa de streaming.
+  if (!HAS_AI) {
+    console.log(`[api] MOCK ${isRefinement ? 'refine' : 'generate'} — proposal ${proposalType}, transcripts: ${transcripts.length}, client: "${clientName}"`);
+    const html = isRefinement ? currentHtml : baseHtml;
+    const banner = `<!-- [MOCK MODE] Servidor sem ANTHROPIC_API_KEY. Esta resposta é o template/HTML atual sem alterações. -->\n`;
+    const out = html.startsWith('<!DOCTYPE') ? banner + html : html;
+    return res.json({
+      ok: true,
+      mode: 'mock',
+      html: out,
+      meta: {
+        model: 'mock',
+        transcripts: transcripts.length,
+        isRefinement,
+        warning: 'Backend em modo MOCK — sem ANTHROPIC_API_KEY configurado.',
+      },
+    });
+  }
+
+  // ── MODO LIVE (Anthropic streaming via SSE) ─────────
+  // Headers SSE
+  res.writeHead(200, {
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache, no-transform',
+    'Connection': 'keep-alive',
+    'X-Accel-Buffering': 'no', // desabilita buffering em proxies (nginx-style)
+  });
+
+  // Heartbeat: comentário SSE a cada 10s pra manter conexão viva
+  // mesmo se a IA estiver "pensando" sem produzir tokens.
+  const heartbeat = setInterval(() => {
+    try { res.write(': heartbeat\n\n'); } catch {}
+  }, 10_000);
+
+  const transcriptsBlock = buildTranscriptsBlock(transcripts);
+  const startedAt = Date.now();
+
+  // Avisa o cliente que começou
+  sseSend(res, { type: 'start', isRefinement });
+
+  let messageRequest;
+  if (isRefinement) {
+    messageRequest = {
+      model: ANTHROPIC_MODEL,
+      max_tokens: 32_000,
+      system: [
+        { type: 'text', text: SYSTEM_PROMPT_REFINE },
+        {
+          type: 'text',
+          text: `CONTEXTO DO CLIENTE:\nNome: ${clientName}\n\nTRANSCRIÇÃO ORIGINAL DA REUNIÃO:\n\n${transcriptsBlock}`,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      messages: [
+        {
+          role: 'user',
+          content: `PROPOSTA ATUAL (HTML):\n\n${currentHtml}\n\n---\n\nINSTRUÇÃO DE REFINAMENTO:\n${refinement}\n\nRetorne o HTML completo modificado.`,
+        },
+      ],
+    };
+  } else {
+    messageRequest = {
+      model: ANTHROPIC_MODEL,
+      max_tokens: 32_000,
+      system: [
+        { type: 'text', text: SYSTEM_PROMPT_GENERATE },
+        {
+          type: 'text',
+          text: `TEMPLATE HTML DA PROPOSTA (use como base — mantenha estrutura, altere copy):\n\n${baseHtml}`,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      messages: [
+        {
+          role: 'user',
+          content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nGere a proposta personalizada para ${clientName} com base no que foi conversado. Substitua nomes de clientes do template (Digital Aligner / Luma / Haira) pelo nome do cliente real (${clientName}).`,
+        },
+      ],
+    };
+  }
+
+  let fullText = '';
+  let charsSent = 0;
+  let finalUsage = null;
+
+  try {
+    const stream = anthropic.messages.stream(messageRequest);
+
+    // Event: cada delta de texto
+    stream.on('text', (text) => {
+      fullText += text;
+      // Notifica progresso a cada ~500 chars pra não inundar o cliente
+      if (fullText.length - charsSent >= 500) {
+        charsSent = fullText.length;
+        try {
+          sseSend(res, { type: 'progress', chars: charsSent });
+        } catch {}
+      }
+    });
+
+    // Aguarda mensagem final completa
+    const finalMessage = await stream.finalMessage();
+    finalUsage = finalMessage.usage;
+
+    const html = sanitizeAIHtml(fullText);
+    const elapsed = Date.now() - startedAt;
+
+    if (!html) {
+      console.error('[api] AI retornou HTML inválido. Primeiros 300 chars:', fullText.slice(0, 300));
+      sseSend(res, {
+        type: 'error',
+        error: 'A IA retornou conteúdo inválido. Tente novamente ou ajuste a transcrição.',
+      });
+    } else {
+      console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — proposal ${proposalType}, ${elapsed}ms, input ${finalUsage?.input_tokens}t (cached: ${finalUsage?.cache_read_input_tokens || 0}t), output ${finalUsage?.output_tokens}t`);
+      sseSend(res, {
+        type: 'done',
+        html,
         meta: {
-          model: 'mock',
+          model: ANTHROPIC_MODEL,
+          elapsedMs: elapsed,
           transcripts: transcripts.length,
           isRefinement,
-          warning: 'Backend em modo MOCK — sem ANTHROPIC_API_KEY configurado.',
+          usage: finalUsage,
         },
       });
     }
-
-    // ── MODO LIVE (Anthropic) ───────────────────────────
-    const transcriptsBlock = buildTranscriptsBlock(transcripts);
-    const startedAt = Date.now();
-
-    let response;
-    if (isRefinement) {
-      // Refinamento: cache da transcrição (varia pouco entre refinos),
-      // o usuário só muda a instrução e o HTML atual.
-      response = await anthropic.messages.create({
-        model: ANTHROPIC_MODEL,
-        max_tokens: 64_000,
-        system: [
-          { type: 'text', text: SYSTEM_PROMPT_REFINE },
-          {
-            type: 'text',
-            text: `CONTEXTO DO CLIENTE:\nNome: ${clientName}\n\nTRANSCRIÇÃO ORIGINAL DA REUNIÃO:\n\n${transcriptsBlock}`,
-            cache_control: { type: 'ephemeral' },
-          },
-        ],
-        messages: [
-          {
-            role: 'user',
-            content: `PROPOSTA ATUAL (HTML):\n\n${currentHtml}\n\n---\n\nINSTRUÇÃO DE REFINAMENTO:\n${refinement}\n\nRetorne o HTML completo modificado.`,
-          },
-        ],
-      });
-    } else {
-      // Geração: cache do template (mesmo template em múltiplas gerações
-      // da mesma jornada/cliente).
-      response = await anthropic.messages.create({
-        model: ANTHROPIC_MODEL,
-        max_tokens: 64_000,
-        system: [
-          { type: 'text', text: SYSTEM_PROMPT_GENERATE },
-          {
-            type: 'text',
-            text: `TEMPLATE HTML DA PROPOSTA (use como base — mantenha estrutura, altere copy):\n\n${baseHtml}`,
-            cache_control: { type: 'ephemeral' },
-          },
-        ],
-        messages: [
-          {
-            role: 'user',
-            content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nGere a proposta personalizada para ${clientName} com base no que foi conversado. Substitua nomes de clientes do template (Digital Aligner / Luma / Haira) pelo nome do cliente real (${clientName}).`,
-          },
-        ],
-      });
-    }
-
-    const elapsed = Date.now() - startedAt;
-    const text = response?.content?.[0]?.text || '';
-    const html = sanitizeAIHtml(text);
-
-    if (!html) {
-      console.error('[api] AI retornou HTML inválido. Primeiros 300 chars:', text.slice(0, 300));
-      return res.status(502).json({
-        ok: false,
-        error: 'A IA retornou conteúdo inválido. Tente novamente ou ajuste a transcrição.',
-      });
-    }
-
-    console.log(`[api] OK ${isRefinement ? 'refine' : 'generate'} — proposal ${proposalType}, ${elapsed}ms, input ${response.usage?.input_tokens}t (cached: ${response.usage?.cache_read_input_tokens || 0}t), output ${response.usage?.output_tokens}t`);
-
-    return res.json({
-      ok: true,
-      mode: 'live',
-      html,
-      meta: {
-        model: ANTHROPIC_MODEL,
-        elapsedMs: elapsed,
-        transcripts: transcripts.length,
-        isRefinement,
-        usage: response.usage,
-      },
-    });
   } catch (e) {
-    console.error('[api] erro inesperado:', e?.message || e);
-    // NÃO vazar stack trace pro cliente.
-    const status = e?.status >= 400 && e?.status < 600 ? e.status : 500;
-    return res.status(status).json({
-      ok: false,
-      error: e?.message?.includes('rate') ? 'Limite de taxa da API atingido. Aguarde e tente novamente.'
-           : e?.message?.includes('overloaded') ? 'A IA está sobrecarregada. Tente novamente em alguns segundos.'
-           : 'Erro inesperado ao gerar a proposta. Tente novamente.',
-    });
+    console.error('[api] erro durante stream:', e?.message || e);
+    const msg = e?.message?.includes('rate') ? 'Limite de taxa da API atingido. Aguarde e tente novamente.'
+              : e?.message?.includes('overloaded') ? 'A IA está sobrecarregada. Tente novamente em alguns segundos.'
+              : e?.message?.includes('authentication') || e?.message?.includes('api_key') ? 'API key da Anthropic inválida ou sem permissão. Verifique no Render.'
+              : e?.message?.includes('credit') || e?.message?.includes('balance') ? 'Conta Anthropic sem créditos. Recarregue em console.anthropic.com.'
+              : `Erro ao chamar a IA: ${e?.message || 'desconhecido'}`;
+    try {
+      sseSend(res, { type: 'error', error: msg });
+    } catch {}
+  } finally {
+    clearInterval(heartbeat);
+    try { res.end(); } catch {}
   }
 });
 

@@ -14714,10 +14714,14 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     });
   }
 
-  // ── API call ────────────────────────────────────
-  async function callGenerate(body) {
+  // ── API call (SSE streaming) ────────────────────
+  // Server pode retornar JSON simples (modo MOCK / erro de validação 400)
+  // ou um stream SSE (modo LIVE). Detectamos pelo Content-Type da resposta.
+  async function callGenerate(body, onProgress) {
     const ctrl = new AbortController();
-    const timeout = setTimeout(() => ctrl.abort(), 130_000); // 2min10s
+    // Timeout generoso — streaming + heartbeat mantém a conexão.
+    const timeout = setTimeout(() => ctrl.abort(), 10 * 60_000); // 10min
+
     try {
       const r = await fetch('/api/generate-proposal', {
         method: 'POST',
@@ -14725,12 +14729,60 @@ document.getElementById('avatar-input').addEventListener('change', e => {
         body: JSON.stringify(body),
         signal: ctrl.signal,
       });
-      const json = await r.json().catch(() => ({ ok: false, error: 'Resposta inválida do servidor.' }));
-      if (!r.ok || !json.ok) {
-        const msg = json?.error || `Erro ${r.status}`;
-        throw new Error(msg);
+
+      const contentType = (r.headers.get('content-type') || '').toLowerCase();
+
+      // Caminho 1: resposta JSON (mock, validação 400, erro 5xx com JSON)
+      if (!contentType.includes('text/event-stream')) {
+        const json = await r.json().catch(() => ({ ok: false, error: 'Resposta inválida do servidor.' }));
+        if (!r.ok || !json.ok) {
+          throw new Error(json?.error || `Erro ${r.status}`);
+        }
+        return json;
       }
-      return json;
+
+      // Caminho 2: stream SSE (live)
+      if (!r.body) throw new Error('Stream não disponível.');
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let result = null;
+      let lastError = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        // Eventos SSE são separados por \n\n
+        let sepIdx;
+        while ((sepIdx = buffer.indexOf('\n\n')) !== -1) {
+          const block = buffer.slice(0, sepIdx);
+          buffer = buffer.slice(sepIdx + 2);
+          if (!block.trim() || block.startsWith(':')) continue; // heartbeat / vazio
+          // Acumula linhas "data: ..."
+          const lines = block.split('\n').filter(l => l.startsWith('data: '));
+          if (lines.length === 0) continue;
+          const dataStr = lines.map(l => l.slice(6)).join('\n');
+          try {
+            const evt = JSON.parse(dataStr);
+            if (evt.type === 'progress') {
+              if (onProgress) onProgress(evt);
+            } else if (evt.type === 'start') {
+              if (onProgress) onProgress(evt);
+            } else if (evt.type === 'done') {
+              result = { ok: true, mode: 'live', html: evt.html, meta: evt.meta };
+            } else if (evt.type === 'error') {
+              lastError = evt.error || 'Erro desconhecido.';
+            }
+          } catch {
+            // ignora linha mal-formada
+          }
+        }
+      }
+
+      if (result) return result;
+      throw new Error(lastError || 'Stream terminou sem resposta válida.');
     } finally {
       clearTimeout(timeout);
     }
@@ -14747,10 +14799,17 @@ document.getElementById('avatar-input').addEventListener('change', e => {
     }
     state.inFlight = true;
     setLoading(generateBtn, true);
-    showStatus('Gerando proposta com IA — pode demorar ~30s a 2min…', 'info');
+    showStatus('Gerando proposta com IA — pode demorar 1–5min em propostas grandes…', 'info');
 
     try {
-      const json = await callGenerate({ transcripts, proposalType, clientName });
+      const json = await callGenerate(
+        { transcripts, proposalType, clientName },
+        (evt) => {
+          if (evt.type === 'progress' && evt.chars) {
+            showStatus(`Gerando… ${evt.chars.toLocaleString('pt-BR')} caracteres recebidos`, 'info');
+          }
+        }
+      );
       renderInFrame(json.html);
       state.lastProposalType = proposalType;
       // Mostra refinamento + download
@@ -14787,18 +14846,25 @@ document.getElementById('avatar-input').addEventListener('change', e => {
 
       state.inFlight = true;
       setLoading(refineBtn, true);
-      showStatus('Aplicando refinamento — ~10s a 1min…', 'info');
+      showStatus('Aplicando refinamento com IA…', 'info');
 
       try {
         // Pega o HTML ATUAL (com edições inline do usuário), limpo do edit-mode
         const currentHtml = getCurrentIframeHtml();
-        const json = await callGenerate({
-          transcripts,
-          proposalType,
-          clientName,
-          refinement,
-          currentHtml,
-        });
+        const json = await callGenerate(
+          {
+            transcripts,
+            proposalType,
+            clientName,
+            refinement,
+            currentHtml,
+          },
+          (evt) => {
+            if (evt.type === 'progress' && evt.chars) {
+              showStatus(`Refinando… ${evt.chars.toLocaleString('pt-BR')} caracteres recebidos`, 'info');
+            }
+          }
+        );
         renderInFrame(json.html);
         refineInput.value = '';
         refineBtn.disabled = true;
