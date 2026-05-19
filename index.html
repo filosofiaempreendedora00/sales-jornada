@@ -14885,37 +14885,40 @@ document.getElementById('avatar-input').addEventListener('change', e => {
   }
 
   // ── Download HTML editado ──────────────────────
-  if (downloadBtn) {
-    downloadBtn.addEventListener('click', () => {
-      const html = getCurrentIframeHtml();
-      if (!html || html.length < 500) {
-        showStatus('Nada pra baixar — gere uma proposta primeiro.', 'error');
-        return;
-      }
-      const clientName = getClientName() || 'cliente';
-      const proposalType = state.lastProposalType || 'proposta';
-      const TYPE_FILE_NAME = {
-        '00': 'lancamento',
-        '01': 'performance-mql',
-        '02': 'reguas',
-      };
-      const safe = clientName
-        .normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
-      const tsuffix = TYPE_FILE_NAME[proposalType] || proposalType;
-      const ts = new Date().toISOString().slice(0, 10);
-      const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `proposta-${safe}-${tsuffix}-${ts}.html`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      showStatus(`✓ Baixado como ${a.download}`, 'success');
-    });
+  function downloadCurrentProposal() {
+    const html = getCurrentIframeHtml();
+    if (!html || html.length < 500) {
+      showStatus('Nada pra baixar — gere uma proposta primeiro.', 'error');
+      return;
+    }
+    const clientName = getClientName() || 'cliente';
+    const proposalType = state.lastProposalType || 'proposta';
+    const TYPE_FILE_NAME = {
+      '00': 'lancamento',
+      '01': 'performance-mql',
+      '02': 'reguas',
+    };
+    const safe = clientName
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
+    const tsuffix = TYPE_FILE_NAME[proposalType] || proposalType;
+    const ts = new Date().toISOString().slice(0, 10);
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `proposta-${safe}-${tsuffix}-${ts}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showStatus(`✓ Baixado como ${a.download}`, 'success');
   }
+
+  if (downloadBtn) downloadBtn.addEventListener('click', downloadCurrentProposal);
+
+  // Exposta pro FAB dentro do iframe (editor.js chama via window.parent)
+  window.__smRequestDownload = downloadCurrentProposal;
 
   // ── Health check (feature flag) ────────────────
   // Detecta se o backend de IA está disponível. Se sim, revela o botão GERAR.

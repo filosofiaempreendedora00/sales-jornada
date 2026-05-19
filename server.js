@@ -256,32 +256,91 @@ Você recebe:
 2. Transcrição(ões) da reunião de vendas
 3. Um JSON com TODOS os textos editáveis do template ({"t-001":"...","t-002":"..."})
 
-SUA TAREFA: retornar um JSON COMPACTO contendo APENAS os IDs cujos textos você está alterando para personalizar a proposta.
+SUA TAREFA: retornar um JSON com os IDs cujos textos você está alterando para personalizar a proposta. Seja MINUCIOSO — é melhor mudar demais que de menos.
 
-REGRA #1 — TAMANHO MÁXIMO:
-O JSON de resposta deve ter ENTRE 8 e 30 entradas. Se você está incluindo mais de 30, está fazendo errado: está incluindo textos que não precisariam mudar. PARE e revise.
+═══════════════════════════════════════════════════
+O QUE SUBSTITUIR (SEMPRE, em CADA texto onde aparecer)
+═══════════════════════════════════════════════════
 
-REGRA #2 — SÓ INCLUA SE MUDOU DE FATO:
-Antes de incluir cada ID, COMPARE o novo texto com o original. Se forem idênticos OU diferirem só por um espaço, NÃO inclua. Inclua APENAS se a mudança é semanticamente relevante (mudou substantivo, frase, número, nome).
+▶ NOMES DE CLIENTES DO TEMPLATE:
+   "Digital Aligner", "Luma", "Haira" → nome do cliente real
+   Variações: "a Digital", "a Luma" → "a {cliente}" ou "ao {cliente}"
 
-REGRA #3 — PRIORIDADES:
-- Headings (h1, h2, h3) que mencionam Digital Aligner / Luma / Haira → SUBSTITUIR pelo cliente real.
-- Parágrafos de contexto / diagnóstico → personalizar com a dor do cliente real.
-- CTAs e textos de fechamento → mencionar o cliente real.
-- Labels curtos (chips, tags, "Foco", "Modelo", "01") → NÃO MUDAR (mesma palavra serve).
-- Preços, datas, números → NÃO MUDAR (a menos que cliente peça explicitamente).
+▶ FOUNDERS, GESTORES, PESSOAS NOMEADAS:
+   Qualquer nome próprio de pessoa do template (Juliana, etc.) → omitir,
+   trocar por cargo genérico ("o time", "a liderança", "o gerente"), OU
+   pelo nome real se o cliente mencionou alguém na reunião.
 
-REGRA #4 — PRESERVAÇÃO DE TAGS:
-Mantenha exatamente as mesmas tags HTML inline (<em>, <strong>, <i>, <br>, <span>) com as MESMAS classes/atributos. Quebras de linha (<br>) onde havia no original.
+▶ SEGMENTO / INDÚSTRIA:
+   Termos específicos do template (dentista, ortodontista, alinhador,
+   clínica odontológica, escola, dentro do varejo de moda, etc.) →
+   substituir pelo segmento real do cliente.
+   Ex: "dentista" → "cliente Acme" / "marketplace" / "loja virtual" etc.
 
-REGRA #5 — TOM:
-Premium, profissional, sóbrio. Igual ao template original. Nunca "vendedor" ou exclamativo.
+▶ CASOS / EXEMPLOS / BENCHMARKS DO TEMPLATE:
+   Cases citados no template original (ex: "Nubank no template", "iFood",
+   referências aleatórias) → trocar pelos benchmarks que o CLIENTE citou
+   na reunião. Se cliente não citou nenhum, manter ou omitir o exemplo
+   (não inventar).
 
-FORMATO DA RESPOSTA:
-SOMENTE JSON válido, sem markdown, sem prefácio, sem comentários, sem aspas externas. Exemplo:
-{"t-002":"A próxima<br>camada de <em class=\\"italic text-primary\\">crescimento</em><br>da {CLIENTE}.","t-008":"..."}
+▶ DORES / PROBLEMAS / GANCHOS:
+   Adapte parágrafos de "diagnóstico" / "contexto" / "dor" para
+   refletir EXATAMENTE o que o cliente verbalizou na reunião (CAC alto,
+   churn, baixa retenção, falta de funil, etc.).
 
-Lembre-se: 8 a 30 entradas no MÁXIMO. Se você está hesitando se deve incluir um ID, NÃO INCLUA.`;
+▶ HEADINGS E SUB-HEADINGS:
+   Qualquer h1/h2/h3 que mencione cliente, segmento, ou problema do
+   template original → reescrever para o contexto do cliente real.
+
+▶ CTAs E FECHAMENTO:
+   "Próxima conversa", "Vamos começar", subtítulos finais que mencionam
+   o cliente → personalizar.
+
+═══════════════════════════════════════════════════
+O QUE PRESERVAR (NÃO INCLUIR no JSON de resposta)
+═══════════════════════════════════════════════════
+
+✗ Labels curtos sem contexto: "01", "02", "Etapa", "Foco", "Modelo",
+  "Camada", "Output" → NÃO MUDAR.
+✗ Preços, datas, números: "R$ 11.997", "20/05/2026", "6x" → NÃO MUDAR.
+✗ Termos técnicos universais: "CAC", "ROAS", "CRM", "ROI", "WhatsApp",
+  "E-mail" → NÃO MUDAR (a menos que precise reformular o parágrafo).
+✗ Status / chips genéricos: "Aquisição", "Operando" → NÃO MUDAR.
+
+═══════════════════════════════════════════════════
+PRESERVAÇÃO DE FORMATAÇÃO (CRÍTICO)
+═══════════════════════════════════════════════════
+
+Quando o texto original tem tags HTML inline (<em>, <strong>, <i>,
+<br>, <span class="...">), você DEVE manter EXATAMENTE as mesmas tags
+com as MESMAS classes/atributos. Apenas o texto entre as tags muda.
+
+Exemplo:
+Original: 'A próxima camada de <em class="italic text-primary">crescimento</em> da Digital Aligner.'
+OK:       'A próxima fase de <em class="italic text-primary">escala</em> da Acme Corp.'
+ERRADO:   'A próxima fase de escala da Acme Corp.' (perdeu <em>)
+ERRADO:   'A próxima fase de <em>escala</em> da Acme Corp.' (perdeu class)
+
+═══════════════════════════════════════════════════
+TOM DE VOZ
+═══════════════════════════════════════════════════
+
+Premium, profissional, sóbrio. Igual ao template. Nunca vendedor ou
+exclamativo. Frases curtas e precisas. Português brasileiro.
+
+═══════════════════════════════════════════════════
+FORMATO DA RESPOSTA
+═══════════════════════════════════════════════════
+
+SOMENTE JSON válido, sem markdown, sem prefácio, sem comentários, sem
+aspas externas. Comece DIRETAMENTE com '{' e termine com '}'.
+
+Quantidade esperada: 20 a 60 entradas. Se passou de 70, está mudando
+coisa que não precisava. Se ficou abaixo de 15, está deixando muita
+coisa do template original passar.
+
+Exemplo de formato:
+{"t-002":"A próxima<br>fase de <em class=\\"italic text-primary\\">escala</em><br>da Acme Corp.","t-014":"..."}`;
 
 const SYSTEM_PROMPT_REFINE = `Você está refinando uma proposta comercial B2B da Turbo Partners.
 
@@ -459,7 +518,7 @@ app.post('/api/generate-proposal', async (req, res) => {
   } else {
     messageRequest = {
       model: ANTHROPIC_MODEL,
-      max_tokens: 8_000,
+      max_tokens: 12_000,
       system: [
         { type: 'text', text: SYSTEM_PROMPT_GENERATE },
         {

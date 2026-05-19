@@ -266,6 +266,40 @@
         0%, 100% { opacity: 1; }
         50% { opacity: 0.4; }
       }
+
+      /* Floating Action Button — Baixar HTML editado */
+      #${NS}-fab {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        z-index: 9998;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #12d490, #0dcfe8);
+        color: #07070f;
+        border: 0;
+        border-radius: 99px;
+        padding: 14px 22px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        cursor: pointer;
+        box-shadow:
+          0 8px 28px rgba(18, 212, 144, 0.35),
+          0 0 0 1px rgba(255,255,255,0.08) inset;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+      }
+      #${NS}-fab:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.06);
+        box-shadow:
+          0 12px 36px rgba(18, 212, 144, 0.45),
+          0 0 0 1px rgba(255,255,255,0.12) inset;
+      }
+      #${NS}-fab:active { transform: translateY(0); }
+      #${NS}-fab svg { flex-shrink: 0; }
     `;
     doc.head.appendChild(style);
   }
@@ -281,6 +315,32 @@
     doc.body.appendChild(banner);
   }
 
+  // Botão flutuante de download — sempre visível no canto inferior direito
+  // do iframe. Quando clicado, chama a função do parent que sabe o
+  // contexto (cliente, tipo, data) e dispara o download.
+  function injectDownloadFab(doc) {
+    if (doc.getElementById(NS + '-fab')) return;
+    const fab = doc.createElement('button');
+    fab.type = 'button';
+    fab.id = NS + '-fab';
+    fab.contentEditable = 'false';
+    fab.setAttribute('aria-label', 'Baixar proposta editada');
+    fab.innerHTML =
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">' +
+      '<path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>' +
+      '<span>Baixar HTML editado</span>';
+    fab.addEventListener('click', () => {
+      try {
+        if (window.parent && typeof window.parent.__smRequestDownload === 'function') {
+          window.parent.__smRequestDownload();
+        }
+      } catch (e) {
+        console.error('[edit] download falhou:', e);
+      }
+    });
+    doc.body.appendChild(fab);
+  }
+
   // ── 4) Export limpo ────────────────────────────────────────────
   function exportCleanHTML(doc) {
     // Clona o document inteiro pra não mexer no atual
@@ -293,6 +353,10 @@
     // Remove banner
     const banner = cloneDoc.getElementById(NS + '-banner');
     if (banner) banner.remove();
+
+    // Remove floating download button
+    const fab = cloneDoc.getElementById(NS + '-fab');
+    if (fab) fab.remove();
 
     // Remove drag handles
     cloneDoc.querySelectorAll('.' + NS + '-handle').forEach(el => el.remove());
@@ -340,6 +404,7 @@
     const editableCount = markEditable(doc.body);
     const sortableOK = setupSortable(doc);
     injectBanner(doc);
+    injectDownloadFab(doc);
     // Expor função de export pro parent
     window.__exportClean = () => exportCleanHTML(doc);
     // Sinaliza ao parent que está pronto
