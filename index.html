@@ -3340,7 +3340,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 /* Quando colapsado, esconde TODOS os nomes (inclusive o ativo).
    O estado de seleção continua em memória — ao expandir, o item
-   ativo reaparece destacado como antes. */
+   ativo reaparece destacado como antes. Esconde também margin,
+   padding e border do próprio container pra não sobrar buraco. */
+.closer-submenu.is-collapsed {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  gap: 0;
+}
 .closer-submenu.is-collapsed .closer-submenu-item {
   display: none;
 }
