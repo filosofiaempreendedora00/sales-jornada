@@ -383,6 +383,454 @@ function extractJson(text) {
   return null;
 }
 
+// ─────────────────────────────────────────────────────────
+// STRUCTURAL REFINEMENT — agentic tool use
+// ─────────────────────────────────────────────────────────
+// O refinamento antigo era "cego": só recebia textos-folha (data-edit-id)
+// e devolvia substituições. Resultado: incapaz de mexer em estrutura,
+// layout, links, ou qualquer coisa fora dos textos extraídos.
+//
+// Nova abordagem: a IA enxerga o HTML INTEIRO e usa ferramentas
+// cirúrgicas (query/update/insert/remove) num loop agentic, igual o
+// Claude no navegador / Lovable. Cada iteração:
+//   1) IA decide qual tool chamar (ou termina)
+//   2) Servidor aplica a tool via cheerio, retorna resultado
+//   3) IA continua até chamar finish() ou estourar limite
+//
+// Otimização de custo: HTML completo vai cached_control no primeiro
+// turno; iterações subsequentes só pagam pelos tool_results curtos.
+// ─────────────────────────────────────────────────────────
+
+const TOOLS_FOR_REFINE = [
+  {
+    name: 'query',
+    description: 'Procura elementos por seletor CSS. Retorna até 10 matches com tag, id, classes e o HTML truncado (500 chars) de cada um. Use ANTES de editar para confirmar que o seletor pega exatamente o que você quer.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string', description: 'Seletor CSS. Ex: "h1", ".pricing-card", "section:nth-of-type(3)", "[data-edit-id=\\"t-012\\"]", "a[href*=\\"whatsapp\\"]".' },
+      },
+      required: ['selector'],
+    },
+  },
+  {
+    name: 'update_text',
+    description: 'Substitui o TEXTO interno do primeiro elemento que casa com o seletor. Use para mudanças de copy simples sem tags inline. Se houver <strong>/<em>/<br> dentro, eles serão removidos — nesse caso use update_html.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        text: { type: 'string', description: 'Novo texto puro (sem HTML).' },
+      },
+      required: ['selector', 'text'],
+    },
+  },
+  {
+    name: 'update_html',
+    description: 'Substitui o HTML interno do primeiro elemento que casa com o seletor. Use quando precisa preservar ou criar tags inline (<strong>, <em>, <br>, <span>) ou reestruturar filhos.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        html: { type: 'string', description: 'Novo HTML interno (pode conter tags).' },
+      },
+      required: ['selector', 'html'],
+    },
+  },
+  {
+    name: 'set_attribute',
+    description: 'Define/atualiza um atributo em TODOS os elementos que casam. Use para href, src, class, style, target, etc.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        attribute: { type: 'string', description: 'Nome do atributo. Ex: "href", "class", "style", "src".' },
+        value: { type: 'string', description: 'Novo valor.' },
+      },
+      required: ['selector', 'attribute', 'value'],
+    },
+  },
+  {
+    name: 'remove_attribute',
+    description: 'Remove um atributo de todos os elementos que casam.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        attribute: { type: 'string' },
+      },
+      required: ['selector', 'attribute'],
+    },
+  },
+  {
+    name: 'add_class',
+    description: 'Adiciona uma ou mais classes (separadas por espaço) aos elementos que casam, sem sobrescrever as classes existentes.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        classes: { type: 'string', description: 'Uma ou mais classes separadas por espaço.' },
+      },
+      required: ['selector', 'classes'],
+    },
+  },
+  {
+    name: 'remove_class',
+    description: 'Remove uma ou mais classes (separadas por espaço) dos elementos que casam.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        classes: { type: 'string' },
+      },
+      required: ['selector', 'classes'],
+    },
+  },
+  {
+    name: 'remove_element',
+    description: 'Remove COMPLETAMENTE os elementos que casam (incluindo eles mesmos e seus filhos) da DOM. Use com cuidado — não há undo.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+      },
+      required: ['selector'],
+    },
+  },
+  {
+    name: 'insert_html',
+    description: 'Insere um bloco de HTML novo relativo ao primeiro elemento que casa. position: "before" (irmão antes), "after" (irmão depois), "prepend" (primeiro filho), "append" (último filho).',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        position: { type: 'string', enum: ['before', 'after', 'prepend', 'append'] },
+        html: { type: 'string', description: 'HTML completo a inserir.' },
+      },
+      required: ['selector', 'position', 'html'],
+    },
+  },
+  {
+    name: 'replace_element',
+    description: 'Substitui o primeiro elemento que casa (incluindo ele mesmo, não só o conteúdo interno) por um novo HTML completo.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        selector: { type: 'string' },
+        html: { type: 'string' },
+      },
+      required: ['selector', 'html'],
+    },
+  },
+  {
+    name: 'finish',
+    description: 'Chame quando TODAS as alterações pedidas pelo usuário foram aplicadas. Encerra a sessão de edição.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        summary: { type: 'string', description: 'Resumo curto (1-2 frases em PT-BR) do que foi alterado.' },
+      },
+      required: ['summary'],
+    },
+  },
+];
+
+// Aplica uma única tool call no HTML atual. Retorna { html (novo), result (status pra IA) }.
+function applyTool(html, name, input) {
+  const truncate = (s, max = 500) => (s.length > max ? s.slice(0, max) + '... [trunc]' : s);
+  const safe = input || {};
+
+  try {
+    const $ = cheerio.load(html, { decodeEntities: false });
+
+    switch (name) {
+      case 'query': {
+        if (typeof safe.selector !== 'string') return { html, result: { error: 'selector ausente' } };
+        const $matches = $(safe.selector);
+        const count = $matches.length;
+        const matches = [];
+        $matches.slice(0, 10).each((i, el) => {
+          const $el = $(el);
+          matches.push({
+            index: i,
+            tag: el.tagName,
+            id: $el.attr('id') || null,
+            dataEditId: $el.attr('data-edit-id') || null,
+            class: $el.attr('class') || null,
+            outer: truncate($.html(el), 500),
+          });
+        });
+        return { html, result: { matchCount: count, showing: matches.length, matches } };
+      }
+
+      case 'update_text': {
+        const $el = $(safe.selector).first();
+        if ($el.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $el.text(String(safe.text ?? ''));
+        return { html: $.html(), result: { ok: true, tag: $el.prop('tagName') } };
+      }
+
+      case 'update_html': {
+        const $el = $(safe.selector).first();
+        if ($el.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $el.html(String(safe.html ?? ''));
+        return { html: $.html(), result: { ok: true, tag: $el.prop('tagName') } };
+      }
+
+      case 'set_attribute': {
+        const $els = $(safe.selector);
+        if ($els.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $els.attr(String(safe.attribute), String(safe.value ?? ''));
+        return { html: $.html(), result: { ok: true, count: $els.length } };
+      }
+
+      case 'remove_attribute': {
+        const $els = $(safe.selector);
+        if ($els.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $els.removeAttr(String(safe.attribute));
+        return { html: $.html(), result: { ok: true, count: $els.length } };
+      }
+
+      case 'add_class': {
+        const $els = $(safe.selector);
+        if ($els.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $els.addClass(String(safe.classes || ''));
+        return { html: $.html(), result: { ok: true, count: $els.length } };
+      }
+
+      case 'remove_class': {
+        const $els = $(safe.selector);
+        if ($els.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $els.removeClass(String(safe.classes || ''));
+        return { html: $.html(), result: { ok: true, count: $els.length } };
+      }
+
+      case 'remove_element': {
+        const $els = $(safe.selector);
+        if ($els.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        const count = $els.length;
+        $els.remove();
+        return { html: $.html(), result: { ok: true, removed: count } };
+      }
+
+      case 'insert_html': {
+        const $el = $(safe.selector).first();
+        if ($el.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        const pos = String(safe.position || '');
+        const content = String(safe.html ?? '');
+        if (pos === 'before') $el.before(content);
+        else if (pos === 'after') $el.after(content);
+        else if (pos === 'prepend') $el.prepend(content);
+        else if (pos === 'append') $el.append(content);
+        else return { html, result: { error: `position inválida: "${pos}"` } };
+        return { html: $.html(), result: { ok: true, position: pos } };
+      }
+
+      case 'replace_element': {
+        const $el = $(safe.selector).first();
+        if ($el.length === 0) return { html, result: { error: `nenhum elemento casa com "${safe.selector}"` } };
+        $el.replaceWith(String(safe.html ?? ''));
+        return { html: $.html(), result: { ok: true } };
+      }
+
+      case 'finish': {
+        return { html, result: { ok: true, finished: true, summary: String(safe.summary || 'Refinamento concluído.') } };
+      }
+
+      default:
+        return { html, result: { error: `tool desconhecida: "${name}"` } };
+    }
+  } catch (err) {
+    return { html, result: { error: `erro aplicando tool: ${err?.message || 'desconhecido'}` } };
+  }
+}
+
+const SYSTEM_PROMPT_REFINE_STRUCTURAL = `Você é um editor de UI sênior + copywriter da Turbo Partners. Sua tarefa é refinar propostas comerciais HTML aplicando EXATAMENTE o que o usuário pedir — alterações estruturais (mover, remover, adicionar seções/containers), estéticas (cores, espaçamentos, classes Tailwind) ou textuais (copy, tom, links).
+
+Você opera num loop agentic:
+1) Inspecione com query() quando precisar confirmar um seletor.
+2) Edite com update_text / update_html / set_attribute / remove_element / insert_html / replace_element / add_class / remove_class.
+3) Quando TODAS as mudanças pedidas estiverem aplicadas, chame finish() com um resumo curto.
+
+═══════════════════════════════════════════════════
+REGRAS DE OURO
+═══════════════════════════════════════════════════
+
+▶ Respeite EXATAMENTE o pedido. Não invente mudanças extras. Se a instrução for ambígua, escolha a interpretação mais conservadora e siga.
+
+▶ Antes de editar algo cuja localização não está óbvia, use query() para confirmar. Mas não abuse — se o seletor é trivial ([data-edit-id="t-012"], #foo, .pricing-cta), edite direto.
+
+▶ Propostas geradas têm data-edit-id="t-XXX" nos textos personalizados — esses são os seletores MAIS estáveis para mudanças de texto.
+
+▶ Para mudanças de estilo, prefira manipular classes (add_class/remove_class) ao invés de style inline. As classes Tailwind são parte do sistema de design.
+
+▶ NÃO mexa em <script>, <style>, ou estrutura <head> a menos que a instrução exija explicitamente.
+
+▶ Preserve tags inline (<em>, <strong>, <br>) quando o usuário pede mudança de texto numa frase que as contém — use update_html para isso.
+
+▶ Você pode chamar múltiplas tools no mesmo turno (em paralelo) quando as edições são independentes. Agrupe.
+
+▶ Limite implícito: ~15 iterações. Seja eficiente.
+
+▶ Tom para mudanças textuais: premium, profissional, sóbrio. Frases curtas e precisas. Português brasileiro. Nunca exclamativo.
+
+═══════════════════════════════════════════════════
+EXEMPLOS DE INTERPRETAÇÃO
+═══════════════════════════════════════════════════
+
+"Troca o título da seção de preços por 'Investimento'":
+  → query('h2, h3') para localizar → update_text no certo.
+
+"Remove o terceiro card de cases":
+  → query('.cases-card') ou similar → remove_element no índice 3 (use :nth-of-type ou :nth-child).
+
+"Adiciona um link de WhatsApp no CTA final":
+  → query('a.cta, .cta a, button.cta') → set_attribute href com link wa.me; ou insert_html se for novo botão.
+
+"Deixa o background da seção 2 mais escuro":
+  → query('section:nth-of-type(2)') → remove_class da cor atual + add_class da nova (bg-zinc-950, etc.).
+
+"O nome do cliente está errado, é Beto e não Roberto":
+  → query('[data-edit-id]') ou texto direto → update_text/update_html.
+
+═══════════════════════════════════════════════════
+FORMATO
+═══════════════════════════════════════════════════
+
+Não escreva prefácio nem explicação narrativa antes das tools. Vá direto: pense brevemente (1-2 frases se necessário), chame tools, finish() ao terminar.`;
+
+// Loop agentic principal do refinamento estrutural.
+async function handleStructuralRefine({ res, sourceHtml, refinement, clientName, transcripts, transcriptsBlock, sseSend }) {
+  // Monta contexto adicional (opcional)
+  const ctxLines = [];
+  if (clientName) ctxLines.push(`Cliente: ${clientName}`);
+  if (transcripts && transcripts.length > 0) {
+    ctxLines.push(`Transcrição de referência (use só se a instrução exigir):\n${transcriptsBlock}`);
+  }
+  const contextBlock = ctxLines.length > 0
+    ? `\n\nCONTEXTO ADICIONAL:\n${ctxLines.join('\n\n')}`
+    : '';
+
+  // Primeira mensagem: HTML completo + instrução. HTML em bloco cacheado.
+  const messages = [
+    {
+      role: 'user',
+      content: [
+        {
+          type: 'text',
+          text: `HTML ATUAL DA PROPOSTA (estado completo — edite com tools):\n\n\`\`\`html\n${sourceHtml}\n\`\`\`${contextBlock}`,
+          cache_control: { type: 'ephemeral' },
+        },
+        {
+          type: 'text',
+          text: `INSTRUÇÃO DE REFINAMENTO DO USUÁRIO:\n\n${refinement}\n\nAplique exatamente isso. Use query() se precisar localizar algo. Chame finish() ao terminar.`,
+        },
+      ],
+    },
+  ];
+
+  let currentHtml = sourceHtml;
+  let iteration = 0;
+  const MAX_ITERATIONS = 15;
+  const totalUsage = {
+    input_tokens: 0,
+    output_tokens: 0,
+    cache_read_input_tokens: 0,
+    cache_creation_input_tokens: 0,
+  };
+  let toolCallsTotal = 0;
+  let finishSummary = null;
+  let finalText = null;
+  let stopReason = null;
+
+  while (iteration < MAX_ITERATIONS) {
+    iteration++;
+    try {
+      sseSend(res, { type: 'progress', stage: 'thinking', iteration });
+      if (typeof res.flush === 'function') res.flush();
+    } catch {}
+
+    const response = await anthropic.messages.create({
+      model: ANTHROPIC_MODEL,
+      max_tokens: 4_000,
+      system: [
+        {
+          type: 'text',
+          text: SYSTEM_PROMPT_REFINE_STRUCTURAL,
+          cache_control: { type: 'ephemeral' },
+        },
+      ],
+      tools: TOOLS_FOR_REFINE,
+      messages,
+    });
+
+    // Acumula usage
+    if (response.usage) {
+      totalUsage.input_tokens += response.usage.input_tokens || 0;
+      totalUsage.output_tokens += response.usage.output_tokens || 0;
+      totalUsage.cache_read_input_tokens += response.usage.cache_read_input_tokens || 0;
+      totalUsage.cache_creation_input_tokens += response.usage.cache_creation_input_tokens || 0;
+    }
+    stopReason = response.stop_reason;
+
+    // Append assistant message (mantém histórico válido)
+    messages.push({ role: 'assistant', content: response.content });
+
+    const toolUses = response.content.filter(b => b.type === 'tool_use');
+    const textBlocks = response.content.filter(b => b.type === 'text');
+
+    if (toolUses.length === 0) {
+      // IA encerrou sem chamar finish — usa o texto final como resumo
+      finalText = textBlocks.map(b => b.text).join('\n').trim() || null;
+      break;
+    }
+
+    // Executa cada tool, monta tool_results
+    const toolResults = [];
+    let finished = false;
+    for (const tu of toolUses) {
+      toolCallsTotal++;
+      const out = applyTool(currentHtml, tu.name, tu.input || {});
+      currentHtml = out.html;
+      toolResults.push({
+        type: 'tool_result',
+        tool_use_id: tu.id,
+        content: JSON.stringify(out.result),
+        is_error: Boolean(out.result?.error),
+      });
+      if (out.result?.finished) {
+        finished = true;
+        finishSummary = out.result.summary || null;
+      }
+      try {
+        sseSend(res, {
+          type: 'progress',
+          stage: 'tool',
+          toolName: tu.name,
+          iteration,
+          toolCallsTotal,
+        });
+        if (typeof res.flush === 'function') res.flush();
+      } catch {}
+    }
+
+    messages.push({ role: 'user', content: toolResults });
+
+    if (finished) break;
+    if (stopReason === 'end_turn') break;
+  }
+
+  return {
+    html: currentHtml,
+    iterations: iteration,
+    toolCalls: toolCallsTotal,
+    summary: finishSummary || finalText || 'Refinamento aplicado.',
+    usage: totalUsage,
+    stopReason,
+    hitMaxIterations: iteration >= MAX_ITERATIONS && !finishSummary,
+  };
+}
+
 const SYSTEM_PROMPT_GENERATE = `Você é um copywriter sênior da Turbo Partners, especialista em personalizar propostas comerciais B2B premium.
 
 Você recebe:
@@ -605,11 +1053,66 @@ app.post('/api/generate-proposal', async (req, res) => {
   const transcriptsBlock = buildTranscriptsBlock(transcripts);
   const startedAt = Date.now();
 
-  // ─── DIFF strategy: extrai textos editáveis do HTML base ───
+  // ─────────────────────────────────────────────────────
+  // MODO REFINAMENTO ESTRUTURAL (agentic loop com tool use)
+  // ─────────────────────────────────────────────────────
+  // Diferente da geração inicial (DIFF strategy só com textos),
+  // o refinamento agora dá à IA visibilidade total do HTML e
+  // ferramentas cirúrgicas pra editar estrutura/estilo/texto.
+  // Custo controlado via prompt caching no HTML completo.
+  if (isRefinement) {
+    try {
+      sseSend(res, { type: 'start', isRefinement: true, mode: 'structural' });
+      if (typeof res.flush === 'function') res.flush();
+
+      const result = await handleStructuralRefine({
+        res,
+        sourceHtml: currentHtml,
+        refinement,
+        clientName,
+        transcripts,
+        transcriptsBlock,
+        sseSend,
+      });
+      const elapsedTotal = Date.now() - startedAt;
+      console.log(`[api] OK refine — ${elapsedTotal}ms, ${result.iterations} iter, ${result.toolCalls} tools, input ${result.usage.input_tokens}t (cached read: ${result.usage.cache_read_input_tokens}t, cache create: ${result.usage.cache_creation_input_tokens}t), output ${result.usage.output_tokens}t, stop=${result.stopReason}${result.hitMaxIterations ? ' [MAX_ITER]' : ''}`);
+      sseSend(res, {
+        type: 'done',
+        html: result.html,
+        meta: {
+          model: ANTHROPIC_MODEL,
+          elapsedMs: elapsedTotal,
+          isRefinement: true,
+          mode: 'structural',
+          iterations: result.iterations,
+          toolCalls: result.toolCalls,
+          summary: result.summary,
+          hitMaxIterations: result.hitMaxIterations,
+          usage: result.usage,
+        },
+      });
+    } catch (e) {
+      console.error('[api] erro no refinamento estrutural:', e?.message || e);
+      const msg = e?.message?.includes('rate') ? 'Limite de taxa da API atingido. Aguarde e tente novamente.'
+                : e?.message?.includes('overloaded') ? 'A IA está sobrecarregada. Tente novamente em alguns segundos.'
+                : e?.message?.includes('authentication') || e?.message?.includes('api_key') ? 'API key da Anthropic inválida ou sem permissão.'
+                : e?.message?.includes('credit') || e?.message?.includes('balance') ? 'Conta Anthropic sem créditos.'
+                : `Erro ao refinar: ${e?.message || 'desconhecido'}`;
+      try { sseSend(res, { type: 'error', error: msg }); } catch {}
+    } finally {
+      clearInterval(heartbeat);
+      try { res.end(); } catch {}
+    }
+    return;
+  }
+
+  // ─────────────────────────────────────────────────────
+  // MODO GERAÇÃO INICIAL — DIFF strategy
+  // ─────────────────────────────────────────────────────
   // Ao invés da IA reescrever 25k tokens de HTML, ela retorna
   // só o JSON de mudanças. Isso é ~10x mais rápido e barato.
   let baseHtmlWithIds, baseTexts;
-  let sourceHtml = isRefinement ? currentHtml : baseHtml;
+  let sourceHtml = baseHtml;
   try {
     const extracted = extractEditableTexts(sourceHtml);
     baseHtmlWithIds = extracted.html;
@@ -626,59 +1129,28 @@ app.post('/api/generate-proposal', async (req, res) => {
   const numTexts = Object.keys(baseTexts).length;
 
   // Avisa o cliente que começou (e força mais um flush)
-  sseSend(res, { type: 'start', isRefinement, numTexts });
+  sseSend(res, { type: 'start', isRefinement: false, mode: 'generate', numTexts });
   if (typeof res.flush === 'function') res.flush();
 
-  let messageRequest;
-  if (isRefinement) {
-    // Refinamento aceita ausência de cliente/transcrição (HTML importado).
-    const contextParts = [];
-    if (clientName) contextParts.push(`Nome do cliente: ${clientName}`);
-    if (transcripts.length > 0) {
-      contextParts.push(`Transcrição original da reunião:\n\n${transcriptsBlock}`);
-    }
-    const contextBlock = contextParts.length
-      ? `CONTEXTO:\n${contextParts.join('\n\n')}`
-      : 'CONTEXTO: (sem contexto adicional — refinar somente baseado na instrução do usuário e na proposta atual)';
-
-    messageRequest = {
-      model: ANTHROPIC_MODEL,
-      max_tokens: 4_000,
-      system: [
-        { type: 'text', text: SYSTEM_PROMPT_REFINE },
-        {
-          type: 'text',
-          text: contextBlock,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: `TEXTOS ATUAIS DA PROPOSTA (JSON, ${numTexts} itens):\n\n${textsJson}\n\n---\n\nINSTRUÇÃO DE REFINAMENTO DO USUÁRIO:\n${refinement}\n\nRetorne SOMENTE um JSON com os IDs cujos textos você alterou (não inclua IDs sem mudança).`,
-        },
-      ],
-    };
-  } else {
-    messageRequest = {
-      model: ANTHROPIC_MODEL,
-      max_tokens: 12_000,
-      system: [
-        { type: 'text', text: SYSTEM_PROMPT_GENERATE },
-        {
-          type: 'text',
-          text: `TEXTOS ORIGINAIS DA PROPOSTA (JSON com ${numTexts} itens — IDs estáveis):\n\n${textsJson}`,
-          cache_control: { type: 'ephemeral' },
-        },
-      ],
-      messages: [
-        {
-          role: 'user',
-          content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nPersonalize a proposta para ${clientName}. Retorne SOMENTE um JSON com os IDs cujos textos você quer alterar (omita os que ficam iguais). Lembre-se: substitua menções a Digital Aligner / Luma / Haira pelo nome ${clientName}.`,
-        },
-      ],
-    };
-  }
+  // Geração inicial: DIFF strategy. (Refinamento sai antes, usa tool use.)
+  const messageRequest = {
+    model: ANTHROPIC_MODEL,
+    max_tokens: 12_000,
+    system: [
+      { type: 'text', text: SYSTEM_PROMPT_GENERATE },
+      {
+        type: 'text',
+        text: `TEXTOS ORIGINAIS DA PROPOSTA (JSON com ${numTexts} itens — IDs estáveis):\n\n${textsJson}`,
+        cache_control: { type: 'ephemeral' },
+      },
+    ],
+    messages: [
+      {
+        role: 'user',
+        content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nPersonalize a proposta para ${clientName}. Retorne SOMENTE um JSON com os IDs cujos textos você quer alterar (omita os que ficam iguais). Lembre-se: substitua menções a Digital Aligner / Luma / Haira pelo nome ${clientName}.`,
+      },
+    ],
+  };
 
   let fullText = '';
   let charsSent = 0;

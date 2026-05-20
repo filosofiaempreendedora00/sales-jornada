@@ -15144,6 +15144,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       try {
         // Pega o HTML ATUAL (com edições inline do usuário), limpo do edit-mode
         const currentHtml = getCurrentIframeHtml();
+        // Nomes amigáveis pras tools (refinamento estrutural agentic)
+        const TOOL_LABELS = {
+          query: 'inspecionando estrutura',
+          update_text: 'ajustando texto',
+          update_html: 'reescrevendo bloco',
+          set_attribute: 'ajustando atributo',
+          remove_attribute: 'limpando atributo',
+          add_class: 'ajustando estilo',
+          remove_class: 'ajustando estilo',
+          remove_element: 'removendo elemento',
+          insert_html: 'inserindo elemento',
+          replace_element: 'substituindo elemento',
+          finish: 'finalizando',
+        };
         const json = await callGenerate(
           {
             transcripts,
@@ -15153,8 +15167,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             currentHtml,
           },
           (evt) => {
-            if (evt.type === 'progress' && evt.chars) {
-              showStatus(`Refinando… ${evt.chars.toLocaleString('pt-BR')} caracteres recebidos`, 'info');
+            if (evt.type === 'start') {
+              showStatus(evt.mode === 'structural'
+                ? 'Refinando — Claude está analisando o HTML…'
+                : 'Refinando…', 'info');
+            } else if (evt.type === 'progress') {
+              if (evt.stage === 'thinking') {
+                showStatus(`Refinando… (passo ${evt.iteration}) pensando próxima ação`, 'info');
+              } else if (evt.stage === 'tool') {
+                const label = TOOL_LABELS[evt.toolName] || evt.toolName;
+                showStatus(`Refinando… (passo ${evt.iteration}) ${label}`, 'info');
+              } else if (evt.chars) {
+                showStatus(`Refinando… ${evt.chars.toLocaleString('pt-BR')} caracteres recebidos`, 'info');
+              }
             }
           }
         );
@@ -15163,7 +15188,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         refineBtn.disabled = true;
         const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
         const modeNote = json.mode === 'mock' ? ' — modo MOCK' : '';
-        showStatus(`✓ Refinamento aplicado${elapsed}${modeNote}. Pode continuar refinando ou editar inline.`, 'success');
+        const summary = json.meta?.summary ? ` ${json.meta.summary}` : '';
+        const tools = json.meta?.toolCalls ? ` [${json.meta.toolCalls} edições aplicadas]` : '';
+        showStatus(`✓ Refinamento aplicado${elapsed}${tools}${modeNote}.${summary} Pode continuar refinando ou editar inline.`, 'success');
       } catch (e) {
         console.error('[refinar]', e);
         const msg = e.name === 'AbortError'
