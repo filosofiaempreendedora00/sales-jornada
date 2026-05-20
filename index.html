@@ -8692,6 +8692,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       <button class="closer-submenu-item" data-closer="ramon">Ramon Reis</button>
       <button class="closer-submenu-item" data-closer="joao">João Guarçoni</button>
       <button class="closer-submenu-item" data-closer="gustavo">Gustavo Dias</button>
+      <button class="closer-submenu-item" data-closer="rodrigo">Rodrigo Pimenta</button>
     </div>
     <button class="apres-subtab" data-sub="turbo">
       <span class="apres-subtab-icon">🚀</span>
@@ -9273,6 +9274,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             <option value="6">Ramon Reis</option>
             <option value="7">João Guarçoni</option>
             <option value="8">Gustavo Dias</option>
+            <option value="9">Rodrigo Pimenta</option>
           </select>
         </div>
         <span class="prop-client-hint">Aparece no slide de fechamento da proposta com o telefone</span>
@@ -12433,6 +12435,14 @@ const CLOSERS_DATA = {
       { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
     ],
   },
+  rodrigo: {
+    name: 'Rodrigo Pimenta',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: 'Fotos closers/rodrigo.jpg',
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
 };
 
 function renderCloser(closerId) {
@@ -15409,6 +15419,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     '6': { name: 'Ramon Reis',       phone: '(27) 98848-6510' },
     '7': { name: 'João Guarçoni',    phone: '(27) 99772-2380' },
     '8': { name: 'Gustavo Dias',     phone: '(27) 99977-5458' },
+    '9': { name: 'Rodrigo Pimenta',  phone: '(27) 98873-0141' },
   };
   const DEFAULT_CLOSER_ID = '1'; // Roberto Fachetti (default antigo)
 
