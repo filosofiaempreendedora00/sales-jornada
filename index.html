@@ -3195,7 +3195,9 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   object-fit: cover;
   display: none;
   flex-shrink: 0;
-  transform: scale(1.1) translateX(12%);
+  /* Default: leve translateX negativo pra centralizar o rosto.
+     Closers com necessidades específicas sobrescrevem via photoStyle. */
+  transform: scale(1.05) translateX(-4%);
   transform-origin: center center;
 }
 
@@ -12335,7 +12337,7 @@ const CLOSERS_DATA = {
     name: 'Roberto Fachetti',
     org: '✦ &nbsp;Sócio · Turbo Partners',
     photo: 'Fotos closers/IMG_9262.JPG',
-    photoStyle: 'transform: scale(1.1) translateX(12%);',
+    photoStyle: 'transform: scale(1.1) translateX(4%);',
     roles: [
       { color: '#9b6dff', emoji: '🚀', period: '', title: 'Sócio da Turbo Partners' },
       { color: '#4d8dff', emoji: '💻', period: '2023 · 2024', title: 'Head de Tech' },
@@ -12348,7 +12350,7 @@ const CLOSERS_DATA = {
     name: 'Matheus Scalfoni',
     org: '✦ &nbsp;Especialista · Turbo Partners',
     photo: 'Fotos closers/scalfoni.jpg',
-    photoStyle: 'transform: scale(1.05) translateX(8%);',
+    photoStyle: 'transform: scale(1.05) translateX(0%);',
     roles: [
       { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
     ],
@@ -12365,7 +12367,7 @@ const CLOSERS_DATA = {
     name: 'Arthur Zon',
     org: '✦ &nbsp;Especialista · Turbo Partners',
     photo: 'Fotos closers/arthur zon.jpg',
-    photoStyle: 'transform: scale(1.05) translateX(8%);',
+    photoStyle: 'transform: scale(1.05) translateX(0%);',
     roles: [
       { color: '#0dcfe8', emoji: '📈', period: '2023 · 2024', title: 'Gestor de Performance' },
       { color: '#ffa826', emoji: '📣', period: '2025', title: 'Líder de Comunicação (Social/Creators)' },
