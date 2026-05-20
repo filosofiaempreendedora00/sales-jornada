@@ -3207,6 +3207,13 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   line-height: 1;
 }
 
+/* Quando uma foto carregou, esconde o placeholder de avatar 👤
+   (antes ele ficava aparecendo no "fundo" das fotos pequenas/com
+   transform — bug visual reportado nos closers Scalfoni e Zon). */
+.avatar-inner:has(.is-loaded) .avatar-placeholder-icon {
+  display: none;
+}
+
 .avatar-add-btn {
   position: absolute;
   bottom: 2px; right: 0px;
@@ -12341,6 +12348,7 @@ const CLOSERS_DATA = {
     name: 'Matheus Scalfoni',
     org: '✦ &nbsp;Especialista · Turbo Partners',
     photo: 'Fotos closers/scalfoni.jpg',
+    photoStyle: 'transform: scale(1.05) translateX(8%);',
     roles: [
       { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
     ],
@@ -12357,6 +12365,7 @@ const CLOSERS_DATA = {
     name: 'Arthur Zon',
     org: '✦ &nbsp;Especialista · Turbo Partners',
     photo: 'Fotos closers/arthur zon.jpg',
+    photoStyle: 'transform: scale(1.05) translateX(8%);',
     roles: [
       { color: '#0dcfe8', emoji: '📈', period: '2023 · 2024', title: 'Gestor de Performance' },
       { color: '#ffa826', emoji: '📣', period: '2025', title: 'Líder de Comunicação (Social/Creators)' },
