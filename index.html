@@ -3323,129 +3323,48 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   white-space: nowrap;
 }
 
-/* ── Outros closers (subtópicos na aba Especialista) ── */
-.closers-divider {
+/* ── Submenu de closers (dentro da apres-subnav) ── */
+.closer-submenu {
   display: flex;
-  align-items: center;
-  gap: 14px;
-  max-width: 720px;
-  width: 100%;
-  margin: 56px auto 28px;
+  flex-direction: column;
+  gap: 2px;
+  margin: 2px 0 8px 0;
+  padding-left: 10px;
+  border-left: 1px dashed var(--border);
+  /* Só aparece quando a aba "Especialista" está ativa */
+  display: none;
 }
-.closers-divider-line {
-  flex: 1;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+.apres-subnav .apres-subtab[data-sub="especialista"].is-active ~ .closer-submenu,
+.closer-submenu.is-revealed {
+  display: flex;
 }
-.closers-divider-label {
+.closer-submenu-item {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  text-align: left;
   font-family: inherit;
-  font-size: 10px;
-  font-weight: 800;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  color: var(--text-3);
-}
-
-.closers-grid {
-  width: 100%;
-  max-width: 720px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-@media (max-width: 640px) {
-  .closers-grid { grid-template-columns: 1fr; }
-}
-
-.closer-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  transition: border-color 0.2s, transform 0.2s, background 0.2s;
-}
-.closer-card:hover {
-  border-color: rgba(155,109,255,0.32);
-  transform: translateY(-1px);
-  background: color-mix(in srgb, var(--c1) 4%, var(--surface));
-}
-.closer-card--wide {
-  grid-column: span 2;
-}
-@media (max-width: 640px) {
-  .closer-card--wide { grid-column: span 1; }
-}
-
-.closer-avatar {
-  width: 44px; height: 44px;
-  flex-shrink: 0;
-  border-radius: 50%;
-  padding: 2px;
-  background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 60%, var(--c3) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.closer-avatar > .closer-avatar-icon {
-  width: 100%; height: 100%;
-  border-radius: 50%;
-  background: var(--surface2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  opacity: 0.42;
-}
-
-.closer-info {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.closer-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.2;
-}
-.closer-tag {
-  display: inline-flex;
-  align-items: center;
-  align-self: flex-start;
-  font-size: 9.5px;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--c5);
-  background: rgba(18,212,144,0.10);
-  border: 1px solid rgba(18,212,144,0.28);
-  border-radius: 99px;
-  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-2);
+  padding: 7px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.closer-tag--alt {
-  color: var(--c2);
-  background: rgba(77,141,255,0.10);
-  border-color: rgba(77,141,255,0.28);
+.closer-submenu-item:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
 }
-.closer-tag--socio {
+.closer-submenu-item.is-active {
+  background: rgba(155,109,255,0.10);
   color: var(--c1);
-  background: rgba(155,109,255,0.12);
-  border-color: rgba(155,109,255,0.32);
+  font-weight: 700;
 }
-
-.closer-tags-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-start;
-}
+.apres-subnav.is-mini .closer-submenu { display: none !important; }
 
 /* ── APRESENTAÇÃO SUB-TABS ───────────────────────── */
 .apres-subnav {
@@ -8718,6 +8637,18 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="apres-subtab-icon">👤</span>
       <span class="apres-subtab-label">Especialista</span>
     </button>
+    <!-- Lista de closers — só visível quando "Especialista" está ativo -->
+    <div class="closer-submenu" id="closer-submenu">
+      <button class="closer-submenu-item is-active" data-closer="roberto">Roberto Fachetti</button>
+      <button class="closer-submenu-item" data-closer="matheus">Matheus Scalfoni</button>
+      <button class="closer-submenu-item" data-closer="fabio">Fábio Richard</button>
+      <button class="closer-submenu-item" data-closer="arthur">Arthur Zon</button>
+      <button class="closer-submenu-item" data-closer="daniel">Daniel Basilio</button>
+      <button class="closer-submenu-item" data-closer="ramon">Ramon Reis</button>
+      <button class="closer-submenu-item" data-closer="joao">João Guarçoni</button>
+      <button class="closer-submenu-item" data-closer="gustavo">Gustavo Dias</button>
+      <button class="closer-submenu-item" data-closer="lucas">Lucas Pereira</button>
+    </div>
     <button class="apres-subtab" data-sub="turbo">
       <span class="apres-subtab-icon">🚀</span>
       <span class="apres-subtab-label">Sobre a Turbo</span>
@@ -8725,148 +8656,11 @@ a.xpto-pricing-btn { text-decoration: none; }
     <button class="apres-subnav-toggle" id="apres-subnav-toggle" title="Minimizar">‹</button>
   </div>
 
-  <!-- SUB-VIEW: Especialista (conteúdo atual) -->
+  <!-- SUB-VIEW: Especialista (conteúdo renderizado dinamicamente pelo JS) -->
   <div class="apres-subview is-active" id="apres-sub-especialista">
-  <div class="apresentacao-wrap">
-    <div class="apresentacao-card">
-
-      <!-- Avatar (temporarily hidden) -->
-      <div class="avatar-ring">
-        <div class="avatar-inner">
-          <img id="avatar-photo" src="IMG_9262.JPG" alt="Roberto Fachetti" class="is-loaded">
-          <span class="avatar-placeholder-icon">👤</span>
-        </div>
-      </div>
-      <input type="file" id="avatar-input" accept="image/*">
-
-      <!-- Name -->
-      <h1 class="apresentacao-name">Roberto Fachetti</h1>
-      <p class="apresentacao-org">✦ &nbsp;Sócio · Turbo Partners</p>
-
-      <!-- Timeline de papéis -->
-      <div class="roles-list">
-
-        <div class="role-item" style="--role-color:#9b6dff">
-          <span class="role-emoji">🚀</span>
-          <div class="role-info">
-            <p class="role-title">Sócio da Turbo Partners</p>
-          </div>
-        </div>
-
-        <div class="role-item" style="--role-color:#4d8dff">
-          <span class="role-emoji">💻</span>
-          <div class="role-info">
-            <p class="role-period">2023 · 2024</p>
-            <p class="role-title">Head de Tech</p>
-          </div>
-        </div>
-
-        <div class="role-item" style="--role-color:#0dcfe8">
-          <span class="role-emoji">📈</span>
-          <div class="role-info">
-            <p class="role-period">2024 · 2025</p>
-            <p class="role-title">Head de Growth</p>
-          </div>
-        </div>
-
-        <div class="role-item" style="--role-color:#ffa826">
-          <span class="role-emoji">🎬</span>
-          <div class="role-info">
-            <p class="role-period">2025</p>
-            <p class="role-title">Head de Creators</p>
-          </div>
-        </div>
-
-        <div class="role-item" style="--role-color:#12d490">
-          <span class="role-emoji">💼</span>
-          <div class="role-info">
-            <p class="role-period">2026</p>
-            <p class="role-title">Especialista de Negócios</p>
-          </div>
-          <span class="role-badge">Atual</span>
-        </div>
-
-      </div>
+    <div class="apresentacao-wrap" id="closer-content">
+      <!-- Card preenchido via renderCloser(closerId) — começa com Roberto -->
     </div>
-
-    <!-- ── OUTROS CLOSERS ─────────────────────────────── -->
-    <div class="closers-divider">
-      <span class="closers-divider-line"></span>
-      <span class="closers-divider-label">Demais especialistas</span>
-      <span class="closers-divider-line"></span>
-    </div>
-    <div class="closers-grid">
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Matheus Scalfoni</p>
-          <span class="closer-tag">Especialista de Negócios</span>
-        </div>
-      </div>
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Fábio Richard</p>
-          <span class="closer-tag">Especialista de Negócios</span>
-        </div>
-      </div>
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Arthur Zon</p>
-          <span class="closer-tag">Especialista de Negócios</span>
-        </div>
-      </div>
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Daniel Basilio</p>
-          <span class="closer-tag closer-tag--alt">Diretor Comercial</span>
-        </div>
-      </div>
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Ramon Reis</p>
-          <span class="closer-tag">Especialista de Negócios</span>
-        </div>
-      </div>
-
-      <div class="closer-card closer-card--wide">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">João Guarçoni</p>
-          <div class="closer-tags-stack">
-            <span class="closer-tag closer-tag--socio">Sócio</span>
-            <span class="closer-tag closer-tag--alt">Diretor Comercial · até 2025</span>
-            <span class="closer-tag closer-tag--alt">Diretor de Receita · 2026</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Gustavo Dias</p>
-          <span class="closer-tag">Especialista de Negócios</span>
-        </div>
-      </div>
-
-      <div class="closer-card">
-        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
-        <div class="closer-info">
-          <p class="closer-name">Lucas Pereira</p>
-          <span class="closer-tag">Especialista de Negócios</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
   </div><!-- /apres-sub-especialista -->
 
   <!-- SUB-VIEW: Sobre a Turbo -->
@@ -12500,8 +12294,143 @@ document.querySelectorAll('.apres-subtab').forEach(tab => {
     document.querySelectorAll('.apres-subview').forEach(v => v.classList.remove('is-active'));
     tab.classList.add('is-active');
     document.getElementById(`apres-sub-${sub}`).classList.add('is-active');
+    // Mostra/esconde o submenu de closers
+    const closerSubmenu = document.getElementById('closer-submenu');
+    if (closerSubmenu) closerSubmenu.classList.toggle('is-revealed', sub === 'especialista');
   });
 });
+
+// ── Closers: dados + renderização ───────────────────
+const CLOSERS_DATA = {
+  roberto: {
+    name: 'Roberto Fachetti',
+    org: '✦ &nbsp;Sócio · Turbo Partners',
+    photo: 'IMG_9262.JPG',
+    photoStyle: 'transform: scale(1.1) translateX(12%);',
+    roles: [
+      { color: '#9b6dff', emoji: '🚀', period: '', title: 'Sócio da Turbo Partners' },
+      { color: '#4d8dff', emoji: '💻', period: '2023 · 2024', title: 'Head de Tech' },
+      { color: '#0dcfe8', emoji: '📈', period: '2024 · 2025', title: 'Head de Growth' },
+      { color: '#ffa826', emoji: '🎬', period: '2025', title: 'Head de Creators' },
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+  matheus: {
+    name: 'Matheus Scalfoni',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+  fabio: {
+    name: 'Fábio Richard',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+  arthur: {
+    name: 'Arthur Zon',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+  daniel: {
+    name: 'Daniel Basilio',
+    org: '✦ &nbsp;Diretor Comercial · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#4d8dff', emoji: '💼', period: '', title: 'Diretor Comercial', badge: 'Atual' },
+    ],
+  },
+  ramon: {
+    name: 'Ramon Reis',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+  joao: {
+    name: 'João Guarçoni',
+    org: '✦ &nbsp;Sócio · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#9b6dff', emoji: '🚀', period: '', title: 'Sócio da Turbo Partners' },
+      { color: '#4d8dff', emoji: '💼', period: 'até 2025', title: 'Diretor Comercial' },
+      { color: '#0dcfe8', emoji: '📈', period: '2026', title: 'Diretor de Receita', badge: 'Atual' },
+    ],
+  },
+  gustavo: {
+    name: 'Gustavo Dias',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+  lucas: {
+    name: 'Lucas Pereira',
+    org: '✦ &nbsp;Especialista · Turbo Partners',
+    photo: null,
+    roles: [
+      { color: '#12d490', emoji: '💼', period: '2026', title: 'Especialista de Negócios', badge: 'Atual' },
+    ],
+  },
+};
+
+function renderCloser(closerId) {
+  const data = CLOSERS_DATA[closerId] || CLOSERS_DATA.roberto;
+  const root = document.getElementById('closer-content');
+  if (!root) return;
+
+  const photoHtml = data.photo
+    ? `<img id="avatar-photo" src="${data.photo}" alt="${data.name}" class="is-loaded" style="${data.photoStyle || ''}">`
+    : '';
+  const rolesHtml = data.roles.map(r => `
+    <div class="role-item" style="--role-color:${r.color}">
+      <span class="role-emoji">${r.emoji}</span>
+      <div class="role-info">
+        ${r.period ? `<p class="role-period">${r.period}</p>` : ''}
+        <p class="role-title">${r.title}</p>
+      </div>
+      ${r.badge ? `<span class="role-badge">${r.badge}</span>` : ''}
+    </div>
+  `).join('');
+
+  root.innerHTML = `
+    <div class="apresentacao-card">
+      <div class="avatar-ring">
+        <div class="avatar-inner">
+          ${photoHtml}
+          <span class="avatar-placeholder-icon">👤</span>
+        </div>
+      </div>
+      <h1 class="apresentacao-name">${data.name}</h1>
+      <p class="apresentacao-org">${data.org}</p>
+      <div class="roles-list">${rolesHtml}</div>
+    </div>
+  `;
+}
+
+// Click handlers do submenu de closers
+document.querySelectorAll('.closer-submenu-item').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const id = btn.dataset.closer;
+    if (!id) return;
+    document.querySelectorAll('.closer-submenu-item').forEach(b => b.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    renderCloser(id);
+  });
+});
+
+// Inicial: Roberto + submenu revelado (aba Especialista é a padrão)
+renderCloser('roberto');
+document.getElementById('closer-submenu')?.classList.add('is-revealed');
 
 // ── Minimizar subnav ──────────────────────────────
 document.getElementById('apres-subnav-toggle')?.addEventListener('click', () => {
