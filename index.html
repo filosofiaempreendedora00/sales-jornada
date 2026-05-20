@@ -3323,6 +3323,130 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   white-space: nowrap;
 }
 
+/* ── Outros closers (subtópicos na aba Especialista) ── */
+.closers-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  max-width: 720px;
+  width: 100%;
+  margin: 56px auto 28px;
+}
+.closers-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border2), transparent);
+}
+.closers-divider-label {
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.closers-grid {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+@media (max-width: 640px) {
+  .closers-grid { grid-template-columns: 1fr; }
+}
+
+.closer-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+.closer-card:hover {
+  border-color: rgba(155,109,255,0.32);
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--c1) 4%, var(--surface));
+}
+.closer-card--wide {
+  grid-column: span 2;
+}
+@media (max-width: 640px) {
+  .closer-card--wide { grid-column: span 1; }
+}
+
+.closer-avatar {
+  width: 44px; height: 44px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--c1) 0%, var(--c2) 60%, var(--c3) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.closer-avatar > .closer-avatar-icon {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  opacity: 0.42;
+}
+
+.closer-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.closer-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.closer-tag {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  font-size: 9.5px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--c5);
+  background: rgba(18,212,144,0.10);
+  border: 1px solid rgba(18,212,144,0.28);
+  border-radius: 99px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.closer-tag--alt {
+  color: var(--c2);
+  background: rgba(77,141,255,0.10);
+  border-color: rgba(77,141,255,0.28);
+}
+.closer-tag--socio {
+  color: var(--c1);
+  background: rgba(155,109,255,0.12);
+  border-color: rgba(155,109,255,0.32);
+}
+
+.closer-tags-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
 /* ── APRESENTAÇÃO SUB-TABS ───────────────────────── */
 .apres-subnav {
   position: fixed;
@@ -8663,6 +8787,84 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
 
       </div>
+    </div>
+
+    <!-- ── OUTROS CLOSERS ─────────────────────────────── -->
+    <div class="closers-divider">
+      <span class="closers-divider-line"></span>
+      <span class="closers-divider-label">Demais especialistas</span>
+      <span class="closers-divider-line"></span>
+    </div>
+    <div class="closers-grid">
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Matheus Scalfoni</p>
+          <span class="closer-tag">Especialista de Negócios</span>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Fábio Richard</p>
+          <span class="closer-tag">Especialista de Negócios</span>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Arthur Zon</p>
+          <span class="closer-tag">Especialista de Negócios</span>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Daniel Basilio</p>
+          <span class="closer-tag closer-tag--alt">Diretor Comercial</span>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Ramon Reis</p>
+          <span class="closer-tag">Especialista de Negócios</span>
+        </div>
+      </div>
+
+      <div class="closer-card closer-card--wide">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">João Guarçoni</p>
+          <div class="closer-tags-stack">
+            <span class="closer-tag closer-tag--socio">Sócio</span>
+            <span class="closer-tag closer-tag--alt">Diretor Comercial · até 2025</span>
+            <span class="closer-tag closer-tag--alt">Diretor de Receita · 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Gustavo Dias</p>
+          <span class="closer-tag">Especialista de Negócios</span>
+        </div>
+      </div>
+
+      <div class="closer-card">
+        <div class="closer-avatar"><span class="closer-avatar-icon">👤</span></div>
+        <div class="closer-info">
+          <p class="closer-name">Lucas Pereira</p>
+          <span class="closer-tag">Especialista de Negócios</span>
+        </div>
+      </div>
+
     </div>
   </div>
   </div><!-- /apres-sub-especialista -->
