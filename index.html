@@ -15299,13 +15299,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   })();
 })();
 
-// Botão "Visualizar proposta" — habilitado quando tipo "02" é escolhido
+// Auto-load do template ao trocar o "Tipo de proposta" no modo Personalizada.
+// O botão "Visualizar proposta" continua no DOM mas escondido — basta selecionar
+// no dropdown que o preview já carrega.
 (function () {
   const select  = document.getElementById('prop-custom-type');
   const btn     = document.getElementById('prop-custom-preview-btn');
   const frame   = document.getElementById('prop-preview-frame');
   const meta    = document.getElementById('prop-preview-meta');
-  if (!select || !btn || !frame) return;
+  if (!select || !frame) return;
 
   // Mapa de tipos → arquivo HTML standalone
   const TYPE_TO_FILE = {
@@ -15319,24 +15321,24 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     '02': 'Proposta de Réguas de Comunicação'
   };
 
-  function sync() {
-    const v = select.value;
-    btn.disabled = !TYPE_TO_FILE[v];
-  }
-  select.addEventListener('change', sync);
-  sync();
+  // Esconde o botão "Visualizar proposta" — auto-load assume essa função.
+  if (btn) btn.hidden = true;
 
-  btn.addEventListener('click', () => {
+  function loadTemplate() {
     const v = select.value;
     const file = TYPE_TO_FILE[v];
-    if (!file) return;
+    if (!file) return; // "Selecione..." mantém placeholder atual
     // O sistema padrão de propostas seta iframe.srcdoc, que sobrescreve src.
     // Precisamos limpar srcdoc antes de setar src para o iframe carregar
     // o arquivo standalone.
     frame.removeAttribute('srcdoc');
     frame.src = file + '?v=' + Date.now();
     if (meta) meta.textContent = '— ' + (TYPE_TO_LABEL[v] || 'Proposta personalizada');
-  });
+  }
+
+  select.addEventListener('change', loadTemplate);
+  // Mantém o handler do botão caso seja revelado de novo no futuro
+  if (btn) btn.addEventListener('click', loadTemplate);
 })();
 
 // Múltiplas transcrições de reunião (modo personalizada)
