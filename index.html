@@ -3338,13 +3338,11 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .closer-submenu.is-revealed {
   display: flex;
 }
-/* Quando colapsado, só o closer ativo aparece (cria efeito "junção"
-   de nomes — fica só o selecionado, os demais somem) */
+/* Quando colapsado, esconde TODOS os nomes (inclusive o ativo).
+   O estado de seleção continua em memória — ao expandir, o item
+   ativo reaparece destacado como antes. */
 .closer-submenu.is-collapsed .closer-submenu-item {
   display: none;
-}
-.closer-submenu.is-collapsed .closer-submenu-item.is-active {
-  display: block;
 }
 .closer-submenu-item {
   appearance: none;
