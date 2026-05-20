@@ -17676,11 +17676,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 })();
 <` + `/script>`;
 
+    // <base href> garante que paths relativos (logo.png, Criativos/..., etc.)
+    // resolvam contra a origem do app no PREVIEW (iframe srcdoc). No DOWNLOAD,
+    // as imagens são embutidas como data URI (não dependem de base), então
+    // o base tag fica inerte — mas removemos pra deixar o HTML standalone
+    // 100% autocontido e portátil.
+    const baseHrefTag = opts.inline ? '' : `<base href="${window.location.origin}/">`;
     let html = `<!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+${baseHrefTag}
 <title>Proposta Turbo Partners</title>
 ${styles}
 <style>${extraCSS}</style>
