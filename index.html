@@ -12496,13 +12496,15 @@ document.querySelectorAll('.journey-tab').forEach(tab => {
 });
 
 // ─────────────────────────────────────────────────
-//  AVATAR UPLOAD
+//  AVATAR UPLOAD (legacy — input só existe se o template do closer
+//  decidir incluir; safe-guard pra não crashar o init quando ausente).
 // ─────────────────────────────────────────────────
-document.getElementById('avatar-input').addEventListener('change', e => {
+document.getElementById('avatar-input')?.addEventListener('change', e => {
   const file = e.target.files[0];
   if (!file) return;
   const url = URL.createObjectURL(file);
   const img = document.getElementById('avatar-photo');
+  if (!img) return;
   img.src = url;
   img.classList.add('is-loaded');
   img.previousElementSibling && (img.previousElementSibling.style.display = 'none');
