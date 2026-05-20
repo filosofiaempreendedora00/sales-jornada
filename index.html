@@ -3338,6 +3338,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .closer-submenu.is-revealed {
   display: flex;
 }
+/* Quando colapsado, só o closer ativo aparece (cria efeito "junção"
+   de nomes — fica só o selecionado, os demais somem) */
+.closer-submenu.is-collapsed .closer-submenu-item {
+  display: none;
+}
+.closer-submenu.is-collapsed .closer-submenu-item.is-active {
+  display: block;
+}
 .closer-submenu-item {
   appearance: none;
   background: transparent;
@@ -12290,13 +12298,24 @@ document.querySelectorAll('.apres-subtab').forEach(tab => {
   tab.addEventListener('click', () => {
     const sub = tab.dataset.sub;
     if (!sub) return;
+    const closerSubmenu = document.getElementById('closer-submenu');
+    // Click no "Especialista" enquanto JÁ está ativo: toggle do
+    // collapsed da lista (efeito sanfona — minimiza/expande, mantém
+    // o selecionado visível).
+    if (sub === 'especialista' && tab.classList.contains('is-active')) {
+      closerSubmenu?.classList.toggle('is-collapsed');
+      return;
+    }
     document.querySelectorAll('.apres-subtab').forEach(t => t.classList.remove('is-active'));
     document.querySelectorAll('.apres-subview').forEach(v => v.classList.remove('is-active'));
     tab.classList.add('is-active');
     document.getElementById(`apres-sub-${sub}`).classList.add('is-active');
-    // Mostra/esconde o submenu de closers
-    const closerSubmenu = document.getElementById('closer-submenu');
-    if (closerSubmenu) closerSubmenu.classList.toggle('is-revealed', sub === 'especialista');
+    // Mostra/esconde o submenu de closers; ao mudar pra "especialista",
+    // sempre começa expandido.
+    if (closerSubmenu) {
+      closerSubmenu.classList.toggle('is-revealed', sub === 'especialista');
+      if (sub === 'especialista') closerSubmenu.classList.remove('is-collapsed');
+    }
   });
 });
 
