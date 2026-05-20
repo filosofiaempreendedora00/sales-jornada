@@ -2995,27 +2995,50 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   letter-spacing: 0.8px;
   color: var(--text-soft);
 }
-.prop-invest-input {
-  width: 100%;
-  padding: 7px 10px;
+/* Wrapper R$ + input: prefixo R$ fixo (não-editável), input só com o número */
+.prop-invest-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: stretch;
   border-radius: 7px;
   border: 1px solid rgba(255,255,255,0.10);
   background: rgba(0,0,0,0.25);
+  overflow: hidden;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+}
+.prop-invest-input-wrap:hover { border-color: rgba(255,255,255,0.20); }
+.prop-invest-input-wrap:focus-within {
+  border-color: var(--card-color, rgba(155,109,255,0.65));
+  background: rgba(0,0,0,0.40);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 22%, transparent);
+}
+.prop-invest-input-wrap:has(.is-edited) {
+  border-color: color-mix(in srgb, var(--card-color, #9b6dff) 60%, transparent);
+}
+.prop-invest-currency {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 8px 0 10px;
+  color: var(--text-soft);
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  user-select: none;
+  pointer-events: none;
+  background: rgba(255,255,255,0.03);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.prop-invest-input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 10px;
+  border: 0;
+  background: transparent;
   color: var(--text);
   font-size: 12.5px;
   font-weight: 600;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
-}
-.prop-invest-input:hover { border-color: rgba(255,255,255,0.20); }
-.prop-invest-input:focus {
-  border-color: var(--card-color, rgba(155,109,255,0.65));
-  background: rgba(0,0,0,0.40);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 22%, transparent);
-}
-.prop-invest-input.is-edited {
-  border-color: color-mix(in srgb, var(--card-color, #9b6dff) 60%, transparent);
 }
 .prop-invest-reset {
   align-self: flex-end;
@@ -15421,10 +15444,27 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       enterprise: { label: 'Enterprise', value: 'R$ 11.997,00' }
     },
     social: {
-      starter: { label: 'Starter', value: 'R$ 3.397,00/mês' },
-      scale:   { label: 'Scale',   value: 'R$ 3.897,00/mês' }
+      starter: { label: 'Starter', value: 'R$ 3.397,00' },
+      scale:   { label: 'Scale',   value: 'R$ 3.897,00' }
     }
   };
+
+  // Helpers do input de preço:
+  //   "R$ 2.997,00"      → amount: "2.997,00"
+  //   "R$ 3.397,00/mês"  → amount: "3.397,00" (sufixo /mês ignorado;
+  //                        as soluções com sufixo são tratadas no preview)
+  function stripCurrency(val) {
+    return String(val || '')
+      .replace(/^R\$\s*/i, '')
+      .replace(/\/[^/]+\s*$/, '')
+      .trim();
+  }
+  // Reconstrói o value salvo: "R$ <amount>" (sem sufixo — Social tirou /mês).
+  function buildPriceValue(amount) {
+    const clean = String(amount || '').trim();
+    if (!clean) return 'R$ ';
+    return 'R$ ' + clean;
+  }
   // Deep-clone para que prices possa ser mutado sem afetar DEFAULT_PRICES.
   const prices = JSON.parse(JSON.stringify(DEFAULT_PRICES));
   // Carrega overrides do localStorage.
@@ -15438,6 +15478,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
     }
   } catch (e) {}
+  // Normalização: remove qualquer sufixo (/mês, /ano...) legado e
+  // garante formato canônico "R$ <amount>". Garante que Social que
+  // antes tinha "/mês" no localStorage volte limpo após o update.
+  for (const sol in prices) {
+    for (const tier in prices[sol]) {
+      prices[sol][tier].value = buildPriceValue(stripCurrency(prices[sol][tier].value));
+    }
+  }
 
   function savePriceOverrides() {
     const flat = {};
@@ -15564,11 +15612,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           ${Object.entries(prices[s.id]).map(([tier, td]) => `
             <label class="prop-invest-field">
               <span class="prop-invest-tier">${td.label}</span>
-              <input type="text"
-                class="prop-invest-input${isPriceDefault(s.id, tier) ? '' : ' is-edited'}"
-                data-sol="${s.id}" data-tier="${tier}"
-                value="${escapeAttr(td.value)}"
-                spellcheck="false" autocomplete="off">
+              <div class="prop-invest-input-wrap">
+                <span class="prop-invest-currency">R$</span>
+                <input type="text"
+                  class="prop-invest-input${isPriceDefault(s.id, tier) ? '' : ' is-edited'}"
+                  data-sol="${s.id}" data-tier="${tier}"
+                  value="${escapeAttr(stripCurrency(td.value))}"
+                  spellcheck="false" autocomplete="off"
+                  inputmode="decimal">
+              </div>
             </label>
           `).join('')}
         </div>
@@ -15579,7 +15631,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       input.addEventListener('input', () => {
         const sol  = input.dataset.sol;
         const tier = input.dataset.tier;
-        prices[sol][tier].value = input.value;
+        // O input só contém o número; sempre reconstroi como "R$ <amount>".
+        prices[sol][tier].value = buildPriceValue(input.value);
         savePriceOverrides();
         input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
         schedulePreviewRebuild();
