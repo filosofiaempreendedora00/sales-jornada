@@ -15707,8 +15707,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       $meta.textContent = '⚠ Digite o nome do cliente para gerar a proposta';
       setDownloadDisabled(true);
     } else if (count === 0) {
-      $meta.textContent = '— selecione ao menos uma solução';
-      setDownloadDisabled(true);
+      // Sem soluções selecionadas → proposta institucional (só Apresentação Turbo).
+      // Continua habilitado pra baixar — caso de uso: mandar a apresentação da Turbo
+      // pro lead antes ainda de definir escopo/serviço.
+      $meta.textContent = `Para ${clientName} · Apresentação institucional da Turbo`;
+      setDownloadDisabled(false);
     } else {
       $meta.textContent = `Para ${clientName} · Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}`;
       setDownloadDisabled(false);
@@ -17757,11 +17760,9 @@ ${dnaAlignScript}
 
   async function renderPreview() {
     if (!$frame) return;
-    if (selected.size === 0) {
-      $frame.srcdoc = `<!doctype html><html><body style="margin:0;background:#0a0a0c;color:#888;font-family:system-ui;display:grid;place-items:center;height:100vh;font-size:14px">Selecione ao menos uma solução à esquerda</body></html>`;
-      previewDirty = false;
-      return;
-    }
+    // Sem soluções → renderiza só a Apresentação Turbo (proposta institucional).
+    // O usuário pode baixar mesmo assim — útil pra mandar apresentação inicial
+    // antes de fechar escopo. buildProposalHTML lida com selected vazio.
     previewDirty = false;
     setBusy(true);
     try {
@@ -17776,7 +17777,7 @@ ${dnaAlignScript}
   async function downloadHTML() {
     // Validação obrigatória do nome do cliente — feedback visual no input.
     if (!clientName) { flagClientMissing(); return; }
-    if (selected.size === 0) return;
+    // Sem soluções: gera só com a Apresentação Turbo (proposta institucional).
     setBusy(true);
     const setMeta = txt => { if ($meta) $meta.textContent = txt; };
     try {
@@ -17792,7 +17793,9 @@ ${dnaAlignScript}
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
       const ts   = new Date().toISOString().slice(0, 10);
-      const sols = Array.from(selected).join('-');
+      // Quando não há solução selecionada, usa "institucional" no nome do arquivo
+      // pra deixar claro que é a apresentação Turbo sem escopo de serviço.
+      const sols = selected.size === 0 ? 'institucional' : Array.from(selected).join('-');
       // Sanitiza o nome do cliente pro filename: lowercase, sem acento,
       // espaços viram hífen, remove qualquer caractere que não seja seguro.
       // ̀-ͯ = combining diacritical marks (acentos depois de NFD).
@@ -17814,7 +17817,9 @@ ${dnaAlignScript}
   }
 
   function setBusy(busy) {
-    setDownloadDisabled(busy || selected.size === 0);
+    // Download só fica disabled enquanto está gerando. selected.size === 0 agora
+    // é caso válido (gera só apresentação Turbo institucional).
+    setDownloadDisabled(busy);
     if ($refresh)  $refresh.disabled = busy;
     if ($meta) {
       if (busy) $meta.textContent = 'Gerando proposta...';
