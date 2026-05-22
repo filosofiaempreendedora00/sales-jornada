@@ -18136,18 +18136,12 @@ ${dnaAlignScript}
       const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
       const url  = URL.createObjectURL(blob);
       const a    = document.createElement('a');
-      const ts   = new Date().toISOString().slice(0, 10);
-      // Quando não há solução selecionada, usa "institucional" no nome do arquivo
-      // pra deixar claro que é a apresentação Turbo sem escopo de serviço.
-      const sols = selected.size === 0 ? 'institucional' : Array.from(selected).join('-');
-      // Sanitiza o nome do cliente pro filename: lowercase, sem acento,
-      // espaços viram hífen, remove qualquer caractere que não seja seguro.
-      // ̀-ͯ = combining diacritical marks (acentos depois de NFD).
-      const safeClient = clientName
-        .normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
+      // Filename padrão: "Turbo Partners & <CLIENTE>.html" — usa o nome
+      // como o usuário digitou (preserva acentos e maiúsculas), só remove
+      // caracteres ilegais em filesystems (/ \ : * ? " < > |).
+      const safeClient = clientName.replace(/[\/\\:*?"<>|]/g, '').trim() || 'Cliente';
       a.href = url;
-      a.download = `proposta-${safeClient}-${sols}-${ts}.html`;
+      a.download = `Turbo Partners & ${safeClient}.html`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
