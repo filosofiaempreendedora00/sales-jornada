@@ -10355,6 +10355,346 @@ a.xpto-pricing-btn { text-decoration: none; }
 <script>
 
 // ─────────────────────────────────────────────────
+//  ROUTER — URLs deep-linkáveis (History API)
+//  Toda navegação muda a URL e o botão voltar/avançar
+//  do navegador funciona corretamente. URLs semânticas
+//  pra controle por voz no futuro.
+//  Definição AQUI (no topo) pra ficar disponível antes
+//  dos handlers de UI que vão usar navigate(). O start()
+//  é chamado no final do script, depois de tudo inicializado.
+// ─────────────────────────────────────────────────
+(function () {
+  // Tabela de rotas — ordem importa (mais específica primeiro)
+  const ROUTES = [
+    { name: 'apres.especialista.closer', re: /^\/apresentacao\/especialista\/([a-z]+)\/?$/, params: ['closer'] },
+    { name: 'apres.especialista',        re: /^\/apresentacao\/especialista\/?$/,           params: [] },
+    { name: 'apres.turbo',               re: /^\/apresentacao\/turbo\/?$/,                  params: [] },
+    { name: 'apres',                     re: /^\/apresentacao\/?$/,                         params: [] },
+    { name: 'jornadas.diagnostico',      re: /^\/jornadas\/(ecommerce|lead)\/diagnostico\/?$/, params: ['jornada'] },
+    { name: 'jornadas.node',             re: /^\/jornadas\/(ecommerce|lead)\/([a-z0-9-]+)\/?$/, params: ['jornada', 'nodeId'] },
+    { name: 'jornadas.tab',              re: /^\/jornadas\/(ecommerce|lead)\/?$/,           params: ['jornada'] },
+    { name: 'jornadas',                  re: /^\/jornadas\/?$/,                             params: [] },
+    { name: 'calc.tab',                  re: /^\/calculadora\/(ecommerce|lead)\/?$/,        params: ['jornada'] },
+    { name: 'calc',                      re: /^\/calculadora\/?$/,                          params: [] },
+    { name: 'prop.padrao.closer',        re: /^\/propostas\/padrao\/([a-z]+)\/?$/,          params: ['closer'] },
+    { name: 'prop.padrao',               re: /^\/propostas\/padrao\/?$/,                    params: [] },
+    { name: 'prop.personalizada.tipo',   re: /^\/propostas\/personalizada\/(lancamento|performance-mql|reguas)\/?$/, params: ['tipo'] },
+    { name: 'prop.personalizada',        re: /^\/propostas\/personalizada\/?$/,             params: [] },
+    { name: 'propostas',                 re: /^\/propostas\/?$/,                            params: [] },
+    { name: 'simulador',                 re: /^\/simulador\/(performance|lead-performance)\/?$/, params: ['sim'] },
+    { name: 'apresentar',                re: /^\/apresentar\/(performance|creators|social)\/?$/, params: ['what'] },
+    { name: 'protocolo',                 re: /^\/protocolo\/?$/,                            params: [] },
+    { name: 'home',                      re: /^\/?$/,                                       params: [] },
+  ];
+
+  // Mapeamentos URL ↔ DOM
+  const TIPO_TO_VAL = { 'lancamento': '00', 'performance-mql': '01', 'reguas': '02' };
+  const VAL_TO_TIPO = { '00': 'lancamento', '01': 'performance-mql', '02': 'reguas' };
+  // Closer em Propostas usa valores numéricos no <select id="prop-closer">.
+  // Já o submenu da Apresentação usa slugs (data-closer="roberto"). Os slugs
+  // ficam na URL — ambas as superfícies traduzem pra seus valores internos.
+  const CLOSER_SLUG_TO_PROP_VAL = {
+    roberto: '1', matheus: '2', fabio: '3', arthur: '4', daniel: '5',
+    ramon: '6', joao: '7', gustavo: '8', rodrigo: '9',
+  };
+  const CLOSER_PROP_VAL_TO_SLUG = Object.fromEntries(
+    Object.entries(CLOSER_SLUG_TO_PROP_VAL).map(([k, v]) => [v, k])
+  );
+
+  // View map por nome de rota — qual aba do topo deve ficar ativa
+  // (rotas de modal/simulador não trocam a aba — overlay sobre o que estiver)
+  const VIEW_OF_ROUTE = {
+    'home': 'apresentacao',
+    'apres': 'apresentacao',
+    'apres.especialista': 'apresentacao',
+    'apres.especialista.closer': 'apresentacao',
+    'apres.turbo': 'apresentacao',
+    'jornadas': 'jornada',
+    'jornadas.tab': 'jornada',
+    'jornadas.node': 'jornada',
+    'jornadas.diagnostico': 'jornada',
+    'calc': 'calculadora',
+    'calc.tab': 'calculadora',
+    'propostas': 'propostas',
+    'prop.padrao': 'propostas',
+    'prop.padrao.closer': 'propostas',
+    'prop.personalizada': 'propostas',
+    'prop.personalizada.tipo': 'propostas',
+  };
+
+  // Lista completa de overlays de modal/simulador rastreados
+  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'xpto-overlay'];
+
+  let _applying = false;
+  let _started = false;
+
+  function match(pathname) {
+    const p = (pathname || '/').replace(/\/+$/, '') || '/';
+    for (const r of ROUTES) {
+      const m = p.match(r.re);
+      if (!m) continue;
+      const params = {};
+      r.params.forEach((pn, i) => { params[pn] = m[i + 1]; });
+      return { name: r.name, params };
+    }
+    return { name: 'unknown', params: {} };
+  }
+
+  function navigate(path, opts = {}) {
+    if (_applying) return; // não muda URL durante hidratação programática
+    if (!path) return;
+    if (location.pathname === path && !opts.force) return;
+    if (opts.replace) {
+      history.replaceState({}, '', path);
+    } else {
+      history.pushState({}, '', path);
+    }
+    apply(path);
+  }
+
+  // ── Activators (mutações DOM idempotentes) ─────
+  function activateView(view) {
+    const el = document.querySelector(`.nav-item[data-view="${view}"]`);
+    if (!el) return;
+    if (!el.classList.contains('is-active')) el.click();
+  }
+
+  function activateApresSub(sub) {
+    const el = document.querySelector(`.apres-subtab[data-sub="${sub}"]`);
+    if (!el) return;
+    if (!el.classList.contains('is-active')) el.click();
+  }
+
+  function activateCloser(closerId) {
+    const btn = document.querySelector(`.closer-submenu-item[data-closer="${closerId}"]`);
+    if (!btn) return;
+    if (!btn.classList.contains('is-active')) btn.click();
+  }
+
+  function activateJourneyInView(viewId, journey) {
+    const viewEl = document.getElementById(viewId);
+    if (!viewEl) return;
+    const tab = viewEl.querySelector(`.journey-tab[data-journey="${journey}"]`);
+    if (!tab) return;
+    if (!tab.classList.contains('is-active')) tab.click();
+  }
+
+  function setPropMode(mode) {
+    const el = document.querySelector(`.prop-mode-btn[data-mode="${mode}"]`);
+    if (!el) return;
+    if (!el.classList.contains('is-active')) el.click();
+  }
+
+  function setPropTipo(tipo) {
+    const sel = document.getElementById('prop-custom-type');
+    if (!sel) return;
+    const val = TIPO_TO_VAL[tipo];
+    if (!val || sel.value === val) return;
+    sel.value = val;
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function clearPropTipo() {
+    const sel = document.getElementById('prop-custom-type');
+    if (!sel || sel.value === '') return;
+    sel.value = '';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+  }
+
+  function isPanelOpenFor(internalId) {
+    const panel = document.getElementById('panel');
+    if (!panel || !panel.classList.contains('is-open')) return false;
+    const active = document.querySelector('.node.is-active');
+    return active && active.id === `n-${internalId}`;
+  }
+
+  function openNodePanel(jornada, urlNodeId) {
+    if (typeof window.openPanel !== 'function') return;
+    const internalId = jornada === 'lead' ? `lead-${urlNodeId}` : urlNodeId;
+    if (isPanelOpenFor(internalId)) return; // já aberto, idempotente
+    window.openPanel(internalId);
+  }
+
+  function closeNodePanelIfOpen() {
+    if (typeof window.closePanel !== 'function') return;
+    const panel = document.getElementById('panel');
+    if (panel && panel.classList.contains('is-open')) {
+      window.closePanel();
+    }
+  }
+
+  function openSimulador(sim) {
+    const id = sim === 'performance' ? 'perf-overlay' : 'lead-perf-overlay';
+    const ov = document.getElementById(id);
+    if (ov && ov.classList.contains('is-open')) return; // já aberto
+    if (sim === 'performance' && typeof window.openPerfSimulator === 'function') window.openPerfSimulator();
+    else if (sim === 'lead-performance' && typeof window.openLeadPerfSimulator === 'function') window.openLeadPerfSimulator();
+  }
+
+  function openApresentar(what) {
+    const overlayMap = { performance: 'pp-overlay', creators: 'cp-overlay', social: 'sm-overlay' };
+    const ov = document.getElementById(overlayMap[what]);
+    if (ov && ov.classList.contains('is-open')) return; // já aberto
+    if (what === 'performance' && typeof window.openPerfPres === 'function') window.openPerfPres();
+    else if (what === 'creators' && typeof window.openCreatorsPres === 'function') window.openCreatorsPres();
+    else if (what === 'social' && typeof window.openSocialPres === 'function') window.openSocialPres();
+  }
+
+  function openProtocolo() {
+    const ov = document.getElementById('xpto-overlay');
+    if (ov && ov.classList.contains('is-open')) return;
+    if (typeof window.openXpto === 'function') window.openXpto();
+  }
+
+  function closeUnwantedModals(routeName, routeParams) {
+    const wants = {
+      'perf-overlay': routeName === 'simulador' && routeParams.sim === 'performance',
+      'lead-perf-overlay': routeName === 'simulador' && routeParams.sim === 'lead-performance',
+      'pp-overlay': routeName === 'apresentar' && routeParams.what === 'performance',
+      'cp-overlay': routeName === 'apresentar' && routeParams.what === 'creators',
+      'sm-overlay': routeName === 'apresentar' && routeParams.what === 'social',
+      'xpto-overlay': routeName === 'protocolo',
+    };
+    for (const id of MODAL_OVERLAYS) {
+      const ov = document.getElementById(id);
+      if (!ov || !ov.classList.contains('is-open')) continue;
+      if (wants[id]) continue;
+      // Fecha disparando click no overlay (reutiliza handlers de close existentes)
+      ov.click();
+    }
+  }
+
+  // ── Apply: sincroniza DOM com URL ──────────────
+  function apply(pathname) {
+    if (!_started) return; // antes de start(), não tenta mexer no DOM
+    const route = match(pathname);
+    _applying = true;
+    try {
+      // 1. Ativa view de fundo (não-modal)
+      const view = VIEW_OF_ROUTE[route.name];
+      if (view) activateView(view);
+
+      // 2. Fecha modais que não correspondem à rota
+      closeUnwantedModals(route.name, route.params);
+
+      // 3. Aplica state específico
+      switch (route.name) {
+        case 'home':
+        case 'apres':
+        case 'apres.especialista':
+          activateApresSub('especialista');
+          closeNodePanelIfOpen();
+          break;
+        case 'apres.especialista.closer':
+          activateApresSub('especialista');
+          activateCloser(route.params.closer);
+          closeNodePanelIfOpen();
+          break;
+        case 'apres.turbo':
+          activateApresSub('turbo');
+          closeNodePanelIfOpen();
+          break;
+        case 'jornadas':
+        case 'jornadas.tab':
+          activateJourneyInView('view-jornada', route.params.jornada || 'ecommerce');
+          closeNodePanelIfOpen();
+          break;
+        case 'jornadas.node':
+          activateJourneyInView('view-jornada', route.params.jornada);
+          // Defere openNodePanel: se troca de jornada acabou de acontecer,
+          // renderFlow precisa de um tick pra montar os novos nodes.
+          setTimeout(() => {
+            _applying = true;
+            try { openNodePanel(route.params.jornada, route.params.nodeId); } finally { _applying = false; }
+          }, 0);
+          break;
+        case 'jornadas.diagnostico':
+          activateJourneyInView('view-jornada', route.params.jornada);
+          closeNodePanelIfOpen();
+          setTimeout(() => {
+            const diag = document.getElementById('diag-section');
+            if (diag) diag.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 0);
+          break;
+        case 'calc':
+        case 'calc.tab':
+          activateJourneyInView('view-calculadora', route.params.jornada || 'ecommerce');
+          break;
+        case 'propostas':
+        case 'prop.padrao':
+          setPropMode('padrao');
+          break;
+        case 'prop.padrao.closer': {
+          setPropMode('padrao');
+          // Traduz slug → value numérico do <select id="prop-closer">
+          const sel = document.getElementById('prop-closer');
+          const val = CLOSER_SLUG_TO_PROP_VAL[route.params.closer];
+          if (sel && val && sel.value !== val) {
+            sel.value = val;
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          break;
+        }
+        case 'prop.personalizada':
+          setPropMode('personalizada');
+          clearPropTipo();
+          break;
+        case 'prop.personalizada.tipo':
+          setPropMode('personalizada');
+          setPropTipo(route.params.tipo);
+          break;
+        case 'simulador':
+          openSimulador(route.params.sim);
+          break;
+        case 'apresentar':
+          openApresentar(route.params.what);
+          break;
+        case 'protocolo':
+          openProtocolo();
+          break;
+        case 'unknown':
+          // URL desconhecida — redireciona pra default
+          history.replaceState({}, '', '/apresentacao/especialista');
+          _applying = false;
+          apply('/apresentacao/especialista');
+          return;
+      }
+    } finally {
+      _applying = false;
+    }
+  }
+
+  function start() {
+    if (_started) return;
+    _started = true;
+    window.addEventListener('popstate', () => apply(location.pathname));
+    // Hidrata estado a partir da URL atual; canonicaliza meias-rotas
+    let initial = location.pathname;
+    const r = match(initial);
+    const canonical = {
+      'home': '/apresentacao/especialista',
+      'apres': '/apresentacao/especialista',
+      'jornadas': '/jornadas/ecommerce',
+      'calc': '/calculadora/ecommerce',
+      'propostas': '/propostas/padrao',
+    };
+    if (canonical[r.name]) {
+      history.replaceState({}, '', canonical[r.name]);
+      initial = canonical[r.name];
+    }
+    apply(initial);
+  }
+
+  // Public API
+  window.App = window.App || {};
+  window.App.router = {
+    navigate, apply, match, start,
+    isApplying: () => _applying,
+    TIPO_TO_VAL, VAL_TO_TIPO,
+  };
+})();
+
+// ─────────────────────────────────────────────────
 //  DATA
 // ─────────────────────────────────────────────────
 const STAGES = [
@@ -18008,6 +18348,190 @@ renderProgress();
   closeBtn.addEventListener('click', closeLightbox);
   backdrop.addEventListener('click', closeLightbox);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+})();
+
+// ─────────────────────────────────────────────────
+//  ROUTER — UI hooks (depois que tudo inicializou)
+//  Liga cliques/aberturas/fechamentos ao router.
+//  Tudo aqui é aditivo — não modifica handlers existentes.
+// ─────────────────────────────────────────────────
+(function () {
+  if (!window.App || !window.App.router) return;
+  const R = window.App.router;
+
+  // Jornada ativa global definida no script principal (var activeJourney).
+  function currentJourney() {
+    return (typeof activeJourney !== 'undefined') ? activeJourney : 'ecommerce';
+  }
+
+  // Remove prefix "lead-" pra URLs voice-friendly: /jornadas/lead/ads-meta
+  // ao invés de /jornadas/lead/lead-ads-meta.
+  function cleanNodeId(internalId) {
+    return String(internalId || '').replace(/^lead-/, '');
+  }
+
+  // ── Click delegation (capture phase pra rodar antes de stopPropagation) ─
+  document.body.addEventListener('click', (e) => {
+    if (R.isApplying()) return;
+    const target = e.target;
+    if (!target || !(target instanceof Element)) return;
+
+    // Top nav (.nav-item[data-view])
+    const navItem = target.closest('.nav-item[data-view]');
+    if (navItem) {
+      const view = navItem.dataset.view;
+      const map = {
+        'apresentacao': '/apresentacao/especialista',
+        'jornada':      `/jornadas/${currentJourney()}`,
+        'calculadora':  `/calculadora/${currentJourney()}`,
+        'propostas':    '/propostas/padrao',
+      };
+      const p = map[view];
+      if (p) R.navigate(p);
+      return;
+    }
+
+    // Apresentação sub-tab (data-sub) — toggle se já ativa, então só navega se mudou
+    const apresSub = target.closest('.apres-subtab[data-sub]');
+    if (apresSub) {
+      if (apresSub.classList.contains('is-active')) return; // toggle collapsed, sem URL change
+      const sub = apresSub.dataset.sub;
+      R.navigate(`/apresentacao/${sub}`);
+      return;
+    }
+
+    // Closer (Apresentação) — botão do submenu lateral
+    const closerBtn = target.closest('.closer-submenu-item[data-closer]');
+    if (closerBtn) {
+      const id = closerBtn.dataset.closer;
+      R.navigate(`/apresentacao/especialista/${id}`);
+      return;
+    }
+
+    // Journey tab — depende da view onde o tab vive
+    const journeyTab = target.closest('.journey-tab[data-journey]');
+    if (journeyTab) {
+      const j = journeyTab.dataset.journey;
+      const viewEl = journeyTab.closest('.view');
+      const viewId = viewEl?.id || '';
+      if (viewId === 'view-jornada')     R.navigate(`/jornadas/${j}`);
+      else if (viewId === 'view-calculadora') R.navigate(`/calculadora/${j}`);
+      return;
+    }
+
+    // Propostas mode (Padrão / Personalizada)
+    const propMode = target.closest('.prop-mode-btn[data-mode]');
+    if (propMode) {
+      const mode = propMode.dataset.mode;
+      R.navigate(`/propostas/${mode}`);
+      return;
+    }
+  }, true);
+
+  // ── Tipo dropdown em Propostas Personalizada ────────
+  const typeSel = document.getElementById('prop-custom-type');
+  if (typeSel) {
+    typeSel.addEventListener('change', () => {
+      if (R.isApplying()) return;
+      const tipo = R.VAL_TO_TIPO[typeSel.value];
+      R.navigate(tipo ? `/propostas/personalizada/${tipo}` : '/propostas/personalizada');
+    });
+  }
+
+  // ── Closer dropdown em Propostas Padrão ─────────────
+  const closerSel = document.getElementById('prop-closer');
+  if (closerSel) {
+    // Mapa numérico → slug (espelha o do router)
+    const VAL_TO_SLUG = { '1':'roberto','2':'matheus','3':'fabio','4':'arthur','5':'daniel','6':'ramon','7':'joao','8':'gustavo','9':'rodrigo' };
+    closerSel.addEventListener('change', () => {
+      if (R.isApplying()) return;
+      const slug = VAL_TO_SLUG[closerSel.value];
+      // Só navega se já estamos na rota de Propostas Padrão (não polui histórico
+      // caso o usuário mude o select sem estar na aba)
+      if (location.pathname.startsWith('/propostas/padrao')) {
+        R.navigate(slug ? `/propostas/padrao/${slug}` : '/propostas/padrao');
+      }
+    });
+  }
+
+  // ── Wrap openPanel / closePanel pra refletir node atual na URL ──
+  if (typeof window.openPanel === 'function') {
+    const _origOpenPanel = window.openPanel;
+    window.openPanel = function (nodeId) {
+      _origOpenPanel.call(this, nodeId);
+      if (!R.isApplying()) {
+        const j = currentJourney();
+        const clean = cleanNodeId(nodeId);
+        R.navigate(`/jornadas/${j}/${clean}`);
+      }
+    };
+  }
+  if (typeof window.closePanel === 'function') {
+    const _origClosePanel = window.closePanel;
+    window.closePanel = function () {
+      const wasOpen = document.getElementById('panel')?.classList.contains('is-open');
+      _origClosePanel.call(this);
+      if (wasOpen && !R.isApplying()) {
+        // Se estamos numa rota de node, volta pra rota da jornada
+        if (/^\/jornadas\/(ecommerce|lead)\/[a-z0-9-]+\/?$/.test(location.pathname)) {
+          R.navigate(`/jornadas/${currentJourney()}`);
+        }
+      }
+    };
+  }
+
+  // ── Wrap modal openers — URL reflete modal aberto ──
+  const MODAL_OPENERS = [
+    { fn: 'openPerfSimulator',     url: '/simulador/performance' },
+    { fn: 'openLeadPerfSimulator', url: '/simulador/lead-performance' },
+    { fn: 'openPerfPres',          url: '/apresentar/performance' },
+    { fn: 'openCreatorsPres',      url: '/apresentar/creators' },
+    { fn: 'openSocialPres',        url: '/apresentar/social' },
+    { fn: 'openXpto',              url: '/protocolo' },
+  ];
+  for (const { fn, url } of MODAL_OPENERS) {
+    const orig = window[fn];
+    if (typeof orig !== 'function') continue;
+    window[fn] = function () {
+      const ret = orig.apply(this, arguments);
+      if (!R.isApplying() && location.pathname !== url) {
+        R.navigate(url);
+      }
+      return ret;
+    };
+  }
+
+  // ── Observa fechamento de modais (qualquer caminho: ESC, click overlay,
+  //    botão close, ou navegação interna que fecha) → reflete na URL ──
+  function watchModal(overlayId, urlWhenOpen) {
+    const ov = document.getElementById(overlayId);
+    if (!ov) return;
+    let wasOpen = ov.classList.contains('is-open');
+    new MutationObserver(() => {
+      const isOpen = ov.classList.contains('is-open');
+      if (wasOpen && !isOpen && !R.isApplying()) {
+        // Modal fechou. Se estamos NA URL do modal, sai dela.
+        // history.back() volta pra rota anterior (ou fora do app se entrou direto).
+        if (location.pathname === urlWhenOpen) {
+          history.back();
+        }
+      }
+      wasOpen = isOpen;
+    }).observe(ov, { attributes: true, attributeFilter: ['class'] });
+  }
+  watchModal('perf-overlay',      '/simulador/performance');
+  watchModal('lead-perf-overlay', '/simulador/lead-performance');
+  watchModal('pp-overlay',        '/apresentar/performance');
+  watchModal('cp-overlay',        '/apresentar/creators');
+  watchModal('sm-overlay',        '/apresentar/social');
+  watchModal('xpto-overlay',      '/protocolo');
+
+  // ── Start: registra popstate + hidrata estado a partir da URL ──
+  // setTimeout(0) > requestAnimationFrame: rAF não dispara em browsers
+  // headless/em background. setTimeout(0) defere até o próximo tick,
+  // o que já é suficiente: a IIFE só roda no fim do script, todas as
+  // inits (renderFlow, propostas, etc.) já completaram.
+  setTimeout(() => R.start(), 0);
 })();
 
 </script>

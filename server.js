@@ -1301,8 +1301,24 @@ app.use(express.static(__dirname, {
   },
 }));
 
+// ── SPA fallback: rotas client-side (/apresentacao, /jornadas/...) ──
+// Qualquer GET que não é /api/*, não tem extensão de arquivo, e não
+// foi resolvido pelo static middleware acima → serve index.html.
+// Isso permite deep-linking direto na URL (cole /jornadas/ecommerce
+// no browser e abre a aba certa).
+app.get(/.*/, (req, res, next) => {
+  if (req.method !== 'GET') return next();
+  if (req.path.startsWith('/api/')) return next();
+  // Tem extensão de arquivo? Provavelmente é asset estático que não existe.
+  if (/\.[a-zA-Z0-9]{1,5}$/.test(req.path)) return next();
+  // Aceita só HTML (browser navigation); evita servir HTML p/ fetch JSON.
+  if (req.headers.accept && !req.headers.accept.includes('text/html')) return next();
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Fallback final: 404 com JSON pra rotas /api/* não-mapeadas;
-// HTML 404 simples pra qualquer outra coisa.
+// HTML 404 simples pra qualquer outra coisa (assets inexistentes etc.)
 app.use((req, res) => {
   if (req.path.startsWith('/api/')) {
     return res.status(404).json({ ok: false, error: 'Endpoint não encontrado.' });
