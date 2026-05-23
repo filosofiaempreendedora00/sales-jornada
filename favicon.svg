@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fundo arredondado: contraste pro polvo branco aparecer em qualquer tab. -->
+  <rect width="64" height="64" rx="14" fill="#0a0a16"/>
+  <!-- Polvinho: cúpula no topo + 5 tentáculos ondulados embaixo. -->
+  <path d="M 12 39
+           A 20 24 0 0 1 52 39
+           A 4 5 0 0 0 44 39
+           A 4 5 0 0 0 36 39
+           A 4 5 0 0 0 28 39
+           A 4 5 0 0 0 20 39
+           A 4 5 0 0 0 12 39
+           Z" fill="#ffffff"/>
+  <!-- Olhinhos -->
+  <circle cx="24" cy="31" r="2.4" fill="#0a0a16"/>
+  <circle cx="40" cy="31" r="2.4" fill="#0a0a16"/>
+</svg>
