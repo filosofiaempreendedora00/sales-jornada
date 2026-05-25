@@ -1,21 +1,20 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Polvinho branco minimalista, ocupa todo o canvas pra ficar bem
-       visível mesmo reduzido a 16x16. Cabeça (elipse) + 5 tentáculos
-       (strokes com round caps pra parecerem orgânicos). -->
+  <!-- Polvinho minimalista. Tentáculos grossos (10px) e longos pra
+       sobreviverem ao downscale do navegador pra 16x16. Cabeça
+       ocupa só 50% vertical, tentáculos os outros 50%. -->
 
-  <!-- Tentáculos atrás do corpo, então primeiro -->
-  <g stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" fill="none">
-    <path d="M 14 36 Q 9 48, 14 58"/>
-    <path d="M 22 40 Q 25 50, 22 60"/>
-    <path d="M 32 42 L 32 60"/>
-    <path d="M 42 40 Q 39 50, 42 60"/>
-    <path d="M 50 36 Q 55 48, 50 58"/>
+  <!-- Tentáculos primeiro (atrás da cabeça) -->
+  <g stroke="#ffffff" stroke-width="10" stroke-linecap="round" fill="none">
+    <path d="M 13 30 Q 8 48, 13 60"/>
+    <path d="M 25 33 Q 27 48, 25 62"/>
+    <path d="M 39 33 Q 37 48, 39 62"/>
+    <path d="M 51 30 Q 56 48, 51 60"/>
   </g>
 
-  <!-- Cabeça arredondada (em cima dos tentáculos pra cobrir os topos) -->
-  <ellipse cx="32" cy="24" rx="22" ry="18" fill="#ffffff"/>
+  <!-- Cabeça por cima dos tentáculos -->
+  <ellipse cx="32" cy="20" rx="22" ry="15" fill="#ffffff"/>
 
   <!-- Olhinhos -->
-  <circle cx="24" cy="22" r="2.8" fill="#0a0a16"/>
-  <circle cx="40" cy="22" r="2.8" fill="#0a0a16"/>
+  <circle cx="23" cy="20" r="3" fill="#0a0a16"/>
+  <circle cx="41" cy="20" r="3" fill="#0a0a16"/>
 </svg>
