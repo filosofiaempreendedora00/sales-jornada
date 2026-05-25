@@ -1,24 +1,39 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Polvinho branco minimalista. Tentáculos como teardrops com pontas
-       pontiagudas (Bezier cúbicos convergindo num corner) e curvas
-       variadas pra parecer orgânico, não simétrico. T1/T5 curvam pra
-       fora, T2/T4 inclinam levemente, T3 quase reto no centro. -->
+  <!-- Polvinho minimalista. 5 tentáculos em forma de banana —
+       cada um curva CONSISTENTEMENTE em uma direção (não zigzag),
+       fica na sua coluna sem cruzar com os vizinhos. Tips em fan:
+       T1 aponta pra (4,58), T5 pra (60,58), tips no meio descem mais
+       baixo (T3 em 32,63). Cria movimento orgânico tipo polvo
+       espalhando os braços, sem rigidez de aranha/caranguejo. -->
 
-  <!-- Tentáculos atrás da cabeça -->
   <g fill="#ffffff">
-    <!-- T1: curva pra fora à esquerda -->
-    <path d="M 10 30 C 2 35, 0 50, 6 60 C 12 50, 16 40, 18 30 Z"/>
-    <!-- T2: inclina pra esquerda -->
-    <path d="M 20 32 C 18 42, 14 55, 18 62 C 24 56, 26 42, 28 32 Z"/>
+    <!-- T1: banana curvando forte pra esquerda -->
+    <path d="M 8 30
+             C 2 38, 0 50, 4 58
+             C 8 52, 14 40, 16 30 Z"/>
+
+    <!-- T2: banana suave pra esquerda -->
+    <path d="M 18 32
+             C 14 42, 12 54, 14 62
+             C 20 54, 24 42, 26 32 Z"/>
+
     <!-- T3: centro, quase reto com leve curva -->
-    <path d="M 29 32 C 30 42, 31 55, 32 63 C 33 55, 34 42, 35 32 Z"/>
-    <!-- T4: inclina pra direita (espelho de T2) -->
-    <path d="M 36 32 C 38 42, 40 56, 46 62 C 50 55, 46 42, 44 32 Z"/>
-    <!-- T5: curva pra fora à direita (espelho de T1) -->
-    <path d="M 46 30 C 48 40, 52 50, 58 60 C 64 50, 62 35, 54 30 Z"/>
+    <path d="M 28 32
+             C 28 44, 30 56, 32 63
+             C 34 56, 36 44, 36 32 Z"/>
+
+    <!-- T4: banana suave pra direita (espelho T2) -->
+    <path d="M 38 32
+             C 40 42, 44 54, 50 62
+             C 52 54, 50 42, 46 32 Z"/>
+
+    <!-- T5: banana curvando forte pra direita (espelho T1) -->
+    <path d="M 48 30
+             C 50 40, 56 52, 60 58
+             C 64 50, 62 38, 56 30 Z"/>
   </g>
 
-  <!-- Cabeça por cima dos tentáculos (cobre as bases) -->
+  <!-- Cabeça por cima -->
   <ellipse cx="32" cy="20" rx="24" ry="14" fill="#ffffff"/>
 
   <!-- Olhinhos -->
