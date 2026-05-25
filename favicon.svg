@@ -1,18 +1,25 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Polvinho minimalista. Tentáculos grossos (10px) e longos pra
-       sobreviverem ao downscale do navegador pra 16x16. Cabeça
-       ocupa só 50% vertical, tentáculos os outros 50%. -->
+  <!-- Polvinho branco minimalista. Tentáculos como teardrops com pontas
+       pontiagudas (Bezier cúbicos convergindo num corner) e curvas
+       variadas pra parecer orgânico, não simétrico. T1/T5 curvam pra
+       fora, T2/T4 inclinam levemente, T3 quase reto no centro. -->
 
-  <!-- Tentáculos primeiro (atrás da cabeça) -->
-  <g stroke="#ffffff" stroke-width="10" stroke-linecap="round" fill="none">
-    <path d="M 13 30 Q 8 48, 13 60"/>
-    <path d="M 25 33 Q 27 48, 25 62"/>
-    <path d="M 39 33 Q 37 48, 39 62"/>
-    <path d="M 51 30 Q 56 48, 51 60"/>
+  <!-- Tentáculos atrás da cabeça -->
+  <g fill="#ffffff">
+    <!-- T1: curva pra fora à esquerda -->
+    <path d="M 10 30 C 2 35, 0 50, 6 60 C 12 50, 16 40, 18 30 Z"/>
+    <!-- T2: inclina pra esquerda -->
+    <path d="M 20 32 C 18 42, 14 55, 18 62 C 24 56, 26 42, 28 32 Z"/>
+    <!-- T3: centro, quase reto com leve curva -->
+    <path d="M 29 32 C 30 42, 31 55, 32 63 C 33 55, 34 42, 35 32 Z"/>
+    <!-- T4: inclina pra direita (espelho de T2) -->
+    <path d="M 36 32 C 38 42, 40 56, 46 62 C 50 55, 46 42, 44 32 Z"/>
+    <!-- T5: curva pra fora à direita (espelho de T1) -->
+    <path d="M 46 30 C 48 40, 52 50, 58 60 C 64 50, 62 35, 54 30 Z"/>
   </g>
 
-  <!-- Cabeça por cima dos tentáculos -->
-  <ellipse cx="32" cy="20" rx="22" ry="15" fill="#ffffff"/>
+  <!-- Cabeça por cima dos tentáculos (cobre as bases) -->
+  <ellipse cx="32" cy="20" rx="24" ry="14" fill="#ffffff"/>
 
   <!-- Olhinhos -->
   <circle cx="23" cy="20" r="3" fill="#0a0a16"/>
