@@ -10960,7 +10960,8 @@ const STAGES = [
         impact: 'CTR baixo, CPM alto, custo por aquisição elevado. Você gasta mais para adquirir cada cliente.',
         deps: ['definicoes'],
         links: [
-          { label: 'Ocean Drop',  url: 'https://drive.google.com/drive/u/1/folders/1cugzfL_UohDiuPFh1HqgbllWNcenAY_r', type: 'featured' },
+          { label: 'Ocean Drop',         url: 'https://drive.google.com/drive/u/1/folders/1cugzfL_UohDiuPFh1HqgbllWNcenAY_r', type: 'featured' },
+          { label: 'Creators-coringas',  url: 'https://drive.google.com/drive/u/0/folders/1yNGHJa5zS5TMay4AQfqOlfgHVN9HE9tQ', type: 'coringa' },
           { label: 'Sulmel',      url: 'https://drive.google.com/drive/u/1/folders/1lIRWpKfm_FPw_gDNdwEgy3tDGLiRV2zT' },
           { label: 'Vekka',       url: 'https://drive.google.com/drive/u/1/folders/1tZbBXg6xeCK2aTrEbrSaerIXFi-W539L' },
           { label: 'Minimal Club',url: 'https://drive.google.com/drive/u/1/folders/1w579OBMG3RG6x4StULmecFqMdnB9qstr' },
@@ -11586,8 +11587,9 @@ function buildLinksHTML(links, color) {
 
   const toolLinks     = links.filter(l => l.type === 'tool');
   const featuredLinks = links.filter(l => l.type === 'featured');
+  const coringaLinks  = links.filter(l => l.type === 'coringa');
   const processLinks  = links.filter(l => l.type === 'process');
-  const caseLinks     = links.filter(l => !l.type || (l.type !== 'tool' && l.type !== 'featured' && l.type !== 'process'));
+  const caseLinks     = links.filter(l => !l.type || (l.type !== 'tool' && l.type !== 'featured' && l.type !== 'coringa' && l.type !== 'process'));
   let html = '';
 
   // ── Cases block (amber) ──────────────────────────
@@ -11641,6 +11643,24 @@ function buildLinksHTML(links, color) {
     });
     html += `<div class="featured-block">
       <p class="block-label">★ projeto destaque</p>
+      ${rows}
+    </div>`;
+  }
+
+  // ── Coringa block (mesma estética do featured) ──
+  // Links curinga/coringas — pasta versátil de creators que cabem
+  // em vários contextos. Mesma estética do "projeto destaque" pra
+  // hierarquizar com ele, mas como bloco separado.
+  if (coringaLinks.length > 0) {
+    let rows = '';
+    coringaLinks.forEach(l => {
+      rows += `<div class="link-row">
+        <span class="link-name">${l.label}</span>
+        <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
+      </div>`;
+    });
+    html += `<div class="featured-block">
+      <p class="block-label">🃏 creators-coringas</p>
       ${rows}
     </div>`;
   }
