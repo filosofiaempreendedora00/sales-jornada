@@ -1,16 +1,21 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <!-- Fundo arredondado: contraste pro polvo branco aparecer em qualquer tab. -->
-  <rect width="64" height="64" rx="14" fill="#0a0a16"/>
-  <!-- Polvinho: cúpula no topo + 5 tentáculos ondulados embaixo. -->
-  <path d="M 12 39
-           A 20 24 0 0 1 52 39
-           A 4 5 0 0 0 44 39
-           A 4 5 0 0 0 36 39
-           A 4 5 0 0 0 28 39
-           A 4 5 0 0 0 20 39
-           A 4 5 0 0 0 12 39
-           Z" fill="#ffffff"/>
+  <!-- Polvinho branco minimalista, ocupa todo o canvas pra ficar bem
+       visível mesmo reduzido a 16x16. Cabeça (elipse) + 5 tentáculos
+       (strokes com round caps pra parecerem orgânicos). -->
+
+  <!-- Tentáculos atrás do corpo, então primeiro -->
+  <g stroke="#ffffff" stroke-width="6.5" stroke-linecap="round" fill="none">
+    <path d="M 14 36 Q 9 48, 14 58"/>
+    <path d="M 22 40 Q 25 50, 22 60"/>
+    <path d="M 32 42 L 32 60"/>
+    <path d="M 42 40 Q 39 50, 42 60"/>
+    <path d="M 50 36 Q 55 48, 50 58"/>
+  </g>
+
+  <!-- Cabeça arredondada (em cima dos tentáculos pra cobrir os topos) -->
+  <ellipse cx="32" cy="24" rx="22" ry="18" fill="#ffffff"/>
+
   <!-- Olhinhos -->
-  <circle cx="24" cy="31" r="2.4" fill="#0a0a16"/>
-  <circle cx="40" cy="31" r="2.4" fill="#0a0a16"/>
+  <circle cx="24" cy="22" r="2.8" fill="#0a0a16"/>
+  <circle cx="40" cy="22" r="2.8" fill="#0a0a16"/>
 </svg>
