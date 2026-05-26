@@ -7252,11 +7252,16 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   transform: translateY(-2px);
 }
 .cm-card-icon {
-  width: 36px; height: 36px;
+  width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
   color: #0dcfe8;
   font-size: 20px;
   margin-bottom: -4px;
+}
+.cm-card-icon svg {
+  width: 100%; height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(13,207,232,0.35));
 }
 .cm-card-title {
   font-size: 17px;
@@ -7296,6 +7301,10 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: rgba(255,255,255,0.96);
   font-weight: 700;
 }
+/* Variante sem "caminhos de rato": remove dots + indent, mantém só o texto. */
+.cm-card-list--plain { gap: 8px; }
+.cm-card-list--plain li { gap: 0; }
+.cm-card-list--plain li::before { display: none; }
 .cm-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -7355,7 +7364,17 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   border-color: rgba(13,207,232,0.45);
   background: rgba(13,207,232,0.09);
 }
-.cm-pillar-icon { font-size: 24px; color: #0dcfe8; }
+.cm-pillar-icon {
+  font-size: 24px;
+  color: #0dcfe8;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cm-pillar-icon svg {
+  width: 100%; height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(13,207,232,0.35));
+}
 .cm-pillar-label {
   font-size: 12.5px;
   font-weight: 800;
@@ -7374,14 +7393,15 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   background: linear-gradient(90deg, rgba(13,207,232,0.14), rgba(77,141,255,0.08));
   border-left: 3px solid #0dcfe8;
   border-radius: 10px;
-  padding: 16px 22px;
+  padding: 14px 22px;
   font-size: 14.5px;
   font-weight: 600;
   color: rgba(255,255,255,0.92);
   letter-spacing: 0.1px;
   text-align: center;
-  margin-top: 22px;
+  margin: 22px auto 0;
   line-height: 1.45;
+  max-width: min(720px, 100%);
 }
 .cm-banner b, .cm-banner strong { color: #0dcfe8; font-weight: 800; }
 .cm-highlight {
@@ -7609,9 +7629,20 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   border-color: rgba(13,207,232,0.32);
   transform: translateY(-2px);
 }
-.cm-invest-inc-icon { font-size: 20px; color: #0dcfe8; margin-bottom: 6px; }
+.cm-invest-inc-icon {
+  font-size: 20px;
+  color: #0dcfe8;
+  margin-bottom: 8px;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cm-invest-inc-icon svg {
+  width: 100%; height: 100%;
+  display: block;
+  filter: drop-shadow(0 0 10px rgba(13,207,232,0.35));
+}
 .cm-invest-inc-text { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.92); line-height: 1.35; }
-.cm-building-hero { text-align: center; margin-bottom: 26px; }
+.cm-building-hero { text-align: left; margin-bottom: 26px; }
 .cm-building-line1 {
   font-size: clamp(22px, 2.8vw, 30px);
   font-weight: 800;
@@ -11077,7 +11108,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <div class="cm-grid-3">
           <div class="cm-card">
-            <div class="cm-card-icon">📈</div>
+            <div class="cm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
             <h3 class="cm-card-title">Tráfego Pago</h3>
             <ul class="cm-card-list">
               <li>Crescente custo de aquisição (CAC).</li>
@@ -11085,7 +11116,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             </ul>
           </div>
           <div class="cm-card">
-            <div class="cm-card-icon">📱</div>
+            <div class="cm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2.5"/><line x1="10" y1="18.5" x2="14" y2="18.5"/></svg></div>
             <h3 class="cm-card-title">Redes Sociais</h3>
             <ul class="cm-card-list">
               <li>Crescimento lento e orgânico limitado.</li>
@@ -11093,7 +11124,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             </ul>
           </div>
           <div class="cm-card">
-            <div class="cm-card-icon">👥</div>
+            <div class="cm-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20v-1.2a4 4 0 0 1 4-4h5a4 4 0 0 1 4 4V20"/><path d="M17.5 4.5l.95 1.93 2.14.31-1.55 1.51.37 2.13-1.91-1-1.91 1 .37-2.13-1.55-1.51 2.14-.31z"/></svg></div>
             <h3 class="cm-card-title">Influenciadores</h3>
             <ul class="cm-card-list">
               <li>Alto custo de contratação pontual.</li>
@@ -11101,7 +11132,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             </ul>
           </div>
         </div>
-        <div class="cm-banner"><b>Resultado:</b> Dificuldade de escalar vendas com previsibilidade e eficiência.</div>
+        <div class="cm-banner"><b>Resultado:</b> dificuldade de escalar vendas com previsibilidade e eficiência.</div>
       </div>
     </section>
 
@@ -11114,17 +11145,29 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <div class="cm-card" style="margin-bottom:22px">
           <h3 class="cm-card-title" style="color:#0dcfe8">Um modelo de crescimento exponencial</h3>
-          <ul class="cm-card-list">
+          <ul class="cm-card-list cm-card-list--plain">
             <li>Pessoas vendem e validam a marca <strong>organicamente</strong>.</li>
             <li>Conteúdo gerado em escala massiva e descentralizada.</li>
             <li>Distribuição que rompe a dependência de canais únicos.</li>
           </ul>
         </div>
         <div class="cm-grid-4">
-          <div class="cm-pillar"><div class="cm-pillar-icon">👤</div><div class="cm-pillar-label">Aquisição</div></div>
-          <div class="cm-pillar"><div class="cm-pillar-icon">🎬</div><div class="cm-pillar-label">Conteúdo</div></div>
-          <div class="cm-pillar"><div class="cm-pillar-icon">🛒</div><div class="cm-pillar-label">Conversão</div></div>
-          <div class="cm-pillar"><div class="cm-pillar-icon">📈</div><div class="cm-pillar-label">Escala</div></div>
+          <div class="cm-pillar">
+            <div class="cm-pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="8" r="3.5"/><path d="M3 20v-1.5a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4V20"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></div>
+            <div class="cm-pillar-label">Aquisição</div>
+          </div>
+          <div class="cm-pillar">
+            <div class="cm-pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="14" rx="2"/><polygon points="23 7 16 12 23 17 23 7"/></svg></div>
+            <div class="cm-pillar-label">Conteúdo</div>
+          </div>
+          <div class="cm-pillar">
+            <div class="cm-pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h9.2a2 2 0 0 0 2-1.6L22 7H6"/></svg></div>
+            <div class="cm-pillar-label">Conversão</div>
+          </div>
+          <div class="cm-pillar">
+            <div class="cm-pillar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><polyline points="7 14 12 9 16 13 21 7"/><polyline points="16 7 21 7 21 12"/></svg></div>
+            <div class="cm-pillar-label">Escala</div>
+          </div>
         </div>
       </div>
     </section>
@@ -11145,7 +11188,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
           <div class="cm-card">
             <h3 class="cm-card-title" style="color:#0dcfe8;justify-content:center">Como Funciona</h3>
-            <ul class="cm-card-list">
+            <ul class="cm-card-list cm-card-list--plain">
               <li>Membros <strong>recebem produtos exclusivos</strong>.</li>
               <li>Criação de <strong>conteúdo autêntico</strong>.</li>
               <li>Divulgação com <strong>link/cupom próprio</strong>.</li>
@@ -11296,7 +11339,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         <div class="cm-grid-2">
           <div class="cm-card">
             <h3 class="cm-card-title" style="color:#0dcfe8"><span>🎯</span>Estratégia de Campanhas</h3>
-            <ul class="cm-card-list">
+            <ul class="cm-card-list cm-card-list--plain">
               <li><strong>Campanhas Recorrentes</strong> — Ciclos mensais de vendas para consistência de faturamento.</li>
               <li><strong>Campanhas Pontuais</strong> — Ações de aceleração em datas estratégicas e picos de produção.</li>
               <li><strong>Controle Total</strong> — Gestão baseada em dados para ajustar volume conforme necessidade.</li>
@@ -11357,7 +11400,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           <p class="cm-building-line2">É a criação de um <strong style="color:#0dcfe8">novo canal de vendas proprietário</strong>.</p>
         </div>
         <div class="cm-grid-4">
-          <div class="cm-pillar"><div class="cm-pillar-icon">⏱</div><div class="cm-pillar-label">Crescimento Temporal</div><div class="cm-pillar-desc">Um ativo que se valoriza e ganha força conforme a comunidade amadurece.</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">📅</div><div class="cm-pillar-label">Crescimento Temporal</div><div class="cm-pillar-desc">Um ativo que se valoriza e ganha força conforme a comunidade amadurece.</div></div>
           <div class="cm-pillar"><div class="cm-pillar-icon">🎯</div><div class="cm-pillar-label">Previsibilidade</div><div class="cm-pillar-desc">Canal orgânico convertido em fonte de receita estável e mensurável.</div></div>
           <div class="cm-pillar"><div class="cm-pillar-icon">📉</div><div class="cm-pillar-label">Redução de CAC</div><div class="cm-pillar-desc">Custo de aquisição cai com a indicação e o conteúdo orgânico.</div></div>
           <div class="cm-pillar"><div class="cm-pillar-icon">💰</div><div class="cm-pillar-label">Aumento de Margem</div><div class="cm-pillar-desc">Lucratividade maior no longo prazo, com menos dependência de mídia paga.</div></div>
@@ -11424,10 +11467,22 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div>
             <h3 class="cm-invest-includes-title">O que está incluso</h3>
             <div class="cm-invest-includes">
-              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">🚀</div><div class="cm-invest-inc-text">Setup completo da infraestrutura</div></div>
-              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">👥</div><div class="cm-invest-inc-text">Gestão ativa da comunidade</div></div>
-              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">♟️</div><div class="cm-invest-inc-text">Estratégia de crescimento contínuo</div></div>
-              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">📈</div><div class="cm-invest-inc-text">Acompanhamento e otimização</div></div>
+              <div class="cm-invest-inc">
+                <div class="cm-invest-inc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.64 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.64 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.56V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.56 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.56 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.56 1z"/></svg></div>
+                <div class="cm-invest-inc-text">Setup completo da infraestrutura</div>
+              </div>
+              <div class="cm-invest-inc">
+                <div class="cm-invest-inc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="3.5"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                <div class="cm-invest-inc-text">Gestão ativa da comunidade</div>
+              </div>
+              <div class="cm-invest-inc">
+                <div class="cm-invest-inc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><polygon points="15.8 8.2 14 14 8.2 15.8 10 10 15.8 8.2"/></svg></div>
+                <div class="cm-invest-inc-text">Estratégia de crescimento contínuo</div>
+              </div>
+              <div class="cm-invest-inc">
+                <div class="cm-invest-inc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9-6-18-3 9H2"/></svg></div>
+                <div class="cm-invest-inc-text">Acompanhamento e otimização</div>
+              </div>
             </div>
           </div>
         </div>
