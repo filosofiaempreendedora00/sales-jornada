@@ -2992,7 +2992,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .prop-invest-field {
   display: grid;
-  grid-template-columns: 76px 1fr;
+  grid-template-columns: auto 76px 1fr;
   align-items: center;
   gap: 8px;
 }
@@ -3002,6 +3002,53 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-transform: uppercase;
   letter-spacing: 0.8px;
   color: var(--text-soft);
+  transition: opacity 0.18s;
+}
+/* Checkbox de inclusão do pacote — quando desmarcado, o pacote some
+   do preview da proposta. */
+.prop-invest-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid rgba(255,255,255,0.28);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.30);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 0;
+  flex-shrink: 0;
+  transition: border-color 0.15s, background 0.15s;
+}
+.prop-invest-check:hover {
+  border-color: var(--card-color, rgba(155,109,255,0.65));
+}
+.prop-invest-check:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--card-color, #9b6dff) 60%, transparent);
+  outline-offset: 2px;
+}
+.prop-invest-check:checked {
+  background: var(--card-color, #9b6dff);
+  border-color: var(--card-color, #9b6dff);
+}
+.prop-invest-check:checked::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -1px;
+}
+.prop-invest-field.is-disabled .prop-invest-tier {
+  opacity: 0.4;
+}
+.prop-invest-field.is-disabled .prop-invest-input-wrap {
+  opacity: 0.45;
+  pointer-events: none;
 }
 /* Wrapper R$ + input: prefixo R$ fixo (não-editável), input só com o número */
 .prop-invest-input-wrap {
@@ -16086,6 +16133,37 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     localStorage.setItem('prop-prices', JSON.stringify(flat));
   }
 
+  // Tiers habilitados — controla quais pacotes aparecem no preview/proposta.
+  // Default: tudo marcado. Quando o vendedor desmarca um checkbox no card
+  // de Investimento, aquele pacote some da proposta gerada.
+  const DEFAULT_ENABLED_TIERS = {
+    performance: ['starter', 'scale', 'enterprise'],
+    creators:    ['starter', 'scale', 'enterprise'],
+    social:      ['starter', 'scale']
+  };
+  const enabledTiers = {};
+  for (const sol in DEFAULT_ENABLED_TIERS) {
+    enabledTiers[sol] = new Set(DEFAULT_ENABLED_TIERS[sol]);
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('prop-enabled-tiers') || '{}');
+    for (const sol in saved) {
+      if (Array.isArray(saved[sol]) && enabledTiers[sol]) {
+        enabledTiers[sol] = new Set(
+          saved[sol].filter(t => DEFAULT_ENABLED_TIERS[sol].includes(t))
+        );
+      }
+    }
+  } catch (e) {}
+  function saveEnabledTiers() {
+    const flat = {};
+    for (const sol in enabledTiers) flat[sol] = [...enabledTiers[sol]];
+    localStorage.setItem('prop-enabled-tiers', JSON.stringify(flat));
+  }
+  function isTierEnabled(sol, tier) {
+    return enabledTiers[sol]?.has(tier) ?? false;
+  }
+
   function isPriceDefault(sol, tier) {
     return prices[sol]?.[tier]?.value === DEFAULT_PRICES[sol]?.[tier]?.value;
   }
@@ -16199,8 +16277,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <span class="prop-invest-name">${s.name}</span>
         </div>
         <div class="prop-invest-tiers">
-          ${Object.entries(prices[s.id]).map(([tier, td]) => `
-            <label class="prop-invest-field">
+          ${Object.entries(prices[s.id]).map(([tier, td]) => {
+            const enabled = isTierEnabled(s.id, tier);
+            return `
+            <div class="prop-invest-field${enabled ? '' : ' is-disabled'}">
+              <input type="checkbox" class="prop-invest-check"
+                data-sol="${s.id}" data-tier="${tier}"
+                ${enabled ? 'checked' : ''}
+                aria-label="Incluir pacote ${td.label} na proposta"
+                title="Incluir pacote ${td.label} na proposta">
               <span class="prop-invest-tier">${td.label}</span>
               <div class="prop-invest-input-wrap">
                 <span class="prop-invest-currency">R$</span>
@@ -16209,10 +16294,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                   data-sol="${s.id}" data-tier="${tier}"
                   value="${escapeAttr(stripCurrency(td.value))}"
                   spellcheck="false" autocomplete="off"
-                  inputmode="decimal">
+                  inputmode="decimal"
+                  ${enabled ? '' : 'disabled'}>
               </div>
-            </label>
-          `).join('')}
+            </div>
+          `;
+          }).join('')}
         </div>
       </div>
     `).join('');
@@ -16225,6 +16312,23 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         prices[sol][tier].value = buildPriceValue(input.value);
         savePriceOverrides();
         input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
+        schedulePreviewRebuild();
+      });
+    });
+
+    // Checkbox de inclusão de pacote — toggle local (sem re-render) +
+    // rebuild do preview pra refletir o pacote escondido na proposta.
+    $invest.querySelectorAll('.prop-invest-check').forEach(check => {
+      check.addEventListener('change', () => {
+        const sol  = check.dataset.sol;
+        const tier = check.dataset.tier;
+        if (check.checked) enabledTiers[sol].add(tier);
+        else               enabledTiers[sol].delete(tier);
+        saveEnabledTiers();
+        const field = check.closest('.prop-invest-field');
+        const priceInput = field?.querySelector('.prop-invest-input');
+        if (field)      field.classList.toggle('is-disabled', !check.checked);
+        if (priceInput) priceInput.disabled = !check.checked;
         schedulePreviewRebuild();
       });
     });
@@ -16537,12 +16641,148 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }
 
     // 3. Investimento + pacotes — só quando alguma solução com pacotes está
-    // selecionada. Hoje: Performance, Creators e Social têm pacotes.
+    // selecionada E pelo menos um tier dela está marcado no checkbox do card
+    // de Investimento. Hoje: Performance, Creators e Social têm pacotes.
     // INVESTIMENTO é um slide-divisor que sempre vem antes dos pacotes.
     const hasPerf     = selected.has('performance');
     const hasCreators = selected.has('creators');
     const hasSocial   = selected.has('social');
-    if (hasPerf || hasCreators || hasSocial) {
+
+    // Ícone padrão (estrela) reutilizado em todos os pacotes
+    const pacoteIcon = `<div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>`;
+
+    // Builders por solução — cada um devolve um array de cards (já filtrado
+    // por enabledTiers). Se vazio, a seção inteira é omitida.
+    const perfCards = [];
+    if (hasPerf) {
+      if (isTierEnabled('performance', 'starter')) perfCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.performance.starter.value)}</div>
+          <span class="pacote-tag">Investimento até R$ 5.000,00</span>
+          <ul class="pacote-features">
+            <li>Planejamento, gestão e estratégia dos anúncios online</li>
+            <li>Trackeamento dos resultados</li>
+            <li>Acompanhamento e otimização semanal</li>
+            <li>Direção e produção dos criativos de venda <small>(4 por mês)</small></li>
+            <li>Plataforma Meta ADs <small>(Atenção)</small></li>
+            <li>Plataforma Google ADs <small>(Intenção)</small></li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('performance', 'scale')) perfCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.performance.scale.value)}</div>
+          <span class="pacote-tag">Investimento até R$ 20.000,00</span>
+          <ul class="pacote-features">
+            <li>Planejamento, gestão e estratégia dos anúncios online</li>
+            <li>Trackeamento dos resultados</li>
+            <li>Acompanhamento e otimização semanal</li>
+            <li>Direção e produção dos criativos de venda <small>(12 por mês)</small></li>
+            <li>Plataforma Meta ADs <small>(Atenção)</small></li>
+            <li>Plataforma Google ADs <small>(Intenção)</small></li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('performance', 'enterprise')) perfCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.performance.enterprise.value)}</div>
+          <span class="pacote-tag">Investimento acima de R$ 20.000,00</span>
+          <span class="pacote-tag pacote-tag--alt">+ R$ 500 a cada R$ 10.000 de investimento</span>
+          <ul class="pacote-features">
+            <li>Planejamento, gestão e estratégia dos anúncios online</li>
+            <li>Trackeamento dos resultados</li>
+            <li>Acompanhamento e otimização semanal</li>
+            <li>Direção e produção dos criativos de venda <small>(16 por mês)</small></li>
+            <li>Plataforma Meta ADs <small>(Atenção)</small></li>
+            <li>Plataforma Google ADs <small>(Intenção)</small></li>
+          </ul>
+        </div>`);
+    }
+
+    const creatorsCards = [];
+    if (hasCreators) {
+      if (isTierEnabled('creators', 'starter')) creatorsCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.creators.starter.value)}</div>
+          <span class="pacote-tag">18 Criativos UGC <small>(em vídeo)</small></span>
+          <ul class="pacote-features">
+            <li>3 Criadores de conteúdo</li>
+            <li>18 Anúncios em vídeo <small>(6 roteiros × 3 variações de ganchos)</small></li>
+            <li>Pesquisa do melhor creator &amp; estratégia</li>
+            <li>Copywriting otimizado para venda direta</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('creators', 'scale')) creatorsCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.creators.scale.value)}</div>
+          <span class="pacote-tag">24 Criativos UGC <small>(em vídeo)</small></span>
+          <ul class="pacote-features">
+            <li>4 Criadores de conteúdo</li>
+            <li>24 Anúncios em vídeo <small>(8 roteiros × 3 variações de ganchos)</small></li>
+            <li>Pesquisa dos melhores creators &amp; estratégia</li>
+            <li>Copywriting otimizado para venda direta</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('creators', 'enterprise')) creatorsCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.creators.enterprise.value)}</div>
+          <span class="pacote-tag">48 Criativos UGC <small>(em vídeo)</small></span>
+          <ul class="pacote-features">
+            <li>8 Criadores de conteúdo</li>
+            <li>48 Anúncios em vídeo <small>(12 roteiros × 4 variações de ganchos)</small></li>
+            <li>Pesquisa dos melhores creators &amp; estratégia</li>
+            <li>Copywriting otimizado para venda direta</li>
+          </ul>
+        </div>`);
+    }
+
+    const socialCards = [];
+    if (hasSocial) {
+      if (isTierEnabled('social', 'starter')) socialCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.social.starter.value)}</div>
+          <span class="pacote-tag">12 conteúdos mensais</span>
+          <ul class="pacote-features">
+            <li>Planejamento mensal com pilares de comunicação definidos</li>
+            <li>Copywriting estratégico — cada post tem intenção</li>
+            <li>Organização estratégica do feed como vitrine do negócio</li>
+            <li>Relatório analítico mensal — você vê o que funciona</li>
+            <li>Kickoff essencial para alinhamento de marca</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('social', 'scale')) socialCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          <div class="pacote-price">${formatPriceHtml(prices.social.scale.value)}</div>
+          <span class="pacote-tag">8 fixos + 4 dinâmicos <small>(1/semana)</small></span>
+          <ul class="pacote-features">
+            <li>Planejamento estratégico mensal com meta de crescimento</li>
+            <li>Stories Estratégicos PRO <small>(4 sequências/mês)</small></li>
+            <li>Reunião estratégica mensal com time especializado</li>
+            <li>Relatório analítico mensal — você vê o que funciona</li>
+            <li><strong>Setup 360 incluso</strong> — estruturação estratégica completa</li>
+            <li><strong>Presença Autoral inclusa</strong> — até 2 criadores/mês, 4 vídeos</li>
+          </ul>
+        </div>`);
+    }
+
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length;
+
+    if (anyPacote) {
       // 3a. INVESTIMENTO divisor
       sections.push(`<section class="proposal-section proposal-section--investimento">
         <div class="invest-slide">
@@ -16552,59 +16792,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>
       </section>`);
 
-      // 3b. Pacotes Performance (se Performance selecionada)
-      if (hasPerf) {
+      // 3b. Pacotes Performance
+      if (perfCards.length) {
         sections.push(`<section class="proposal-section proposal-section--pacotes-perf">
           <div class="pacotes-slide">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes Gestão de <span class="pacotes-title-accent">Performance</span></h2>
             </div>
-            <div class="pacotes-grid">
-              <div class="pacote-card">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">STARTER</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.performance.starter.value)}</div>
-                <span class="pacote-tag">Investimento até R$ 5.000,00</span>
-                <ul class="pacote-features">
-                  <li>Planejamento, gestão e estratégia dos anúncios online</li>
-                  <li>Trackeamento dos resultados</li>
-                  <li>Acompanhamento e otimização semanal</li>
-                  <li>Direção e produção dos criativos de venda <small>(4 por mês)</small></li>
-                  <li>Plataforma Meta ADs <small>(Atenção)</small></li>
-                  <li>Plataforma Google ADs <small>(Intenção)</small></li>
-                </ul>
-              </div>
-              <div class="pacote-card pacote-card--featured">
-                <span class="pacote-badge">mais vendido</span>
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">SCALE</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.performance.scale.value)}</div>
-                <span class="pacote-tag">Investimento até R$ 20.000,00</span>
-                <ul class="pacote-features">
-                  <li>Planejamento, gestão e estratégia dos anúncios online</li>
-                  <li>Trackeamento dos resultados</li>
-                  <li>Acompanhamento e otimização semanal</li>
-                  <li>Direção e produção dos criativos de venda <small>(12 por mês)</small></li>
-                  <li>Plataforma Meta ADs <small>(Atenção)</small></li>
-                  <li>Plataforma Google ADs <small>(Intenção)</small></li>
-                </ul>
-              </div>
-              <div class="pacote-card">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">ENTERPRISE</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.performance.enterprise.value)}</div>
-                <span class="pacote-tag">Investimento acima de R$ 20.000,00</span>
-                <span class="pacote-tag pacote-tag--alt">+ R$ 500 a cada R$ 10.000 de investimento</span>
-                <ul class="pacote-features">
-                  <li>Planejamento, gestão e estratégia dos anúncios online</li>
-                  <li>Trackeamento dos resultados</li>
-                  <li>Acompanhamento e otimização semanal</li>
-                  <li>Direção e produção dos criativos de venda <small>(16 por mês)</small></li>
-                  <li>Plataforma Meta ADs <small>(Atenção)</small></li>
-                  <li>Plataforma Google ADs <small>(Intenção)</small></li>
-                </ul>
-              </div>
-            </div>
+            <div class="pacotes-grid">${perfCards.join('')}</div>
             <div class="pacotes-footer">
               <span class="pacotes-footer-label">Fee de implantação:</span>
               <span class="pacotes-footer-value">R$ 2.997,00</span>
@@ -16613,95 +16808,29 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3c. Pacotes Creators (se Creators selecionada)
-      if (hasCreators) {
+      // 3c. Pacotes Creators
+      if (creatorsCards.length) {
         sections.push(`<section class="proposal-section proposal-section--pacotes-creators">
           <div class="pacotes-slide">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Creators</span></h2>
               <p class="pacotes-sub">A partir de 4 entregas</p>
             </div>
-            <div class="pacotes-grid">
-              <div class="pacote-card">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">STARTER</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.creators.starter.value)}</div>
-                <span class="pacote-tag">18 Criativos UGC <small>(em vídeo)</small></span>
-                <ul class="pacote-features">
-                  <li>3 Criadores de conteúdo</li>
-                  <li>18 Anúncios em vídeo <small>(6 roteiros × 3 variações de ganchos)</small></li>
-                  <li>Pesquisa do melhor creator &amp; estratégia</li>
-                  <li>Copywriting otimizado para venda direta</li>
-                </ul>
-              </div>
-              <div class="pacote-card pacote-card--featured">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">SCALE</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.creators.scale.value)}</div>
-                <span class="pacote-tag">24 Criativos UGC <small>(em vídeo)</small></span>
-                <ul class="pacote-features">
-                  <li>4 Criadores de conteúdo</li>
-                  <li>24 Anúncios em vídeo <small>(8 roteiros × 3 variações de ganchos)</small></li>
-                  <li>Pesquisa dos melhores creators &amp; estratégia</li>
-                  <li>Copywriting otimizado para venda direta</li>
-                </ul>
-              </div>
-              <div class="pacote-card">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">ENTERPRISE</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.creators.enterprise.value)}</div>
-                <span class="pacote-tag">48 Criativos UGC <small>(em vídeo)</small></span>
-                <ul class="pacote-features">
-                  <li>8 Criadores de conteúdo</li>
-                  <li>48 Anúncios em vídeo <small>(12 roteiros × 4 variações de ganchos)</small></li>
-                  <li>Pesquisa dos melhores creators &amp; estratégia</li>
-                  <li>Copywriting otimizado para venda direta</li>
-                </ul>
-              </div>
-            </div>
+            <div class="pacotes-grid">${creatorsCards.join('')}</div>
           </div>
         </section>`);
       }
 
-      // 3d. Pacotes Social Media (se Social selecionada) — só 2 cards
-      // (Starter e Scale, sem Enterprise). Preços vêm do slide de
+      // 3d. Pacotes Social Media — preços vêm do slide de
       // Investimento original do deck Social: R$ 3.397 / R$ 3.897.
-      if (hasSocial) {
+      if (socialCards.length) {
         sections.push(`<section class="proposal-section proposal-section--pacotes-social">
           <div class="pacotes-slide pacotes-slide--two">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Social Media</span></h2>
               <p class="pacotes-sub">Presença digital estratégica, mensal e consistente</p>
             </div>
-            <div class="pacotes-grid pacotes-grid--two">
-              <div class="pacote-card">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">STARTER</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.social.starter.value)}</div>
-                <span class="pacote-tag">12 conteúdos mensais</span>
-                <ul class="pacote-features">
-                  <li>Planejamento mensal com pilares de comunicação definidos</li>
-                  <li>Copywriting estratégico — cada post tem intenção</li>
-                  <li>Organização estratégica do feed como vitrine do negócio</li>
-                  <li>Relatório analítico mensal — você vê o que funciona</li>
-                  <li>Kickoff essencial para alinhamento de marca</li>
-                </ul>
-              </div>
-              <div class="pacote-card pacote-card--featured">
-                <div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-                <h3 class="pacote-name">SCALE</h3>
-                <div class="pacote-price">${formatPriceHtml(prices.social.scale.value)}</div>
-                <span class="pacote-tag">8 fixos + 4 dinâmicos <small>(1/semana)</small></span>
-                <ul class="pacote-features">
-                  <li>Planejamento estratégico mensal com meta de crescimento</li>
-                  <li>Stories Estratégicos PRO <small>(4 sequências/mês)</small></li>
-                  <li>Reunião estratégica mensal com time especializado</li>
-                  <li>Relatório analítico mensal — você vê o que funciona</li>
-                  <li><strong>Setup 360 incluso</strong> — estruturação estratégica completa</li>
-                  <li><strong>Presença Autoral inclusa</strong> — até 2 criadores/mês, 4 vídeos</li>
-                </ul>
-              </div>
-            </div>
+            <div class="pacotes-grid pacotes-grid--two">${socialCards.join('')}</div>
           </div>
         </section>`);
       }
@@ -17066,11 +17195,16 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         letter-spacing: 0.3px;
         margin: 0;
       }
+      /* Flex em vez de grid 3-col pra centralizar quando algum pacote for
+         removido via checkbox no card de Investimento. Com 3 cards visíveis
+         o visual é idêntico ao grid; com 2 ou 1 os cards centralizam
+         em vez de ficarem encostados à esquerda. */
       .proposal-section--pacotes-perf .pacotes-grid,
       .proposal-section--pacotes-creators .pacotes-grid,
       .proposal-section--pacotes-social .pacotes-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 18px;
         align-items: stretch;
       }
@@ -17085,6 +17219,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         display: flex;
         flex-direction: column;
         gap: 14px;
+        flex: 1 1 280px;
+        min-width: 220px;
+        max-width: 340px;
         transition: border-color 0.18s, transform 0.18s;
       }
       .proposal-section--pacotes-perf .pacote-card:hover,
@@ -17304,17 +17441,21 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         background-clip: text;
       }
       @media (max-width: 900px) {
-        .proposal-section--pacotes-perf .pacotes-grid,
-        .proposal-section--pacotes-creators .pacotes-grid,
-        .proposal-section--pacotes-social .pacotes-grid { grid-template-columns: 1fr; }
+        /* Mobile: cards stackam (flex-basis 100%). Max-width removido pra
+           usarem largura cheia. */
+        .proposal-section--pacotes-perf .pacote-card,
+        .proposal-section--pacotes-creators .pacote-card,
+        .proposal-section--pacotes-social .pacote-card {
+          flex: 1 1 100%;
+          max-width: none;
+        }
         /* Ordem natural mantida: STARTER → SCALE → ENTERPRISE.
            (Removido order:-1 anterior que jogava o featured pro topo.) */
       }
 
-      /* Pacotes Social só tem 2 cards (Starter + Scale) — usa grid de 2 cols
-         com largura máxima centralizada pra evitar cards gigantes em desktop. */
+      /* Pacotes Social tem no máximo 2 cards (Starter + Scale) — largura
+         máxima centralizada pra evitar cards gigantes em desktop. */
       .proposal-section--pacotes-social .pacotes-grid--two {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
         max-width: 760px;
         margin: 0 auto;
         width: 100%;
@@ -17760,11 +17901,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .proposal-section--pacotes-social .pacote-price {
           font-size: 26px !important;
         }
-        /* Social bundles no mobile: stack vertical igual Performance/
-           Creators (antes ficavam lado-a-lado com texto esmagado pq o
-           grid--two forçava 2 cols). */
+        /* Social bundles no mobile: max-width cheio e gap reduzido.
+           O stack vertical vem da regra geral .pacote-card{flex:1 1 100%}. */
         .proposal-section--pacotes-social .pacotes-grid--two {
-          grid-template-columns: 1fr !important;
           max-width: 100% !important;
           gap: 16px !important;
         }
