@@ -2992,7 +2992,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .prop-invest-field {
   display: grid;
-  grid-template-columns: auto 76px 1fr;
+  grid-template-columns: 76px 1fr auto;
   align-items: center;
   gap: 8px;
 }
@@ -3003,6 +3003,39 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   letter-spacing: 0.8px;
   color: var(--text-soft);
   transition: opacity 0.18s;
+}
+/* "Extras" são toggles abaixo dos tiers (ex: Fee de implantação no Performance).
+   Linha mais sutil — não tem input editável, só label + valor + checkbox.
+   Borda tracejada separa visualmente dos pacotes principais. */
+.prop-invest-extras {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255,255,255,0.10);
+}
+.prop-invest-extra-field {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+}
+.prop-invest-extra-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-soft);
+  transition: opacity 0.18s;
+}
+.prop-invest-extra-value {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.2px;
+  transition: opacity 0.18s;
+}
+.prop-invest-extra-field.is-disabled .prop-invest-extra-label,
+.prop-invest-extra-field.is-disabled .prop-invest-extra-value {
+  opacity: 0.4;
 }
 /* Checkbox de inclusão do pacote — quando desmarcado, o pacote some
    do preview da proposta. */
@@ -16164,6 +16197,35 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return enabledTiers[sol]?.has(tier) ?? false;
   }
 
+  // Extras = elementos opcionais que não são pacotes mas podem ser
+  // incluídos/removidos via checkbox no card de Investimento.
+  // Hoje: 'fee' do Performance (Fee de implantação R$ 2.997,00).
+  const DEFAULT_ENABLED_EXTRAS = {
+    performance: ['fee']
+  };
+  const enabledExtras = {};
+  for (const sol in DEFAULT_ENABLED_EXTRAS) {
+    enabledExtras[sol] = new Set(DEFAULT_ENABLED_EXTRAS[sol]);
+  }
+  try {
+    const saved = JSON.parse(localStorage.getItem('prop-enabled-extras') || '{}');
+    for (const sol in saved) {
+      if (Array.isArray(saved[sol]) && enabledExtras[sol]) {
+        enabledExtras[sol] = new Set(
+          saved[sol].filter(e => DEFAULT_ENABLED_EXTRAS[sol].includes(e))
+        );
+      }
+    }
+  } catch (e) {}
+  function saveEnabledExtras() {
+    const flat = {};
+    for (const sol in enabledExtras) flat[sol] = [...enabledExtras[sol]];
+    localStorage.setItem('prop-enabled-extras', JSON.stringify(flat));
+  }
+  function isExtraEnabled(sol, extra) {
+    return enabledExtras[sol]?.has(extra) ?? false;
+  }
+
   function isPriceDefault(sol, tier) {
     return prices[sol]?.[tier]?.value === DEFAULT_PRICES[sol]?.[tier]?.value;
   }
@@ -16270,7 +16332,23 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       $invest.innerHTML = '<p class="prop-invest-empty">Selecione ao menos uma solução para editar os preços dos pacotes.</p>';
       return;
     }
-    $invest.innerHTML = visibleSols.map(s => `
+    $invest.innerHTML = visibleSols.map(s => {
+      const feeEnabled = isExtraEnabled(s.id, 'fee');
+      // Extras por solução. Hoje só Performance tem (Fee de implantação).
+      const extrasHtml = s.id === 'performance' ? `
+        <div class="prop-invest-extras">
+          <div class="prop-invest-extra-field${feeEnabled ? '' : ' is-disabled'}">
+            <span class="prop-invest-extra-label">Fee de implantação</span>
+            <span class="prop-invest-extra-value">R$ 2.997,00</span>
+            <input type="checkbox" class="prop-invest-check"
+              data-sol="${s.id}" data-extra="fee"
+              ${feeEnabled ? 'checked' : ''}
+              aria-label="Incluir Fee de implantação na proposta"
+              title="Incluir Fee de implantação na proposta">
+          </div>
+        </div>
+      ` : '';
+      return `
       <div class="prop-invest-card" style="--card-color:${s.color}">
         <div class="prop-invest-card-head">
           <span class="prop-invest-icon">${s.icon}</span>
@@ -16281,11 +16359,6 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             const enabled = isTierEnabled(s.id, tier);
             return `
             <div class="prop-invest-field${enabled ? '' : ' is-disabled'}">
-              <input type="checkbox" class="prop-invest-check"
-                data-sol="${s.id}" data-tier="${tier}"
-                ${enabled ? 'checked' : ''}
-                aria-label="Incluir pacote ${td.label} na proposta"
-                title="Incluir pacote ${td.label} na proposta">
               <span class="prop-invest-tier">${td.label}</span>
               <div class="prop-invest-input-wrap">
                 <span class="prop-invest-currency">R$</span>
@@ -16297,12 +16370,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                   inputmode="decimal"
                   ${enabled ? '' : 'disabled'}>
               </div>
+              <input type="checkbox" class="prop-invest-check"
+                data-sol="${s.id}" data-tier="${tier}"
+                ${enabled ? 'checked' : ''}
+                aria-label="Incluir pacote ${td.label} na proposta"
+                title="Incluir pacote ${td.label} na proposta">
             </div>
           `;
           }).join('')}
         </div>
+        ${extrasHtml}
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     $invest.querySelectorAll('.prop-invest-input').forEach(input => {
       input.addEventListener('input', () => {
@@ -16316,16 +16396,25 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       });
     });
 
-    // Checkbox de inclusão de pacote — toggle local (sem re-render) +
-    // rebuild do preview pra refletir o pacote escondido na proposta.
+    // Checkbox de inclusão de pacote ou extra (Fee) — toggle local (sem
+    // re-render) + rebuild do preview pra refletir o item escondido na
+    // proposta. `data-tier` = pacote (Starter/Scale/Enterprise);
+    // `data-extra` = extra opcional (hoje só 'fee' do Performance).
     $invest.querySelectorAll('.prop-invest-check').forEach(check => {
       check.addEventListener('change', () => {
-        const sol  = check.dataset.sol;
-        const tier = check.dataset.tier;
-        if (check.checked) enabledTiers[sol].add(tier);
-        else               enabledTiers[sol].delete(tier);
-        saveEnabledTiers();
-        const field = check.closest('.prop-invest-field');
+        const sol   = check.dataset.sol;
+        const tier  = check.dataset.tier;
+        const extra = check.dataset.extra;
+        if (extra) {
+          if (check.checked) enabledExtras[sol].add(extra);
+          else               enabledExtras[sol].delete(extra);
+          saveEnabledExtras();
+        } else if (tier) {
+          if (check.checked) enabledTiers[sol].add(tier);
+          else               enabledTiers[sol].delete(tier);
+          saveEnabledTiers();
+        }
+        const field = check.closest('.prop-invest-field, .prop-invest-extra-field');
         const priceInput = field?.querySelector('.prop-invest-input');
         if (field)      field.classList.toggle('is-disabled', !check.checked);
         if (priceInput) priceInput.disabled = !check.checked;
@@ -16792,18 +16881,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>
       </section>`);
 
-      // 3b. Pacotes Performance
+      // 3b. Pacotes Performance — footer com Fee de implantação só aparece
+      // quando o checkbox correspondente no card de Investimento está marcado.
       if (perfCards.length) {
+        const feeHtml = isExtraEnabled('performance', 'fee') ? `
+            <div class="pacotes-footer">
+              <span class="pacotes-footer-label">Fee de implantação:</span>
+              <span class="pacotes-footer-value">R$ 2.997,00</span>
+            </div>` : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-perf">
           <div class="pacotes-slide">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes Gestão de <span class="pacotes-title-accent">Performance</span></h2>
             </div>
-            <div class="pacotes-grid">${perfCards.join('')}</div>
-            <div class="pacotes-footer">
-              <span class="pacotes-footer-label">Fee de implantação:</span>
-              <span class="pacotes-footer-value">R$ 2.997,00</span>
-            </div>
+            <div class="pacotes-grid">${perfCards.join('')}</div>${feeHtml}
           </div>
         </section>`);
       }
