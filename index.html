@@ -12028,8 +12028,9 @@ const STAGES = [
         mistake: 'Loja bonita, cheia de informação, sem hierarquia clara e sem foco em levar o visitante ao botão de compra.',
         impact: 'CPL e CPA disparam. Você aumenta o orçamento de anúncios, mas o retorno não aparece — e você não entende por quê.',
         deps: ['identidade', 'redes'],
+        toolsLabel: 'Catálogo de produtos',
         links: [
-          { label: 'Catálogo de produtos', url: 'https://tech.turbopartners.com.br/', type: 'tool' },
+          { label: 'Acessar plataforma', url: 'https://tech.turbopartners.com.br/', type: 'tool' },
           { label: 'Guday',      url: 'https://guday.com.br/',             group: 'PERSONALIZADO' },
           { label: 'Push Matcha',url: 'https://pushmatcha.com.br/',        group: 'PERSONALIZADO' },
           { label: 'Pace It',    url: 'https://loja.paceit.com.br/',       group: 'PERSONALIZADO' },
@@ -12822,8 +12823,9 @@ function buildLinksHTML(links, color) {
       </div>`;
     });
 
+    const toolsLabel = node.toolsLabel || 'ferramenta parceira';
     html += `<div class="tools-block">
-      <p class="block-label">⚙ ferramenta parceira</p>
+      <p class="block-label">⚙ ${toolsLabel}</p>
       ${rows}
     </div>`;
   }
