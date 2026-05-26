@@ -17007,40 +17007,33 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     if (!clean) return 'R$ ';
     return 'R$ ' + clean;
   }
-  // Deep-clone para que prices possa ser mutado sem afetar DEFAULT_PRICES.
-  const prices = JSON.parse(JSON.stringify(DEFAULT_PRICES));
-  // Carrega overrides do localStorage.
+  // Limpeza one-shot: remove caches antigos do localStorage. Usuários
+  // reclamavam que os pacotes default mudavam ao reabrir a app porque
+  // edições de preço/checkboxes ficavam persistidas. Estado de pacotes
+  // agora é APENAS em memória — sempre defaults ao recarregar a página.
   try {
-    const saved = JSON.parse(localStorage.getItem('prop-prices') || '{}');
-    for (const sol in saved) {
-      for (const tier in saved[sol]) {
-        if (prices[sol]?.[tier] && typeof saved[sol][tier] === 'string') {
-          prices[sol][tier].value = saved[sol][tier];
-        }
-      }
-    }
+    localStorage.removeItem('prop-prices');
+    localStorage.removeItem('prop-enabled-tiers');
+    localStorage.removeItem('prop-enabled-extras');
   } catch (e) {}
-  // Normalização: remove qualquer sufixo (/mês, /ano...) legado e
-  // garante formato canônico "R$ <amount>". Garante que Social que
-  // antes tinha "/mês" no localStorage volte limpo após o update.
+
+  // Deep-clone para que prices possa ser mutado sem afetar DEFAULT_PRICES.
+  // Edições de preço vivem só na sessão atual — não persistem.
+  const prices = JSON.parse(JSON.stringify(DEFAULT_PRICES));
+  // Normalização: garante formato canônico "R$ <amount>" nos defaults.
   for (const sol in prices) {
     for (const tier in prices[sol]) {
       prices[sol][tier].value = buildPriceValue(stripCurrency(prices[sol][tier].value));
     }
   }
 
-  function savePriceOverrides() {
-    const flat = {};
-    for (const sol in prices) {
-      flat[sol] = {};
-      for (const tier in prices[sol]) flat[sol][tier] = prices[sol][tier].value;
-    }
-    localStorage.setItem('prop-prices', JSON.stringify(flat));
-  }
+  // No-op intencional: edições de preço são por-sessão, não persistem.
+  // Mantemos a função pra não quebrar call sites.
+  function savePriceOverrides() {}
 
   // Tiers habilitados — controla quais pacotes aparecem no preview/proposta.
-  // Default: tudo marcado. Quando o vendedor desmarca um checkbox no card
-  // de Investimento, aquele pacote some da proposta gerada.
+  // Default: tudo marcado. Estado vive só na sessão — sempre volta marcado
+  // ao recarregar.
   const DEFAULT_ENABLED_TIERS = {
     performance: ['starter', 'scale', 'enterprise'],
     creators:    ['starter', 'scale', 'enterprise'],
@@ -17050,21 +17043,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   for (const sol in DEFAULT_ENABLED_TIERS) {
     enabledTiers[sol] = new Set(DEFAULT_ENABLED_TIERS[sol]);
   }
-  try {
-    const saved = JSON.parse(localStorage.getItem('prop-enabled-tiers') || '{}');
-    for (const sol in saved) {
-      if (Array.isArray(saved[sol]) && enabledTiers[sol]) {
-        enabledTiers[sol] = new Set(
-          saved[sol].filter(t => DEFAULT_ENABLED_TIERS[sol].includes(t))
-        );
-      }
-    }
-  } catch (e) {}
-  function saveEnabledTiers() {
-    const flat = {};
-    for (const sol in enabledTiers) flat[sol] = [...enabledTiers[sol]];
-    localStorage.setItem('prop-enabled-tiers', JSON.stringify(flat));
-  }
+  function saveEnabledTiers() {} // no-op intencional
   function isTierEnabled(sol, tier) {
     return enabledTiers[sol]?.has(tier) ?? false;
   }
@@ -17072,6 +17051,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Extras = elementos opcionais que não são pacotes mas podem ser
   // incluídos/removidos via checkbox no card de Investimento.
   // Hoje: 'fee' do Performance (Fee de implantação R$ 2.997,00).
+  // Default Fee marcado, sem persistência entre sessões.
   const DEFAULT_ENABLED_EXTRAS = {
     performance: ['fee']
   };
@@ -17079,21 +17059,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   for (const sol in DEFAULT_ENABLED_EXTRAS) {
     enabledExtras[sol] = new Set(DEFAULT_ENABLED_EXTRAS[sol]);
   }
-  try {
-    const saved = JSON.parse(localStorage.getItem('prop-enabled-extras') || '{}');
-    for (const sol in saved) {
-      if (Array.isArray(saved[sol]) && enabledExtras[sol]) {
-        enabledExtras[sol] = new Set(
-          saved[sol].filter(e => DEFAULT_ENABLED_EXTRAS[sol].includes(e))
-        );
-      }
-    }
-  } catch (e) {}
-  function saveEnabledExtras() {
-    const flat = {};
-    for (const sol in enabledExtras) flat[sol] = [...enabledExtras[sol]];
-    localStorage.setItem('prop-enabled-extras', JSON.stringify(flat));
-  }
+  function saveEnabledExtras() {} // no-op intencional
   function isExtraEnabled(sol, extra) {
     return enabledExtras[sol]?.has(extra) ?? false;
   }
@@ -17777,7 +17743,6 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <div class="pacotes-slide">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Creators</span></h2>
-              <p class="pacotes-sub">A partir de 4 entregas</p>
             </div>
             <div class="pacotes-grid">${creatorsCards.join('')}</div>
           </div>
