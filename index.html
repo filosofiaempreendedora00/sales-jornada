@@ -7205,6 +7205,445 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   .sm-pricing-divider { width: 60%; height: 1px; margin: 0; }
 }
 
+/* ── Comunidade presentation slides (cm-*) ──────── */
+.cm-section-header { margin-bottom: 26px; }
+.cm-section-title {
+  font-size: clamp(28px, 4.2vw, 46px);
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1.07;
+  margin: 0 0 12px 0;
+  padding-bottom: 4px;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(180,230,250,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cm-section-title-accent {
+  background: linear-gradient(90deg, #0dcfe8, #4d8dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cm-section-sub {
+  font-size: clamp(14px, 1.4vw, 17px);
+  color: rgba(255,255,255,0.6);
+  margin: 0;
+  line-height: 1.5;
+}
+.cm-hero-accent {
+  background: linear-gradient(90deg, #0dcfe8, #4d8dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cm-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 24px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.cm-card:hover {
+  border-color: rgba(13,207,232,0.30);
+  transform: translateY(-2px);
+}
+.cm-card-icon {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  color: #0dcfe8;
+  font-size: 20px;
+  margin-bottom: -4px;
+}
+.cm-card-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cm-card-list {
+  list-style: none;
+  padding: 0; margin: 0;
+  display: flex; flex-direction: column;
+  gap: 9px;
+}
+.cm-card-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.5;
+}
+.cm-card-list li::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #0dcfe8;
+  box-shadow: 0 0 8px rgba(13,207,232,0.55);
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.cm-card-list li strong, .cm-card-list li b {
+  color: rgba(255,255,255,0.96);
+  font-weight: 700;
+}
+.cm-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+  align-items: stretch;
+}
+.cm-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: stretch;
+}
+.cm-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  align-items: stretch;
+}
+.cm-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cm-row-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-left: 3px solid #0dcfe8;
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.cm-row-card:hover {
+  border-color: rgba(13,207,232,0.30);
+  border-left-color: #0dcfe8;
+  transform: translateX(2px);
+}
+.cm-row-card-icon { color: #0dcfe8; font-size: 18px; flex-shrink: 0; }
+.cm-pillar {
+  background: rgba(13,207,232,0.05);
+  border: 1px solid rgba(13,207,232,0.20);
+  border-radius: 14px;
+  padding: 22px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+}
+.cm-pillar:hover {
+  border-color: rgba(13,207,232,0.45);
+  background: rgba(13,207,232,0.09);
+}
+.cm-pillar-icon { font-size: 24px; color: #0dcfe8; }
+.cm-pillar-label {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.92);
+}
+.cm-pillar-desc {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.45;
+  margin-top: 2px;
+}
+.cm-banner {
+  background: linear-gradient(90deg, rgba(13,207,232,0.14), rgba(77,141,255,0.08));
+  border-left: 3px solid #0dcfe8;
+  border-radius: 10px;
+  padding: 16px 22px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: 0.1px;
+  text-align: center;
+  margin-top: 22px;
+  line-height: 1.45;
+}
+.cm-banner b, .cm-banner strong { color: #0dcfe8; font-weight: 800; }
+.cm-highlight {
+  background: rgba(13,207,232,0.10);
+  border: 1px solid rgba(13,207,232,0.32);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin-top: auto;
+  text-align: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0dcfe8;
+  line-height: 1.35;
+}
+.cm-metric {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 26px 18px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.cm-metric-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(13,207,232,0.10);
+  border: 1px solid rgba(13,207,232,0.28);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: #0dcfe8;
+  margin-bottom: 8px;
+}
+.cm-metric-number {
+  font-size: clamp(38px, 4.6vw, 60px);
+  font-weight: 900;
+  letter-spacing: -2.5px;
+  line-height: 1;
+  background: linear-gradient(90deg, #0dcfe8, #4d8dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-bottom: 2px;
+}
+.cm-metric-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-top: 6px;
+  letter-spacing: 0.1px;
+}
+.cm-metric-desc {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.45;
+  margin-top: 4px;
+}
+.cm-month-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+.cm-month {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 18px;
+  text-align: center;
+}
+.cm-month-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: #0dcfe8;
+  margin-bottom: 6px;
+}
+.cm-month-desc {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.4;
+}
+.cm-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 14px;
+  color: rgba(255,255,255,0.75);
+}
+.cm-info-row + .cm-info-row { border-top: 1px solid rgba(255,255,255,0.06); }
+.cm-info-row-label { font-weight: 500; }
+.cm-info-row-value { font-weight: 700; color: #ffffff; }
+.cm-info-row--total .cm-info-row-label,
+.cm-info-row--total .cm-info-row-value { color: #0dcfe8; }
+.cm-info-row-hint {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.45);
+  margin-top: 4px;
+  font-style: italic;
+}
+.cm-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cm-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  align-items: center;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  padding: 16px 22px;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.cm-step:hover {
+  border-color: rgba(13,207,232,0.32);
+  transform: translateX(2px);
+}
+.cm-step-num {
+  font-size: 24px;
+  font-weight: 900;
+  color: #0dcfe8;
+  letter-spacing: -0.5px;
+  text-align: center;
+}
+.cm-step-body { display: flex; flex-direction: column; gap: 2px; }
+.cm-step-title { font-size: 15px; font-weight: 800; color: #ffffff; }
+.cm-step-desc { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.45; }
+.cm-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 30px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #0dcfe8, #4d8dff);
+  color: #0a1430;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  border: none;
+  cursor: pointer;
+  margin-top: 22px;
+  box-shadow: 0 8px 24px rgba(13,207,232,0.25);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.cm-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(13,207,232,0.4);
+}
+.cm-cta-icon { font-size: 13px; }
+.cm-invest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 28px;
+  align-items: stretch;
+}
+.cm-invest-price-card {
+  background: linear-gradient(160deg, rgba(13,207,232,0.10) 0%, rgba(77,141,255,0.06) 100%), #0a1224;
+  border: 1.5px solid rgba(13,207,232,0.40);
+  border-radius: 18px;
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  box-shadow: 0 0 0 1px rgba(13,207,232,0.10), 0 20px 50px rgba(13,80,200,0.20);
+}
+.cm-invest-price-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #0dcfe8;
+}
+.cm-invest-price-value {
+  font-size: clamp(40px, 5.2vw, 62px);
+  font-weight: 900;
+  letter-spacing: -2.5px;
+  color: #ffffff;
+  margin: 6px 0;
+  line-height: 1;
+}
+.cm-invest-price-period {
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.85);
+  margin-top: 4px;
+}
+.cm-invest-price-hint {
+  font-size: 12px;
+  color: rgba(255,255,255,0.55);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.cm-invest-includes-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0 0 14px 0;
+  letter-spacing: -0.2px;
+}
+.cm-invest-includes {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.cm-invest-inc {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  padding: 14px 14px;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.cm-invest-inc:hover {
+  border-color: rgba(13,207,232,0.32);
+  transform: translateY(-2px);
+}
+.cm-invest-inc-icon { font-size: 20px; color: #0dcfe8; margin-bottom: 6px; }
+.cm-invest-inc-text { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.92); line-height: 1.35; }
+.cm-building-hero { text-align: center; margin-bottom: 26px; }
+.cm-building-line1 {
+  font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 800;
+  color: #0dcfe8;
+  margin: 0 0 4px;
+  letter-spacing: -0.6px;
+}
+.cm-building-line2 {
+  font-size: clamp(16px, 2vw, 20px);
+  font-weight: 500;
+  color: rgba(255,255,255,0.82);
+  margin: 0;
+  line-height: 1.45;
+}
+
+@media (max-width: 900px) {
+  .cm-grid-3,
+  .cm-grid-4,
+  .cm-grid-2,
+  .cm-month-row,
+  .cm-invest-includes { grid-template-columns: 1fr 1fr; }
+  .cm-invest-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .cm-grid-3,
+  .cm-grid-4,
+  .cm-grid-2,
+  .cm-month-row,
+  .cm-invest-includes { grid-template-columns: 1fr; }
+  .cm-step { grid-template-columns: 40px 1fr; padding: 14px 18px; }
+}
+
 /* ── Value bar (âncora de preço) ──────────────────── */
 #xpto-value-bar {
   position: fixed;
@@ -10612,6 +11051,397 @@ a.xpto-pricing-btn { text-decoration: none; }
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  COMUNIDADE PRESENTATION MODAL (cm-*)          -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="cm-overlay"></div>
+<button class="xpto-close" id="cm-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="cm-modal">
+  <div class="xpto-inner" id="cm-inner">
+
+    <!-- SLIDE 01 — HERO -->
+    <section class="xpto-slide xpto-slide-hero">
+      <div class="xpto-slide-inner" style="text-align:center;">
+        <div class="xpto-eyebrow"><span></span>Gestão de Comunidade</div>
+        <h1 class="xpto-title">Estruturação de Canal de<br>Vendas <span class="cm-hero-accent">via Comunidade</span></h1>
+        <p class="xpto-subtitle">Criação de um novo motor de crescimento escalável para o e-commerce.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 — PROBLEMA -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Diagnóstico</div>
+          <h2 class="cm-section-title">O Problema: limitações<br>dos modelos tradicionais.</h2>
+        </div>
+        <div class="cm-grid-3">
+          <div class="cm-card">
+            <div class="cm-card-icon">📈</div>
+            <h3 class="cm-card-title">Tráfego Pago</h3>
+            <ul class="cm-card-list">
+              <li>Crescente custo de aquisição (CAC).</li>
+              <li>Dependência contínua de investimento direto.</li>
+            </ul>
+          </div>
+          <div class="cm-card">
+            <div class="cm-card-icon">📱</div>
+            <h3 class="cm-card-title">Redes Sociais</h3>
+            <ul class="cm-card-list">
+              <li>Crescimento lento e orgânico limitado.</li>
+              <li>Baixo alcance inicial para novas marcas.</li>
+            </ul>
+          </div>
+          <div class="cm-card">
+            <div class="cm-card-icon">👥</div>
+            <h3 class="cm-card-title">Influenciadores</h3>
+            <ul class="cm-card-list">
+              <li>Alto custo de contratação pontual.</li>
+              <li>Baixa previsibilidade de retorno (ROI).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="cm-banner"><b>Resultado:</b> Dificuldade de escalar vendas com previsibilidade e eficiência.</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 — OPORTUNIDADE -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Oportunidade</div>
+          <h2 class="cm-section-title">A Oportunidade: <span class="cm-section-title-accent">Comunidade de Criadores + Afiliados.</span></h2>
+        </div>
+        <div class="cm-card" style="margin-bottom:22px">
+          <h3 class="cm-card-title" style="color:#0dcfe8">Um modelo de crescimento exponencial</h3>
+          <ul class="cm-card-list">
+            <li>Pessoas vendem e validam a marca <strong>organicamente</strong>.</li>
+            <li>Conteúdo gerado em escala massiva e descentralizada.</li>
+            <li>Distribuição que rompe a dependência de canais únicos.</li>
+          </ul>
+        </div>
+        <div class="cm-grid-4">
+          <div class="cm-pillar"><div class="cm-pillar-icon">👤</div><div class="cm-pillar-label">Aquisição</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">🎬</div><div class="cm-pillar-label">Conteúdo</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">🛒</div><div class="cm-pillar-label">Conversão</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">📈</div><div class="cm-pillar-label">Escala</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 — SOLUÇÃO -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Solução</div>
+          <h2 class="cm-section-title">A Solução: <span class="cm-section-title-accent">Comunidade de Afiliados Estruturada.</span></h2>
+        </div>
+        <div class="cm-grid-2">
+          <div class="cm-row">
+            <div class="cm-row-card"><span class="cm-row-card-icon">📦</span><span>Geração de conteúdo em volume massivo</span></div>
+            <div class="cm-row-card"><span class="cm-row-card-icon">🔗</span><span>Distribuição orgânica descentralizada</span></div>
+            <div class="cm-row-card"><span class="cm-row-card-icon">🛒</span><span>Conversão via links e cupons rastreáveis</span></div>
+            <div class="cm-row-card"><span class="cm-row-card-icon">📊</span><span>Escala previsível e eficiente de vendas</span></div>
+          </div>
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8;justify-content:center">Como Funciona</h3>
+            <ul class="cm-card-list">
+              <li>Membros <strong>recebem produtos exclusivos</strong>.</li>
+              <li>Criação de <strong>conteúdo autêntico</strong>.</li>
+              <li>Divulgação com <strong>link/cupom próprio</strong>.</li>
+              <li>Geração de <strong>vendas com comissão</strong>.</li>
+            </ul>
+            <div class="cm-highlight">A marca ganha Alcance, Autoridade e Receita.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 — RESULTADOS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Prova social</div>
+          <h2 class="cm-section-title">Resultados já alcançados.</h2>
+          <p class="cm-section-sub">Alguns dos resultados que já conquistamos com comunidades.</p>
+        </div>
+        <div class="cm-grid-3">
+          <div class="cm-metric">
+            <div class="cm-metric-icon">🛍️</div>
+            <div class="cm-metric-number">+60%</div>
+            <div class="cm-metric-label">Ticket Médio</div>
+            <div class="cm-metric-desc">Aumento expressivo no ticket médio das compras com uso de cupons.</div>
+          </div>
+          <div class="cm-metric">
+            <div class="cm-metric-icon">👥</div>
+            <div class="cm-metric-number">3x</div>
+            <div class="cm-metric-label">Crescimento de Base</div>
+            <div class="cm-metric-desc">Comunidade triplicada em 30 dias.</div>
+          </div>
+          <div class="cm-metric">
+            <div class="cm-metric-icon">📊</div>
+            <div class="cm-metric-number">70%</div>
+            <div class="cm-metric-label">Vendas E-commerce</div>
+            <div class="cm-metric-desc">Volume de vendas originado por cupons.</div>
+          </div>
+        </div>
+        <div class="cm-banner"><b>Resultado:</b> Um canal que não só gera alcance — mas impacta diretamente o faturamento.</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 — FASE 1 SETUP -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Execução · Fase 1</div>
+          <h2 class="cm-section-title">Fase 1 — <span class="cm-section-title-accent">Setup (Mês 1).</span></h2>
+        </div>
+        <div class="cm-grid-2">
+          <div class="cm-card">
+            <h3 class="cm-card-title"><span>⚙️</span>Setup Estratégico</h3>
+            <ul class="cm-card-list">
+              <li>Configuração da plataforma de gestão.</li>
+              <li>Criação da estrutura da comunidade.</li>
+              <li>Recrutamento ativo de afiliados.</li>
+              <li>Onboarding e treinamento inicial.</li>
+              <li>Definição da estratégia de lançamento.</li>
+            </ul>
+            <div class="cm-highlight">Foco: Construção da Base</div>
+          </div>
+          <div class="cm-card">
+            <h3 class="cm-card-title"><span>📋</span>Entregáveis Práticos</h3>
+            <ul class="cm-card-list">
+              <li>Landing page de recrutamento.</li>
+              <li>Grupo oficial de WhatsApp.</li>
+              <li>Regras e metas de permanência.</li>
+              <li>Cupons e links individuais.</li>
+              <li>Processo de seleção de criadores.</li>
+              <li>Reunião geral de alinhamento.</li>
+              <li>Direcionamento de conteúdos.</li>
+              <li>Planejamento da 1ª campanha.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 — FASE 2 GESTÃO -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Execução · Fase 2</div>
+          <h2 class="cm-section-title">Fase 2 — <span class="cm-section-title-accent">Gestão (Meses 2 e 3).</span></h2>
+        </div>
+        <div class="cm-grid-2">
+          <div class="cm-card">
+            <h3 class="cm-card-title"><span>📊</span>Gestão e Engajamento</h3>
+            <ul class="cm-card-list">
+              <li>Acompanhamento semanal de performance e análise de vendas por afiliado.</li>
+              <li>Gestão ativa do grupo de WhatsApp com direcionamentos constantes.</li>
+              <li>Estímulo contínuo à produção de conteúdo e suporte individual.</li>
+            </ul>
+          </div>
+          <div class="cm-card">
+            <h3 class="cm-card-title"><span>🚀</span>Exemplo Prático e Escala</h3>
+            <ul class="cm-card-list">
+              <li>Identificação de conteúdos vencedores (ex: Reels de alta conversão).</li>
+              <li>Replicação estratégica — "repliquem esse formato para toda a base".</li>
+              <li>Execução de campanhas mensais e ações rápidas de aceleração.</li>
+            </ul>
+            <div class="cm-highlight">Foco: Otimização constante com base em dados reais.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 08 — ESTRATÉGIA CRESCIMENTO -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Crescimento</div>
+          <h2 class="cm-section-title">Estratégia de <span class="cm-section-title-accent">Crescimento e Conteúdo.</span></h2>
+        </div>
+        <div class="cm-grid-2">
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8"><span>🔄</span>Efeito Rede (Flywheel)</h3>
+            <ul class="cm-card-list">
+              <li>Atração de novos afiliados.</li>
+              <li>Geração massiva de conteúdo.</li>
+              <li>Aumento exponencial de vendas.</li>
+              <li>Novos membros entram no ciclo.</li>
+            </ul>
+          </div>
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8"><span>🎬</span>Ciclo de Conteúdo</h3>
+            <ul class="cm-card-list">
+              <li>Identificação e replicação do que gera vendas.</li>
+              <li>Direcionamento semanal baseado em dados reais.</li>
+              <li>Replicação estratégica por toda a base.</li>
+              <li>Foco total em volume + consistência.</li>
+            </ul>
+            <div class="cm-highlight">Presença massiva e onipresente nas redes sociais.</div>
+          </div>
+        </div>
+        <div class="cm-banner">O crescimento se torna <b>orgânico, previsível e acumulativo</b>.</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 09 — ESTRATÉGIA CAMPANHAS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Diferenciais</div>
+          <h2 class="cm-section-title">Estratégia de <span class="cm-section-title-accent">Campanhas e Diferenciais.</span></h2>
+        </div>
+        <div class="cm-grid-2">
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8"><span>🎯</span>Estratégia de Campanhas</h3>
+            <ul class="cm-card-list">
+              <li><strong>Campanhas Recorrentes</strong> — Ciclos mensais de vendas para consistência de faturamento.</li>
+              <li><strong>Campanhas Pontuais</strong> — Ações de aceleração em datas estratégicas e picos de produção.</li>
+              <li><strong>Controle Total</strong> — Gestão baseada em dados para ajustar volume conforme necessidade.</li>
+            </ul>
+          </div>
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8"><span>⭐</span>Diferenciais do Modelo</h3>
+            <ul class="cm-card-list">
+              <li>Altamente Escalável e Previsível.</li>
+              <li>Baseado 100% em Performance.</li>
+              <li>Menor dependência de mídia paga.</li>
+              <li>Conversão superior via prova social.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="cm-banner"><b>Eficiência máxima:</b> transformando influência em receita direta.</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 10 — PROJEÇÃO E CUSTOS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Roadmap</div>
+          <h2 class="cm-section-title">Projeção de <span class="cm-section-title-accent">Evolução e Custos.</span></h2>
+        </div>
+        <div class="cm-month-row">
+          <div class="cm-month"><div class="cm-month-label">Mês 1</div><div class="cm-month-desc">Estruturação e formação da base.</div></div>
+          <div class="cm-month"><div class="cm-month-label">Mês 2</div><div class="cm-month-desc">Início da tração e validação.</div></div>
+          <div class="cm-month"><div class="cm-month-label">Mês 3</div><div class="cm-month-desc">Escala acelerada e resultados.</div></div>
+        </div>
+        <div class="cm-grid-2">
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8"><span>💻</span>Plataforma de Gestão</h3>
+            <div class="cm-info-row"><span class="cm-info-row-label">Mensalidade fixa</span><span class="cm-info-row-value">R$ 2.000/mês</span></div>
+            <div class="cm-info-row"><span class="cm-info-row-label">Ou variável</span><span class="cm-info-row-value">2% das vendas</span></div>
+            <span class="cm-info-row-hint">* Escolha baseada no volume de operação.</span>
+          </div>
+          <div class="cm-card">
+            <h3 class="cm-card-title" style="color:#0dcfe8"><span>💸</span>Incentivos de Performance</h3>
+            <div class="cm-info-row"><span class="cm-info-row-label">Comissão afiliado</span><span class="cm-info-row-value">10% por venda</span></div>
+            <div class="cm-info-row"><span class="cm-info-row-label">Desconto cupom</span><span class="cm-info-row-value">10% para cliente</span></div>
+            <div class="cm-info-row cm-info-row--total"><span class="cm-info-row-label">Total de incentivo</span><span class="cm-info-row-value">Até 20%</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 11 — VISÃO ESTRATÉGICA -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Visão estratégica</div>
+          <h2 class="cm-section-title">O que você está construindo.</h2>
+        </div>
+        <div class="cm-building-hero">
+          <p class="cm-building-line1">Não é apenas uma campanha.</p>
+          <p class="cm-building-line2">É a criação de um <strong style="color:#0dcfe8">novo canal de vendas proprietário</strong>.</p>
+        </div>
+        <div class="cm-grid-4">
+          <div class="cm-pillar"><div class="cm-pillar-icon">⏱</div><div class="cm-pillar-label">Crescimento Temporal</div><div class="cm-pillar-desc">Um ativo que se valoriza e ganha força conforme a comunidade amadurece.</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">🎯</div><div class="cm-pillar-label">Previsibilidade</div><div class="cm-pillar-desc">Canal orgânico convertido em fonte de receita estável e mensurável.</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">📉</div><div class="cm-pillar-label">Redução de CAC</div><div class="cm-pillar-desc">Custo de aquisição cai com a indicação e o conteúdo orgânico.</div></div>
+          <div class="cm-pillar"><div class="cm-pillar-icon">💰</div><div class="cm-pillar-label">Aumento de Margem</div><div class="cm-pillar-desc">Lucratividade maior no longo prazo, com menos dependência de mídia paga.</div></div>
+        </div>
+        <div class="cm-banner">Um <b>ativo estratégico</b> para a soberania digital da sua marca.</div>
+      </div>
+    </section>
+
+    <!-- SLIDE 12 — PRÓXIMOS PASSOS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Próximos passos</div>
+          <h2 class="cm-section-title">Próximos passos e <span class="cm-section-title-accent">início imediato.</span></h2>
+        </div>
+        <div class="cm-steps">
+          <div class="cm-step">
+            <div class="cm-step-num">01</div>
+            <div class="cm-step-body">
+              <div class="cm-step-title">Aprovação do projeto</div>
+              <div class="cm-step-desc">Validação final da estratégia e alinhamento de expectativas.</div>
+            </div>
+          </div>
+          <div class="cm-step">
+            <div class="cm-step-num">02</div>
+            <div class="cm-step-body">
+              <div class="cm-step-title">Início imediato do setup</div>
+              <div class="cm-step-desc">Configuração da plataforma e infraestrutura técnica.</div>
+            </div>
+          </div>
+          <div class="cm-step">
+            <div class="cm-step-num">03</div>
+            <div class="cm-step-body">
+              <div class="cm-step-title">Estruturação da comunidade</div>
+              <div class="cm-step-desc">Criação dos canais de comunicação e materiais de onboarding.</div>
+            </div>
+          </div>
+          <div class="cm-step">
+            <div class="cm-step-num">04</div>
+            <div class="cm-step-body">
+              <div class="cm-step-title">Ativação dos afiliados</div>
+              <div class="cm-step-desc">Recrutamento e lançamento da primeira campanha de tração.</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:center"><button class="cm-cta" type="button"><span class="cm-cta-icon">▶</span>Vamos começar?</button></div>
+      </div>
+    </section>
+
+    <!-- SLIDE 13 — INVESTIMENTO -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="cm-section-header">
+          <div class="xpto-eyebrow"><span></span>Investimento</div>
+          <h2 class="cm-section-title">Investimento Turbo: <span class="cm-section-title-accent">Gestão Estratégica + Operacional.</span></h2>
+        </div>
+        <div class="cm-invest-grid">
+          <div class="cm-invest-price-card">
+            <div class="cm-invest-price-label">Investimento mensal</div>
+            <div class="cm-invest-price-value">R$ 10.000</div>
+            <div class="cm-invest-price-period">Período mínimo: 3 meses</div>
+            <div class="cm-invest-price-hint">Podendo ser parcelado em até 12x no cartão.</div>
+          </div>
+          <div>
+            <h3 class="cm-invest-includes-title">O que está incluso</h3>
+            <div class="cm-invest-includes">
+              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">🚀</div><div class="cm-invest-inc-text">Setup completo da infraestrutura</div></div>
+              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">👥</div><div class="cm-invest-inc-text">Gestão ativa da comunidade</div></div>
+              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">♟️</div><div class="cm-invest-inc-text">Estratégia de crescimento contínuo</div></div>
+              <div class="cm-invest-inc"><div class="cm-invest-inc-icon">📈</div><div class="cm-invest-inc-text">Acompanhamento e otimização</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div class="xpto-scroll-hint" id="cm-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  SCRIPT                                        -->
 <!-- ══════════════════════════════════════════════ -->
 <script>
@@ -10644,7 +11474,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     { name: 'prop.personalizada',        re: /^\/propostas\/personalizada\/?$/,             params: [] },
     { name: 'propostas',                 re: /^\/propostas\/?$/,                            params: [] },
     { name: 'simulador',                 re: /^\/simulador\/(performance|lead-performance)\/?$/, params: ['sim'] },
-    { name: 'apresentar',                re: /^\/apresentar\/(performance|creators|social)\/?$/, params: ['what'] },
+    { name: 'apresentar',                re: /^\/apresentar\/(performance|creators|social|comunidade)\/?$/, params: ['what'] },
     { name: 'protocolo',                 re: /^\/protocolo\/?$/,                            params: [] },
     { name: 'home',                      re: /^\/?$/,                                       params: [] },
   ];
@@ -10685,7 +11515,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   };
 
   // Lista completa de overlays de modal/simulador rastreados
-  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'xpto-overlay'];
+  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'cm-overlay', 'xpto-overlay'];
 
   let _applying = false;
   let _started = false;
@@ -10794,12 +11624,13 @@ a.xpto-pricing-btn { text-decoration: none; }
   }
 
   function openApresentar(what) {
-    const overlayMap = { performance: 'pp-overlay', creators: 'cp-overlay', social: 'sm-overlay' };
+    const overlayMap = { performance: 'pp-overlay', creators: 'cp-overlay', social: 'sm-overlay', comunidade: 'cm-overlay' };
     const ov = document.getElementById(overlayMap[what]);
     if (ov && ov.classList.contains('is-open')) return; // já aberto
     if (what === 'performance' && typeof window.openPerfPres === 'function') window.openPerfPres();
     else if (what === 'creators' && typeof window.openCreatorsPres === 'function') window.openCreatorsPres();
     else if (what === 'social' && typeof window.openSocialPres === 'function') window.openSocialPres();
+    else if (what === 'comunidade' && typeof window.openComunidadePres === 'function') window.openComunidadePres();
   }
 
   function openProtocolo() {
@@ -10815,6 +11646,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       'pp-overlay': routeName === 'apresentar' && routeParams.what === 'performance',
       'cp-overlay': routeName === 'apresentar' && routeParams.what === 'creators',
       'sm-overlay': routeName === 'apresentar' && routeParams.what === 'social',
+      'cm-overlay': routeName === 'apresentar' && routeParams.what === 'comunidade',
       'xpto-overlay': routeName === 'protocolo',
     };
     for (const id of MODAL_OVERLAYS) {
@@ -11967,6 +12799,7 @@ function openPanel(nodeId) {
   const isTrafego = nodeId === 'trafego' || nodeId === 'lead-trafego';
   const isCreators = nodeId === 'criativos';
   const isSocial   = nodeId === 'organico' || nodeId === 'lead-organico';
+  const isComunidade = nodeId === 'comunidade';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -12004,6 +12837,13 @@ function openPanel(nodeId) {
     <button class="pres-launch-btn" onclick="if(window.openSocialPres) window.openSocialPres()">
       <span class="pres-launch-icon">📱</span>
       <span class="pres-launch-title">Apresentação de Social Media</span>
+      <span class="pres-launch-arrow">→</span>
+    </button>
+    ` : ''}
+    ${isComunidade ? `
+    <button class="pres-launch-btn" onclick="if(window.openComunidadePres) window.openComunidadePres()">
+      <span class="pres-launch-icon">🤝</span>
+      <span class="pres-launch-title">Apresentação de Gestão de Comunidade</span>
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
@@ -15256,6 +16096,46 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   });
 
   window.openSocialPres = openSocialPres;
+})();
+
+// ─────────────────────────────────────────────────
+//  COMUNIDADE PRESENTATION
+// ─────────────────────────────────────────────────
+(function() {
+  const modal = document.getElementById('cm-modal');
+  const overlay = document.getElementById('cm-overlay');
+  const closeBtn = document.getElementById('cm-close');
+  const hint = document.getElementById('cm-scroll-hint');
+  if (!modal || !overlay || !closeBtn) return;
+
+  function openComunidadePres() {
+    overlay.classList.add('is-open');
+    modal.classList.add('is-open');
+    closeBtn.style.display = 'flex';
+    if (hint) hint.style.display = 'flex';
+    modal.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeComunidadePres() {
+    overlay.classList.remove('is-open');
+    modal.classList.remove('is-open');
+    closeBtn.style.display = 'none';
+    if (hint) hint.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.style.display = 'none';
+  if (hint) hint.style.display = 'none';
+
+  overlay.addEventListener('click', closeComunidadePres);
+  closeBtn.addEventListener('click', closeComunidadePres);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open'))
+      closeComunidadePres();
+  });
+
+  window.openComunidadePres = openComunidadePres;
 })();
 
 // ─────────────────────────────────────────────────
@@ -18913,6 +19793,7 @@ renderProgress();
     { fn: 'openPerfPres',          url: '/apresentar/performance' },
     { fn: 'openCreatorsPres',      url: '/apresentar/creators' },
     { fn: 'openSocialPres',        url: '/apresentar/social' },
+    { fn: 'openComunidadePres',    url: '/apresentar/comunidade' },
     { fn: 'openXpto',              url: '/protocolo' },
   ];
   for (const { fn, url } of MODAL_OPENERS) {
