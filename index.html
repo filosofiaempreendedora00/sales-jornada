@@ -7305,6 +7305,26 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .cm-card-list--plain { gap: 8px; }
 .cm-card-list--plain li { gap: 0; }
 .cm-card-list--plain li::before { display: none; }
+/* Bullet com termo em destaque + descrição: empilha vertical
+   pra evitar o rio visual entre negritos de larguras diferentes
+   e as descrições à direita. */
+.cm-card-list li:has(.cm-li-term) {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  margin-bottom: 4px;
+}
+.cm-li-term {
+  font-weight: 800;
+  color: rgba(255,255,255,0.95);
+  font-size: 13.5px;
+  letter-spacing: -0.1px;
+}
+.cm-li-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.5;
+}
 .cm-grid-2 {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -11340,9 +11360,18 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="cm-card">
             <h3 class="cm-card-title" style="color:#0dcfe8"><span>🎯</span>Estratégia de Campanhas</h3>
             <ul class="cm-card-list cm-card-list--plain">
-              <li><strong>Campanhas Recorrentes</strong> — Ciclos mensais de vendas para consistência de faturamento.</li>
-              <li><strong>Campanhas Pontuais</strong> — Ações de aceleração em datas estratégicas e picos de produção.</li>
-              <li><strong>Controle Total</strong> — Gestão baseada em dados para ajustar volume conforme necessidade.</li>
+              <li>
+                <div class="cm-li-term">Campanhas Recorrentes</div>
+                <div class="cm-li-desc">Ciclos mensais de vendas para consistência de faturamento.</div>
+              </li>
+              <li>
+                <div class="cm-li-term">Campanhas Pontuais</div>
+                <div class="cm-li-desc">Ações de aceleração em datas estratégicas e picos de produção.</div>
+              </li>
+              <li>
+                <div class="cm-li-term">Controle Total</div>
+                <div class="cm-li-desc">Gestão baseada em dados para ajustar volume conforme necessidade.</div>
+              </li>
             </ul>
           </div>
           <div class="cm-card">
