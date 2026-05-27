@@ -4295,13 +4295,26 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-transform: uppercase;
   transition: background 0.15s, color 0.15s;
   border-left: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  /* Garante que tap/click não vire scroll gesture no scroll-snap container */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 .turbo-brand-action:first-child { border-left: none; }
 .turbo-brand-action:hover {
   background: rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.9);
 }
-.turbo-brand-action svg { width: 11px; height: 11px; flex-shrink: 0; }
+/* SVG e texto dentro da âncora não absorvem o click — evita o quirk
+   do SVG dentro de <a> que em alguns browsers cancela a navegação. */
+.turbo-brand-action svg {
+  width: 11px; height: 11px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+.turbo-brand-action > * { pointer-events: none; }
 
 /* ── TURBO SLIDE: TIPOGRAFIA Plus Jakarta Sans ───── */
 #apres-sub-turbo,
@@ -9673,66 +9686,6 @@ a.xpto-pricing-btn { text-decoration: none; }
       <!-- SLIDE 05 — CASES LEAD -->
       <div class="turbo-slide turbo-slide--cases">
         <img src="fotos%20turbo/logos-lead-novo.svg" alt="Cases Lead Generation Turbo" class="turbo-cases-img">
-      </div>
-
-      <!-- SLIDE 06 — ONDE EU DEVO FOCAR (framework) -->
-      <div class="turbo-slide turbo-slide--focus">
-        <div class="turbo-focus-bg"></div>
-        <div class="turbo-slide-inner">
-          <div class="turbo-focus-header">
-            <div class="xpto-eyebrow"><span></span>Framework</div>
-            <h2 class="turbo-focus-title">Onde eu devo focar?</h2>
-          </div>
-          <div class="turbo-focus-funnel">
-            <!-- Reconhecimento — coluna vertical -->
-            <div class="turbo-focus-awareness">
-              <div class="turbo-focus-awareness-rail">
-                <span class="turbo-focus-awareness-text">Reconhecimento</span>
-              </div>
-            </div>
-
-            <!-- Atração -->
-            <div class="turbo-focus-col">
-              <div class="turbo-focus-header-pill">Atração</div>
-              <div class="turbo-focus-pills">
-                <span class="turbo-focus-pill">Performance</span>
-                <span class="turbo-focus-pill">Comunidade</span>
-                <span class="turbo-focus-pill">Creators</span>
-                <span class="turbo-focus-pill">Social Media</span>
-              </div>
-            </div>
-
-            <div class="turbo-focus-arrow">›</div>
-
-            <!-- Conversão -->
-            <div class="turbo-focus-col">
-              <div class="turbo-focus-header-pill">Conversão</div>
-              <div class="turbo-focus-pills">
-                <span class="turbo-focus-pill">CRM</span>
-                <span class="turbo-focus-pill">E-commerce</span>
-                <span class="turbo-focus-pill">Site</span>
-                <span class="turbo-focus-pill">LP</span>
-                <span class="turbo-focus-pill">CRO</span>
-                <span class="turbo-focus-pill">Régua de comunicação</span>
-              </div>
-            </div>
-
-            <div class="turbo-focus-arrow">›</div>
-
-            <!-- Recorrência e relacionamento -->
-            <div class="turbo-focus-col">
-              <div class="turbo-focus-header-pill">Recorrência e<br>relacionamento</div>
-              <div class="turbo-focus-pills">
-                <span class="turbo-focus-pill">CRM</span>
-                <span class="turbo-focus-pill">Broadcast</span>
-                <span class="turbo-focus-pill">Performance</span>
-                <span class="turbo-focus-pill">Comunidade</span>
-                <span class="turbo-focus-pill">Creators</span>
-                <span class="turbo-focus-pill">Social Media</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
     </div>
