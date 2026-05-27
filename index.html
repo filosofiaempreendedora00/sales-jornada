@@ -13047,6 +13047,21 @@ document.addEventListener('keydown', e => {
       }
     });
   });
+
+  // Força a navegação dos links do slide de marcas próprias (Bready/flashCRM).
+  // Apesar dos <a target="_blank"> serem semanticamente corretos, a navegação
+  // default às vezes não acontece dentro do scroll-snap container — algum
+  // handler/quirk no caminho. Forçamos via window.open na fase de capture
+  // pra garantir que o link sempre abra.
+  document.addEventListener('click', e => {
+    const a = e.target.closest('.turbo-brand-action');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href) return;
+    e.preventDefault();
+    e.stopPropagation();
+    window.open(href, '_blank', 'noopener,noreferrer');
+  }, true);
 })();
 
 // Shared helper: find which .turbo-slide index is closest to current scrollTop
