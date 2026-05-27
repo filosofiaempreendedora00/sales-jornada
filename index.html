@@ -5824,6 +5824,129 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: rgba(255,255,255,0.50);
 }
 
+/* ── Cases Carousel (último slide da apresentação Performance) ── */
+.pp-cases-slide { background: var(--bg); }
+.pp-cases-slide .xpto-slide-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
+  max-width: 1100px;
+}
+.pp-cases-header { text-align: center; }
+.pp-cases-header .xpto-eyebrow {
+  justify-content: center;
+  margin: 0 auto;
+}
+.pp-cases-title {
+  font-size: clamp(28px, 4.2vw, 48px);
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1.07;
+  margin: 12px 0 0;
+  padding-bottom: 4px;
+  background: linear-gradient(160deg, #ffffff 30%, rgba(180,210,255,0.7));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.pp-cases-sub {
+  font-size: clamp(13px, 1.3vw, 16px);
+  color: rgba(255,255,255,0.55);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+.pp-cases-carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+.pp-cases-track {
+  position: relative;
+  flex: 1 1 auto;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+}
+.pp-case-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.32s ease;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pp-case-item.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.pp-case-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.pp-cases-nav {
+  flex: 0 0 auto;
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.14);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s, opacity 0.15s;
+  position: relative;
+  z-index: 2;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+}
+.pp-cases-nav:hover:not(:disabled) {
+  background: rgba(77,141,255,0.16);
+  border-color: rgba(77,141,255,0.45);
+  transform: scale(1.06);
+}
+.pp-cases-nav:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+.pp-cases-counter {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+}
+.pp-cases-counter strong {
+  color: #fff;
+  font-weight: 800;
+}
+.pp-cases-hint {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.32);
+  margin-top: 4px;
+}
+@media (max-width: 800px) {
+  .pp-cases-nav { width: 38px; height: 38px; font-size: 18px; }
+  .pp-cases-carousel { gap: 8px; }
+}
+
 /* ══════════════════════════════════════════════════ */
 /*  CREATORS PRESENTATION SLIDES (cp-*)               */
 /* ══════════════════════════════════════════════════ */
@@ -10400,6 +10523,38 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
 
         </div>
+      </div>
+    </section>
+
+    <!-- SLIDE FINAL — CASES (carousel horizontal) -->
+    <section class="xpto-slide pp-cases-slide">
+      <div class="xpto-slide-inner">
+        <div class="pp-cases-header">
+          <div class="xpto-eyebrow"><span></span>Cases</div>
+          <h2 class="pp-cases-title">Quem cresceu com a gente.</h2>
+          <p class="pp-cases-sub">Cada um desses negócios começou em um ponto. Hoje, vendem mais, vendem melhor — e voltam mais vezes.</p>
+        </div>
+        <div class="pp-cases-carousel">
+          <button type="button" class="pp-cases-nav pp-cases-nav--prev" id="pp-cases-prev" aria-label="Case anterior">‹</button>
+          <div class="pp-cases-track" id="pp-cases-track">
+            <div class="pp-case-item is-active"><img src="Cases%20-%20Performance/case-01.svg" alt="Case 1" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-02.svg" alt="Case 2" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-03.svg" alt="Case 3" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-04.svg" alt="Case 4" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-05.svg" alt="Case 5" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-06.svg" alt="Case 6" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-07.svg" alt="Case 7" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-08.svg" alt="Case 8" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-09.svg" alt="Case 9" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-10.svg" alt="Case 10" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-11.svg" alt="Case 11" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-12.svg" alt="Case 12" loading="lazy"></div>
+            <div class="pp-case-item"><img src="Cases%20-%20Performance/case-13.svg" alt="Case 13" loading="lazy"></div>
+          </div>
+          <button type="button" class="pp-cases-nav pp-cases-nav--next" id="pp-cases-next" aria-label="Próximo case">›</button>
+        </div>
+        <div class="pp-cases-counter"><strong id="pp-cases-current">01</strong> / 13</div>
+        <div class="pp-cases-hint">Use as setas do teclado ← → para navegar</div>
       </div>
     </section>
 
@@ -16039,6 +16194,53 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   });
 
   window.openPerfPres = openPerfPres;
+})();
+
+// ─────────────────────────────────────────────────
+//  PERFORMANCE CASES CAROUSEL — slide final
+// ─────────────────────────────────────────────────
+(function () {
+  const track = document.getElementById('pp-cases-track');
+  if (!track) return;
+  const items = Array.from(track.querySelectorAll('.pp-case-item'));
+  const prevBtn = document.getElementById('pp-cases-prev');
+  const nextBtn = document.getElementById('pp-cases-next');
+  const counter = document.getElementById('pp-cases-current');
+  if (!items.length) return;
+  let idx = 0;
+
+  function pad2(n) { return String(n).padStart(2, '0'); }
+
+  function show(i) {
+    idx = Math.max(0, Math.min(items.length - 1, i));
+    items.forEach((it, j) => it.classList.toggle('is-active', j === idx));
+    if (counter) counter.textContent = pad2(idx + 1);
+    if (prevBtn) prevBtn.disabled = idx === 0;
+    if (nextBtn) nextBtn.disabled = idx === items.length - 1;
+  }
+
+  prevBtn?.addEventListener('click', e => { e.stopPropagation(); show(idx - 1); });
+  nextBtn?.addEventListener('click', e => { e.stopPropagation(); show(idx + 1); });
+
+  // Teclado: ← → navegam APENAS quando modal pp está aberta E o slide de
+  // cases está visível na viewport (>50% dentro). Senão deixa o scroll
+  // vertical normal do modal funcionar.
+  const ppModal = document.getElementById('pp-modal');
+  document.addEventListener('keydown', e => {
+    if (!ppModal || !ppModal.classList.contains('is-open')) return;
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    const slide = track.closest('.xpto-slide');
+    if (!slide) return;
+    const r = slide.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const inView = r.top < vh * 0.5 && r.bottom > vh * 0.5;
+    if (!inView) return;
+    e.preventDefault();
+    if (e.key === 'ArrowRight') show(idx + 1);
+    else                         show(idx - 1);
+  });
+
+  show(0);
 })();
 
 // ─────────────────────────────────────────────────
