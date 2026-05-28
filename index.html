@@ -10123,6 +10123,16 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <span class="prop-client-hint">Aparece no slide de fechamento da proposta com o telefone</span>
       </div>
+      <div class="prop-section">
+        <p class="prop-section-label">Validade da proposta</p>
+        <input
+          class="prop-client-input"
+          id="prop-validity"
+          type="date"
+          aria-label="Validade da proposta"
+        >
+        <span class="prop-client-hint">Aparece em destaque no slide final “Vamos com Turbo!!”</span>
+      </div>
       <div class="prop-actions">
         <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
         <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
@@ -17194,6 +17204,22 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   const $refresh     = document.getElementById('prop-refresh');
   const $clientInput = document.getElementById('prop-client-name');
   const $closer      = document.getElementById('prop-closer');
+  const $validity    = document.getElementById('prop-validity');
+
+  // Validade da proposta — só em memória (sem persistência entre sessões).
+  // Default: hoje + 30 dias. Formato interno: ISO YYYY-MM-DD.
+  function defaultValidityISO() {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    return d.toISOString().slice(0, 10);
+  }
+  let validityISO = defaultValidityISO();
+  function formatValidityBR(iso) {
+    if (!iso) return '';
+    const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return '';
+    return `${m[3]}/${m[2]}/${m[1]}`;
+  }
 
   // Preços default por solução/tier — defaults vêm dos cards atuais.
   // Quando o vendedor edita um campo, o valor sobrescreve aqui em memória
@@ -17345,6 +17371,16 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
       previewDirty = true;
       renderPreview();
+    });
+  }
+
+  // Validade — input de data, dispara rebuild do preview pra refletir a
+  // badge no slide de fechamento. Estado vive só na sessão.
+  if ($validity) {
+    $validity.value = validityISO;
+    $validity.addEventListener('input', () => {
+      validityISO = $validity.value || '';
+      schedulePreviewRebuild();
     });
   }
 
@@ -18027,8 +18063,23 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // 4. Slide de fechamento (sempre o último, independente das soluções
     // selecionadas). Contatos do closer selecionado + endereço da Turbo + branding.
     const closer = CLOSERS[closerId] || CLOSERS[DEFAULT_CLOSER_ID];
+    const validityFmt = formatValidityBR(validityISO);
+    const validityHtml = validityFmt ? `
+        <div class="closing-validity">
+          <svg class="closing-validity-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="4" width="18" height="18" rx="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <div class="closing-validity-text">
+            <span class="closing-validity-label">Proposta válida até</span>
+            <span class="closing-validity-date">${validityFmt}</span>
+          </div>
+        </div>` : '';
     sections.push(`<section class="proposal-section proposal-section--closing">
       <div class="closing-slide">
+        ${validityHtml}
         <img src="logo.png" alt="" class="closing-bg-mark" aria-hidden="true">
         <div class="closing-content">
           <h1 class="closing-title">Vamos com<br><span class="closing-accent">Turbo!!</span></h1>
@@ -18781,6 +18832,62 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         height: auto;
         display: block;
         filter: brightness(1.1) drop-shadow(0 0 14px rgba(77,141,255,0.35));
+      }
+      /* Badge de validade — canto superior direito, pill com calendar icon */
+      .proposal-section--closing .closing-validity {
+        position: absolute;
+        top: clamp(24px, 3.5vw, 40px);
+        right: clamp(24px, 3.5vw, 40px);
+        z-index: 3;
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        padding: 11px 18px 12px 14px;
+        border-radius: 99px;
+        background: linear-gradient(135deg, rgba(155,109,255,0.22), rgba(77,141,255,0.16));
+        border: 1px solid rgba(155,109,255,0.45);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.08),
+          0 8px 28px rgba(13,80,200,0.28);
+      }
+      .proposal-section--closing .closing-validity-icon {
+        width: 18px; height: 18px;
+        color: #d6c5ff;
+        flex-shrink: 0;
+        filter: drop-shadow(0 0 6px rgba(155,109,255,0.4));
+      }
+      .proposal-section--closing .closing-validity-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+        text-align: left;
+        line-height: 1;
+      }
+      .proposal-section--closing .closing-validity-label {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: rgba(214,197,255,0.88);
+      }
+      .proposal-section--closing .closing-validity-date {
+        font-size: 14px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 0.3px;
+        margin-top: 3px;
+      }
+      @media (max-width: 700px) {
+        .proposal-section--closing .closing-validity {
+          padding: 9px 14px 10px 12px;
+          gap: 10px;
+          top: 18px;
+          right: 18px;
+        }
+        .proposal-section--closing .closing-validity-icon { width: 16px; height: 16px; }
+        .proposal-section--closing .closing-validity-date { font-size: 12.5px; }
       }
       @media (max-width: 700px) {
         .proposal-section--closing .closing-slide {
