@@ -3128,6 +3128,74 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-family: inherit;
   outline: none;
 }
+/* Botão "+" pra abrir/fechar a linha de ancoragem (preço riscado) */
+.prop-invest-anchor-toggle {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  padding: 0 8px;
+  color: rgba(255,255,255,0.42);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-weight: 700;
+  transition: color 0.15s, background 0.15s;
+  min-width: 24px;
+  line-height: 1;
+}
+.prop-invest-anchor-toggle:hover {
+  color: #c4a8ff;
+  background: rgba(155,109,255,0.10);
+}
+.prop-invest-anchor-toggle.is-active {
+  color: #c4a8ff;
+  background: rgba(155,109,255,0.16);
+  border-left-color: rgba(155,109,255,0.32);
+}
+/* Linha extra que aparece embaixo do tier quando ancoragem ativa.
+   Alinhada com o input principal (offset visual do label do tier). */
+.prop-invest-anchor-row {
+  display: grid;
+  grid-template-columns: 76px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin: -2px 0 2px 0;
+  animation: prop-anchor-in 0.22s ease;
+}
+@keyframes prop-anchor-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.prop-invest-anchor-hint {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: rgba(196,168,255,0.55);
+  text-align: right;
+  padding-right: 4px;
+}
+.prop-invest-input-wrap--anchor {
+  border-style: dashed !important;
+  border-color: rgba(196,168,255,0.30) !important;
+  background: rgba(155,109,255,0.04) !important;
+}
+.prop-invest-input-wrap--anchor .prop-invest-currency {
+  color: rgba(196,168,255,0.55);
+  background: rgba(155,109,255,0.06);
+  border-right-color: rgba(196,168,255,0.18);
+  text-decoration: line-through;
+}
+.prop-invest-input--anchor {
+  color: rgba(196,168,255,0.80) !important;
+  text-decoration: line-through;
+  text-decoration-color: rgba(196,168,255,0.55);
+}
+.prop-invest-anchor-row-spacer { /* invisible spacer to align checkbox column */ }
 .prop-invest-reset {
   align-self: flex-end;
   background: none;
@@ -17319,6 +17387,35 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return enabledExtras[sol]?.has(extra) ?? false;
   }
 
+  // Ancoragem — preço de referência (riscado) que aparece acima do preço
+  // real em cada pacote. Estado vive só na sessão. Shape:
+  //   { performance: { starter: 'R$ 4.997,00' }, ... }
+  // Tier sem entrada = sem ancoragem.
+  const anchors = {};
+  function getAnchor(sol, tier) {
+    return anchors[sol]?.[tier] || '';
+  }
+  function setAnchor(sol, tier, raw) {
+    const clean = String(raw || '').trim();
+    if (!anchors[sol]) anchors[sol] = {};
+    if (clean) anchors[sol][tier] = buildPriceValue(stripCurrency(clean));
+    else       delete anchors[sol][tier];
+  }
+  function hasAnchor(sol, tier) {
+    return !!(anchors[sol] && anchors[sol][tier]);
+  }
+  function toggleAnchor(sol, tier) {
+    if (hasAnchor(sol, tier)) {
+      delete anchors[sol][tier];
+    } else {
+      // Default: usa o preço atual da tier como valor inicial da ancoragem
+      const cur = prices[sol]?.[tier]?.value || '';
+      const amount = stripCurrency(cur);
+      if (!anchors[sol]) anchors[sol] = {};
+      anchors[sol][tier] = buildPriceValue(amount);
+    }
+  }
+
   function isPriceDefault(sol, tier) {
     return prices[sol]?.[tier]?.value === DEFAULT_PRICES[sol]?.[tier]?.value;
   }
@@ -17460,6 +17557,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="prop-invest-tiers">
           ${Object.entries(prices[s.id]).map(([tier, td]) => {
             const enabled = isTierEnabled(s.id, tier);
+            const anchored = hasAnchor(s.id, tier);
             return `
             <div class="prop-invest-field${enabled ? '' : ' is-disabled'}">
               <span class="prop-invest-tier">${td.label}</span>
@@ -17472,6 +17570,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                   spellcheck="false" autocomplete="off"
                   inputmode="decimal"
                   ${enabled ? '' : 'disabled'}>
+                <button type="button"
+                  class="prop-invest-anchor-toggle${anchored ? ' is-active' : ''}"
+                  data-sol="${s.id}" data-tier="${tier}"
+                  aria-label="${anchored ? 'Remover' : 'Adicionar'} preço de ancoragem"
+                  title="${anchored ? 'Remover preço de ancoragem' : 'Adicionar preço de ancoragem (riscado)'}">${anchored ? '−' : '+'}</button>
               </div>
               <input type="checkbox" class="prop-invest-check"
                 data-sol="${s.id}" data-tier="${tier}"
@@ -17479,6 +17582,21 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                 aria-label="Incluir pacote ${td.label} na proposta"
                 title="Incluir pacote ${td.label} na proposta">
             </div>
+            ${anchored ? `
+            <div class="prop-invest-anchor-row" data-sol="${s.id}" data-tier="${tier}">
+              <span class="prop-invest-anchor-hint">de</span>
+              <div class="prop-invest-input-wrap prop-invest-input-wrap--anchor">
+                <span class="prop-invest-currency">R$</span>
+                <input type="text"
+                  class="prop-invest-input prop-invest-input--anchor"
+                  data-sol="${s.id}" data-tier="${tier}"
+                  value="${escapeAttr(stripCurrency(getAnchor(s.id, tier)))}"
+                  spellcheck="false" autocomplete="off"
+                  inputmode="decimal"
+                  aria-label="Preço de ancoragem ${td.label}">
+              </div>
+              <span class="prop-invest-anchor-row-spacer"></span>
+            </div>` : ''}
           `;
           }).join('')}
         </div>
@@ -17488,13 +17606,34 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }).join('');
 
     $invest.querySelectorAll('.prop-invest-input').forEach(input => {
+      const isAnchor = input.classList.contains('prop-invest-input--anchor');
       input.addEventListener('input', () => {
         const sol  = input.dataset.sol;
         const tier = input.dataset.tier;
-        // O input só contém o número; sempre reconstroi como "R$ <amount>".
-        prices[sol][tier].value = buildPriceValue(input.value);
-        savePriceOverrides();
-        input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
+        if (isAnchor) {
+          // Input de ancoragem — só rebuilda preview, sem mexer no preço real.
+          setAnchor(sol, tier, input.value);
+          schedulePreviewRebuild();
+        } else {
+          // O input só contém o número; sempre reconstroi como "R$ <amount>".
+          prices[sol][tier].value = buildPriceValue(input.value);
+          savePriceOverrides();
+          input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
+          schedulePreviewRebuild();
+        }
+      });
+    });
+
+    // Toggle de ancoragem — abre/fecha a linha do preço riscado.
+    // Re-renderiza o card inteiro (mais simples que injetar DOM manual).
+    $invest.querySelectorAll('.prop-invest-anchor-toggle').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        const sol  = btn.dataset.sol;
+        const tier = btn.dataset.tier;
+        toggleAnchor(sol, tier);
+        renderInvestimento();
         schedulePreviewRebuild();
       });
     });
@@ -17540,6 +17679,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const m = v.match(/^(.+?)(\/[^/]+)\s*$/);
     if (!m) return escapeHtml(v);
     return escapeHtml(m[1].trimEnd()) + '<small>' + escapeHtml(m[2]) + '</small>';
+  }
+
+  // Renderiza o bloco de preço dum pacote, incluindo o preço de ancoragem
+  // (riscado) acima quando habilitado pra aquele tier. Suffix opcional
+  // (ex: '<small>/mês</small>' pra Comunidade).
+  function priceWithAnchor(sol, tier, suffix) {
+    const sfx = suffix || '';
+    const realHtml = formatPriceHtml(prices[sol][tier].value) + sfx;
+    const anchor = getAnchor(sol, tier);
+    if (!anchor) return `<div class="pacote-price">${realHtml}</div>`;
+    return `<div class="pacote-price-anchor">${formatPriceHtml(anchor)}${sfx}</div>
+          <div class="pacote-price">${realHtml}</div>`;
   }
 
   function setDownloadDisabled(v) {
@@ -17852,7 +18003,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.performance.starter.value)}</div>
+          ${priceWithAnchor('performance', 'starter')}
           <span class="pacote-tag">Investimento até R$ 5.000,00</span>
           <ul class="pacote-features">
             <li>Planejamento, gestão e estratégia dos anúncios online</li>
@@ -17868,7 +18019,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <span class="pacote-badge">mais vendido</span>
           ${pacoteIcon}
           <h3 class="pacote-name">SCALE</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.performance.scale.value)}</div>
+          ${priceWithAnchor('performance', 'scale')}
           <span class="pacote-tag">Investimento até R$ 20.000,00</span>
           <ul class="pacote-features">
             <li>Planejamento, gestão e estratégia dos anúncios online</li>
@@ -17883,7 +18034,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.performance.enterprise.value)}</div>
+          ${priceWithAnchor('performance', 'enterprise')}
           <span class="pacote-tag">Investimento acima de R$ 20.000,00</span>
           <span class="pacote-tag pacote-tag--alt">+ R$ 500 a cada R$ 10.000 de investimento</span>
           <ul class="pacote-features">
@@ -17903,7 +18054,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.creators.starter.value)}</div>
+          ${priceWithAnchor('creators', 'starter')}
           <span class="pacote-tag">18 Criativos UGC <small>(em vídeo)</small></span>
           <ul class="pacote-features">
             <li>3 Criadores de conteúdo</li>
@@ -17916,7 +18067,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card pacote-card--featured">
           ${pacoteIcon}
           <h3 class="pacote-name">SCALE</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.creators.scale.value)}</div>
+          ${priceWithAnchor('creators', 'scale')}
           <span class="pacote-tag">24 Criativos UGC <small>(em vídeo)</small></span>
           <ul class="pacote-features">
             <li>4 Criadores de conteúdo</li>
@@ -17929,7 +18080,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.creators.enterprise.value)}</div>
+          ${priceWithAnchor('creators', 'enterprise')}
           <span class="pacote-tag">48 Criativos UGC <small>(em vídeo)</small></span>
           <ul class="pacote-features">
             <li>8 Criadores de conteúdo</li>
@@ -17946,7 +18097,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.social.starter.value)}</div>
+          ${priceWithAnchor('social', 'starter')}
           <span class="pacote-tag">12 conteúdos mensais</span>
           <ul class="pacote-features">
             <li>Planejamento mensal com pilares de comunicação definidos</li>
@@ -17960,7 +18111,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card pacote-card--featured">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.social.scale.value)}</div>
+          ${priceWithAnchor('social', 'scale')}
           <span class="pacote-tag">8 fixos + 4 dinâmicos <small>(1/semana)</small></span>
           <ul class="pacote-features">
             <li>Planejamento estratégico mensal com meta de crescimento</li>
@@ -17980,7 +18131,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pacote-card pacote-card--featured">
           ${pacoteIcon}
           <h3 class="pacote-name">GESTÃO DE COMUNIDADE</h3>
-          <div class="pacote-price">${formatPriceHtml(prices.comunidade.unico.value)}<small>/mês</small></div>
+          ${priceWithAnchor('comunidade', 'unico', '<small>/mês</small>')}
           <span class="pacote-tag">Período mínimo: 3 meses · em até 12x no cartão</span>
           <ul class="pacote-features">
             <li>Setup completo da infraestrutura</li>
@@ -18535,6 +18686,30 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         text-align: center;
         color: #ffffff;
         margin: -4px 0 4px;
+      }
+      /* Preço de ancoragem — riscado, acima do preço real. */
+      .proposal-section--pacotes-perf .pacote-price-anchor,
+      .proposal-section--pacotes-creators .pacote-price-anchor,
+      .proposal-section--pacotes-social .pacote-price-anchor,
+      .proposal-section--pacotes-comunidade .pacote-price-anchor {
+        font-size: clamp(15px, 1.6vw, 19px);
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        text-align: center;
+        color: rgba(255,255,255,0.42);
+        text-decoration: line-through;
+        text-decoration-color: rgba(255,107,142,0.55);
+        text-decoration-thickness: 2px;
+        margin: 6px 0 -4px;
+      }
+      .proposal-section--pacotes-perf .pacote-price-anchor small,
+      .proposal-section--pacotes-creators .pacote-price-anchor small,
+      .proposal-section--pacotes-social .pacote-price-anchor small,
+      .proposal-section--pacotes-comunidade .pacote-price-anchor small {
+        font-size: 0.55em;
+        font-weight: 500;
+        letter-spacing: 0;
+        margin-left: 2px;
       }
       .proposal-section--pacotes-perf .pacote-price small,
       .proposal-section--pacotes-creators .pacote-price small,
