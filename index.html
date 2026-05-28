@@ -12906,7 +12906,7 @@ function refreshChecklist(nodeId) {
 // ─────────────────────────────────────────────────
 //  PANEL HELPERS
 // ─────────────────────────────────────────────────
-function buildLinksHTML(links, color) {
+function buildLinksHTML(links, color, toolsLabel) {
   if (!links || links.length === 0) return '';
 
   const toolLinks     = links.filter(l => l.type === 'tool');
@@ -13014,9 +13014,9 @@ function buildLinksHTML(links, color) {
       </div>`;
     });
 
-    const toolsLabel = node.toolsLabel || 'ferramenta parceira';
+    const lbl = toolsLabel || 'ferramenta parceira';
     html += `<div class="tools-block">
-      <p class="block-label">⚙ ${toolsLabel}</p>
+      <p class="block-label">⚙ ${lbl}</p>
       ${rows}
     </div>`;
   }
@@ -13086,7 +13086,7 @@ function openPanel(nodeId) {
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
-    ${buildLinksHTML(node.links, color)}
+    ${buildLinksHTML(node.links, color, node.toolsLabel)}
     ${buildChecklistHTML(node)}
   `;
 
