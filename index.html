@@ -17235,10 +17235,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
 (function () {
   const SOLUTIONS = [
-    { id: 'performance', icon: '📈', name: 'Performance',         color: '#0dcfe8', sourceId: 'pp-inner' },
-    { id: 'creators',    icon: '🎬', name: 'Creators UGC',        color: '#ffa826', sourceId: 'cp-inner' },
-    { id: 'social',      icon: '📱', name: 'Social Media',        color: '#12d490', sourceId: 'sm-inner' },
-    { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' }
+    { id: 'performance', icon: '📈', name: 'Performance',          color: '#0dcfe8', sourceId: 'pp-inner' },
+    { id: 'creators',    icon: '🎬', name: 'Creators UGC',         color: '#ffa826', sourceId: 'cp-inner' },
+    { id: 'social',      icon: '📱', name: 'Social Media',         color: '#12d490', sourceId: 'sm-inner' },
+    { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
+    { id: 'dnvb',        icon: '🛒', name: 'E-commerce DNVB',      color: '#ec4899', sourceId: null }
   ];
 
   // Closers — aparecem no slide de fechamento (nome + telefone).
@@ -17310,6 +17311,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     },
     comunidade: {
       unico: { label: 'Único', value: 'R$ 10.000,00' }
+    },
+    dnvb: {
+      unico: { label: 'Único', value: 'R$ 19.497,00' }
     }
   };
 
@@ -17360,7 +17364,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     performance: ['starter', 'scale', 'enterprise'],
     creators:    ['starter', 'scale', 'enterprise'],
     social:      ['starter', 'scale'],
-    comunidade:  ['unico']
+    comunidade:  ['unico'],
+    dnvb:        ['unico']
   };
   const enabledTiers = {};
   for (const sol in DEFAULT_ENABLED_TIERS) {
@@ -17991,6 +17996,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const hasCreators   = selected.has('creators');
     const hasSocial     = selected.has('social');
     const hasComunidade = selected.has('comunidade');
+    const hasDnvb       = selected.has('dnvb');
 
     // Ícone padrão (estrela) reutilizado em todos os pacotes
     const pacoteIcon = `<div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>`;
@@ -18142,7 +18148,34 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length;
+    // Pacotes E-commerce DNVB — tier único de R$ 19.497 (pagamento único)
+    const dnvbCards = [];
+    if (hasDnvb) {
+      if (isTierEnabled('dnvb', 'unico')) dnvbCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">E-COMMERCE DNVB</h3>
+          ${priceWithAnchor('dnvb', 'unico')}
+          <span class="pacote-tag">50 dias úteis · 3x de R$ 6.499,00 no boleto</span>
+          <span class="pacote-tag pacote-tag--alt">Total: R$ 19.497,00</span>
+          <ul class="pacote-features">
+            <li>Página Home</li>
+            <li>PDP com até 7 seções</li>
+            <li>Página de Todos os Produtos + Filtros</li>
+            <li>Cadastro de 1 produto como playbook para os outros</li>
+            <li>Página Quem Somos</li>
+            <li>Páginas de Políticas</li>
+            <li>Notificações de E-mails padrões <small>(Compra Confirmada, Checkout Abandonado etc.)</small></li>
+            <li>Treinamentos personalizados</li>
+            <li>Treinamento em vídeo <small>(Como operar o e-commerce)</small></li>
+            <li>Instalação do ERP, Gateway e Logística + Treinamento</li>
+            <li>Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp</li>
+            <li><strong>Funcionalidades destaque:</strong> Carrinho Lateral + Frete · Barra de Frete Grátis · Orderbump · Reviews de Clientes · Popup Personalizado · Seção de UGC's · Bundle Progressivo · Menu Mobile Custom</li>
+          </ul>
+        </div>`);
+    }
+
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || dnvbCards.length;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -18206,6 +18239,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <h2 class="pacotes-title">Pacotes Gestão de <span class="pacotes-title-accent">Comunidade</span></h2>
             </div>
             <div class="pacotes-grid">${comunidadeCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3f. Pacotes E-commerce DNVB — tier único, pagamento único
+      if (dnvbCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-dnvb">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Pacote <span class="pacotes-title-accent">E-commerce DNVB</span></h2>
+              <p class="pacotes-sub">Utilizaremos a biblioteca de seções da Turbo. Fora disso, passa a ser um e-commerce personalizado.</p>
+            </div>
+            <div class="pacotes-grid">${dnvbCards.join('')}</div>
           </div>
         </section>`);
       }
@@ -18539,12 +18585,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf,
       .proposal-section--pacotes-creators,
       .proposal-section--pacotes-social ,
-      .proposal-section--pacotes-comunidade { background: #050810; }
+      .proposal-section--pacotes-comunidade ,
+      .proposal-section--pacotes-dnvb { background: #050810; }
       .proposal-section--pacotes-perf .pacotes-slide,
       .proposal-section--pacotes-creators .pacotes-slide,
       .proposal-section--pacotes-social .pacotes-slide,
       .proposal-section--pacotes-social .pacotes-slide ,
-      .proposal-section--pacotes-comunidade .pacotes-slide {
+      .proposal-section--pacotes-comunidade .pacotes-slide ,
+      .proposal-section--pacotes-dnvb .pacotes-slide {
         position: relative;
         min-height: 720px;
         padding: clamp(56px, 6vw, 80px) clamp(40px, 5vw, 72px);
@@ -18557,13 +18605,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-header,
       .proposal-section--pacotes-creators .pacotes-header,
       .proposal-section--pacotes-social .pacotes-header ,
-      .proposal-section--pacotes-comunidade .pacotes-header {
+      .proposal-section--pacotes-comunidade .pacotes-header ,
+      .proposal-section--pacotes-dnvb .pacotes-header {
         text-align: center;
       }
       .proposal-section--pacotes-perf .pacotes-title,
       .proposal-section--pacotes-creators .pacotes-title,
       .proposal-section--pacotes-social .pacotes-title ,
-      .proposal-section--pacotes-comunidade .pacotes-title {
+      .proposal-section--pacotes-comunidade .pacotes-title ,
+      .proposal-section--pacotes-dnvb .pacotes-title {
         font-size: clamp(34px, 4.6vw, 56px);
         font-weight: 900;
         letter-spacing: -1.6px;
@@ -18574,7 +18624,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-title-accent,
       .proposal-section--pacotes-creators .pacotes-title-accent,
       .proposal-section--pacotes-social .pacotes-title-accent ,
-      .proposal-section--pacotes-comunidade .pacotes-title-accent {
+      .proposal-section--pacotes-comunidade .pacotes-title-accent ,
+      .proposal-section--pacotes-dnvb .pacotes-title-accent {
         background: linear-gradient(120deg, #0dcfe8 0%, #4d8dff 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -18584,7 +18635,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-sub,
       .proposal-section--pacotes-creators .pacotes-sub,
       .proposal-section--pacotes-social .pacotes-sub ,
-      .proposal-section--pacotes-comunidade .pacotes-sub {
+      .proposal-section--pacotes-comunidade .pacotes-sub ,
+      .proposal-section--pacotes-dnvb .pacotes-sub {
         font-size: 14px;
         font-weight: 600;
         color: rgba(255,255,255,0.55);
@@ -18598,7 +18650,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-grid,
       .proposal-section--pacotes-creators .pacotes-grid,
       .proposal-section--pacotes-social .pacotes-grid ,
-      .proposal-section--pacotes-comunidade .pacotes-grid {
+      .proposal-section--pacotes-comunidade .pacotes-grid ,
+      .proposal-section--pacotes-dnvb .pacotes-grid {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
@@ -18608,7 +18661,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-card,
       .proposal-section--pacotes-creators .pacote-card,
       .proposal-section--pacotes-social .pacote-card ,
-      .proposal-section--pacotes-comunidade .pacote-card {
+      .proposal-section--pacotes-comunidade .pacote-card ,
+      .proposal-section--pacotes-dnvb .pacote-card {
         position: relative;
         background: rgba(255,255,255,0.025);
         border: 1px solid rgba(255,255,255,0.10);
@@ -18625,14 +18679,16 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-card:hover,
       .proposal-section--pacotes-creators .pacote-card:hover,
       .proposal-section--pacotes-social .pacote-card:hover ,
-      .proposal-section--pacotes-comunidade .pacote-card:hover {
+      .proposal-section--pacotes-comunidade .pacote-card:hover ,
+      .proposal-section--pacotes-dnvb .pacote-card:hover {
         border-color: rgba(155,109,255,0.30);
         transform: translateY(-3px);
       }
       .proposal-section--pacotes-perf .pacote-card--featured,
       .proposal-section--pacotes-creators .pacote-card--featured,
       .proposal-section--pacotes-social .pacote-card--featured ,
-      .proposal-section--pacotes-comunidade .pacote-card--featured {
+      .proposal-section--pacotes-comunidade .pacote-card--featured ,
+      .proposal-section--pacotes-dnvb .pacote-card--featured {
         background:
           linear-gradient(165deg, rgba(13,207,232,0.18) 0%, rgba(77,141,255,0.20) 45%, rgba(155,109,255,0.22) 100%),
           #0a1430;
@@ -18645,7 +18701,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-icon,
       .proposal-section--pacotes-creators .pacote-icon,
       .proposal-section--pacotes-social .pacote-icon ,
-      .proposal-section--pacotes-comunidade .pacote-icon {
+      .proposal-section--pacotes-comunidade .pacote-icon ,
+      .proposal-section--pacotes-dnvb .pacote-icon {
         align-self: center;
         width: 38px; height: 38px;
         display: flex; align-items: center; justify-content: center;
@@ -18655,20 +18712,23 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-card--featured .pacote-icon,
       .proposal-section--pacotes-creators .pacote-card--featured .pacote-icon,
       .proposal-section--pacotes-social .pacote-card--featured .pacote-icon ,
-      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-icon {
+      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-icon ,
+      .proposal-section--pacotes-dnvb .pacote-card--featured .pacote-icon {
         color: #ffffff;
         filter: drop-shadow(0 0 12px rgba(255,255,255,0.45));
       }
       .proposal-section--pacotes-perf .pacote-icon svg,
       .proposal-section--pacotes-creators .pacote-icon svg,
       .proposal-section--pacotes-social .pacote-icon svg ,
-      .proposal-section--pacotes-comunidade .pacote-icon svg {
+      .proposal-section--pacotes-comunidade .pacote-icon svg ,
+      .proposal-section--pacotes-dnvb .pacote-icon svg {
         width: 100%; height: 100%;
       }
       .proposal-section--pacotes-perf .pacote-name,
       .proposal-section--pacotes-creators .pacote-name,
       .proposal-section--pacotes-social .pacote-name ,
-      .proposal-section--pacotes-comunidade .pacote-name {
+      .proposal-section--pacotes-comunidade .pacote-name ,
+      .proposal-section--pacotes-dnvb .pacote-name {
         font-size: 16px;
         font-weight: 800;
         letter-spacing: 1.6px;
@@ -18679,7 +18739,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-price,
       .proposal-section--pacotes-creators .pacote-price,
       .proposal-section--pacotes-social .pacote-price ,
-      .proposal-section--pacotes-comunidade .pacote-price {
+      .proposal-section--pacotes-comunidade .pacote-price ,
+      .proposal-section--pacotes-dnvb .pacote-price {
         font-size: clamp(24px, 2.4vw, 32px);
         font-weight: 900;
         letter-spacing: -1px;
@@ -18691,7 +18752,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-price-anchor,
       .proposal-section--pacotes-creators .pacote-price-anchor,
       .proposal-section--pacotes-social .pacote-price-anchor,
-      .proposal-section--pacotes-comunidade .pacote-price-anchor {
+      .proposal-section--pacotes-comunidade .pacote-price-anchor ,
+      .proposal-section--pacotes-dnvb .pacote-price-anchor {
         font-size: clamp(15px, 1.6vw, 19px);
         font-weight: 600;
         letter-spacing: -0.2px;
@@ -18705,7 +18767,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-price-anchor small,
       .proposal-section--pacotes-creators .pacote-price-anchor small,
       .proposal-section--pacotes-social .pacote-price-anchor small,
-      .proposal-section--pacotes-comunidade .pacote-price-anchor small {
+      .proposal-section--pacotes-comunidade .pacote-price-anchor small ,
+      .proposal-section--pacotes-dnvb .pacote-price-anchor small {
         font-size: 0.55em;
         font-weight: 500;
         letter-spacing: 0;
@@ -18714,7 +18777,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-price small,
       .proposal-section--pacotes-creators .pacote-price small,
       .proposal-section--pacotes-social .pacote-price small ,
-      .proposal-section--pacotes-comunidade .pacote-price small {
+      .proposal-section--pacotes-comunidade .pacote-price small ,
+      .proposal-section--pacotes-dnvb .pacote-price small {
         font-size: 0.5em;
         font-weight: 600;
         letter-spacing: 0;
@@ -18724,7 +18788,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-tag,
       .proposal-section--pacotes-creators .pacote-tag,
       .proposal-section--pacotes-social .pacote-tag ,
-      .proposal-section--pacotes-comunidade .pacote-tag {
+      .proposal-section--pacotes-comunidade .pacote-tag ,
+      .proposal-section--pacotes-dnvb .pacote-tag {
         display: block;
         text-align: center;
         font-size: 12px;
@@ -18739,7 +18804,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-card--featured .pacote-tag,
       .proposal-section--pacotes-creators .pacote-card--featured .pacote-tag,
       .proposal-section--pacotes-social .pacote-card--featured .pacote-tag ,
-      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-tag {
+      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-tag ,
+      .proposal-section--pacotes-dnvb .pacote-card--featured .pacote-tag {
         border-color: rgba(255,255,255,0.28);
         background: rgba(255,255,255,0.08);
         color: rgba(255,255,255,0.95);
@@ -18747,7 +18813,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-tag small,
       .proposal-section--pacotes-creators .pacote-tag small,
       .proposal-section--pacotes-social .pacote-tag small ,
-      .proposal-section--pacotes-comunidade .pacote-tag small {
+      .proposal-section--pacotes-comunidade .pacote-tag small ,
+      .proposal-section--pacotes-dnvb .pacote-tag small {
         font-size: 10.5px;
         font-weight: 500;
         opacity: 0.75;
@@ -18755,7 +18822,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-tag--alt,
       .proposal-section--pacotes-creators .pacote-tag--alt,
       .proposal-section--pacotes-social .pacote-tag--alt ,
-      .proposal-section--pacotes-comunidade .pacote-tag--alt {
+      .proposal-section--pacotes-comunidade .pacote-tag--alt ,
+      .proposal-section--pacotes-dnvb .pacote-tag--alt {
         margin-top: -8px;
         background: transparent;
         border-color: rgba(255,255,255,0.08);
@@ -18765,7 +18833,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-features,
       .proposal-section--pacotes-creators .pacote-features,
       .proposal-section--pacotes-social .pacote-features ,
-      .proposal-section--pacotes-comunidade .pacote-features {
+      .proposal-section--pacotes-comunidade .pacote-features ,
+      .proposal-section--pacotes-dnvb .pacote-features {
         list-style: none;
         padding: 0;
         margin: 8px 0 0;
@@ -18781,7 +18850,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-features li,
       .proposal-section--pacotes-creators .pacote-features li,
       .proposal-section--pacotes-social .pacote-features li ,
-      .proposal-section--pacotes-comunidade .pacote-features li {
+      .proposal-section--pacotes-comunidade .pacote-features li ,
+      .proposal-section--pacotes-dnvb .pacote-features li {
         position: relative;
         padding-left: 27px;
         font-size: 12.5px;
@@ -18791,7 +18861,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-features li::before,
       .proposal-section--pacotes-creators .pacote-features li::before,
       .proposal-section--pacotes-social .pacote-features li::before ,
-      .proposal-section--pacotes-comunidade .pacote-features li::before {
+      .proposal-section--pacotes-comunidade .pacote-features li::before ,
+      .proposal-section--pacotes-dnvb .pacote-features li::before {
         content: '✓';
         position: absolute;
         left: 0;
@@ -18809,13 +18880,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-card--featured .pacote-features li,
       .proposal-section--pacotes-creators .pacote-card--featured .pacote-features li,
       .proposal-section--pacotes-social .pacote-card--featured .pacote-features li ,
-      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-features li {
+      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-features li ,
+      .proposal-section--pacotes-dnvb .pacote-card--featured .pacote-features li {
         color: rgba(255,255,255,0.92);
       }
       .proposal-section--pacotes-perf .pacote-card--featured .pacote-features li::before,
       .proposal-section--pacotes-creators .pacote-card--featured .pacote-features li::before,
       .proposal-section--pacotes-social .pacote-card--featured .pacote-features li::before ,
-      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-features li::before {
+      .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-features li::before ,
+      .proposal-section--pacotes-dnvb .pacote-card--featured .pacote-features li::before {
         background: rgba(255,255,255,0.20);
         color: #ffffff;
       }
@@ -18827,7 +18900,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-features li small,
       .proposal-section--pacotes-creators .pacote-features li small,
       .proposal-section--pacotes-social .pacote-features li small ,
-      .proposal-section--pacotes-comunidade .pacote-features li small {
+      .proposal-section--pacotes-comunidade .pacote-features li small ,
+      .proposal-section--pacotes-dnvb .pacote-features li small {
         font-size: 0.88em;
         color: rgba(255,255,255,0.55);
         font-weight: 400;
@@ -18835,7 +18909,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacote-badge,
       .proposal-section--pacotes-creators .pacote-badge,
       .proposal-section--pacotes-social .pacote-badge ,
-      .proposal-section--pacotes-comunidade .pacote-badge {
+      .proposal-section--pacotes-comunidade .pacote-badge ,
+      .proposal-section--pacotes-dnvb .pacote-badge {
         position: absolute;
         top: -14px;
         left: 50%;
@@ -18854,7 +18929,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-footer,
       .proposal-section--pacotes-creators .pacotes-footer,
       .proposal-section--pacotes-social .pacotes-footer ,
-      .proposal-section--pacotes-comunidade .pacotes-footer {
+      .proposal-section--pacotes-comunidade .pacotes-footer ,
+      .proposal-section--pacotes-dnvb .pacotes-footer {
         align-self: center;
         display: inline-flex;
         align-items: center;
@@ -18868,7 +18944,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-footer-label,
       .proposal-section--pacotes-creators .pacotes-footer-label,
       .proposal-section--pacotes-social .pacotes-footer-label ,
-      .proposal-section--pacotes-comunidade .pacotes-footer-label {
+      .proposal-section--pacotes-comunidade .pacotes-footer-label ,
+      .proposal-section--pacotes-dnvb .pacotes-footer-label {
         font-size: 13px;
         font-weight: 600;
         color: rgba(255,255,255,0.85);
@@ -18876,7 +18953,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-perf .pacotes-footer-value,
       .proposal-section--pacotes-creators .pacotes-footer-value,
       .proposal-section--pacotes-social .pacotes-footer-value ,
-      .proposal-section--pacotes-comunidade .pacotes-footer-value {
+      .proposal-section--pacotes-comunidade .pacotes-footer-value ,
+      .proposal-section--pacotes-dnvb .pacotes-footer-value {
         font-size: 15px;
         font-weight: 800;
         background: linear-gradient(120deg, #0dcfe8 0%, #4d8dff 100%);
@@ -18890,7 +18968,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .proposal-section--pacotes-perf .pacote-card,
         .proposal-section--pacotes-creators .pacote-card,
         .proposal-section--pacotes-social .pacote-card ,
-        .proposal-section--pacotes-comunidade .pacote-card {
+        .proposal-section--pacotes-comunidade .pacote-card ,
+        .proposal-section--pacotes-dnvb .pacote-card {
           flex: 1 1 100%;
           max-width: none;
         }
@@ -18901,7 +18980,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       /* Pacotes Social tem no máximo 2 cards (Starter + Enterprise) — largura
          máxima centralizada pra evitar cards gigantes em desktop. */
       .proposal-section--pacotes-social .pacotes-grid--two ,
-      .proposal-section--pacotes-comunidade .pacotes-grid--two {
+      .proposal-section--pacotes-comunidade .pacotes-grid--two ,
+      .proposal-section--pacotes-dnvb .pacotes-grid--two {
         max-width: 760px;
         margin: 0 auto;
         width: 100%;
@@ -19389,32 +19469,37 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .proposal-section--pacotes-perf .pacotes-slide,
         .proposal-section--pacotes-creators .pacotes-slide,
         .proposal-section--pacotes-social .pacotes-slide ,
-        .proposal-section--pacotes-comunidade .pacotes-slide {
+        .proposal-section--pacotes-comunidade .pacotes-slide ,
+        .proposal-section--pacotes-dnvb .pacotes-slide {
           padding: 40px 18px !important;
           gap: 22px;
         }
         .proposal-section--pacotes-perf .pacotes-title,
         .proposal-section--pacotes-creators .pacotes-title,
         .proposal-section--pacotes-social .pacotes-title ,
-        .proposal-section--pacotes-comunidade .pacotes-title {
+        .proposal-section--pacotes-comunidade .pacotes-title ,
+        .proposal-section--pacotes-dnvb .pacotes-title {
           font-size: clamp(26px, 7vw, 38px) !important;
         }
         .proposal-section--pacotes-perf .pacote-card,
         .proposal-section--pacotes-creators .pacote-card,
         .proposal-section--pacotes-social .pacote-card ,
-        .proposal-section--pacotes-comunidade .pacote-card {
+        .proposal-section--pacotes-comunidade .pacote-card ,
+        .proposal-section--pacotes-dnvb .pacote-card {
           padding: 22px 18px !important;
         }
         .proposal-section--pacotes-perf .pacote-price,
         .proposal-section--pacotes-creators .pacote-price,
         .proposal-section--pacotes-social .pacote-price ,
-        .proposal-section--pacotes-comunidade .pacote-price {
+        .proposal-section--pacotes-comunidade .pacote-price ,
+        .proposal-section--pacotes-dnvb .pacote-price {
           font-size: 26px !important;
         }
         /* Social bundles no mobile: max-width cheio e gap reduzido.
            O stack vertical vem da regra geral .pacote-card{flex:1 1 100%}. */
         .proposal-section--pacotes-social .pacotes-grid--two ,
-        .proposal-section--pacotes-comunidade .pacotes-grid--two {
+        .proposal-section--pacotes-comunidade .pacotes-grid--two ,
+        .proposal-section--pacotes-dnvb .pacotes-grid--two {
           max-width: 100% !important;
           gap: 16px !important;
         }
