@@ -18148,34 +18148,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
-    // Pacotes E-commerce DNVB — tier único de R$ 19.497 (pagamento único)
-    const dnvbCards = [];
-    if (hasDnvb) {
-      if (isTierEnabled('dnvb', 'unico')) dnvbCards.push(`
-        <div class="pacote-card pacote-card--featured">
-          ${pacoteIcon}
-          <h3 class="pacote-name">E-COMMERCE DNVB</h3>
-          ${priceWithAnchor('dnvb', 'unico')}
-          <span class="pacote-tag">50 dias úteis · 3x de R$ 6.499,00 no boleto</span>
-          <span class="pacote-tag pacote-tag--alt">Total: R$ 19.497,00</span>
-          <ul class="pacote-features">
-            <li>Página Home</li>
-            <li>PDP com até 7 seções</li>
-            <li>Página de Todos os Produtos + Filtros</li>
-            <li>Cadastro de 1 produto como playbook para os outros</li>
-            <li>Página Quem Somos</li>
-            <li>Páginas de Políticas</li>
-            <li>Notificações de E-mails padrões <small>(Compra Confirmada, Checkout Abandonado etc.)</small></li>
-            <li>Treinamentos personalizados</li>
-            <li>Treinamento em vídeo <small>(Como operar o e-commerce)</small></li>
-            <li>Instalação do ERP, Gateway e Logística + Treinamento</li>
-            <li>Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp</li>
-            <li><strong>Funcionalidades destaque:</strong> Carrinho Lateral + Frete · Barra de Frete Grátis · Orderbump · Reviews de Clientes · Popup Personalizado · Seção de UGC's · Bundle Progressivo · Menu Mobile Custom</li>
-          </ul>
-        </div>`);
-    }
+    // E-commerce DNVB — layout split (texto à esquerda, preço à direita).
+    // Não usa estrutura .pacote-card como os outros — é um slide próprio.
+    const dnvbActive = hasDnvb && isTierEnabled('dnvb', 'unico');
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || dnvbCards.length;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || dnvbActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -18243,15 +18220,70 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3f. Pacotes E-commerce DNVB — tier único, pagamento único
-      if (dnvbCards.length) {
+      // 3f. E-commerce DTC / DNVB — layout split (texto + price card)
+      if (dnvbActive) {
+        const anchor = getAnchor('dnvb', 'unico');
+        const anchorHtml = anchor ? `<div class="dnvb-price-anchor">${formatPriceHtml(anchor)}</div>` : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-dnvb">
-          <div class="pacotes-slide">
+          <div class="pacotes-slide dnvb-slide">
             <div class="pacotes-header">
-              <h2 class="pacotes-title">Pacote <span class="pacotes-title-accent">E-commerce DNVB</span></h2>
-              <p class="pacotes-sub">Utilizaremos a biblioteca de seções da Turbo. Fora disso, passa a ser um e-commerce personalizado.</p>
+              <h2 class="pacotes-title">E-commerce <span class="pacotes-title-accent">DTC / DNVB</span></h2>
+              <p class="pacotes-sub">Utilizaremos a biblioteca de seções da Turbo para criar o e-commerce. Fora disso, passa a ser um e-commerce personalizado.</p>
             </div>
-            <div class="pacotes-grid">${dnvbCards.join('')}</div>
+            <div class="dnvb-split">
+              <div class="dnvb-features-col">
+                <div class="dnvb-block">
+                  <h3 class="dnvb-section-title">✓ O que contempla</h3>
+                  <ul class="dnvb-features-list">
+                    <li>Página Home</li>
+                    <li>PDP com até 7 seções</li>
+                    <li>Página de Todos os Produtos + Filtros</li>
+                    <li>Cadastro de 1 produto como playbook para os outros</li>
+                    <li>Página Quem Somos</li>
+                    <li>Páginas de Políticas</li>
+                    <li>Notificações de E-mails padrões <small>(Compra Confirmada, Checkout Abandonado etc.)</small></li>
+                    <li>Treinamentos personalizados</li>
+                    <li>Treinamento em vídeo <small>(Como operar o e-commerce)</small></li>
+                    <li>Instalação do ERP, Gateway e Logística + Treinamento</li>
+                    <li>Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp</li>
+                  </ul>
+                </div>
+                <div class="dnvb-block">
+                  <h3 class="dnvb-section-title">✦ Funcionalidades destaque</h3>
+                  <ul class="dnvb-features-grid">
+                    <li>Carrinho Lateral + Frete</li>
+                    <li>Barra de Frete Grátis</li>
+                    <li>Orderbump</li>
+                    <li>Reviews de Clientes</li>
+                    <li>Popup Personalizado</li>
+                    <li>Seção de UGC's</li>
+                    <li>Bundle Progressivo</li>
+                    <li>Menu Mobile Custom</li>
+                  </ul>
+                </div>
+              </div>
+              <aside class="dnvb-price-col">
+                <div class="dnvb-price-card">
+                  <div class="dnvb-price-label">Investimento</div>
+                  ${anchorHtml}
+                  <div class="dnvb-price-value">${formatPriceHtml(prices.dnvb.unico.value)}</div>
+                  <div class="dnvb-price-installments">ou em <strong>3x de R$ 6.499,00</strong> no boleto</div>
+                  <div class="dnvb-price-divider"></div>
+                  <div class="dnvb-price-prazo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="18" rx="2"/>
+                      <line x1="16" y1="2" x2="16" y2="6"/>
+                      <line x1="8" y1="2" x2="8" y2="6"/>
+                      <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    <div class="dnvb-price-prazo-text">
+                      <span class="dnvb-price-prazo-label">Prazo de execução</span>
+                      <strong class="dnvb-price-prazo-value">50 dias úteis</strong>
+                    </div>
+                  </div>
+                </div>
+              </aside>
+            </div>
           </div>
         </section>`);
       }
@@ -18993,6 +19025,184 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
          O slide é identificado pelo .sm-pricing-final que só existe nele. */
       .proposal-section--social .xpto-slide:has(.sm-pricing-final) {
         display: none !important;
+      }
+
+      /* ── DNVB: layout split (texto à esquerda, price card à direita) ── */
+      .proposal-section--pacotes-dnvb .pacotes-title-accent {
+        background: linear-gradient(120deg, #ec4899 0%, #f59e0b 100%) !important;
+        -webkit-background-clip: text !important;
+        background-clip: text !important;
+        filter: drop-shadow(0 0 18px rgba(236,72,153,0.35)) !important;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-split {
+        display: grid;
+        grid-template-columns: 1.35fr 1fr;
+        gap: clamp(24px, 3vw, 44px);
+        align-items: start;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-col {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-block {
+        background: rgba(255,255,255,0.025);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 22px 24px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-section-title {
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: #ec4899;
+        margin: 0 0 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-list,
+      .proposal-section--pacotes-dnvb .dnvb-features-grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-list {
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-list li {
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: rgba(255,255,255,0.78);
+        padding-left: 18px;
+        position: relative;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-list li::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 8px;
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #ec4899;
+        box-shadow: 0 0 8px rgba(236,72,153,0.55);
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-list li small {
+        color: rgba(255,255,255,0.5);
+        font-size: 0.88em;
+        font-weight: 400;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px 14px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-features-grid li {
+        font-size: 12.5px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.85);
+        padding: 8px 12px;
+        background: rgba(236,72,153,0.08);
+        border: 1px solid rgba(236,72,153,0.22);
+        border-radius: 8px;
+        text-align: center;
+      }
+      /* Price card (coluna direita) */
+      .proposal-section--pacotes-dnvb .dnvb-price-col {
+        position: sticky;
+        top: 24px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-card {
+        background: linear-gradient(160deg, rgba(236,72,153,0.14) 0%, rgba(245,158,11,0.08) 100%), #0f0816;
+        border: 1.5px solid rgba(236,72,153,0.42);
+        border-radius: 18px;
+        padding: 32px 26px;
+        text-align: center;
+        box-shadow:
+          inset 0 1px 0 rgba(255,255,255,0.08),
+          0 20px 50px rgba(236,72,153,0.18);
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-label {
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #ec4899;
+        margin-bottom: 14px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-anchor {
+        font-size: clamp(16px, 1.6vw, 20px);
+        font-weight: 600;
+        color: rgba(255,255,255,0.42);
+        text-decoration: line-through;
+        text-decoration-color: rgba(255,107,142,0.55);
+        text-decoration-thickness: 2px;
+        margin-bottom: 4px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-value {
+        font-size: clamp(38px, 4.8vw, 58px);
+        font-weight: 900;
+        letter-spacing: -2px;
+        line-height: 1;
+        color: #ffffff;
+        margin-bottom: 12px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-installments {
+        font-size: 13.5px;
+        font-weight: 500;
+        color: rgba(255,255,255,0.72);
+        line-height: 1.4;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-installments strong {
+        color: #ffffff;
+        font-weight: 800;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-divider {
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(236,72,153,0.32), transparent);
+        margin: 22px 0 20px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-prazo {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: rgba(236,72,153,0.08);
+        border: 1px solid rgba(236,72,153,0.22);
+        border-radius: 12px;
+        padding: 12px 18px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-prazo svg {
+        width: 22px; height: 22px;
+        color: #ec4899;
+        flex-shrink: 0;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-prazo-text {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        gap: 1px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-prazo-label {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.55);
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-prazo-value {
+        font-size: 15px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: -0.2px;
+      }
+      @media (max-width: 900px) {
+        .proposal-section--pacotes-dnvb .dnvb-split { grid-template-columns: 1fr; }
+        .proposal-section--pacotes-dnvb .dnvb-price-col { position: static; }
+      }
+      @media (max-width: 600px) {
+        .proposal-section--pacotes-dnvb .dnvb-features-grid { grid-template-columns: 1fr; }
       }
 
       /* ── Slide de fechamento ("Vamos com Turbo!!") ──────
