@@ -3130,7 +3130,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 /* Botão "+" pra abrir/fechar a linha de ancoragem (preço riscado) */
 /* Radio picker (exclusivo) usado pelo E-commerce na sidebar — escolhe
-   entre subtipos DNVB / Vestuário / Personalizado. */
+   entre subtipos DNVB / Moda / Personalizado. */
 .prop-invest-subtypes {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -17362,7 +17362,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     },
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.497,00' },
-      vestuario:     { label: 'Vestuário',     value: 'R$ 15.997,00' },
+      moda:          { label: 'Moda',          value: 'R$ 15.997,00' },
       personalizado: { label: 'Personalizado', value: 'R$ 35.000,00' }
     }
   };
@@ -17460,10 +17460,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         { name: 'Ovacare',          url: 'https://www.ovacare.com.br/' }
       ]
     },
-    vestuario: {
-      label: 'Vestuário',
-      titleHtml: 'E-commerce <span class="pacotes-title-accent">Vestuário</span>',
-      subtitle: 'Estrutura Turbo otimizada para vestuário — biblioteca de seções da Turbo. Fora disso, passa a ser um e-commerce personalizado.',
+    moda: {
+      label: 'Moda',
+      titleHtml: 'E-commerce <span class="pacotes-title-accent">Moda</span>',
+      subtitle: 'Estrutura Turbo otimizada para marcas de moda — biblioteca de seções da Turbo. Fora disso, passa a ser um e-commerce personalizado.',
       prazo: '45 dias úteis',
       installmentsHtml: 'ou em <strong>3x de R$ 5.332,34</strong> no boleto',
       features: [
@@ -17525,7 +17525,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         'Instalação de ERP, Gateway de Pagamento e Logística',
         'Automação de recuperação de checkout abandonado'
       ],
-      highlightsNote: 'Inclui todas as funcionalidades dos pacotes DTC/DNVB e Vestuário.',
+      highlightsNote: 'Inclui todas as funcionalidades dos pacotes DTC/DNVB e Moda.',
       highlightsTitle: 'Principais Diferenciais',
       highlights: [
         'Protótipo 100% personalizado',
@@ -17780,7 +17780,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>
       ` : '';
 
-      // E-commerce: radio picker (DNVB / Vestuário / Personalizado) +
+      // E-commerce: radio picker (DNVB / Moda / Personalizado) +
       // SÓ a linha do subtipo selecionado (com input de preço + ancoragem)
       if (s.hasSubtypes) {
         const activeTier = [...(enabledTiers[s.id] || [])][0] || Object.keys(prices[s.id])[0];
@@ -18378,7 +18378,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }
 
     // E-commerce — layout split (texto à esquerda, preço à direita).
-    // Subtipo escolhido via radio na sidebar (DNVB / Vestuário / Personalizado).
+    // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
     const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || ecommerceActive;
@@ -18450,7 +18450,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
 
       // 3f. E-commerce — slide com layout split, renderizado a partir do
-      // subtipo selecionado (DNVB / Vestuário / Personalizado). Todo o
+      // subtipo selecionado (DNVB / Moda / Personalizado). Todo o
       // conteúdo (título, features, highlights, exemplos, preço, prazo,
       // parcelas) vem de ECOMMERCE_SUBTYPES[ecommerceTier].
       if (ecommerceActive) {
