@@ -3167,9 +3167,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: #fff;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 12%, transparent);
 }
-/* Linha de tier em modo exclusivo (sub-pacote escolhido) — sem checkbox */
+/* Linha de tier em modo exclusivo (sub-pacote escolhido) — sem
+   checkbox E sem label do tier (redundante com o picker acima, que
+   já mostra qual está selecionado). Input ocupa toda a largura. */
 .prop-invest-field--exclusive {
-  grid-template-columns: 76px 1fr !important;
+  grid-template-columns: 1fr !important;
+}
+.prop-invest-field--exclusive .prop-invest-tier {
+  display: none;
 }
 
 .prop-invest-anchor-toggle {
@@ -17528,7 +17533,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         'Escopo Aberto e Flexível',
         'Criação de funcionalidades'
       ],
-      examples: []
+      examples: [
+        { name: 'Push & Pow', url: 'https://pushmatcha.com.br/' },
+        { name: 'Pace It',    url: 'https://loja.paceit.com.br/' },
+        { name: 'Guday',      url: 'https://guday.com.br/' }
+      ]
     }
   };
   const enabledTiers = {};
