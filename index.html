@@ -2404,6 +2404,278 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 @media (max-width: 760px) {
   #view-propostas.is-active { height: calc(100vh - 65px); }
 }
+
+/* ── CASES (biblioteca de referências) ───────────── */
+#view-cases { display: none; }
+#view-cases.is-active {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
+}
+@media (max-width: 760px) {
+  #view-cases.is-active { height: calc(100vh - 65px); }
+}
+.cases-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 48px) 80px;
+}
+.cases-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.cases-header-left { flex: 1; min-width: 280px; }
+.cases-title {
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 900;
+  letter-spacing: -1.4px;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cases-title-icon { font-size: 0.85em; line-height: 1; }
+.cases-subtitle {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-soft);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 600px;
+}
+.cases-header-stats {
+  display: flex;
+  gap: 12px;
+}
+.cases-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 12px 18px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  min-width: 90px;
+}
+.cases-stat-value {
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+.cases-stat-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+.cases-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.cases-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+  max-width: 520px;
+}
+.cases-search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.cases-search-input {
+  width: 100%;
+  padding: 11px 14px 12px 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.03);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s;
+}
+.cases-search-input:hover {
+  border-color: rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.045);
+}
+.cases-search-input:focus {
+  border-color: rgba(155,109,255,0.55);
+  background: rgba(255,255,255,0.05);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.15);
+}
+.cases-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-soft);
+  padding: 8px 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.03);
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+}
+.cases-filter-toggle:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+.cases-filter-toggle input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border: 1.5px solid rgba(255,255,255,0.30);
+  border-radius: 4px;
+  background: rgba(0,0,0,0.3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cases-filter-toggle input:checked {
+  background: #9b6dff;
+  border-color: #9b6dff;
+}
+.cases-filter-toggle input:checked::after {
+  content: '';
+  width: 4px; height: 7px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+  margin-top: -1px;
+}
+
+/* Grade de nichos */
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.cases-nicho-card {
+  position: relative;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid var(--nicho-color, #9b6dff);
+  border-radius: 14px;
+  padding: 22px 22px 18px;
+  cursor: pointer;
+  transition: transform 0.18s, border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 180px;
+}
+.cases-nicho-card:hover {
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 8%, rgba(255,255,255,0.025));
+  border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 40%, transparent);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+}
+.cases-nicho-card.has-cases::before {
+  content: '✦';
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 12px;
+  color: var(--nicho-color, #9b6dff);
+  filter: drop-shadow(0 0 4px currentColor);
+}
+.cases-nicho-card-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.cases-nicho-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+.cases-nicho-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+  flex: 1;
+}
+.cases-nicho-count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  color: var(--text-soft);
+}
+.cases-nicho-count strong {
+  color: var(--nicho-color, #9b6dff);
+  font-weight: 800;
+}
+.cases-nicho-subnichos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cases-nicho-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px 6px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-soft);
+  white-space: nowrap;
+}
+.cases-nicho-chip.has-cases {
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 12%, transparent);
+  border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 35%, transparent);
+  color: #fff;
+}
+.cases-nicho-chip-count {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--nicho-color, #9b6dff);
+}
+/* Highlight de busca */
+.cases-search-hit {
+  background: rgba(252,211,77,0.25);
+  color: #fde68a;
+  padding: 0 2px;
+  border-radius: 3px;
+}
+
+.cases-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-soft);
+}
+.cases-empty-icon { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.5; }
+.cases-empty-text { font-size: 14px; margin: 0; }
+
+@media (max-width: 600px) {
+  .cases-grid { grid-template-columns: 1fr; }
+  .cases-header-stats { width: 100%; }
+}
+
 .prop-wrap {
   display: grid;
   grid-template-columns: 320px 1fr;
@@ -9630,6 +9902,10 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="nav-item-icon">📄</span>
       <span class="nav-item-label">Propostas</span>
     </div>
+    <div class="nav-item" data-view="cases">
+      <span class="nav-item-icon">🏆</span>
+      <span class="nav-item-label">Cases</span>
+    </div>
   </div>
 </nav>
 
@@ -10261,6 +10537,60 @@ a.xpto-pricing-btn { text-decoration: none; }
         <button class="prop-btn prop-btn--primary prop-btn--compact" id="prop-download-top" type="button">⬇ Baixar HTML</button>
       </div>
       <iframe class="prop-preview-frame" id="prop-preview-frame" title="Preview da proposta"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: CASES (biblioteca de referências)        -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view" id="view-cases">
+  <div class="cases-wrap">
+    <header class="cases-header">
+      <div class="cases-header-left">
+        <h1 class="cases-title">
+          <span class="cases-title-icon">🏆</span>
+          Cases
+        </h1>
+        <p class="cases-subtitle">Biblioteca de referências organizada por nicho de mercado — use como inspiração e prova social.</p>
+      </div>
+      <div class="cases-header-stats">
+        <div class="cases-stat">
+          <span class="cases-stat-value" id="cases-stat-total">0</span>
+          <span class="cases-stat-label">cases</span>
+        </div>
+        <div class="cases-stat">
+          <span class="cases-stat-value" id="cases-stat-nichos">0</span>
+          <span class="cases-stat-label">nichos ativos</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="cases-toolbar">
+      <div class="cases-search-wrap">
+        <span class="cases-search-icon">🔍</span>
+        <input
+          type="text"
+          class="cases-search-input"
+          id="cases-search"
+          placeholder="Buscar por nicho, subnicho ou nome do cliente…"
+          autocomplete="off"
+          spellcheck="false"
+        >
+      </div>
+      <label class="cases-filter-toggle">
+        <input type="checkbox" id="cases-filter-only-with">
+        <span>Mostrar só nichos com cases</span>
+      </label>
+    </div>
+
+    <div class="cases-grid" id="cases-grid">
+      <!-- Cards de nicho renderizados por JS -->
+    </div>
+
+    <div class="cases-empty" id="cases-empty" hidden>
+      <span class="cases-empty-icon">🔭</span>
+      <p class="cases-empty-text">Nenhum nicho corresponde à busca.</p>
     </div>
   </div>
 </div>
@@ -11758,6 +12088,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     { name: 'prop.personalizada.tipo',   re: /^\/propostas\/personalizada\/(lancamento|performance-mql|reguas)\/?$/, params: ['tipo'] },
     { name: 'prop.personalizada',        re: /^\/propostas\/personalizada\/?$/,             params: [] },
     { name: 'propostas',                 re: /^\/propostas\/?$/,                            params: [] },
+    { name: 'cases',                     re: /^\/cases\/?$/,                                params: [] },
     { name: 'simulador',                 re: /^\/simulador\/(performance|lead-performance)\/?$/, params: ['sim'] },
     { name: 'apresentar',                re: /^\/apresentar\/(performance|creators|social|comunidade)\/?$/, params: ['what'] },
     { name: 'protocolo',                 re: /^\/protocolo\/?$/,                            params: [] },
@@ -11999,6 +12330,11 @@ a.xpto-pricing-btn { text-decoration: none; }
         case 'calc.tab':
           activateJourneyInView('view-calculadora', route.params.jornada || 'ecommerce');
           break;
+        case 'cases': {
+          const navItem = document.querySelector('.nav-item[data-view="cases"]');
+          if (navItem && !navItem.classList.contains('is-active')) navItem.click();
+          break;
+        }
         case 'propostas':
         case 'prop.padrao':
           setPropMode('padrao');
@@ -20847,6 +21183,7 @@ renderProgress();
         'jornada':      `/jornadas/${currentJourney()}`,
         'calculadora':  `/calculadora/${currentJourney()}`,
         'propostas':    '/propostas/padrao',
+        'cases':        '/cases',
       };
       const p = map[view];
       if (p) R.navigate(p);
@@ -20995,6 +21332,189 @@ renderProgress();
   // o que já é suficiente: a IIFE só roda no fim do script, todas as
   // inits (renderFlow, propostas, etc.) já completaram.
   setTimeout(() => R.start(), 0);
+})();
+
+// ─────────────────────────────────────────────────
+//  CASES — biblioteca de referências por nicho
+//  v0: grade de nichos read-only + busca + filtro
+//  (CRUD vem em PR seguinte)
+// ─────────────────────────────────────────────────
+(function () {
+  // Nichos seedados — 11 categorias de mercado com cor + subnichos.
+  // Itens cadastrados pelo usuário ficam em casesState.cases (localStorage).
+  const NICHOS = [
+    { id: 'alimentos', emoji: '🍔', name: 'Alimentos & Bebidas',     color: '#f59e0b',
+      subnichos: ['Snacks', 'Cafés especiais', 'Bebidas funcionais', 'Conveniência', 'Doces & sobremesas'] },
+    { id: 'automotivo', emoji: '🚗', name: 'Automotivo',              color: '#64748b',
+      subnichos: ['Acessórios', 'Peças', 'Serviços'] },
+    { id: 'beleza',    emoji: '💄', name: 'Beleza & Higiene',         color: '#ec4899',
+      subnichos: ['Skincare', 'Haircare', 'Maquiagem', 'Perfumaria', 'Higiene íntima'] },
+    { id: 'casa',      emoji: '🏠', name: 'Casa & Utilidades',        color: '#14b8a6',
+      subnichos: ['Decor', 'Cama, mesa & banho', 'Eletro', 'Limpeza', 'Cozinha'] },
+    { id: 'educacao',  emoji: '📚', name: 'Educação & Treinamento',   color: '#3b82f6',
+      subnichos: ['Cursos online', 'Treinamento corporativo', 'Idiomas', 'Concursos'] },
+    { id: 'infantil',  emoji: '👶', name: 'Infantil',                 color: '#0ea5e9',
+      subnichos: ['Roupas infantis', 'Brinquedos', 'Higiene infantil', 'Educativos'] },
+    { id: 'moda',      emoji: '👗', name: 'Moda & Acessórios',        color: '#f43f5e',
+      subnichos: ['Vestuário casual', 'Esporte & fitness', 'Plus size', 'Calçados', 'Acessórios', 'Streetwear'] },
+    { id: 'pets',      emoji: '🐶', name: 'Pets',                     color: '#fb923c',
+      subnichos: ['Petfood', 'Acessórios pet', 'Saúde & cuidados'] },
+    { id: 'saude',     emoji: '💊', name: 'Saúde & Suplementação',    color: '#10b981',
+      subnichos: ['Suplementos esportivos', 'Emagrecimento', 'Vitaminas', 'Saúde feminina', 'Imunidade'] },
+    { id: 'mental',    emoji: '🧠', name: 'Saúde Mental & Comportamento', color: '#8b5cf6',
+      subnichos: ['Terapia', 'Mindfulness & apps', 'Coaching', 'Hábitos'] },
+    { id: 'fin',       emoji: '💰', name: 'Serviços Financeiros',     color: '#22c55e',
+      subnichos: ['Investimentos', 'Crédito', 'Seguros', 'Educação financeira'] },
+  ];
+
+  // Estado in-memory + sync localStorage
+  // cases = [{ id, nichoId, subnicho, nome, criadoEm, instancias: [{id, nome, url, conteudo, criadoEm}] }]
+  let casesData = [];
+  try {
+    const raw = localStorage.getItem('cases-data');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) casesData = parsed;
+    }
+  } catch (e) {}
+  function saveCases() {
+    try { localStorage.setItem('cases-data', JSON.stringify(casesData)); } catch (e) {}
+  }
+
+  // Filtros UI
+  let searchTerm = '';
+  let onlyWithCases = false;
+
+  // Refs DOM
+  const $grid       = document.getElementById('cases-grid');
+  const $search     = document.getElementById('cases-search');
+  const $onlyToggle = document.getElementById('cases-filter-only-with');
+  const $empty      = document.getElementById('cases-empty');
+  const $statTotal  = document.getElementById('cases-stat-total');
+  const $statNichos = document.getElementById('cases-stat-nichos');
+  if (!$grid) return;
+
+  // Helpers
+  function casesOfNicho(nichoId) {
+    return casesData.filter(c => c.nichoId === nichoId);
+  }
+  function casesOfSubnicho(nichoId, subnicho) {
+    return casesData.filter(c => c.nichoId === nichoId && c.subnicho === subnicho);
+  }
+  function normalize(s) {
+    return String(s || '').toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '');
+  }
+  function matchesSearch(nicho) {
+    if (!searchTerm) return true;
+    const q = normalize(searchTerm);
+    if (normalize(nicho.name).includes(q)) return true;
+    if (nicho.subnichos.some(s => normalize(s).includes(q))) return true;
+    const cases = casesOfNicho(nicho.id);
+    if (cases.some(c => normalize(c.nome).includes(q))) return true;
+    return false;
+  }
+  function highlight(text) {
+    if (!searchTerm) return text;
+    const q = searchTerm.trim();
+    if (!q) return text;
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp('(' + escaped + ')', 'gi');
+    return String(text).replace(re, '<span class="cases-search-hit">$1</span>');
+  }
+
+  // Render principal
+  function render() {
+    const filtered = NICHOS.filter(n => {
+      if (onlyWithCases && casesOfNicho(n.id).length === 0) return false;
+      if (!matchesSearch(n)) return false;
+      return true;
+    });
+
+    // Stats globais
+    $statTotal.textContent = casesData.length;
+    const nichosAtivos = new Set(casesData.map(c => c.nichoId));
+    $statNichos.textContent = nichosAtivos.size;
+
+    if (filtered.length === 0) {
+      $grid.innerHTML = '';
+      $empty.hidden = false;
+      return;
+    }
+    $empty.hidden = true;
+
+    $grid.innerHTML = filtered.map(n => {
+      const cases = casesOfNicho(n.id);
+      const hasCases = cases.length > 0;
+      const subnichoChips = n.subnichos.map(sub => {
+        const subCount = casesOfSubnicho(n.id, sub).length;
+        const cls = 'cases-nicho-chip' + (subCount > 0 ? ' has-cases' : '');
+        const countBadge = subCount > 0 ? `<span class="cases-nicho-chip-count">${subCount}</span>` : '';
+        return `<span class="${cls}">${highlight(sub)}${countBadge}</span>`;
+      }).join('');
+      return `
+        <div class="cases-nicho-card${hasCases ? ' has-cases' : ''}"
+             data-nicho="${n.id}"
+             style="--nicho-color: ${n.color}">
+          <div class="cases-nicho-card-head">
+            <span class="cases-nicho-emoji">${n.emoji}</span>
+            <h3 class="cases-nicho-name">${highlight(n.name)}</h3>
+          </div>
+          <div class="cases-nicho-subnichos">${subnichoChips}</div>
+          <div class="cases-nicho-count">
+            ${hasCases
+              ? `<strong>${cases.length}</strong> case${cases.length > 1 ? 's' : ''} cadastrado${cases.length > 1 ? 's' : ''}`
+              : 'Nenhum case ainda'}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // Click no card de nicho — TODO: abrir drawer/detalhe (PR2).
+  // Por ora só loga pra confirmar wire-up.
+  $grid.addEventListener('click', e => {
+    const card = e.target.closest('.cases-nicho-card[data-nicho]');
+    if (!card) return;
+    const nichoId = card.dataset.nicho;
+    console.log('[cases] clicked nicho:', nichoId, '— drawer chega no PR2');
+  });
+
+  // Search input
+  if ($search) {
+    $search.addEventListener('input', () => {
+      searchTerm = $search.value.trim();
+      render();
+    });
+  }
+
+  // Toggle "só com cases"
+  if ($onlyToggle) {
+    $onlyToggle.addEventListener('change', () => {
+      onlyWithCases = $onlyToggle.checked;
+      render();
+    });
+  }
+
+  // Expõe API mínima pra futuras integrações (PR2+)
+  window.__cases = {
+    NICHOS,
+    getAll: () => casesData.slice(),
+    add: (c) => { casesData.push(c); saveCases(); render(); },
+    update: (id, patch) => {
+      const i = casesData.findIndex(c => c.id === id);
+      if (i >= 0) { casesData[i] = { ...casesData[i], ...patch }; saveCases(); render(); }
+    },
+    remove: (id) => {
+      casesData = casesData.filter(c => c.id !== id);
+      saveCases();
+      render();
+    },
+    refresh: render,
+  };
+
+  // Primeira render
+  render();
 })();
 
 </script>
