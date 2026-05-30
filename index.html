@@ -2671,9 +2671,388 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .cases-empty-icon { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.5; }
 .cases-empty-text { font-size: 14px; margin: 0; }
 
+/* ── DRAWER de detalhe do nicho ──────────────────── */
+.cases-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+.cases-drawer.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.cases-drawer-overlay {
+  position: absolute; inset: 0;
+  background: rgba(7,7,15,0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.cases-drawer-panel {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: min(680px, 100%);
+  background: #0a0a14;
+  border-left: 1px solid rgba(255,255,255,0.08);
+  box-shadow: -24px 0 60px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0.34, 1);
+  overflow: hidden;
+}
+.cases-drawer.is-open .cases-drawer-panel {
+  transform: translateX(0);
+}
+.cases-drawer-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 22px 26px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--nicho-color, #9b6dff);
+  background:
+    color-mix(in srgb, var(--nicho-color, #9b6dff) 6%, transparent),
+    rgba(255,255,255,0.01);
+  flex-shrink: 0;
+}
+.cases-drawer-emoji { font-size: 30px; line-height: 1; }
+.cases-drawer-title-wrap { flex: 1; min-width: 0; }
+.cases-drawer-title {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.4px;
+  color: #fff;
+  margin: 0;
+  line-height: 1.1;
+}
+.cases-drawer-meta {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text-soft);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+.cases-drawer-meta strong {
+  color: var(--nicho-color, #9b6dff);
+  font-weight: 800;
+}
+.cases-drawer-close {
+  appearance: none;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  width: 34px; height: 34px;
+  font-size: 14px;
+  color: var(--text-soft);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cases-drawer-close:hover {
+  background: rgba(255,255,255,0.10);
+  color: #fff;
+}
+.cases-drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 26px 80px;
+}
+
+/* Subnichos */
+.cases-subnicho {
+  margin-bottom: 28px;
+}
+.cases-subnicho:last-child { margin-bottom: 0; }
+.cases-subnicho-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+}
+.cases-subnicho-name {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--nicho-color, #9b6dff);
+  margin: 0;
+}
+.cases-subnicho-count {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-soft);
+  letter-spacing: 0.4px;
+}
+.cases-subnicho-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Card de Case */
+.cases-item {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.18s, background 0.18s;
+}
+.cases-item.is-expanded {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.14);
+}
+.cases-item-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  cursor: pointer;
+  user-select: none;
+}
+.cases-item-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.1px;
+  min-width: 0;
+  word-wrap: break-word;
+}
+.cases-item-name-input {
+  flex: 1;
+  background: rgba(0,0,0,0.40);
+  border: 1px solid rgba(155,109,255,0.45);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+}
+.cases-item-count {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-soft);
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 99px;
+}
+.cases-icon-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  width: 26px; height: 26px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.42);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  flex-shrink: 0;
+}
+.cases-icon-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border-color: rgba(255,255,255,0.10);
+}
+.cases-icon-btn--danger:hover {
+  color: #f87171;
+  border-color: rgba(248,113,113,0.35);
+  background: rgba(248,113,113,0.10);
+}
+.cases-icon-btn--save:hover {
+  color: #34d399;
+  border-color: rgba(52,211,153,0.35);
+  background: rgba(52,211,153,0.10);
+}
+.cases-item-toggle {
+  font-size: 14px;
+  transition: transform 0.18s;
+}
+.cases-item.is-expanded .cases-item-toggle { transform: rotate(90deg); }
+.cases-item-body {
+  display: none;
+  padding: 4px 14px 14px;
+  border-top: 1px dashed rgba(255,255,255,0.06);
+}
+.cases-item.is-expanded .cases-item-body { display: block; }
+
+/* Instância */
+.cases-instancias {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.cases-instancia {
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.cases-instancia-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cases-instancia-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  word-wrap: break-word;
+}
+.cases-instancia-url {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--nicho-color, #c4a8ff);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+.cases-instancia-url:hover { text-decoration: underline; }
+.cases-instancia-content {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.7);
+  margin: 8px 0 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.cases-instancia-content:empty { display: none; }
+
+/* Forminhos inline (criar/editar instância) */
+.cases-form {
+  background: rgba(155,109,255,0.06);
+  border: 1px dashed rgba(155,109,255,0.30);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cases-form input,
+.cases-form textarea {
+  width: 100%;
+  background: rgba(0,0,0,0.40);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.cases-form input:focus,
+.cases-form textarea:focus {
+  border-color: rgba(155,109,255,0.55);
+  background: rgba(0,0,0,0.55);
+}
+.cases-form textarea { resize: vertical; min-height: 60px; }
+.cases-form-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.cases-form-row input { flex: 1; }
+.cases-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+.cases-form-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.cases-form-btn:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+}
+.cases-form-btn--primary {
+  background: rgba(155,109,255,0.18);
+  border-color: rgba(155,109,255,0.50);
+  color: #fff;
+}
+.cases-form-btn--primary:hover {
+  background: rgba(155,109,255,0.28);
+  border-color: rgba(155,109,255,0.70);
+}
+.cases-form-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Botões "Adicionar" */
+.cases-add-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px dashed rgba(255,255,255,0.14);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.cases-add-btn:hover {
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 8%, transparent);
+  border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 45%, transparent);
+  color: #fff;
+}
+.cases-add-btn--inline {
+  padding: 6px 10px;
+  font-size: 11.5px;
+  margin-top: 6px;
+}
+
+/* Subnicho vazio */
+.cases-subnicho-empty {
+  font-size: 12px;
+  color: rgba(255,255,255,0.32);
+  font-style: italic;
+  padding: 8px 2px;
+}
+
 @media (max-width: 600px) {
   .cases-grid { grid-template-columns: 1fr; }
   .cases-header-stats { width: 100%; }
+  .cases-drawer-panel { width: 100%; }
+  .cases-drawer-header { padding: 16px 18px; }
+  .cases-drawer-body { padding: 18px 18px 80px; }
 }
 
 .prop-wrap {
@@ -10593,6 +10972,24 @@ a.xpto-pricing-btn { text-decoration: none; }
       <p class="cases-empty-text">Nenhum nicho corresponde à busca.</p>
     </div>
   </div>
+</div>
+
+<!-- Drawer de detalhe do nicho (PR2) -->
+<div class="cases-drawer" id="cases-drawer" hidden>
+  <div class="cases-drawer-overlay" data-close="1"></div>
+  <aside class="cases-drawer-panel" role="dialog" aria-modal="true" aria-labelledby="cases-drawer-title">
+    <header class="cases-drawer-header" id="cases-drawer-header">
+      <span class="cases-drawer-emoji" id="cases-drawer-emoji">🏆</span>
+      <div class="cases-drawer-title-wrap">
+        <h2 class="cases-drawer-title" id="cases-drawer-title">Nicho</h2>
+        <div class="cases-drawer-meta" id="cases-drawer-meta"><strong>0</strong> cases</div>
+      </div>
+      <button class="cases-drawer-close" id="cases-drawer-close" data-close="1" aria-label="Fechar">✕</button>
+    </header>
+    <div class="cases-drawer-body" id="cases-drawer-body">
+      <!-- Subnichos + cases populados por JS -->
+    </div>
+  </aside>
 </div>
 
 </div><!-- /main-content -->
@@ -21471,13 +21868,476 @@ renderProgress();
     }).join('');
   }
 
-  // Click no card de nicho — TODO: abrir drawer/detalhe (PR2).
-  // Por ora só loga pra confirmar wire-up.
+  // ══════════════════════════════════════════════════════════
+  // DRAWER (PR2) — detalhe do nicho + CRUD case + instâncias
+  // ══════════════════════════════════════════════════════════
+  const $drawer       = document.getElementById('cases-drawer');
+  const $drawerHeader = document.getElementById('cases-drawer-header');
+  const $drawerEmoji  = document.getElementById('cases-drawer-emoji');
+  const $drawerTitle  = document.getElementById('cases-drawer-title');
+  const $drawerMeta   = document.getElementById('cases-drawer-meta');
+  const $drawerBody   = document.getElementById('cases-drawer-body');
+
+  let currentNichoId = null;          // qual nicho está aberto no drawer
+  let expandedCaseIds = new Set();    // cases expandidos (mostra instâncias)
+  let editingCaseId = null;           // case em edição inline (nome)
+  let editingInstanceKey = null;      // 'caseId:instanciaId' em edição
+  let addingCaseInSub = null;         // 'nichoId|subnicho' onde form de novo case está aberto
+  let addingInstanceInCase = null;    // caseId onde form de nova instância está aberto
+
+  function uid(prefix) {
+    return (prefix || 'id') + '-' + Math.random().toString(36).slice(2, 9) + '-' + (casesData.length + 1);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function escapeAttr(s) {
+    return escapeHtml(s);
+  }
+
+  function nichoById(id) {
+    return NICHOS.find(n => n.id === id) || null;
+  }
+
+  function openDrawer(nichoId) {
+    const nicho = nichoById(nichoId);
+    if (!nicho) return;
+    currentNichoId = nichoId;
+    expandedCaseIds = new Set();
+    editingCaseId = null;
+    editingInstanceKey = null;
+    addingCaseInSub = null;
+    addingInstanceInCase = null;
+    $drawerHeader.style.setProperty('--nicho-color', nicho.color);
+    $drawerEmoji.textContent = nicho.emoji;
+    $drawerTitle.textContent = nicho.name;
+    renderDrawer();
+    $drawer.hidden = false;
+    requestAnimationFrame(() => $drawer.classList.add('is-open'));
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDrawer() {
+    $drawer.classList.remove('is-open');
+    setTimeout(() => {
+      $drawer.hidden = true;
+      currentNichoId = null;
+      document.body.style.overflow = '';
+    }, 240);
+  }
+
+  function renderDrawer() {
+    const nicho = nichoById(currentNichoId);
+    if (!nicho) return;
+    const total = casesOfNicho(nicho.id).length;
+    $drawerMeta.innerHTML = `<strong>${total}</strong> case${total === 1 ? '' : 's'} cadastrado${total === 1 ? '' : 's'}`;
+
+    const html = nicho.subnichos.map(sub => renderSubnicho(nicho, sub)).join('');
+    $drawerBody.innerHTML = html;
+    $drawerBody.style.setProperty('--nicho-color', nicho.color);
+  }
+
+  function renderSubnicho(nicho, sub) {
+    const list = casesOfSubnicho(nicho.id, sub);
+    const key = nicho.id + '|' + sub;
+    const isAdding = addingCaseInSub === key;
+
+    const itemsHTML = list.length
+      ? list.map(c => renderCaseItem(c)).join('')
+      : (isAdding ? '' : `<div class="cases-subnicho-empty">Nenhum case nesse subnicho ainda.</div>`);
+
+    const formHTML = isAdding ? `
+      <form class="cases-form" data-form="new-case" data-sub-key="${escapeAttr(key)}" autocomplete="off">
+        <div class="cases-form-row">
+          <input type="text" name="nome" placeholder="Nome do cliente (ex: Sallve, Nubank…)"
+                 maxlength="80" required autofocus>
+        </div>
+        <div class="cases-form-actions">
+          <button type="button" class="cases-form-btn" data-cancel-new-case>Cancelar</button>
+          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar</button>
+        </div>
+      </form>
+    ` : '';
+
+    const addBtnHTML = !isAdding ? `
+      <button type="button" class="cases-add-btn cases-add-btn--inline"
+              data-add-case data-sub-key="${escapeAttr(key)}">
+        + Adicionar case em ${escapeHtml(sub)}
+      </button>
+    ` : '';
+
+    return `
+      <section class="cases-subnicho">
+        <header class="cases-subnicho-header">
+          <h3 class="cases-subnicho-name">${escapeHtml(sub)}</h3>
+          <span class="cases-subnicho-count">${list.length} ${list.length === 1 ? 'case' : 'cases'}</span>
+        </header>
+        <div class="cases-subnicho-items">
+          ${itemsHTML}
+          ${formHTML}
+          ${addBtnHTML}
+        </div>
+      </section>
+    `;
+  }
+
+  function renderCaseItem(c) {
+    const isExpanded = expandedCaseIds.has(c.id);
+    const isEditing = editingCaseId === c.id;
+    const instancias = Array.isArray(c.instancias) ? c.instancias : [];
+    const count = instancias.length;
+
+    const nameHTML = isEditing
+      ? `<input type="text" class="cases-item-name-input"
+                data-edit-case-input data-case-id="${escapeAttr(c.id)}"
+                value="${escapeAttr(c.nome)}" maxlength="80" autofocus>`
+      : `<span class="cases-item-name">${escapeHtml(c.nome)}</span>`;
+
+    const editBtns = isEditing
+      ? `
+        <button type="button" class="cases-icon-btn cases-icon-btn--save"
+                data-save-case data-case-id="${escapeAttr(c.id)}"
+                title="Salvar">✓</button>
+        <button type="button" class="cases-icon-btn"
+                data-cancel-edit-case
+                title="Cancelar">✕</button>
+      `
+      : `
+        <span class="cases-item-count">${count} ${count === 1 ? 'item' : 'itens'}</span>
+        <button type="button" class="cases-icon-btn"
+                data-edit-case data-case-id="${escapeAttr(c.id)}"
+                title="Renomear">✎</button>
+        <button type="button" class="cases-icon-btn cases-icon-btn--danger"
+                data-delete-case data-case-id="${escapeAttr(c.id)}"
+                title="Apagar case">🗑</button>
+        <button type="button" class="cases-icon-btn cases-item-toggle"
+                data-toggle-case data-case-id="${escapeAttr(c.id)}"
+                title="${isExpanded ? 'Recolher' : 'Expandir'}">›</button>
+      `;
+
+    const bodyHTML = isExpanded ? `
+      <div class="cases-item-body">
+        ${renderInstancias(c)}
+      </div>
+    ` : '';
+
+    return `
+      <article class="cases-item${isExpanded ? ' is-expanded' : ''}${isEditing ? ' is-editing' : ''}"
+               data-case-id="${escapeAttr(c.id)}">
+        <header class="cases-item-header"${isEditing ? '' : ' data-toggle-case data-case-id="' + escapeAttr(c.id) + '"'}>
+          ${nameHTML}
+          ${editBtns}
+        </header>
+        ${bodyHTML}
+      </article>
+    `;
+  }
+
+  function renderInstancias(c) {
+    const list = Array.isArray(c.instancias) ? c.instancias : [];
+    const isAdding = addingInstanceInCase === c.id;
+
+    const items = list.map(inst => renderInstancia(c, inst)).join('');
+    const empty = !list.length && !isAdding
+      ? `<div class="cases-subnicho-empty" style="padding-top:6px">Sem instâncias ainda. Adicione a primeira ↓</div>`
+      : '';
+
+    const formHTML = isAdding ? `
+      <form class="cases-form" data-form="new-instancia" data-case-id="${escapeAttr(c.id)}" autocomplete="off">
+        <div class="cases-form-row">
+          <input type="text" name="nome" placeholder="Nome da instância (ex: Site DNVB, IG Orgânico…)"
+                 maxlength="80" required autofocus>
+        </div>
+        <div class="cases-form-row">
+          <input type="url" name="url" placeholder="URL (opcional)">
+        </div>
+        <textarea name="conteudo" placeholder="Conteúdo / contexto / o que foi feito (opcional)"></textarea>
+        <div class="cases-form-actions">
+          <button type="button" class="cases-form-btn" data-cancel-new-instancia>Cancelar</button>
+          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar instância</button>
+        </div>
+      </form>
+    ` : '';
+
+    const addBtn = !isAdding ? `
+      <button type="button" class="cases-add-btn cases-add-btn--inline"
+              data-add-instancia data-case-id="${escapeAttr(c.id)}">
+        + Nova instância
+      </button>
+    ` : '';
+
+    return `
+      <div class="cases-instancias">${items}${empty}</div>
+      ${formHTML}
+      ${addBtn}
+    `;
+  }
+
+  function renderInstancia(c, inst) {
+    const editKey = c.id + ':' + inst.id;
+    const isEditing = editingInstanceKey === editKey;
+
+    if (isEditing) {
+      return `
+        <form class="cases-form" data-form="edit-instancia"
+              data-case-id="${escapeAttr(c.id)}" data-inst-id="${escapeAttr(inst.id)}" autocomplete="off">
+          <div class="cases-form-row">
+            <input type="text" name="nome" value="${escapeAttr(inst.nome)}" maxlength="80" required autofocus>
+          </div>
+          <div class="cases-form-row">
+            <input type="url" name="url" value="${escapeAttr(inst.url || '')}" placeholder="URL (opcional)">
+          </div>
+          <textarea name="conteudo" placeholder="Conteúdo / contexto">${escapeHtml(inst.conteudo || '')}</textarea>
+          <div class="cases-form-actions">
+            <button type="button" class="cases-form-btn" data-cancel-edit-instancia>Cancelar</button>
+            <button type="submit" class="cases-form-btn cases-form-btn--primary">Salvar</button>
+          </div>
+        </form>
+      `;
+    }
+
+    const urlHTML = inst.url ? `
+      <a class="cases-instancia-url" href="${escapeAttr(inst.url)}" target="_blank" rel="noopener">
+        ↗ abrir
+      </a>` : '';
+
+    return `
+      <div class="cases-instancia">
+        <div class="cases-instancia-head">
+          <span class="cases-instancia-name">${escapeHtml(inst.nome)}</span>
+          ${urlHTML}
+          <button type="button" class="cases-icon-btn"
+                  data-edit-instancia data-case-id="${escapeAttr(c.id)}" data-inst-id="${escapeAttr(inst.id)}"
+                  title="Editar">✎</button>
+          <button type="button" class="cases-icon-btn cases-icon-btn--danger"
+                  data-delete-instancia data-case-id="${escapeAttr(c.id)}" data-inst-id="${escapeAttr(inst.id)}"
+                  title="Apagar instância">🗑</button>
+        </div>
+        ${inst.conteudo ? `<p class="cases-instancia-content">${escapeHtml(inst.conteudo)}</p>` : ''}
+      </div>
+    `;
+  }
+
+  // ── Delegation no drawer body ───────────────────
+  $drawerBody.addEventListener('click', (e) => {
+    const t = e.target;
+
+    // Toggle expand
+    const toggleEl = t.closest('[data-toggle-case]');
+    if (toggleEl && !t.closest('[data-edit-case], [data-delete-case], [data-save-case], [data-cancel-edit-case], .cases-item-name-input')) {
+      const id = toggleEl.dataset.caseId;
+      if (expandedCaseIds.has(id)) expandedCaseIds.delete(id); else expandedCaseIds.add(id);
+      renderDrawer();
+      return;
+    }
+
+    // Add case
+    if (t.closest('[data-add-case]')) {
+      const subKey = t.closest('[data-add-case]').dataset.subKey;
+      addingCaseInSub = subKey;
+      renderDrawer();
+      return;
+    }
+    if (t.closest('[data-cancel-new-case]')) {
+      addingCaseInSub = null;
+      renderDrawer();
+      return;
+    }
+
+    // Edit case nome
+    if (t.closest('[data-edit-case]')) {
+      e.stopPropagation();
+      editingCaseId = t.closest('[data-edit-case]').dataset.caseId;
+      renderDrawer();
+      // foca/seleciona input
+      setTimeout(() => {
+        const inp = $drawerBody.querySelector('[data-edit-case-input]');
+        if (inp) { inp.focus(); inp.select(); }
+      }, 0);
+      return;
+    }
+    if (t.closest('[data-cancel-edit-case]')) {
+      e.stopPropagation();
+      editingCaseId = null;
+      renderDrawer();
+      return;
+    }
+    if (t.closest('[data-save-case]')) {
+      e.stopPropagation();
+      saveCaseEdit();
+      return;
+    }
+
+    // Delete case
+    const delBtn = t.closest('[data-delete-case]');
+    if (delBtn) {
+      e.stopPropagation();
+      const id = delBtn.dataset.caseId;
+      const c = casesData.find(x => x.id === id);
+      if (!c) return;
+      const msg = `Apagar o case "${c.nome}"? Esta ação não pode ser desfeita.`;
+      if (!confirm(msg)) return;
+      casesData = casesData.filter(x => x.id !== id);
+      expandedCaseIds.delete(id);
+      saveCases();
+      renderDrawer();
+      render(); // atualiza grade
+      return;
+    }
+
+    // Add instância
+    if (t.closest('[data-add-instancia]')) {
+      addingInstanceInCase = t.closest('[data-add-instancia]').dataset.caseId;
+      expandedCaseIds.add(addingInstanceInCase);
+      renderDrawer();
+      return;
+    }
+    if (t.closest('[data-cancel-new-instancia]')) {
+      addingInstanceInCase = null;
+      renderDrawer();
+      return;
+    }
+
+    // Edit instância
+    if (t.closest('[data-edit-instancia]')) {
+      const btn = t.closest('[data-edit-instancia]');
+      editingInstanceKey = btn.dataset.caseId + ':' + btn.dataset.instId;
+      renderDrawer();
+      return;
+    }
+    if (t.closest('[data-cancel-edit-instancia]')) {
+      editingInstanceKey = null;
+      renderDrawer();
+      return;
+    }
+
+    // Delete instância
+    const delInst = t.closest('[data-delete-instancia]');
+    if (delInst) {
+      const caseId = delInst.dataset.caseId;
+      const instId = delInst.dataset.instId;
+      const c = casesData.find(x => x.id === caseId);
+      if (!c) return;
+      const inst = (c.instancias || []).find(i => i.id === instId);
+      if (!inst) return;
+      if (!confirm(`Apagar a instância "${inst.nome}"?`)) return;
+      c.instancias = (c.instancias || []).filter(i => i.id !== instId);
+      saveCases();
+      renderDrawer();
+      render();
+      return;
+    }
+  });
+
+  // Enter no input de renomear case
+  $drawerBody.addEventListener('keydown', (e) => {
+    if (e.target.matches('[data-edit-case-input]')) {
+      if (e.key === 'Enter') { e.preventDefault(); saveCaseEdit(); }
+      else if (e.key === 'Escape') { e.preventDefault(); editingCaseId = null; renderDrawer(); }
+    }
+  });
+
+  function saveCaseEdit() {
+    if (!editingCaseId) return;
+    const inp = $drawerBody.querySelector('[data-edit-case-input]');
+    if (!inp) return;
+    const nome = inp.value.trim();
+    if (!nome) { inp.focus(); return; }
+    const i = casesData.findIndex(c => c.id === editingCaseId);
+    if (i >= 0) {
+      casesData[i] = { ...casesData[i], nome };
+      saveCases();
+    }
+    editingCaseId = null;
+    renderDrawer();
+    render();
+  }
+
+  // ── Submit dos forms (new-case / new-instancia / edit-instancia) ─
+  $drawerBody.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement)) return;
+    const kind = form.dataset.form;
+
+    if (kind === 'new-case') {
+      const subKey = form.dataset.subKey;
+      const [nichoId, subnicho] = subKey.split('|');
+      const nome = form.elements.nome.value.trim();
+      if (!nome) return;
+      const newCase = {
+        id: uid('case'),
+        nichoId, subnicho, nome,
+        criadoEm: new Date().toISOString(),
+        instancias: [],
+      };
+      casesData.push(newCase);
+      saveCases();
+      addingCaseInSub = null;
+      expandedCaseIds.add(newCase.id); // já abre pra usuário adicionar instância
+      renderDrawer();
+      render();
+      return;
+    }
+
+    if (kind === 'new-instancia') {
+      const caseId = form.dataset.caseId;
+      const c = casesData.find(x => x.id === caseId);
+      if (!c) return;
+      const nome = form.elements.nome.value.trim();
+      if (!nome) return;
+      const url = form.elements.url.value.trim();
+      const conteudo = form.elements.conteudo.value.trim();
+      c.instancias = c.instancias || [];
+      c.instancias.push({
+        id: uid('inst'),
+        nome, url, conteudo,
+        criadoEm: new Date().toISOString(),
+      });
+      saveCases();
+      addingInstanceInCase = null;
+      renderDrawer();
+      render();
+      return;
+    }
+
+    if (kind === 'edit-instancia') {
+      const caseId = form.dataset.caseId;
+      const instId = form.dataset.instId;
+      const c = casesData.find(x => x.id === caseId);
+      if (!c) return;
+      const inst = (c.instancias || []).find(i => i.id === instId);
+      if (!inst) return;
+      const nome = form.elements.nome.value.trim();
+      if (!nome) return;
+      inst.nome = nome;
+      inst.url = form.elements.url.value.trim();
+      inst.conteudo = form.elements.conteudo.value.trim();
+      saveCases();
+      editingInstanceKey = null;
+      renderDrawer();
+      render();
+      return;
+    }
+  });
+
+  // Fechar drawer (X, overlay, Escape)
+  $drawer.addEventListener('click', (e) => {
+    if (e.target.dataset && e.target.dataset.close === '1') closeDrawer();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && currentNichoId) closeDrawer();
+  });
+
+  // Click no card de nicho → abre drawer
   $grid.addEventListener('click', e => {
     const card = e.target.closest('.cases-nicho-card[data-nicho]');
     if (!card) return;
-    const nichoId = card.dataset.nicho;
-    console.log('[cases] clicked nicho:', nichoId, '— drawer chega no PR2');
+    openDrawer(card.dataset.nicho);
   });
 
   // Search input
@@ -21496,20 +22356,23 @@ renderProgress();
     });
   }
 
-  // Expõe API mínima pra futuras integrações (PR2+)
+  // Expõe API mínima pra futuras integrações
   window.__cases = {
     NICHOS,
     getAll: () => casesData.slice(),
-    add: (c) => { casesData.push(c); saveCases(); render(); },
+    add: (c) => { casesData.push(c); saveCases(); render(); if (currentNichoId) renderDrawer(); },
     update: (id, patch) => {
       const i = casesData.findIndex(c => c.id === id);
-      if (i >= 0) { casesData[i] = { ...casesData[i], ...patch }; saveCases(); render(); }
+      if (i >= 0) { casesData[i] = { ...casesData[i], ...patch }; saveCases(); render(); if (currentNichoId) renderDrawer(); }
     },
     remove: (id) => {
       casesData = casesData.filter(c => c.id !== id);
       saveCases();
       render();
+      if (currentNichoId) renderDrawer();
     },
+    open: openDrawer,
+    close: closeDrawer,
     refresh: render,
   };
 
