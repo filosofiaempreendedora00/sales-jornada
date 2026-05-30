@@ -3010,33 +3010,168 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   cursor: not-allowed;
 }
 
-/* Botões "Adicionar" */
+/* Botões "Adicionar" — versão respirada (v2) */
 .cases-add-btn {
   appearance: none;
-  background: transparent;
-  border: 1px dashed rgba(255,255,255,0.14);
-  border-radius: 8px;
-  padding: 9px 12px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-soft);
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 8%, rgba(255,255,255,0.015));
+  border: 1px solid color-mix(in srgb, var(--nicho-color, #9b6dff) 25%, rgba(255,255,255,0.06));
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  color: #fff;
   cursor: pointer;
   font-family: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  gap: 8px;
+  margin-top: 10px;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.20);
 }
 .cases-add-btn:hover {
-  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 8%, transparent);
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 18%, rgba(255,255,255,0.02));
+  border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 55%, transparent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--nicho-color, #9b6dff) 25%, transparent);
+}
+.cases-add-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.20);
+}
+.cases-add-btn-icon {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 35%, transparent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1;
+}
+.cases-add-btn--small {
+  padding: 10px 14px;
+  font-size: 12px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.025);
+  border-color: rgba(255,255,255,0.10);
+  border-style: dashed;
+  margin-top: 8px;
+  box-shadow: none;
+}
+.cases-add-btn--small:hover {
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 10%, rgba(255,255,255,0.04));
+  border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 40%, transparent);
+  border-style: solid;
+  box-shadow: none;
+  transform: none;
+}
+.cases-add-btn--small .cases-add-btn-icon {
+  width: 18px; height: 18px; font-size: 12px;
+}
+
+/* Chips de links do cliente (IG/site) no header do case */
+.cases-case-links {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.cases-case-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  text-decoration: none;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.78);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cases-case-link:hover {
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 18%, rgba(255,255,255,0.05));
   border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 45%, transparent);
   color: #fff;
 }
-.cases-add-btn--inline {
-  padding: 6px 10px;
-  font-size: 11.5px;
-  margin-top: 6px;
+.cases-case-link--ig {
+  background: linear-gradient(135deg, rgba(225,48,108,0.16), rgba(245,133,41,0.14));
+  border-color: rgba(225,48,108,0.30);
+  color: #ffe6f0;
+}
+.cases-case-link--ig:hover {
+  background: linear-gradient(135deg, rgba(225,48,108,0.28), rgba(245,133,41,0.22));
+  border-color: rgba(245,133,41,0.55);
+  color: #fff;
+}
+.cases-case-link--site {
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.30);
+  color: #dbeafe;
+}
+.cases-case-link--site:hover {
+  background: rgba(96,165,250,0.22);
+  border-color: rgba(96,165,250,0.55);
+  color: #fff;
+}
+.cases-case-link-icon {
+  font-size: 11px;
+  line-height: 1;
+}
+.cases-case-link-handle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cases-case-link--empty {
+  opacity: 0.45;
+  background: rgba(255,255,255,0.02) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.45) !important;
+  cursor: default;
+}
+
+/* Botões IG/Site empty quando case sem links (botão pra editar) */
+.cases-case-link-add {
+  appearance: none;
+  background: rgba(255,255,255,0.03);
+  border: 1px dashed rgba(255,255,255,0.12);
+  border-radius: 99px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.cases-case-link-add:hover {
+  background: color-mix(in srgb, var(--nicho-color, #9b6dff) 12%, transparent);
+  border-color: color-mix(in srgb, var(--nicho-color, #9b6dff) 40%, transparent);
+  color: #fff;
+  border-style: solid;
+}
+
+/* Header do case — reorganizado pra acomodar links */
+.cases-item-headline {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* Subnicho vazio */
@@ -21765,7 +21900,13 @@ renderProgress();
   ];
 
   // Estado in-memory + sync localStorage
-  // cases = [{ id, nichoId, subnicho, nome, criadoEm, instancias: [{id, nome, url, conteudo, criadoEm}] }]
+  // cases = [{
+  //   id, nichoId, subnicho, nome,
+  //   instagram: 'sallve' | '',     // handle (sem @) ou URL completa
+  //   site:      'https://...' | '',
+  //   criadoEm,
+  //   solucoes: [{ id, nome, url, conteudo, criadoEm }]
+  // }]
   let casesData = [];
   try {
     const raw = localStorage.getItem('cases-data');
@@ -21774,9 +21915,24 @@ renderProgress();
       if (Array.isArray(parsed)) casesData = parsed;
     }
   } catch (e) {}
+
+  // Migration: instancias → solucoes; garantir instagram/site
+  let migrated = false;
+  casesData.forEach(c => {
+    if (Array.isArray(c.instancias) && !Array.isArray(c.solucoes)) {
+      c.solucoes = c.instancias;
+      delete c.instancias;
+      migrated = true;
+    }
+    if (!('instagram' in c)) { c.instagram = ''; migrated = true; }
+    if (!('site' in c))      { c.site = '';      migrated = true; }
+    if (!Array.isArray(c.solucoes)) { c.solucoes = []; migrated = true; }
+  });
+
   function saveCases() {
     try { localStorage.setItem('cases-data', JSON.stringify(casesData)); } catch (e) {}
   }
+  if (migrated) saveCases();
 
   // Filtros UI
   let searchTerm = '';
@@ -21808,7 +21964,11 @@ renderProgress();
     if (normalize(nicho.name).includes(q)) return true;
     if (nicho.subnichos.some(s => normalize(s).includes(q))) return true;
     const cases = casesOfNicho(nicho.id);
-    if (cases.some(c => normalize(c.nome).includes(q))) return true;
+    if (cases.some(c =>
+        normalize(c.nome).includes(q) ||
+        normalize(c.instagram).includes(q) ||
+        normalize(c.site).includes(q)
+    )) return true;
     return false;
   }
   function highlight(text) {
@@ -21818,6 +21978,39 @@ renderProgress();
     const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const re = new RegExp('(' + escaped + ')', 'gi');
     return String(text).replace(re, '<span class="cases-search-hit">$1</span>');
+  }
+
+  // ── Normalização IG / Site ───────────────────────
+  // Aceita @handle, handle, ou URL → guarda só o handle (sem @).
+  // Pra URL https://instagram.com/sallve → 'sallve'.
+  function normalizeInstagram(input) {
+    let s = String(input || '').trim();
+    if (!s) return '';
+    s = s.replace(/^https?:\/\/(www\.)?(instagram\.com|instagr\.am)\//i, '');
+    s = s.replace(/^@/, '');
+    s = s.split(/[/?#]/)[0]; // remove tudo depois de /, ?, #
+    return s.toLowerCase();
+  }
+  function igUrl(handle) {
+    const h = String(handle || '').replace(/^@/, '');
+    return h ? `https://instagram.com/${h}` : '';
+  }
+  function igDisplay(handle) {
+    const h = String(handle || '').replace(/^@/, '');
+    return h ? '@' + h : '';
+  }
+  // Site: garante protocolo, devolve URL + display (hostname).
+  function normalizeSite(input) {
+    let s = String(input || '').trim();
+    if (!s) return '';
+    if (!/^https?:\/\//i.test(s)) s = 'https://' + s;
+    return s;
+  }
+  function siteDisplay(url) {
+    if (!url) return '';
+    try {
+      return new URL(url).hostname.replace(/^www\./, '');
+    } catch (e) { return url; }
   }
 
   // Render principal
@@ -21869,7 +22062,7 @@ renderProgress();
   }
 
   // ══════════════════════════════════════════════════════════
-  // DRAWER (PR2) — detalhe do nicho + CRUD case + instâncias
+  // DRAWER — detalhe do nicho + CRUD case + soluções
   // ══════════════════════════════════════════════════════════
   const $drawer       = document.getElementById('cases-drawer');
   const $drawerHeader = document.getElementById('cases-drawer-header');
@@ -21879,11 +22072,11 @@ renderProgress();
   const $drawerBody   = document.getElementById('cases-drawer-body');
 
   let currentNichoId = null;          // qual nicho está aberto no drawer
-  let expandedCaseIds = new Set();    // cases expandidos (mostra instâncias)
-  let editingCaseId = null;           // case em edição inline (nome)
-  let editingInstanceKey = null;      // 'caseId:instanciaId' em edição
+  let expandedCaseIds = new Set();    // cases expandidos (mostra soluções)
+  let editingCaseId = null;           // case em edição (form completo: nome+IG+site)
+  let editingSolucaoKey = null;       // 'caseId:solucaoId' em edição
   let addingCaseInSub = null;         // 'nichoId|subnicho' onde form de novo case está aberto
-  let addingInstanceInCase = null;    // caseId onde form de nova instância está aberto
+  let addingSolucaoInCase = null;     // caseId onde form de nova solução está aberto
 
   function uid(prefix) {
     return (prefix || 'id') + '-' + Math.random().toString(36).slice(2, 9) + '-' + (casesData.length + 1);
@@ -21909,9 +22102,9 @@ renderProgress();
     currentNichoId = nichoId;
     expandedCaseIds = new Set();
     editingCaseId = null;
-    editingInstanceKey = null;
+    editingSolucaoKey = null;
     addingCaseInSub = null;
-    addingInstanceInCase = null;
+    addingSolucaoInCase = null;
     $drawerHeader.style.setProperty('--nicho-color', nicho.color);
     $drawerEmoji.textContent = nicho.emoji;
     $drawerTitle.textContent = nicho.name;
@@ -21956,17 +22149,24 @@ renderProgress();
           <input type="text" name="nome" placeholder="Nome do cliente (ex: Sallve, Nubank…)"
                  maxlength="80" required autofocus>
         </div>
+        <div class="cases-form-row">
+          <input type="text" name="instagram" placeholder="@instagram do cliente (opcional)">
+        </div>
+        <div class="cases-form-row">
+          <input type="text" name="site" placeholder="Site do cliente — ex: sallve.com.br (opcional)">
+        </div>
         <div class="cases-form-actions">
           <button type="button" class="cases-form-btn" data-cancel-new-case>Cancelar</button>
-          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar</button>
+          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar case</button>
         </div>
       </form>
     ` : '';
 
     const addBtnHTML = !isAdding ? `
-      <button type="button" class="cases-add-btn cases-add-btn--inline"
+      <button type="button" class="cases-add-btn"
               data-add-case data-sub-key="${escapeAttr(key)}">
-        + Adicionar case em ${escapeHtml(sub)}
+        <span class="cases-add-btn-icon">+</span>
+        <span>Novo case em ${escapeHtml(sub)}</span>
       </button>
     ` : '';
 
@@ -21988,85 +22188,127 @@ renderProgress();
   function renderCaseItem(c) {
     const isExpanded = expandedCaseIds.has(c.id);
     const isEditing = editingCaseId === c.id;
-    const instancias = Array.isArray(c.instancias) ? c.instancias : [];
-    const count = instancias.length;
+    const solucoes = Array.isArray(c.solucoes) ? c.solucoes : [];
+    const count = solucoes.length;
 
-    const nameHTML = isEditing
-      ? `<input type="text" class="cases-item-name-input"
-                data-edit-case-input data-case-id="${escapeAttr(c.id)}"
-                value="${escapeAttr(c.nome)}" maxlength="80" autofocus>`
-      : `<span class="cases-item-name">${escapeHtml(c.nome)}</span>`;
-
-    const editBtns = isEditing
-      ? `
-        <button type="button" class="cases-icon-btn cases-icon-btn--save"
-                data-save-case data-case-id="${escapeAttr(c.id)}"
-                title="Salvar">✓</button>
-        <button type="button" class="cases-icon-btn"
-                data-cancel-edit-case
-                title="Cancelar">✕</button>
-      `
-      : `
-        <span class="cases-item-count">${count} ${count === 1 ? 'item' : 'itens'}</span>
-        <button type="button" class="cases-icon-btn"
-                data-edit-case data-case-id="${escapeAttr(c.id)}"
-                title="Renomear">✎</button>
-        <button type="button" class="cases-icon-btn cases-icon-btn--danger"
-                data-delete-case data-case-id="${escapeAttr(c.id)}"
-                title="Apagar case">🗑</button>
-        <button type="button" class="cases-icon-btn cases-item-toggle"
-                data-toggle-case data-case-id="${escapeAttr(c.id)}"
-                title="${isExpanded ? 'Recolher' : 'Expandir'}">›</button>
+    // Modo edição: form completo (nome + IG + site)
+    if (isEditing) {
+      return `
+        <article class="cases-item is-editing" data-case-id="${escapeAttr(c.id)}">
+          <form class="cases-form" data-form="edit-case" data-case-id="${escapeAttr(c.id)}"
+                style="margin:0;border-radius:10px" autocomplete="off">
+            <div class="cases-form-row">
+              <input type="text" name="nome" value="${escapeAttr(c.nome)}"
+                     maxlength="80" required autofocus placeholder="Nome do cliente">
+            </div>
+            <div class="cases-form-row">
+              <input type="text" name="instagram" value="${escapeAttr(igDisplay(c.instagram))}"
+                     placeholder="@instagram do cliente (opcional)">
+            </div>
+            <div class="cases-form-row">
+              <input type="text" name="site" value="${escapeAttr(c.site || '')}"
+                     placeholder="Site do cliente (opcional)">
+            </div>
+            <div class="cases-form-actions">
+              <button type="button" class="cases-form-btn" data-cancel-edit-case>Cancelar</button>
+              <button type="submit" class="cases-form-btn cases-form-btn--primary">Salvar</button>
+            </div>
+          </form>
+        </article>
       `;
+    }
+
+    // Chips de IG e Site (sempre presentes; cinza se vazio)
+    const igHandle = c.instagram || '';
+    const igChip = igHandle
+      ? `<a class="cases-case-link cases-case-link--ig" href="${escapeAttr(igUrl(igHandle))}"
+            target="_blank" rel="noopener" title="Instagram do cliente"
+            onclick="event.stopPropagation()">
+           <span class="cases-case-link-icon">📷</span>
+           <span class="cases-case-link-handle">${escapeHtml(igDisplay(igHandle))}</span>
+         </a>`
+      : `<button type="button" class="cases-case-link-add"
+                 data-edit-case data-case-id="${escapeAttr(c.id)}"
+                 title="Adicionar Instagram do cliente">
+           <span>📷</span><span>+ IG</span>
+         </button>`;
+
+    const siteChip = c.site
+      ? `<a class="cases-case-link cases-case-link--site" href="${escapeAttr(c.site)}"
+            target="_blank" rel="noopener" title="Site do cliente"
+            onclick="event.stopPropagation()">
+           <span class="cases-case-link-icon">🌐</span>
+           <span class="cases-case-link-handle">${escapeHtml(siteDisplay(c.site))}</span>
+         </a>`
+      : `<button type="button" class="cases-case-link-add"
+                 data-edit-case data-case-id="${escapeAttr(c.id)}"
+                 title="Adicionar site do cliente">
+           <span>🌐</span><span>+ site</span>
+         </button>`;
 
     const bodyHTML = isExpanded ? `
       <div class="cases-item-body">
-        ${renderInstancias(c)}
+        ${renderSolucoes(c)}
       </div>
     ` : '';
 
     return `
-      <article class="cases-item${isExpanded ? ' is-expanded' : ''}${isEditing ? ' is-editing' : ''}"
-               data-case-id="${escapeAttr(c.id)}">
-        <header class="cases-item-header"${isEditing ? '' : ' data-toggle-case data-case-id="' + escapeAttr(c.id) + '"'}>
-          ${nameHTML}
-          ${editBtns}
+      <article class="cases-item${isExpanded ? ' is-expanded' : ''}" data-case-id="${escapeAttr(c.id)}">
+        <header class="cases-item-header">
+          <div class="cases-item-headline" data-toggle-case data-case-id="${escapeAttr(c.id)}">
+            <span class="cases-item-name">${escapeHtml(c.nome)}</span>
+            <div class="cases-case-links">
+              ${igChip}
+              ${siteChip}
+            </div>
+          </div>
+          <span class="cases-item-count">${count} ${count === 1 ? 'solução' : 'soluções'}</span>
+          <button type="button" class="cases-icon-btn"
+                  data-edit-case data-case-id="${escapeAttr(c.id)}"
+                  title="Editar case">✎</button>
+          <button type="button" class="cases-icon-btn cases-icon-btn--danger"
+                  data-delete-case data-case-id="${escapeAttr(c.id)}"
+                  title="Apagar case">🗑</button>
+          <button type="button" class="cases-icon-btn cases-item-toggle"
+                  data-toggle-case data-case-id="${escapeAttr(c.id)}"
+                  title="${isExpanded ? 'Recolher' : 'Expandir'}">›</button>
         </header>
         ${bodyHTML}
       </article>
     `;
   }
 
-  function renderInstancias(c) {
-    const list = Array.isArray(c.instancias) ? c.instancias : [];
-    const isAdding = addingInstanceInCase === c.id;
+  function renderSolucoes(c) {
+    const list = Array.isArray(c.solucoes) ? c.solucoes : [];
+    const isAdding = addingSolucaoInCase === c.id;
 
-    const items = list.map(inst => renderInstancia(c, inst)).join('');
+    const items = list.map(s => renderSolucao(c, s)).join('');
     const empty = !list.length && !isAdding
-      ? `<div class="cases-subnicho-empty" style="padding-top:6px">Sem instâncias ainda. Adicione a primeira ↓</div>`
+      ? `<div class="cases-subnicho-empty" style="padding-top:6px">Sem soluções ainda. Adicione a primeira ↓</div>`
       : '';
 
     const formHTML = isAdding ? `
-      <form class="cases-form" data-form="new-instancia" data-case-id="${escapeAttr(c.id)}" autocomplete="off">
+      <form class="cases-form" data-form="new-solucao" data-case-id="${escapeAttr(c.id)}" autocomplete="off">
         <div class="cases-form-row">
-          <input type="text" name="nome" placeholder="Nome da instância (ex: Site DNVB, IG Orgânico…)"
+          <input type="text" name="nome" placeholder="Nome da solução (ex: Performance Meta, Tráfego Google, CRM…)"
                  maxlength="80" required autofocus>
         </div>
         <div class="cases-form-row">
-          <input type="url" name="url" placeholder="URL (opcional)">
+          <input type="url" name="url" placeholder="URL relacionada (opcional — ex: landing page, drive de resultados)">
         </div>
-        <textarea name="conteudo" placeholder="Conteúdo / contexto / o que foi feito (opcional)"></textarea>
+        <textarea name="conteudo" placeholder="Contexto / o que foi feito / resultados (opcional)"></textarea>
         <div class="cases-form-actions">
-          <button type="button" class="cases-form-btn" data-cancel-new-instancia>Cancelar</button>
-          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar instância</button>
+          <button type="button" class="cases-form-btn" data-cancel-new-solucao>Cancelar</button>
+          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar solução</button>
         </div>
       </form>
     ` : '';
 
     const addBtn = !isAdding ? `
-      <button type="button" class="cases-add-btn cases-add-btn--inline"
-              data-add-instancia data-case-id="${escapeAttr(c.id)}">
-        + Nova instância
+      <button type="button" class="cases-add-btn cases-add-btn--small"
+              data-add-solucao data-case-id="${escapeAttr(c.id)}">
+        <span class="cases-add-btn-icon">+</span>
+        <span>Nova solução</span>
       </button>
     ` : '';
 
@@ -22077,47 +22319,47 @@ renderProgress();
     `;
   }
 
-  function renderInstancia(c, inst) {
-    const editKey = c.id + ':' + inst.id;
-    const isEditing = editingInstanceKey === editKey;
+  function renderSolucao(c, sol) {
+    const editKey = c.id + ':' + sol.id;
+    const isEditing = editingSolucaoKey === editKey;
 
     if (isEditing) {
       return `
-        <form class="cases-form" data-form="edit-instancia"
-              data-case-id="${escapeAttr(c.id)}" data-inst-id="${escapeAttr(inst.id)}" autocomplete="off">
+        <form class="cases-form" data-form="edit-solucao"
+              data-case-id="${escapeAttr(c.id)}" data-sol-id="${escapeAttr(sol.id)}" autocomplete="off">
           <div class="cases-form-row">
-            <input type="text" name="nome" value="${escapeAttr(inst.nome)}" maxlength="80" required autofocus>
+            <input type="text" name="nome" value="${escapeAttr(sol.nome)}" maxlength="80" required autofocus>
           </div>
           <div class="cases-form-row">
-            <input type="url" name="url" value="${escapeAttr(inst.url || '')}" placeholder="URL (opcional)">
+            <input type="url" name="url" value="${escapeAttr(sol.url || '')}" placeholder="URL (opcional)">
           </div>
-          <textarea name="conteudo" placeholder="Conteúdo / contexto">${escapeHtml(inst.conteudo || '')}</textarea>
+          <textarea name="conteudo" placeholder="Contexto / resultados">${escapeHtml(sol.conteudo || '')}</textarea>
           <div class="cases-form-actions">
-            <button type="button" class="cases-form-btn" data-cancel-edit-instancia>Cancelar</button>
+            <button type="button" class="cases-form-btn" data-cancel-edit-solucao>Cancelar</button>
             <button type="submit" class="cases-form-btn cases-form-btn--primary">Salvar</button>
           </div>
         </form>
       `;
     }
 
-    const urlHTML = inst.url ? `
-      <a class="cases-instancia-url" href="${escapeAttr(inst.url)}" target="_blank" rel="noopener">
+    const urlHTML = sol.url ? `
+      <a class="cases-instancia-url" href="${escapeAttr(sol.url)}" target="_blank" rel="noopener">
         ↗ abrir
       </a>` : '';
 
     return `
       <div class="cases-instancia">
         <div class="cases-instancia-head">
-          <span class="cases-instancia-name">${escapeHtml(inst.nome)}</span>
+          <span class="cases-instancia-name">${escapeHtml(sol.nome)}</span>
           ${urlHTML}
           <button type="button" class="cases-icon-btn"
-                  data-edit-instancia data-case-id="${escapeAttr(c.id)}" data-inst-id="${escapeAttr(inst.id)}"
+                  data-edit-solucao data-case-id="${escapeAttr(c.id)}" data-sol-id="${escapeAttr(sol.id)}"
                   title="Editar">✎</button>
           <button type="button" class="cases-icon-btn cases-icon-btn--danger"
-                  data-delete-instancia data-case-id="${escapeAttr(c.id)}" data-inst-id="${escapeAttr(inst.id)}"
-                  title="Apagar instância">🗑</button>
+                  data-delete-solucao data-case-id="${escapeAttr(c.id)}" data-sol-id="${escapeAttr(sol.id)}"
+                  title="Apagar solução">🗑</button>
         </div>
-        ${inst.conteudo ? `<p class="cases-instancia-content">${escapeHtml(inst.conteudo)}</p>` : ''}
+        ${sol.conteudo ? `<p class="cases-instancia-content">${escapeHtml(sol.conteudo)}</p>` : ''}
       </div>
     `;
   }
@@ -22126,9 +22368,23 @@ renderProgress();
   $drawerBody.addEventListener('click', (e) => {
     const t = e.target;
 
+    // Edit case (precedência: edit > toggle)
+    if (t.closest('[data-edit-case]')) {
+      e.stopPropagation();
+      editingCaseId = t.closest('[data-edit-case]').dataset.caseId;
+      renderDrawer();
+      return;
+    }
+    if (t.closest('[data-cancel-edit-case]')) {
+      e.stopPropagation();
+      editingCaseId = null;
+      renderDrawer();
+      return;
+    }
+
     // Toggle expand
     const toggleEl = t.closest('[data-toggle-case]');
-    if (toggleEl && !t.closest('[data-edit-case], [data-delete-case], [data-save-case], [data-cancel-edit-case], .cases-item-name-input')) {
+    if (toggleEl && !t.closest('.cases-case-link, .cases-case-link-add, .cases-form')) {
       const id = toggleEl.dataset.caseId;
       if (expandedCaseIds.has(id)) expandedCaseIds.delete(id); else expandedCaseIds.add(id);
       renderDrawer();
@@ -22148,30 +22404,6 @@ renderProgress();
       return;
     }
 
-    // Edit case nome
-    if (t.closest('[data-edit-case]')) {
-      e.stopPropagation();
-      editingCaseId = t.closest('[data-edit-case]').dataset.caseId;
-      renderDrawer();
-      // foca/seleciona input
-      setTimeout(() => {
-        const inp = $drawerBody.querySelector('[data-edit-case-input]');
-        if (inp) { inp.focus(); inp.select(); }
-      }, 0);
-      return;
-    }
-    if (t.closest('[data-cancel-edit-case]')) {
-      e.stopPropagation();
-      editingCaseId = null;
-      renderDrawer();
-      return;
-    }
-    if (t.closest('[data-save-case]')) {
-      e.stopPropagation();
-      saveCaseEdit();
-      return;
-    }
-
     // Delete case
     const delBtn = t.closest('[data-delete-case]');
     if (delBtn) {
@@ -22185,47 +22417,47 @@ renderProgress();
       expandedCaseIds.delete(id);
       saveCases();
       renderDrawer();
-      render(); // atualiza grade
+      render();
       return;
     }
 
-    // Add instância
-    if (t.closest('[data-add-instancia]')) {
-      addingInstanceInCase = t.closest('[data-add-instancia]').dataset.caseId;
-      expandedCaseIds.add(addingInstanceInCase);
+    // Add solução
+    if (t.closest('[data-add-solucao]')) {
+      addingSolucaoInCase = t.closest('[data-add-solucao]').dataset.caseId;
+      expandedCaseIds.add(addingSolucaoInCase);
       renderDrawer();
       return;
     }
-    if (t.closest('[data-cancel-new-instancia]')) {
-      addingInstanceInCase = null;
-      renderDrawer();
-      return;
-    }
-
-    // Edit instância
-    if (t.closest('[data-edit-instancia]')) {
-      const btn = t.closest('[data-edit-instancia]');
-      editingInstanceKey = btn.dataset.caseId + ':' + btn.dataset.instId;
-      renderDrawer();
-      return;
-    }
-    if (t.closest('[data-cancel-edit-instancia]')) {
-      editingInstanceKey = null;
+    if (t.closest('[data-cancel-new-solucao]')) {
+      addingSolucaoInCase = null;
       renderDrawer();
       return;
     }
 
-    // Delete instância
-    const delInst = t.closest('[data-delete-instancia]');
-    if (delInst) {
-      const caseId = delInst.dataset.caseId;
-      const instId = delInst.dataset.instId;
+    // Edit solução
+    if (t.closest('[data-edit-solucao]')) {
+      const btn = t.closest('[data-edit-solucao]');
+      editingSolucaoKey = btn.dataset.caseId + ':' + btn.dataset.solId;
+      renderDrawer();
+      return;
+    }
+    if (t.closest('[data-cancel-edit-solucao]')) {
+      editingSolucaoKey = null;
+      renderDrawer();
+      return;
+    }
+
+    // Delete solução
+    const delSol = t.closest('[data-delete-solucao]');
+    if (delSol) {
+      const caseId = delSol.dataset.caseId;
+      const solId = delSol.dataset.solId;
       const c = casesData.find(x => x.id === caseId);
       if (!c) return;
-      const inst = (c.instancias || []).find(i => i.id === instId);
-      if (!inst) return;
-      if (!confirm(`Apagar a instância "${inst.nome}"?`)) return;
-      c.instancias = (c.instancias || []).filter(i => i.id !== instId);
+      const sol = (c.solucoes || []).find(s => s.id === solId);
+      if (!sol) return;
+      if (!confirm(`Apagar a solução "${sol.nome}"?`)) return;
+      c.solucoes = (c.solucoes || []).filter(s => s.id !== solId);
       saveCases();
       renderDrawer();
       render();
@@ -22233,31 +22465,7 @@ renderProgress();
     }
   });
 
-  // Enter no input de renomear case
-  $drawerBody.addEventListener('keydown', (e) => {
-    if (e.target.matches('[data-edit-case-input]')) {
-      if (e.key === 'Enter') { e.preventDefault(); saveCaseEdit(); }
-      else if (e.key === 'Escape') { e.preventDefault(); editingCaseId = null; renderDrawer(); }
-    }
-  });
-
-  function saveCaseEdit() {
-    if (!editingCaseId) return;
-    const inp = $drawerBody.querySelector('[data-edit-case-input]');
-    if (!inp) return;
-    const nome = inp.value.trim();
-    if (!nome) { inp.focus(); return; }
-    const i = casesData.findIndex(c => c.id === editingCaseId);
-    if (i >= 0) {
-      casesData[i] = { ...casesData[i], nome };
-      saveCases();
-    }
-    editingCaseId = null;
-    renderDrawer();
-    render();
-  }
-
-  // ── Submit dos forms (new-case / new-instancia / edit-instancia) ─
+  // ── Submit dos forms (new-case / edit-case / new-solucao / edit-solucao) ─
   $drawerBody.addEventListener('submit', (e) => {
     e.preventDefault();
     const form = e.target;
@@ -22269,22 +22477,42 @@ renderProgress();
       const [nichoId, subnicho] = subKey.split('|');
       const nome = form.elements.nome.value.trim();
       if (!nome) return;
+      const instagram = normalizeInstagram(form.elements.instagram.value);
+      const siteRaw = form.elements.site.value;
+      const site = normalizeSite(siteRaw);
       const newCase = {
         id: uid('case'),
         nichoId, subnicho, nome,
+        instagram, site,
         criadoEm: new Date().toISOString(),
-        instancias: [],
+        solucoes: [],
       };
       casesData.push(newCase);
       saveCases();
       addingCaseInSub = null;
-      expandedCaseIds.add(newCase.id); // já abre pra usuário adicionar instância
+      expandedCaseIds.add(newCase.id);
       renderDrawer();
       render();
       return;
     }
 
-    if (kind === 'new-instancia') {
+    if (kind === 'edit-case') {
+      const caseId = form.dataset.caseId;
+      const i = casesData.findIndex(c => c.id === caseId);
+      if (i < 0) return;
+      const nome = form.elements.nome.value.trim();
+      if (!nome) return;
+      const instagram = normalizeInstagram(form.elements.instagram.value);
+      const site = normalizeSite(form.elements.site.value);
+      casesData[i] = { ...casesData[i], nome, instagram, site };
+      saveCases();
+      editingCaseId = null;
+      renderDrawer();
+      render();
+      return;
+    }
+
+    if (kind === 'new-solucao') {
       const caseId = form.dataset.caseId;
       const c = casesData.find(x => x.id === caseId);
       if (!c) return;
@@ -22292,36 +22520,51 @@ renderProgress();
       if (!nome) return;
       const url = form.elements.url.value.trim();
       const conteudo = form.elements.conteudo.value.trim();
-      c.instancias = c.instancias || [];
-      c.instancias.push({
-        id: uid('inst'),
+      c.solucoes = c.solucoes || [];
+      c.solucoes.push({
+        id: uid('sol'),
         nome, url, conteudo,
         criadoEm: new Date().toISOString(),
       });
       saveCases();
-      addingInstanceInCase = null;
+      addingSolucaoInCase = null;
       renderDrawer();
       render();
       return;
     }
 
-    if (kind === 'edit-instancia') {
+    if (kind === 'edit-solucao') {
       const caseId = form.dataset.caseId;
-      const instId = form.dataset.instId;
+      const solId = form.dataset.solId;
       const c = casesData.find(x => x.id === caseId);
       if (!c) return;
-      const inst = (c.instancias || []).find(i => i.id === instId);
-      if (!inst) return;
+      const sol = (c.solucoes || []).find(s => s.id === solId);
+      if (!sol) return;
       const nome = form.elements.nome.value.trim();
       if (!nome) return;
-      inst.nome = nome;
-      inst.url = form.elements.url.value.trim();
-      inst.conteudo = form.elements.conteudo.value.trim();
+      sol.nome = nome;
+      sol.url = form.elements.url.value.trim();
+      sol.conteudo = form.elements.conteudo.value.trim();
       saveCases();
-      editingInstanceKey = null;
+      editingSolucaoKey = null;
       renderDrawer();
       render();
       return;
+    }
+  });
+
+  // Esc no form de edição cancela
+  $drawerBody.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (editingCaseId || editingSolucaoKey || addingCaseInSub || addingSolucaoInCase) {
+        e.preventDefault();
+        e.stopPropagation();
+        editingCaseId = null;
+        editingSolucaoKey = null;
+        addingCaseInSub = null;
+        addingSolucaoInCase = null;
+        renderDrawer();
+      }
     }
   });
 
