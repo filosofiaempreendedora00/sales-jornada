@@ -3129,6 +3129,49 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   outline: none;
 }
 /* Botão "+" pra abrir/fechar a linha de ancoragem (preço riscado) */
+/* Radio picker (exclusivo) usado pelo E-commerce na sidebar — escolhe
+   entre subtipos DNVB / Vestuário / Personalizado. */
+.prop-invest-subtypes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+  margin-bottom: 10px;
+  padding: 4px;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+.prop-invest-subtype {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 7px 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1.2;
+}
+.prop-invest-subtype:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+.prop-invest-subtype.is-active {
+  background: color-mix(in srgb, var(--card-color, #9b6dff) 18%, transparent);
+  border-color: color-mix(in srgb, var(--card-color, #9b6dff) 55%, transparent);
+  color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 12%, transparent);
+}
+/* Linha de tier em modo exclusivo (sub-pacote escolhido) — sem checkbox */
+.prop-invest-field--exclusive {
+  grid-template-columns: 76px 1fr !important;
+}
+
 .prop-invest-anchor-toggle {
   appearance: none;
   background: transparent;
@@ -17239,7 +17282,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'creators',    icon: '🎬', name: 'Creators UGC',         color: '#ffa826', sourceId: 'cp-inner' },
     { id: 'social',      icon: '📱', name: 'Social Media',         color: '#12d490', sourceId: 'sm-inner' },
     { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
-    { id: 'dnvb',        icon: '🛒', name: 'E-commerce DNVB',      color: '#ec4899', sourceId: null }
+    { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
   // Closers — aparecem no slide de fechamento (nome + telefone).
@@ -17312,8 +17355,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     comunidade: {
       unico: { label: 'Único', value: 'R$ 10.000,00' }
     },
-    dnvb: {
-      unico: { label: 'Único', value: 'R$ 19.497,00' }
+    ecommerce: {
+      dnvb:          { label: 'DNVB',          value: 'R$ 19.497,00' },
+      vestuario:     { label: 'Vestuário',     value: 'R$ 15.997,00' },
+      personalizado: { label: 'Personalizado', value: 'R$ —' }
     }
   };
 
@@ -17365,7 +17410,104 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     creators:    ['starter', 'scale', 'enterprise'],
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
-    dnvb:        ['unico']
+    ecommerce:   ['dnvb']
+  };
+
+  // Conteúdo de cada subtipo de E-commerce — escolhido via radio na sidebar.
+  // O slide renderiza o subtipo ativo. Personalizado fica como placeholder
+  // até receber dados reais.
+  const ECOMMERCE_SUBTYPES = {
+    dnvb: {
+      label: 'DNVB',
+      titleHtml: 'E-commerce <span class="pacotes-title-accent">DTC / DNVB</span>',
+      subtitle: 'Utilizaremos a biblioteca de seções da Turbo para criar o e-commerce. Fora disso, passa a ser um e-commerce personalizado.',
+      prazo: '50 dias úteis',
+      installmentsHtml: 'ou em <strong>3x de R$ 6.499,00</strong> no boleto',
+      features: [
+        'Página Home',
+        'PDP com até 7 seções',
+        'Página de Todos os Produtos + Filtros',
+        'Cadastro de 1 produto como playbook para os outros',
+        'Página Quem Somos',
+        'Páginas de Políticas',
+        'Notificações de E-mails padrões <small>(Compra Confirmada, Checkout Abandonado etc.)</small>',
+        'Treinamentos personalizados',
+        'Treinamento em vídeo <small>(Como operar o e-commerce)</small>',
+        'Instalação do ERP, Gateway e Logística + Treinamento',
+        'Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp'
+      ],
+      highlights: [
+        'Carrinho Lateral + Frete',
+        'Barra de Frete Grátis',
+        'Orderbump',
+        'Reviews de Clientes',
+        'Popup Personalizado',
+        "Seção de UGC's",
+        'Bundle Progressivo',
+        'Menu Mobile Custom'
+      ],
+      examples: [
+        { name: 'OTO',              url: 'https://otomen.com.br/' },
+        { name: 'Soul Beleza Rara', url: 'https://soubelezarara.com.br/' },
+        { name: 'Jui',              url: 'https://vivajui.com.br/' },
+        { name: 'Tricky',           url: 'https://tricky.com.br/' },
+        { name: 'Dates Snacks',     url: 'https://dates-snacks.com.br/' },
+        { name: 'Ovacare',          url: 'https://www.ovacare.com.br/' }
+      ]
+    },
+    vestuario: {
+      label: 'Vestuário',
+      titleHtml: 'E-commerce <span class="pacotes-title-accent">Vestuário</span>',
+      subtitle: 'Estrutura Turbo otimizada para vestuário — biblioteca de seções da Turbo. Fora disso, passa a ser um e-commerce personalizado.',
+      prazo: '45 dias úteis',
+      installmentsHtml: 'ou em <strong>3x de R$ 5.332,34</strong> no boleto',
+      features: [
+        'Página Home',
+        '1 Modelo de PDP <small>(até 5 seções)</small>',
+        '1 Modelo de Todos os Produtos + Filtros',
+        'Cadastro de até 3 produtos completos',
+        'Página de Contato com Formulário <small>(2 seções)</small>',
+        'Página de Quem Somos',
+        'Páginas de Políticas e Privacidade',
+        'Search inteligente',
+        'Carrinho Lateral',
+        'Notificações de Email Padrão',
+        'Acesso à comunidade da Turbo',
+        'Treinamentos personalizados em vídeo',
+        'Instalação de ERP, Gateway e Logística',
+        'Automação de recuperação de checkout'
+      ],
+      highlights: [
+        'Search Inteligente',
+        'Carrinho Lateral + Frete',
+        'Barra de Frete Grátis',
+        'Orderbump',
+        'Separa e Agrega',
+        'Reviews de Clientes',
+        'Add to Cart Fixo',
+        'Wishlist',
+        'Visualizações Personalizadas',
+        'Popup Personalizado',
+        'Sales Notification',
+        'Barra de Estoque',
+        'Compre Com'
+      ],
+      examples: [
+        { name: 'BSCROSS',  url: 'https://bscross.com.br/' },
+        { name: 'Florest',  url: 'https://www.florestoficial.com.br/' },
+        { name: 'Sie Wear', url: 'https://siewear.com/' }
+      ]
+    },
+    personalizado: {
+      label: 'Personalizado',
+      titleHtml: 'E-commerce <span class="pacotes-title-accent">Personalizado</span>',
+      subtitle: 'Detalhes em breve — Roberto vai mandar o conteúdo completo deste subtipo.',
+      prazo: 'A definir',
+      installmentsHtml: 'Sob consulta',
+      features: ['Conteúdo em construção — aguardando definição.'],
+      highlights: [],
+      examples: []
+    }
   };
   const enabledTiers = {};
   for (const sol in DEFAULT_ENABLED_TIERS) {
@@ -17537,6 +17679,59 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       $invest.innerHTML = '<p class="prop-invest-empty">Selecione ao menos uma solução para editar os preços dos pacotes.</p>';
       return;
     }
+    // Helper: renderiza UMA linha de tier (checkbox padrão OU exclusivo
+     // sem checkbox no caso de ecommerce subtypes). Mantém input de preço,
+     // toggle de ancoragem, anchor row.
+    function renderTierRow(solId, tier, td, opts) {
+      opts = opts || {};
+      const exclusive = !!opts.exclusive;
+      const enabled = isTierEnabled(solId, tier);
+      const anchored = hasAnchor(solId, tier);
+      // No modo exclusivo (radio), só renderiza a linha do tier ATIVO.
+      // O input é sempre habilitado pois é o único da subseleção.
+      const checkHtml = exclusive ? '' : `<input type="checkbox" class="prop-invest-check"
+        data-sol="${solId}" data-tier="${tier}"
+        ${enabled ? 'checked' : ''}
+        aria-label="Incluir pacote ${td.label} na proposta"
+        title="Incluir pacote ${td.label} na proposta">`;
+      return `
+        <div class="prop-invest-field${exclusive ? ' prop-invest-field--exclusive' : ''}${enabled || exclusive ? '' : ' is-disabled'}">
+          <span class="prop-invest-tier">${td.label}</span>
+          <div class="prop-invest-input-wrap">
+            <span class="prop-invest-currency">R$</span>
+            <input type="text"
+              class="prop-invest-input${isPriceDefault(solId, tier) ? '' : ' is-edited'}"
+              data-sol="${solId}" data-tier="${tier}"
+              value="${escapeAttr(stripCurrency(td.value))}"
+              spellcheck="false" autocomplete="off"
+              inputmode="decimal"
+              ${(enabled || exclusive) ? '' : 'disabled'}>
+            <button type="button"
+              class="prop-invest-anchor-toggle${anchored ? ' is-active' : ''}"
+              data-sol="${solId}" data-tier="${tier}"
+              aria-label="${anchored ? 'Remover' : 'Adicionar'} preço de ancoragem"
+              title="${anchored ? 'Remover preço de ancoragem' : 'Adicionar preço de ancoragem (riscado)'}">${anchored ? '−' : '+'}</button>
+          </div>
+          ${checkHtml}
+        </div>
+        ${anchored ? `
+        <div class="prop-invest-anchor-row" data-sol="${solId}" data-tier="${tier}">
+          <span class="prop-invest-anchor-hint">de</span>
+          <div class="prop-invest-input-wrap prop-invest-input-wrap--anchor">
+            <span class="prop-invest-currency">R$</span>
+            <input type="text"
+              class="prop-invest-input prop-invest-input--anchor"
+              data-sol="${solId}" data-tier="${tier}"
+              value="${escapeAttr(stripCurrency(getAnchor(solId, tier)))}"
+              spellcheck="false" autocomplete="off"
+              inputmode="decimal"
+              aria-label="Preço de ancoragem ${td.label}">
+          </div>
+          <span class="prop-invest-anchor-row-spacer"></span>
+        </div>` : ''}
+      `;
+    }
+
     $invest.innerHTML = visibleSols.map(s => {
       const feeEnabled = isExtraEnabled(s.id, 'fee');
       // Extras por solução. Hoje só Performance tem (Fee de implantação).
@@ -17553,6 +17748,35 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           </div>
         </div>
       ` : '';
+
+      // E-commerce: radio picker (DNVB / Vestuário / Personalizado) +
+      // SÓ a linha do subtipo selecionado (com input de preço + ancoragem)
+      if (s.hasSubtypes) {
+        const activeTier = [...(enabledTiers[s.id] || [])][0] || Object.keys(prices[s.id])[0];
+        const subtypesPicker = Object.entries(prices[s.id]).map(([tier, td]) => {
+          const isActive = tier === activeTier;
+          return `<button type="button"
+            class="prop-invest-subtype${isActive ? ' is-active' : ''}"
+            data-sol="${s.id}" data-tier="${tier}"
+            aria-pressed="${isActive ? 'true' : 'false'}">${td.label}</button>`;
+        }).join('');
+        const activeTd = prices[s.id][activeTier];
+        return `
+        <div class="prop-invest-card" style="--card-color:${s.color}">
+          <div class="prop-invest-card-head">
+            <span class="prop-invest-icon">${s.icon}</span>
+            <span class="prop-invest-name">${s.name}</span>
+          </div>
+          <div class="prop-invest-subtypes">${subtypesPicker}</div>
+          <div class="prop-invest-tiers">
+            ${renderTierRow(s.id, activeTier, activeTd, { exclusive: true })}
+          </div>
+          ${extrasHtml}
+        </div>
+        `;
+      }
+
+      // Soluções padrão: todos os tiers como checkboxes
       return `
       <div class="prop-invest-card" style="--card-color:${s.color}">
         <div class="prop-invest-card-head">
@@ -17560,50 +17784,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <span class="prop-invest-name">${s.name}</span>
         </div>
         <div class="prop-invest-tiers">
-          ${Object.entries(prices[s.id]).map(([tier, td]) => {
-            const enabled = isTierEnabled(s.id, tier);
-            const anchored = hasAnchor(s.id, tier);
-            return `
-            <div class="prop-invest-field${enabled ? '' : ' is-disabled'}">
-              <span class="prop-invest-tier">${td.label}</span>
-              <div class="prop-invest-input-wrap">
-                <span class="prop-invest-currency">R$</span>
-                <input type="text"
-                  class="prop-invest-input${isPriceDefault(s.id, tier) ? '' : ' is-edited'}"
-                  data-sol="${s.id}" data-tier="${tier}"
-                  value="${escapeAttr(stripCurrency(td.value))}"
-                  spellcheck="false" autocomplete="off"
-                  inputmode="decimal"
-                  ${enabled ? '' : 'disabled'}>
-                <button type="button"
-                  class="prop-invest-anchor-toggle${anchored ? ' is-active' : ''}"
-                  data-sol="${s.id}" data-tier="${tier}"
-                  aria-label="${anchored ? 'Remover' : 'Adicionar'} preço de ancoragem"
-                  title="${anchored ? 'Remover preço de ancoragem' : 'Adicionar preço de ancoragem (riscado)'}">${anchored ? '−' : '+'}</button>
-              </div>
-              <input type="checkbox" class="prop-invest-check"
-                data-sol="${s.id}" data-tier="${tier}"
-                ${enabled ? 'checked' : ''}
-                aria-label="Incluir pacote ${td.label} na proposta"
-                title="Incluir pacote ${td.label} na proposta">
-            </div>
-            ${anchored ? `
-            <div class="prop-invest-anchor-row" data-sol="${s.id}" data-tier="${tier}">
-              <span class="prop-invest-anchor-hint">de</span>
-              <div class="prop-invest-input-wrap prop-invest-input-wrap--anchor">
-                <span class="prop-invest-currency">R$</span>
-                <input type="text"
-                  class="prop-invest-input prop-invest-input--anchor"
-                  data-sol="${s.id}" data-tier="${tier}"
-                  value="${escapeAttr(stripCurrency(getAnchor(s.id, tier)))}"
-                  spellcheck="false" autocomplete="off"
-                  inputmode="decimal"
-                  aria-label="Preço de ancoragem ${td.label}">
-              </div>
-              <span class="prop-invest-anchor-row-spacer"></span>
-            </div>` : ''}
-          `;
-          }).join('')}
+          ${Object.entries(prices[s.id]).map(([tier, td]) => renderTierRow(s.id, tier, td)).join('')}
         </div>
         ${extrasHtml}
       </div>
@@ -17626,6 +17807,21 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
           schedulePreviewRebuild();
         }
+      });
+    });
+
+    // Subtype picker (radio exclusivo) — usado pelo E-commerce. Trocar
+    // de subtipo seta enabledTiers[sol] = Set([tier]) e re-renderiza.
+    $invest.querySelectorAll('.prop-invest-subtype').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        const sol  = btn.dataset.sol;
+        const tier = btn.dataset.tier;
+        enabledTiers[sol] = new Set([tier]);
+        saveEnabledTiers();
+        renderInvestimento();
+        schedulePreviewRebuild();
       });
     });
 
@@ -17996,7 +18192,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const hasCreators   = selected.has('creators');
     const hasSocial     = selected.has('social');
     const hasComunidade = selected.has('comunidade');
-    const hasDnvb       = selected.has('dnvb');
+    const hasEcommerce  = selected.has('ecommerce');
+    const ecommerceTier = hasEcommerce ? ([...(enabledTiers.ecommerce || [])][0] || 'dnvb') : null;
+    const ecommerceSub  = ecommerceTier ? ECOMMERCE_SUBTYPES[ecommerceTier] : null;
 
     // Ícone padrão (estrela) reutilizado em todos os pacotes
     const pacoteIcon = `<div class="pacote-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>`;
@@ -18148,11 +18346,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
-    // E-commerce DNVB — layout split (texto à esquerda, preço à direita).
-    // Não usa estrutura .pacote-card como os outros — é um slide próprio.
-    const dnvbActive = hasDnvb && isTierEnabled('dnvb', 'unico');
+    // E-commerce — layout split (texto à esquerda, preço à direita).
+    // Subtipo escolhido via radio na sidebar (DNVB / Vestuário / Personalizado).
+    const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || dnvbActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -18220,67 +18418,45 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3f. E-commerce DTC / DNVB — layout split (texto à esquerda,
-      // price card à direita) com paleta cyan/blue (mesma dos demais
-      // slides) e bloco de exemplos no canto inferior direito.
-      if (dnvbActive) {
-        const dnvbExamples = [
-          { name: 'OTO',              url: 'https://otomen.com.br/' },
-          { name: 'Soul Beleza Rara', url: 'https://soubelezarara.com.br/' },
-          { name: 'Jui',              url: 'https://vivajui.com.br/' },
-          { name: 'Tricky',           url: 'https://tricky.com.br/' },
-          { name: 'Dates Snacks',     url: 'https://dates-snacks.com.br/' },
-          { name: 'Ovacare',          url: 'https://www.ovacare.com.br/' }
-        ];
-        const dnvbExamplesHtml = dnvbExamples.map(e =>
+      // 3f. E-commerce — slide com layout split, renderizado a partir do
+      // subtipo selecionado (DNVB / Vestuário / Personalizado). Todo o
+      // conteúdo (título, features, highlights, exemplos, preço, prazo,
+      // parcelas) vem de ECOMMERCE_SUBTYPES[ecommerceTier].
+      if (ecommerceActive) {
+        const sub = ecommerceSub;
+        const dnvbExamplesHtml = sub.examples.map(e =>
           `<a href="${e.url}" target="_blank" rel="noopener" class="dnvb-example-chip" onclick="var w=window.open(this.href,'_blank','noopener,noreferrer');if(!w){window.location.href=this.href;}event.preventDefault();event.stopPropagation();return false;">${e.name}<span class="dnvb-example-arrow">↗</span></a>`
         ).join('');
-        const anchor = getAnchor('dnvb', 'unico');
+        const anchor = getAnchor('ecommerce', ecommerceTier);
         const anchorHtml = anchor ? `<div class="dnvb-price-anchor">${formatPriceHtml(anchor)}</div>` : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-dnvb">
           <div class="pacotes-slide dnvb-slide">
             <div class="pacotes-header">
-              <h2 class="pacotes-title">E-commerce <span class="pacotes-title-accent">DTC / DNVB</span></h2>
-              <p class="pacotes-sub">Utilizaremos a biblioteca de seções da Turbo para criar o e-commerce. Fora disso, passa a ser um e-commerce personalizado.</p>
+              <h2 class="pacotes-title">${sub.titleHtml}</h2>
+              <p class="pacotes-sub">${sub.subtitle}</p>
             </div>
             <div class="dnvb-split">
               <div class="dnvb-features-col">
                 <div class="dnvb-block">
                   <h3 class="dnvb-section-title">✓ O que contempla</h3>
                   <ul class="dnvb-features-list">
-                    <li>Página Home</li>
-                    <li>PDP com até 7 seções</li>
-                    <li>Página de Todos os Produtos + Filtros</li>
-                    <li>Cadastro de 1 produto como playbook para os outros</li>
-                    <li>Página Quem Somos</li>
-                    <li>Páginas de Políticas</li>
-                    <li>Notificações de E-mails padrões <small>(Compra Confirmada, Checkout Abandonado etc.)</small></li>
-                    <li>Treinamentos personalizados</li>
-                    <li>Treinamento em vídeo <small>(Como operar o e-commerce)</small></li>
-                    <li>Instalação do ERP, Gateway e Logística + Treinamento</li>
-                    <li>Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp</li>
+                    ${sub.features.map(f => `<li>${f}</li>`).join('')}
                   </ul>
                 </div>
+                ${sub.highlights.length ? `
                 <div class="dnvb-block">
                   <h3 class="dnvb-section-title">✦ Funcionalidades destaque</h3>
                   <ul class="dnvb-features-grid">
-                    <li>Carrinho Lateral + Frete</li>
-                    <li>Barra de Frete Grátis</li>
-                    <li>Orderbump</li>
-                    <li>Reviews de Clientes</li>
-                    <li>Popup Personalizado</li>
-                    <li>Seção de UGC's</li>
-                    <li>Bundle Progressivo</li>
-                    <li>Menu Mobile Custom</li>
+                    ${sub.highlights.map(h => `<li>${h}</li>`).join('')}
                   </ul>
-                </div>
+                </div>` : ''}
               </div>
               <aside class="dnvb-price-col">
                 <div class="dnvb-price-card">
                   <div class="dnvb-price-label">Investimento</div>
                   ${anchorHtml}
-                  <div class="dnvb-price-value">${formatPriceHtml(prices.dnvb.unico.value)}</div>
-                  <div class="dnvb-price-installments">ou em <strong>3x de R$ 6.499,00</strong> no boleto</div>
+                  <div class="dnvb-price-value">${formatPriceHtml(prices.ecommerce[ecommerceTier].value)}</div>
+                  <div class="dnvb-price-installments">${sub.installmentsHtml}</div>
                   <div class="dnvb-price-divider"></div>
                   <div class="dnvb-price-prazo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -18291,14 +18467,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                     </svg>
                     <div class="dnvb-price-prazo-text">
                       <span class="dnvb-price-prazo-label">Prazo de execução</span>
-                      <strong class="dnvb-price-prazo-value">50 dias úteis</strong>
+                      <strong class="dnvb-price-prazo-value">${sub.prazo}</strong>
                     </div>
                   </div>
                 </div>
+                ${sub.examples.length ? `
                 <div class="dnvb-examples">
-                  <span class="dnvb-examples-label">✦ Veja exemplos de DNVBs</span>
+                  <span class="dnvb-examples-label">✦ Veja exemplos</span>
                   <div class="dnvb-examples-list">${dnvbExamplesHtml}</div>
-                </div>
+                </div>` : ''}
               </aside>
             </div>
           </div>
