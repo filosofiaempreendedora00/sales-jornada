@@ -17358,7 +17358,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.497,00' },
       vestuario:     { label: 'Vestuário',     value: 'R$ 15.997,00' },
-      personalizado: { label: 'Personalizado', value: 'R$ —' }
+      personalizado: { label: 'Personalizado', value: 'R$ 35.000,00' }
     }
   };
 
@@ -17501,11 +17501,33 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     personalizado: {
       label: 'Personalizado',
       titleHtml: 'E-commerce <span class="pacotes-title-accent">Personalizado</span>',
-      subtitle: 'Detalhes em breve — Roberto vai mandar o conteúdo completo deste subtipo.',
-      prazo: 'A definir',
-      installmentsHtml: 'Sob consulta',
-      features: ['Conteúdo em construção — aguardando definição.'],
-      highlights: [],
+      eyebrow: 'Projeto Exclusivo',
+      subtitle: 'Esse projeto tem escopo aberto. A principal diferença é a fase de prototipação no Figma com design 100% personalizado e exclusivo para o cliente.',
+      pricePrefix: 'A partir de',
+      prazo: 'Sob consulta',
+      installmentsHtml: 'ou em <strong>4x de R$ 8.750,00</strong> no boleto',
+      features: [
+        'Prototipação completa no Figma',
+        'Design 100% exclusivo para a marca',
+        'Página Home personalizada',
+        'Modelos de PDP com design exclusivo',
+        'Página de Todos os Produtos + Filtros',
+        'Página de Quem Somos personalizada',
+        'Páginas de Políticas e Privacidade',
+        'Notificações de Email Padrão',
+        'Acesso à comunidade de e-commerce da Turbo',
+        'Treinamentos personalizados em vídeo',
+        'Instalação de ERP, Gateway de Pagamento e Logística',
+        'Automação de recuperação de checkout abandonado'
+      ],
+      highlightsNote: 'Inclui todas as funcionalidades dos pacotes DTC/DNVB e Vestuário.',
+      highlightsTitle: 'Principais Diferenciais',
+      highlights: [
+        'Protótipo 100% personalizado',
+        'Seções 100% customizadas',
+        'Escopo Aberto e Flexível',
+        'Criação de funcionalidades'
+      ],
       examples: []
     }
   };
@@ -18446,6 +18468,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                 ${sub.highlights.length ? `
                 <div class="dnvb-block">
                   <h3 class="dnvb-section-title">✦ Funcionalidades destaque</h3>
+                  ${sub.highlightsNote ? `<p class="dnvb-block-note">${sub.highlightsNote}</p>` : ''}
+                  ${sub.highlightsTitle ? `<p class="dnvb-block-subtitle">${sub.highlightsTitle}</p>` : ''}
                   <ul class="dnvb-features-grid">
                     ${sub.highlights.map(h => `<li>${h}</li>`).join('')}
                   </ul>
@@ -18453,8 +18477,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               </div>
               <aside class="dnvb-price-col">
                 <div class="dnvb-price-card">
+                  ${sub.eyebrow ? `<div class="dnvb-price-eyebrow">${sub.eyebrow}</div>` : ''}
                   <div class="dnvb-price-label">Investimento</div>
                   ${anchorHtml}
+                  ${sub.pricePrefix ? `<div class="dnvb-price-prefix">${sub.pricePrefix}</div>` : ''}
                   <div class="dnvb-price-value">${formatPriceHtml(prices.ecommerce[ecommerceTier].value)}</div>
                   <div class="dnvb-price-installments">${sub.installmentsHtml}</div>
                   <div class="dnvb-price-divider"></div>
@@ -19320,6 +19346,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           inset 0 1px 0 rgba(255,255,255,0.08),
           0 24px 60px rgba(13,80,200,0.35);
       }
+      .proposal-section--pacotes-dnvb .dnvb-price-eyebrow {
+        display: inline-block;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 1.6px;
+        text-transform: uppercase;
+        color: #ffffff;
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.18);
+        border-radius: 99px;
+        padding: 5px 12px;
+        margin-bottom: 14px;
+      }
       .proposal-section--pacotes-dnvb .dnvb-price-label {
         font-size: 11.5px;
         font-weight: 800;
@@ -19327,6 +19366,27 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         text-transform: uppercase;
         color: #0dcfe8;
         margin-bottom: 14px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-price-prefix {
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.62);
+        margin-bottom: -2px;
+        letter-spacing: 0.2px;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-block-note {
+        font-size: 13px;
+        color: rgba(255,255,255,0.65);
+        margin: 0 0 14px;
+        line-height: 1.5;
+      }
+      .proposal-section--pacotes-dnvb .dnvb-block-subtitle {
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: rgba(13,207,232,0.88);
+        margin: 0 0 10px;
       }
       .proposal-section--pacotes-dnvb .dnvb-price-anchor {
         font-size: clamp(16px, 1.6vw, 20px);
