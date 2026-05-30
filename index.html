@@ -3060,6 +3060,140 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   cursor: not-allowed;
 }
 
+/* Label de seção dentro do form */
+.cases-form-label {
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  margin: 4px 2px 0;
+}
+.cases-form-label small {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(255,255,255,0.40);
+  margin-left: 6px;
+}
+
+/* Picker de soluções (multi-select) */
+.cases-sol-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 8px;
+}
+.cases-sol-chip {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.80);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.12s;
+  position: relative;
+}
+.cases-sol-chip:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.20);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.cases-sol-chip.is-selected {
+  background: rgba(155,109,255,0.18);
+  border-color: rgba(155,109,255,0.60);
+  color: #fff;
+}
+.cases-sol-chip.is-selected:hover {
+  background: rgba(155,109,255,0.26);
+}
+.cases-sol-chip-icon {
+  width: 22px; height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  flex-shrink: 0;
+}
+.cases-sol-chip.is-selected .cases-sol-chip-icon {
+  background: rgba(155,109,255,0.25);
+}
+.cases-sol-chip-name {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+}
+.cases-sol-chip-check {
+  width: 18px; height: 18px;
+  border-radius: 5px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(0,0,0,0.40);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: transparent;
+  transition: all 0.15s;
+}
+.cases-sol-chip.is-selected .cases-sol-chip-check {
+  background: #9b6dff;
+  border-color: #9b6dff;
+  color: #fff;
+}
+.cases-sol-chip-tag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(96,165,250,0.18);
+  color: #93c5fd;
+  border: 1px solid rgba(96,165,250,0.25);
+}
+
+/* Bloco "Extras" do form (URL + conteúdo) — só aparece após
+   pelo menos uma solução estar selecionada */
+.cases-form-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(255,255,255,0.08);
+  margin-top: 4px;
+}
+.cases-form textarea.cases-form-textarea-tall {
+  min-height: 140px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Counter da seleção */
+.cases-sol-selection-summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.55);
+  padding: 6px 2px;
+}
+.cases-sol-selection-summary strong {
+  color: #c4a8ff;
+  font-weight: 800;
+}
+
 /* Botões "Adicionar" — versão respirada (v2) */
 .cases-add-btn {
   appearance: none;
@@ -22134,6 +22268,49 @@ renderProgress();
   let editingSolucaoKey = null;       // 'caseId:solucaoId' em edição
   let addingCaseInSub = null;         // 'nichoId|subnicho' onde form de novo case está aberto
   let addingSolucaoInCase = null;     // caseId onde form de nova solução está aberto
+  let pickerSelectedIds = new Set();  // soluções marcadas no picker (multi-select) do form "Nova solução"
+
+  // ── Catálogo de soluções: lê os nodes top-level de STAGES (e-commerce)
+  // + nodes únicos de STAGES_LEAD (lead-only). Ordenado por fase. ──────
+  const SOLUCOES_CATALOG = (() => {
+    const list = [];
+    const seenKey = new Set();    // dedup por nome normalizado
+    const seenId = new Set();
+    function push(node, stage, journey) {
+      const key = normalize(node.name);
+      if (seenKey.has(key)) return;
+      seenKey.add(key);
+      seenId.add(node.id);
+      list.push({
+        id: node.id,
+        icon: node.icon || '✦',
+        name: node.name,
+        stage: stage.title,
+        stageColor: stage.color,
+        journey,
+      });
+    }
+    // E-commerce: nodes top-level (sem parentId)
+    if (typeof STAGES !== 'undefined' && Array.isArray(STAGES)) {
+      STAGES.forEach(stage => {
+        (stage.nodes || []).forEach(node => {
+          if (node.parentId) return;
+          push(node, stage, 'ambas');
+        });
+      });
+    }
+    // Lead: nodes que não existem na ecommerce (Zona de Conversão, LP,
+    // automações de e-mail/whatsapp, etc.) Pode ter parentId.
+    if (typeof STAGES_LEAD !== 'undefined' && Array.isArray(STAGES_LEAD)) {
+      STAGES_LEAD.forEach(stage => {
+        (stage.nodes || []).forEach(node => {
+          if (seenId.has(node.id)) return;
+          push(node, stage, 'lead');
+        });
+      });
+    }
+    return list;
+  })();
 
   function uid(prefix) {
     return (prefix || 'id') + '-' + Math.random().toString(36).slice(2, 9) + '-' + (casesData.length + 1);
@@ -22344,28 +22521,16 @@ renderProgress();
       ? `<div class="cases-subnicho-empty" style="padding-top:6px">Sem soluções ainda. Adicione a primeira ↓</div>`
       : '';
 
-    const formHTML = isAdding ? `
-      <form class="cases-form" data-form="new-solucao" data-case-id="${escapeAttr(c.id)}" autocomplete="off">
-        <div class="cases-form-row">
-          <input type="text" name="nome" placeholder="Nome da solução (ex: Performance Meta, Tráfego Google, CRM…)"
-                 maxlength="80" required autofocus>
-        </div>
-        <div class="cases-form-row">
-          <input type="url" name="url" placeholder="URL relacionada (opcional — ex: landing page, drive de resultados)">
-        </div>
-        <textarea name="conteudo" placeholder="Contexto / o que foi feito / resultados (opcional)"></textarea>
-        <div class="cases-form-actions">
-          <button type="button" class="cases-form-btn" data-cancel-new-solucao>Cancelar</button>
-          <button type="submit" class="cases-form-btn cases-form-btn--primary">Adicionar solução</button>
-        </div>
-      </form>
-    ` : '';
+    // IDs de soluções já cadastradas neste case — evita duplicar no picker
+    const existingSolCatIds = new Set(list.map(s => s.solCatId).filter(Boolean));
+
+    const formHTML = isAdding ? renderSolucaoPicker(c, existingSolCatIds) : '';
 
     const addBtn = !isAdding ? `
       <button type="button" class="cases-add-btn cases-add-btn--small"
               data-add-solucao data-case-id="${escapeAttr(c.id)}">
         <span class="cases-add-btn-icon">+</span>
-        <span>Nova solução</span>
+        <span>Adicionar soluções entregues</span>
       </button>
     ` : '';
 
@@ -22373,6 +22538,71 @@ renderProgress();
       <div class="cases-instancias">${items}${empty}</div>
       ${formHTML}
       ${addBtn}
+    `;
+  }
+
+  function renderSolucaoPicker(c, existingSolCatIds) {
+    const hasSelection = pickerSelectedIds.size > 0;
+    const chipsHTML = SOLUCOES_CATALOG.map(sol => {
+      const isSelected = pickerSelectedIds.has(sol.id);
+      const alreadyAdded = existingSolCatIds.has(sol.id);
+      const tag = sol.journey === 'lead'
+        ? `<span class="cases-sol-chip-tag">Lead</span>` : '';
+      const disabledAttr = alreadyAdded ? ' disabled title="Já adicionada nesse case"' : '';
+      const classes = 'cases-sol-chip'
+        + (isSelected ? ' is-selected' : '')
+        + (alreadyAdded ? ' is-disabled' : '');
+      return `
+        <button type="button" class="${classes}"
+                data-sol-toggle="${escapeAttr(sol.id)}"${disabledAttr}
+                style="${alreadyAdded ? 'opacity:0.35;cursor:not-allowed;' : ''}">
+          <span class="cases-sol-chip-check">✓</span>
+          <span class="cases-sol-chip-icon">${sol.icon}</span>
+          <span class="cases-sol-chip-name">${escapeHtml(sol.name)}</span>
+          ${tag}
+        </button>
+      `;
+    }).join('');
+
+    const summary = hasSelection
+      ? `<div class="cases-sol-selection-summary">
+           <strong>${pickerSelectedIds.size}</strong>
+           ${pickerSelectedIds.size === 1 ? 'solução selecionada' : 'soluções selecionadas'} —
+           preencha URL/contexto abaixo (opcional) e adicione.
+         </div>`
+      : `<div class="cases-sol-selection-summary">Marque uma ou mais soluções que foram entregues pra esse cliente.</div>`;
+
+    const extrasHTML = hasSelection ? `
+      <div class="cases-form-extras">
+        <input type="url" name="url"
+               placeholder="URL relacionada (opcional — ex: drive de resultados, deck do case)">
+        <textarea name="conteudo" class="cases-form-textarea-tall"
+                  placeholder="Contexto / o que foi feito / resultados alcançados (opcional)"></textarea>
+        <div class="cases-form-actions">
+          <button type="button" class="cases-form-btn" data-cancel-new-solucao>Cancelar</button>
+          <button type="submit" class="cases-form-btn cases-form-btn--primary">
+            Adicionar ${pickerSelectedIds.size === 1 ? 'solução' : `${pickerSelectedIds.size} soluções`}
+          </button>
+        </div>
+      </div>
+    ` : `
+      <div class="cases-form-actions">
+        <button type="button" class="cases-form-btn" data-cancel-new-solucao>Cancelar</button>
+      </div>
+    `;
+
+    return `
+      <form class="cases-form" data-form="new-solucao" data-case-id="${escapeAttr(c.id)}" autocomplete="off">
+        <div class="cases-form-label">
+          Soluções entregues
+          <small>(escolha as que se aplicam)</small>
+        </div>
+        <div class="cases-sol-picker">
+          ${chipsHTML}
+        </div>
+        ${summary}
+        ${extrasHTML}
+      </form>
     `;
   }
 
@@ -22403,15 +22633,16 @@ renderProgress();
       <a class="cases-instancia-url" href="${escapeAttr(sol.url)}" target="_blank" rel="noopener">
         ↗ abrir
       </a>` : '';
+    const iconHTML = sol.icon ? `<span style="font-size:14px;line-height:1;margin-right:4px">${sol.icon}</span>` : '';
 
     return `
       <div class="cases-instancia">
         <div class="cases-instancia-head">
-          <span class="cases-instancia-name">${escapeHtml(sol.nome)}</span>
+          <span class="cases-instancia-name">${iconHTML}${escapeHtml(sol.nome)}</span>
           ${urlHTML}
           <button type="button" class="cases-icon-btn"
                   data-edit-solucao data-case-id="${escapeAttr(c.id)}" data-sol-id="${escapeAttr(sol.id)}"
-                  title="Editar">✎</button>
+                  title="Editar URL/contexto">✎</button>
           <button type="button" class="cases-icon-btn cases-icon-btn--danger"
                   data-delete-solucao data-case-id="${escapeAttr(c.id)}" data-sol-id="${escapeAttr(sol.id)}"
                   title="Apagar solução">🗑</button>
@@ -22482,11 +22713,23 @@ renderProgress();
     if (t.closest('[data-add-solucao]')) {
       addingSolucaoInCase = t.closest('[data-add-solucao]').dataset.caseId;
       expandedCaseIds.add(addingSolucaoInCase);
+      pickerSelectedIds = new Set();
       renderDrawer();
       return;
     }
     if (t.closest('[data-cancel-new-solucao]')) {
       addingSolucaoInCase = null;
+      pickerSelectedIds = new Set();
+      renderDrawer();
+      return;
+    }
+
+    // Toggle chip do picker
+    const chipBtn = t.closest('[data-sol-toggle]');
+    if (chipBtn && !chipBtn.disabled) {
+      const solId = chipBtn.dataset.solToggle;
+      if (pickerSelectedIds.has(solId)) pickerSelectedIds.delete(solId);
+      else pickerSelectedIds.add(solId);
       renderDrawer();
       return;
     }
@@ -22573,18 +22816,28 @@ renderProgress();
       const caseId = form.dataset.caseId;
       const c = casesData.find(x => x.id === caseId);
       if (!c) return;
-      const nome = form.elements.nome.value.trim();
-      if (!nome) return;
-      const url = form.elements.url.value.trim();
-      const conteudo = form.elements.conteudo.value.trim();
+      if (pickerSelectedIds.size === 0) return;
+      const url = form.elements.url ? form.elements.url.value.trim() : '';
+      const conteudo = form.elements.conteudo ? form.elements.conteudo.value.trim() : '';
+      const nowIso = new Date().toISOString();
       c.solucoes = c.solucoes || [];
-      c.solucoes.push({
-        id: uid('sol'),
-        nome, url, conteudo,
-        criadoEm: new Date().toISOString(),
+      // Cria 1 entrada por solução selecionada — todas compartilham URL/conteúdo
+      pickerSelectedIds.forEach(solId => {
+        const sol = SOLUCOES_CATALOG.find(s => s.id === solId);
+        if (!sol) return;
+        c.solucoes.push({
+          id: uid('sol'),
+          solCatId: sol.id,
+          nome: sol.name,
+          icon: sol.icon,
+          stage: sol.stage,
+          url, conteudo,
+          criadoEm: nowIso,
+        });
       });
       saveCases();
       addingSolucaoInCase = null;
+      pickerSelectedIds = new Set();
       renderDrawer();
       render();
       return;
