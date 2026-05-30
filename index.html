@@ -2970,74 +2970,91 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .cases-instancia-content:empty { display: none; }
 
-/* Forminhos inline (criar/editar instância) */
+/* Forminhos inline (criar/editar case ou solução) */
 .cases-form {
   background: rgba(155,109,255,0.06);
   border: 1px dashed rgba(155,109,255,0.30);
-  border-radius: 8px;
-  padding: 10px 12px;
+  border-radius: 10px;
+  padding: 18px 20px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 .cases-form input,
 .cases-form textarea {
   width: 100%;
   background: rgba(0,0,0,0.40);
   border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 6px;
-  padding: 7px 10px;
-  font-size: 12.5px;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 14px;
   font-weight: 500;
   color: #fff;
   font-family: inherit;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  line-height: 1.4;
+}
+.cases-form input::placeholder,
+.cases-form textarea::placeholder {
+  color: rgba(255,255,255,0.36);
+  font-weight: 500;
 }
 .cases-form input:focus,
 .cases-form textarea:focus {
-  border-color: rgba(155,109,255,0.55);
+  border-color: rgba(155,109,255,0.65);
   background: rgba(0,0,0,0.55);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.12);
 }
-.cases-form textarea { resize: vertical; min-height: 60px; }
+.cases-form textarea {
+  resize: vertical;
+  min-height: 84px;
+  line-height: 1.5;
+}
 .cases-form-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 .cases-form-row input { flex: 1; }
 .cases-form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 10px;
+  margin-top: 4px;
 }
 .cases-form-btn {
   appearance: none;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 6px;
-  padding: 5px 12px;
-  font-size: 11.5px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 11px 20px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.3px;
   color: var(--text-soft);
   cursor: pointer;
   font-family: inherit;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+  min-width: 100px;
 }
 .cases-form-btn:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.08);
   color: #fff;
+  border-color: rgba(255,255,255,0.20);
 }
 .cases-form-btn--primary {
-  background: rgba(155,109,255,0.18);
-  border-color: rgba(155,109,255,0.50);
+  background: rgba(155,109,255,0.22);
+  border-color: rgba(155,109,255,0.55);
   color: #fff;
 }
 .cases-form-btn--primary:hover {
-  background: rgba(155,109,255,0.28);
-  border-color: rgba(155,109,255,0.70);
+  background: rgba(155,109,255,0.34);
+  border-color: rgba(155,109,255,0.80);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(155,109,255,0.25);
 }
+.cases-form-btn:active { transform: translateY(0); }
 .cases-form-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
