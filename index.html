@@ -8922,6 +8922,227 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   .cm-step { grid-template-columns: 40px 1fr; padding: 14px 18px; }
 }
 
+/* ── ID Visual presentation slides (iv-*) ───────── */
+.iv-hero-accent {
+  background: linear-gradient(90deg, #f9a8d4, #fb923c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.iv-section-header { margin-bottom: 36px; }
+.iv-section-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1.05;
+  margin: 12px 0 12px;
+  color: #fff;
+}
+.iv-section-sub {
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: rgba(255,255,255,0.65);
+  max-width: 640px;
+  margin: 0;
+  line-height: 1.55;
+}
+
+.iv-deck-wrap {
+  width: 100%;
+  background: #0a0a14;
+  border-radius: 14px;
+  padding: 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: center;
+}
+.iv-deck-img {
+  display: block;
+  width: 100%;
+  max-width: 980px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.45);
+}
+
+.iv-plans-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+.iv-plan-card {
+  position: relative;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 28px 26px;
+  overflow: hidden;
+}
+.iv-plan-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #f9a8d4, #fb923c);
+  opacity: 0.55;
+}
+.iv-plan-card.is-featured {
+  background: rgba(251,146,60,0.05);
+  border-color: rgba(251,146,60,0.30);
+  box-shadow: 0 8px 28px rgba(251,146,60,0.12);
+}
+.iv-plan-card.is-featured::before {
+  width: 5px;
+  background: linear-gradient(180deg, #fb923c, #ec4899);
+  opacity: 1;
+}
+.iv-plan-tag {
+  display: inline-block;
+  padding: 5px 11px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  border-radius: 99px;
+  background: rgba(249,168,212,0.10);
+  border: 1px solid rgba(249,168,212,0.25);
+  color: #fbcfe8;
+  margin-bottom: 14px;
+}
+.iv-plan-card.is-featured .iv-plan-tag {
+  background: rgba(251,146,60,0.15);
+  border-color: rgba(251,146,60,0.40);
+  color: #fed7aa;
+}
+.iv-plan-name {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.6px;
+  color: #fff;
+  margin: 0 0 8px;
+}
+.iv-plan-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+.iv-plan-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin: 16px 0 18px;
+}
+.iv-plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.iv-plan-features li {
+  display: flex;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.85);
+}
+.iv-plan-features li small {
+  color: rgba(255,255,255,0.55);
+  font-size: 11.5px;
+  display: block;
+  margin-top: 1px;
+}
+.iv-feat-icon {
+  flex-shrink: 0;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(249,168,212,0.18);
+  color: #f9a8d4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  margin-top: 1px;
+}
+.iv-plan-card.is-featured .iv-feat-icon {
+  background: rgba(251,146,60,0.22);
+  color: #fb923c;
+}
+.iv-plan-highlight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(251,146,60,0.10), rgba(236,72,153,0.08));
+  border: 1px solid rgba(251,146,60,0.25);
+  border-radius: 12px;
+}
+.iv-plan-hi-icon {
+  font-size: 22px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.iv-plan-hi-text {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.45;
+}
+
+.iv-diff-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+.iv-diff-card {
+  position: relative;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 22px;
+}
+.iv-diff-num {
+  position: absolute;
+  top: 14px; right: 18px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.30);
+}
+.iv-diff-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(249,168,212,0.14);
+  color: #f9a8d4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.iv-diff-icon--alt {
+  background: rgba(251,146,60,0.14);
+  color: #fb923c;
+}
+.iv-diff-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin: 0 0 6px;
+  color: #fff;
+}
+.iv-diff-text {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .iv-plans-grid,
+  .iv-diff-grid { grid-template-columns: 1fr; }
+}
+
 /* ── Value bar (âncora de preço) ──────────────────── */
 #xpto-value-bar {
   position: fixed;
@@ -12774,6 +12995,101 @@ a.xpto-pricing-btn { text-decoration: none; }
   </div>
 </div>
 <div class="xpto-scroll-hint" id="cm-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  ID VISUAL — fonte do preview do serviço       -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-inner" id="iv-inner">
+
+  <!-- SLIDE 01 — HERO -->
+  <section class="xpto-slide xpto-slide-hero">
+    <div class="xpto-slide-inner" style="text-align:center;">
+      <div class="xpto-eyebrow"><span></span>ID Visual</div>
+      <h1 class="xpto-title">Identidade visual<br>que <span class="iv-hero-accent">comunica antes da palavra.</span></h1>
+      <p class="xpto-subtitle">Da definição estratégica ao manual da marca aplicada — uma identidade construída para crescer com o negócio.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 02 — APRESENTAÇÃO COMPLETA (SVG do Roberto) -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner" style="padding: 0;">
+      <div class="iv-deck-wrap">
+        <img src="fotos turbo/id-visual.svg" alt="Apresentação ID Visual — Turbo Partners" class="iv-deck-img" loading="lazy" />
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 03 — PLANOS -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="iv-section-header">
+        <div class="xpto-eyebrow"><span></span>Planos</div>
+        <h2 class="iv-section-title">Dois caminhos<br>para construir sua marca.</h2>
+        <p class="iv-section-sub">Do essencial pra começar com consistência ao pacote completo de marca com manual aplicado.</p>
+      </div>
+
+      <div class="iv-plans-grid">
+        <!-- STARTER -->
+        <div class="iv-plan-card">
+          <div class="iv-plan-tag">✦ ID Visual Starter</div>
+          <h3 class="iv-plan-name">Starter</h3>
+          <p class="iv-plan-desc">O kit essencial pra marca nascer já com identidade própria — sem cara de Canva e sem inconsistência.</p>
+          <div class="iv-plan-divider"></div>
+          <ul class="iv-plan-features">
+            <li><span class="iv-feat-icon">✓</span><span>Logo principal + variações <small>(horizontal, vertical, símbolo, fundos claro/escuro)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Paleta de cores oficial <small>(primária + secundárias com códigos HEX/RGB/CMYK)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Tipografia da marca <small>(família principal + secundária + hierarquia)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Mini-manual de uso em PDF <small>(do-and-don't básico do logo)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Arquivos abertos <small>(AI, PNG, SVG)</small> entregues organizados</span></li>
+          </ul>
+        </div>
+
+        <!-- ENTERPRISE -->
+        <div class="iv-plan-card is-featured">
+          <div class="iv-plan-tag">🚀 ID Visual Enterprise</div>
+          <h3 class="iv-plan-name">Enterprise</h3>
+          <p class="iv-plan-desc">Identidade visual completa, com universo de marca aplicado, mock-ups e o manual oficial para escalar com consistência.</p>
+          <div class="iv-plan-divider"></div>
+          <ul class="iv-plan-features">
+            <li><span class="iv-feat-icon">✓</span><span><strong>Tudo do Starter</strong> + universo visual estendido</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Sistema de elementos gráficos <small>(grafismos, padrões, ícones próprios)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Manual da Marca completo em PDF <small>(uso, restrições, exemplos)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Identidade aplicada em mock-ups <small>(embalagem, social, cartão, papelaria)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Kit Social Media <small>(templates de feed e stories prontos)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Sessão de apresentação da marca <small>(alinhamento com o time)</small></span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Suporte de aplicação por 30 dias após entrega</span></li>
+          </ul>
+          <div class="iv-plan-highlight">
+            <div class="iv-plan-hi-icon">🎨</div>
+            <div class="iv-plan-hi-text">Marca pronta pra ser aplicada em qualquer ponto de contato sem precisar reinventar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 04 — DIFERENCIAIS -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="iv-section-header">
+        <div class="xpto-eyebrow"><span></span>Diferenciais</div>
+        <h2 class="iv-section-title">Por que faz diferença<br>fazer com a Turbo.</h2>
+      </div>
+      <div class="iv-diff-grid">
+        <div class="iv-diff-card"><div class="iv-diff-num">01</div><div class="iv-diff-icon">🎯</div><h4 class="iv-diff-title">Estratégia antes do traço</h4><p class="iv-diff-text">Cada decisão visual nasce de uma decisão estratégica. Marca que vende é marca que comunica posicionamento.</p></div>
+        <div class="iv-diff-card"><div class="iv-diff-num">02</div><div class="iv-diff-icon iv-diff-icon--alt">🔗</div><h4 class="iv-diff-title">Identidade pronta pra crescer</h4><p class="iv-diff-text">Sistema de marca pensado pra escalar — funciona no Instagram, na embalagem, na loja online e no off-line.</p></div>
+        <div class="iv-diff-card"><div class="iv-diff-num">03</div><div class="iv-diff-icon iv-diff-icon--alt">📐</div><h4 class="iv-diff-title">Manual que evita retrabalho</h4><p class="iv-diff-text">Equipes internas e fornecedores aplicam a marca certo na primeira vez. Menos revisão, mais consistência.</p></div>
+        <div class="iv-diff-card"><div class="iv-diff-num">04</div><div class="iv-diff-icon">⚡</div><h4 class="iv-diff-title">Entrega organizada</h4><p class="iv-diff-text">Arquivos nomeados, pastas estruturadas, formatos exportados certos. Você acha tudo na hora que precisar.</p></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<div class="xpto-scroll-hint" id="iv-scroll-hint">
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
@@ -18346,6 +18662,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'creators',    icon: '🎬', name: 'Creators UGC',         color: '#ffa826', sourceId: 'cp-inner' },
     { id: 'social',      icon: '📱', name: 'Social Media',         color: '#12d490', sourceId: 'sm-inner' },
     { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
+    { id: 'idvisual',    icon: '🎨', name: 'ID Visual',             color: '#f9a8d4', sourceId: 'iv-inner' },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
@@ -18419,6 +18736,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     comunidade: {
       unico: { label: 'Único', value: 'R$ 10.000,00' }
     },
+    idvisual: {
+      starter:    { label: 'Starter',    value: 'R$ 4.997,00' },
+      enterprise: { label: 'Enterprise', value: 'R$ 9.997,00' }
+    },
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.497,00' },
       moda:          { label: 'Moda',          value: 'R$ 15.997,00' },
@@ -18474,6 +18795,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     creators:    ['starter', 'scale', 'enterprise'],
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
+    idvisual:    ['starter', 'enterprise'],
     ecommerce:   ['dnvb']
   };
 
@@ -19282,6 +19604,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const hasCreators   = selected.has('creators');
     const hasSocial     = selected.has('social');
     const hasComunidade = selected.has('comunidade');
+    const hasIdVisual   = selected.has('idvisual');
     const hasEcommerce  = selected.has('ecommerce');
     const ecommerceTier = hasEcommerce ? ([...(enabledTiers.ecommerce || [])][0] || 'dnvb') : null;
     const ecommerceSub  = ecommerceTier ? ECOMMERCE_SUBTYPES[ecommerceTier] : null;
@@ -19436,11 +19759,46 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
+    // Pacotes ID Visual — Starter (essencial) + Enterprise (completo com manual).
+    const idvisualCards = [];
+    if (hasIdVisual) {
+      if (isTierEnabled('idvisual', 'starter')) idvisualCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          ${priceWithAnchor('idvisual', 'starter')}
+          <span class="pacote-tag">Logo + paleta + tipografia</span>
+          <ul class="pacote-features">
+            <li>Logo principal + variações <small>(horizontal, vertical, símbolo)</small></li>
+            <li>Paleta de cores oficial <small>(HEX/RGB/CMYK)</small></li>
+            <li>Tipografia da marca <small>(principal + secundária)</small></li>
+            <li>Mini-manual de uso em PDF</li>
+            <li>Arquivos abertos organizados <small>(AI, PNG, SVG)</small></li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('idvisual', 'enterprise')) idvisualCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          ${priceWithAnchor('idvisual', 'enterprise')}
+          <span class="pacote-tag">Manual completo + identidade aplicada</span>
+          <ul class="pacote-features">
+            <li><strong>Tudo do Starter</strong> + universo visual estendido</li>
+            <li>Sistema de elementos gráficos <small>(grafismos, ícones)</small></li>
+            <li>Manual da Marca completo em PDF</li>
+            <li>Identidade aplicada em mock-ups <small>(embalagem, social, papelaria)</small></li>
+            <li>Kit Social Media <small>(templates de feed e stories)</small></li>
+            <li>Sessão de apresentação da marca</li>
+            <li>Suporte de aplicação por 30 dias</li>
+          </ul>
+        </div>`);
+    }
+
     // E-commerce — layout split (texto à esquerda, preço à direita).
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -19508,7 +19866,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3f. E-commerce — slide com layout split, renderizado a partir do
+      // 3f. Pacotes ID Visual — Starter + Enterprise (layout de 2 colunas)
+      if (idvisualCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-idvisual">
+          <div class="pacotes-slide pacotes-slide--two">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">ID Visual</span></h2>
+              <p class="pacotes-sub">Identidade visual estratégica — do logo ao manual aplicado</p>
+            </div>
+            <div class="pacotes-grid pacotes-grid--two">${idvisualCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3g. E-commerce — slide com layout split, renderizado a partir do
       // subtipo selecionado (DNVB / Moda / Personalizado). Todo o
       // conteúdo (título, features, highlights, exemplos, preço, prazo,
       // parcelas) vem de ECOMMERCE_SUBTYPES[ecommerceTier].
