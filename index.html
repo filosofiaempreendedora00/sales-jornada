@@ -2797,6 +2797,94 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   padding: 24px 26px 80px;
 }
 
+/* Toast de Undo (Gmail-style) — aparece após delete de case/solução */
+.cases-undo-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  z-index: 110;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px 13px 18px;
+  min-width: 320px;
+  max-width: calc(100vw - 32px);
+  background: #1a1a2e;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 12px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  overflow: hidden;
+}
+.cases-undo-toast.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.cases-undo-toast[hidden] { display: none; }
+.cases-undo-toast-icon {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.cases-undo-toast-msg {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.1px;
+  line-height: 1.3;
+}
+.cases-undo-toast-msg strong {
+  color: #fff;
+  font-weight: 800;
+}
+.cases-undo-toast-btn {
+  appearance: none;
+  background: rgba(155,109,255,0.20);
+  border: 1px solid rgba(155,109,255,0.50);
+  border-radius: 7px;
+  padding: 7px 13px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+  flex-shrink: 0;
+}
+.cases-undo-toast-btn:hover {
+  background: rgba(155,109,255,0.32);
+  border-color: rgba(155,109,255,0.75);
+  transform: translateY(-1px);
+}
+.cases-undo-toast-btn:active { transform: translateY(0); }
+.cases-undo-toast-progress {
+  position: absolute;
+  left: 0; bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #9b6dff, #c4a8ff);
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(1);
+}
+.cases-undo-toast.is-running .cases-undo-toast-progress {
+  transition: transform var(--undo-duration, 8s) linear;
+  transform: scaleX(0);
+}
+
+@media (max-width: 600px) {
+  .cases-undo-toast {
+    bottom: 16px;
+    min-width: 0;
+    width: calc(100vw - 32px);
+  }
+}
+
 /* Subnichos */
 .cases-subnicho {
   margin-bottom: 28px;
@@ -12090,6 +12178,14 @@ a.xpto-pricing-btn { text-decoration: none; }
       <!-- Subnichos + cases populados por JS -->
     </div>
   </aside>
+</div>
+
+<!-- Toast de Undo (compartilhado entre case + solução) -->
+<div class="cases-undo-toast" id="cases-undo-toast" hidden role="status" aria-live="polite">
+  <span class="cases-undo-toast-icon">🗑️</span>
+  <span class="cases-undo-toast-msg" id="cases-undo-toast-msg">Apagado</span>
+  <button type="button" class="cases-undo-toast-btn" id="cases-undo-toast-btn">↺ Desfazer</button>
+  <div class="cases-undo-toast-progress" id="cases-undo-toast-progress"></div>
 </div>
 
 </div><!-- /main-content -->
@@ -23238,6 +23334,48 @@ renderProgress();
   const $drawerMeta   = document.getElementById('cases-drawer-meta');
   const $drawerBody   = document.getElementById('cases-drawer-body');
 
+  // ── Undo toast (compartilhado entre delete de case e de solução) ─
+  const $undoToast    = document.getElementById('cases-undo-toast');
+  const $undoMsg      = document.getElementById('cases-undo-toast-msg');
+  const $undoBtn      = document.getElementById('cases-undo-toast-btn');
+  let undoPending = null; // { restore, timer }
+  const UNDO_MS = 8000;
+
+  function hideUndoToast(execute) {
+    if (!$undoToast) return;
+    if (undoPending && undoPending.timer) {
+      clearTimeout(undoPending.timer);
+    }
+    if (execute && undoPending && typeof undoPending.restore === 'function') {
+      try { undoPending.restore(); } catch (e) {}
+    }
+    undoPending = null;
+    $undoToast.classList.remove('is-open', 'is-running');
+    setTimeout(() => { if (!undoPending) $undoToast.hidden = true; }, 240);
+  }
+
+  function showUndoToast({ msg, restore }) {
+    if (!$undoToast || !$undoMsg) return;
+    // Se já tem um pendente, dispensa (commit do delete anterior)
+    if (undoPending && undoPending.timer) clearTimeout(undoPending.timer);
+    undoPending = { restore, timer: null };
+    $undoMsg.innerHTML = msg;
+    $undoToast.hidden = false;
+    $undoToast.classList.remove('is-running');
+    // setTimeout(0) em vez de RAF — RAF pode não disparar em tabs ocultos,
+    // o que deixaria o toast invisível em cenários edge (devtools background, etc).
+    setTimeout(() => {
+      $undoToast.classList.add('is-open');
+      // Restart barra de progresso
+      void $undoToast.offsetWidth; // force reflow pra reiniciar animação
+      $undoToast.style.setProperty('--undo-duration', (UNDO_MS / 1000) + 's');
+      $undoToast.classList.add('is-running');
+    }, 10);
+    undoPending.timer = setTimeout(() => hideUndoToast(false), UNDO_MS);
+  }
+
+  if ($undoBtn) $undoBtn.addEventListener('click', () => hideUndoToast(true));
+
   let currentNichoId = null;          // qual nicho está aberto no drawer
   let expandedCaseIds = new Set();    // cases expandidos (mostra soluções)
   let editingCaseId = null;           // case em edição (form completo: nome+IG+site)
@@ -23760,20 +23898,30 @@ renderProgress();
       return;
     }
 
-    // Delete case
+    // Delete case (soft-delete + toast Undo)
     const delBtn = t.closest('[data-delete-case]');
     if (delBtn) {
       e.stopPropagation();
       const id = delBtn.dataset.caseId;
-      const c = casesData.find(x => x.id === id);
-      if (!c) return;
-      const msg = `Apagar o case "${c.nome}"? Esta ação não pode ser desfeita.`;
-      if (!confirm(msg)) return;
-      casesData = casesData.filter(x => x.id !== id);
+      const idx = casesData.findIndex(x => x.id === id);
+      if (idx < 0) return;
+      const c = casesData[idx];
+      const wasExpanded = expandedCaseIds.has(id);
+      casesData.splice(idx, 1);
       expandedCaseIds.delete(id);
       saveCases();
       renderDrawer();
       render();
+      showUndoToast({
+        msg: `Case <strong>${escapeHtml(c.nome)}</strong> apagado.`,
+        restore: () => {
+          casesData.splice(Math.min(idx, casesData.length), 0, c);
+          if (wasExpanded) expandedCaseIds.add(c.id);
+          saveCases();
+          if (currentNichoId) renderDrawer();
+          render();
+        },
+      });
       return;
     }
 
@@ -23815,20 +23963,32 @@ renderProgress();
       return;
     }
 
-    // Delete solução
+    // Delete solução (soft-delete + toast Undo)
     const delSol = t.closest('[data-delete-solucao]');
     if (delSol) {
       const caseId = delSol.dataset.caseId;
       const solId = delSol.dataset.solId;
       const c = casesData.find(x => x.id === caseId);
-      if (!c) return;
-      const sol = (c.solucoes || []).find(s => s.id === solId);
-      if (!sol) return;
-      if (!confirm(`Apagar a solução "${sol.nome}"?`)) return;
-      c.solucoes = (c.solucoes || []).filter(s => s.id !== solId);
+      if (!c || !Array.isArray(c.solucoes)) return;
+      const idx = c.solucoes.findIndex(s => s.id === solId);
+      if (idx < 0) return;
+      const sol = c.solucoes[idx];
+      c.solucoes.splice(idx, 1);
       saveCases();
       renderDrawer();
       render();
+      showUndoToast({
+        msg: `Solução <strong>${escapeHtml(sol.nome)}</strong> apagada.`,
+        restore: () => {
+          const target = casesData.find(x => x.id === caseId);
+          if (!target) return; // case foi apagado depois, undo apenas da solução não faz sentido
+          target.solucoes = target.solucoes || [];
+          target.solucoes.splice(Math.min(idx, target.solucoes.length), 0, sol);
+          saveCases();
+          if (currentNichoId) renderDrawer();
+          render();
+        },
+      });
       return;
     }
   });
