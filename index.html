@@ -4355,6 +4355,279 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   min-height: 0;
 }
 
+/* Tabs no toolbar (Preview / Concessões) */
+.prop-preview-tabs {
+  display: inline-flex;
+  gap: 4px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 3px;
+}
+.prop-preview-tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s, color 0.15s;
+  position: relative;
+}
+.prop-preview-tab:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.prop-preview-tab.is-active {
+  background: linear-gradient(180deg, rgba(155,109,255,0.18), rgba(155,109,255,0.12));
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(155,109,255,0.40);
+}
+.prop-preview-tab-icon { font-size: 14px; line-height: 1; }
+.prop-preview-tab-badge {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 2px 6px;
+  border-radius: 99px;
+  background: rgba(155,109,255,0.20);
+  color: #d6c5ff;
+  border: 1px solid rgba(155,109,255,0.30);
+}
+
+/* Painéis (preview iframe vs grid de concessões) */
+.prop-pane {
+  display: none;
+  flex: 1;
+  min-height: 0;
+}
+.prop-pane.is-active { display: flex; flex-direction: column; }
+.prop-pane[data-prop-pane-content="preview"] { padding: 0; }
+.prop-pane[data-prop-pane-content="concessoes"] {
+  background: var(--bg);
+  overflow-y: auto;
+  padding: 28px clamp(20px, 3vw, 36px) 60px;
+}
+
+/* Grid de cards das concessões */
+.conc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.conc-card {
+  position: relative;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(155,109,255,0.20);
+  border-radius: 16px;
+  padding: 26px 22px 22px;
+  cursor: pointer;
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  display: flex;
+  flex-direction: column;
+  min-height: 230px;
+  overflow: hidden;
+}
+.conc-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top right, var(--accent, rgba(155,109,255,0.18)), transparent 60%);
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.conc-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(155,109,255,0.50);
+  box-shadow: 0 12px 30px rgba(155,109,255,0.16);
+}
+.conc-card:hover::before { opacity: 1; }
+.conc-card-eyebrow {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--accent-soft, #c4a8ff);
+  margin-bottom: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.conc-card-eyebrow::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent-soft, #c4a8ff);
+  display: inline-block;
+}
+.conc-card-icon {
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 14px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+}
+.conc-card-title {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  color: #fff;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+.conc-card-desc {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-soft);
+  margin: 0 0 18px;
+  flex: 1;
+}
+.conc-card-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--accent-soft, #c4a8ff);
+  letter-spacing: 0.3px;
+  align-self: flex-start;
+}
+.conc-card-action::after {
+  content: '→';
+  transition: transform 0.18s;
+}
+.conc-card:hover .conc-card-action::after { transform: translateX(3px); }
+
+/* Modal de leitura da concessão */
+.conc-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: none;
+  background: rgba(7,7,15,0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+.conc-modal.is-open { display: flex; opacity: 1; align-items: center; justify-content: center; padding: clamp(16px, 3vw, 40px); }
+.conc-modal-panel {
+  background: #0a0a14;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  width: min(880px, 100%);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.55);
+}
+.conc-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 26px 18px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.conc-modal-icon { font-size: 28px; line-height: 1; }
+.conc-modal-title-wrap { flex: 1; min-width: 0; }
+.conc-modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+.conc-modal-eyebrow {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--accent-soft, #c4a8ff);
+  margin-bottom: 3px;
+}
+.conc-modal-close {
+  appearance: none;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  font-size: 14px;
+  color: var(--text-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.conc-modal-close:hover { background: rgba(255,255,255,0.10); color: #fff; }
+.conc-modal-body {
+  overflow-y: auto;
+  padding: 28px clamp(22px, 4vw, 40px);
+  flex: 1;
+}
+
+/* Tipografia do conteúdo da concessão */
+.conc-content {
+  color: rgba(255,255,255,0.85);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.conc-content h1, .conc-content h2, .conc-content h3, .conc-content h4 {
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1.3;
+  margin: 28px 0 10px;
+}
+.conc-content h2 { font-size: 22px; padding-bottom: 8px; border-bottom: 1px solid rgba(155,109,255,0.20); }
+.conc-content h3 { font-size: 17px; color: #c4a8ff; }
+.conc-content h4 { font-size: 14px; color: #c4a8ff; text-transform: uppercase; letter-spacing: 0.8px; }
+.conc-content p { margin: 0 0 12px; }
+.conc-content p:empty { display: none; }
+.conc-content strong { color: #fff; font-weight: 700; }
+.conc-content em { color: rgba(255,255,255,0.95); font-style: italic; }
+.conc-content ul, .conc-content ol { padding-left: 22px; margin: 0 0 14px; }
+.conc-content li { margin-bottom: 6px; }
+.conc-content table.conc-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0;
+  font-size: 13px;
+  background: rgba(255,255,255,0.02);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.conc-content table.conc-table th,
+.conc-content table.conc-table td {
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+.conc-content table.conc-table th {
+  background: rgba(155,109,255,0.12);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+.conc-content table.conc-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+@media (max-width: 700px) {
+  .conc-grid { grid-template-columns: 1fr; }
+  .prop-preview-tabs { flex: 1; }
+  .prop-preview-meta { display: none; }
+}
+
 /* ── APRESENTAÇÃO ────────────────────────────────── */
 .apresentacao-wrap {
   display: flex;
@@ -10803,6 +11076,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 }
 
 </style>
+<script src="concessoes-data.js"></script>
 </head>
 <body>
 
@@ -11464,11 +11738,42 @@ a.xpto-pricing-btn { text-decoration: none; }
     </div>
     <div class="prop-preview-wrap">
       <div class="prop-preview-toolbar">
-        <span class="prop-preview-title">Preview da proposta</span>
+        <div class="prop-preview-tabs" role="tablist">
+          <button type="button" class="prop-preview-tab is-active" data-prop-pane="preview" role="tab" aria-selected="true">
+            <span class="prop-preview-tab-icon">📄</span>
+            <span>Preview</span>
+          </button>
+          <button type="button" class="prop-preview-tab" data-prop-pane="concessoes" role="tab" aria-selected="false">
+            <span class="prop-preview-tab-icon">🤝</span>
+            <span>Concessões</span>
+            <span class="prop-preview-tab-badge">3</span>
+          </button>
+        </div>
         <span class="prop-preview-meta" id="prop-preview-meta">— selecione ao menos uma solução</span>
         <button class="prop-btn prop-btn--primary prop-btn--compact" id="prop-download-top" type="button">⬇ Baixar HTML</button>
       </div>
-      <iframe class="prop-preview-frame" id="prop-preview-frame" title="Preview da proposta"></iframe>
+      <div class="prop-pane is-active" data-prop-pane-content="preview">
+        <iframe class="prop-preview-frame" id="prop-preview-frame" title="Preview da proposta"></iframe>
+      </div>
+      <div class="prop-pane" data-prop-pane-content="concessoes">
+        <div class="conc-grid" id="conc-grid"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal de leitura de Concessão -->
+  <div class="conc-modal" id="conc-modal" aria-hidden="true">
+    <div class="conc-modal-panel" role="dialog" aria-modal="true" aria-labelledby="conc-modal-title">
+      <header class="conc-modal-header">
+        <span class="conc-modal-icon" id="conc-modal-icon">🤝</span>
+        <div class="conc-modal-title-wrap">
+          <div class="conc-modal-eyebrow">Concessões comerciais</div>
+          <h2 class="conc-modal-title" id="conc-modal-title">—</h2>
+        </div>
+        <button type="button" class="conc-modal-close" id="conc-modal-close" aria-label="Fechar">✕</button>
+      </header>
+      <div class="conc-modal-body">
+        <article class="conc-content" id="conc-modal-content"></article>
+      </div>
     </div>
   </div>
 </div>
@@ -23321,6 +23626,128 @@ renderProgress();
 
   // Primeira render
   render();
+})();
+
+// ══════════════════════════════════════════════════════════
+// CONCESSÕES — tab no preview da Proposta + cards + modal leitura.
+// Dados em window.__CONCESSOES__ (carregado de concessoes-data.js).
+// ══════════════════════════════════════════════════════════
+(function () {
+  const CONC = window.__CONCESSOES__ || {};
+  // Metadata por slug — ícone, descrição curta, accent color (CSS var)
+  const META = {
+    onboarding: {
+      icon: '🚀',
+      eyebrow: 'Pré-fechamento',
+      desc: 'Itens, contrapartidas e o que nunca conceder antes da assinatura.',
+      accent: 'rgba(155,109,255,0.18)',
+      accentSoft: '#c4a8ff',
+    },
+    creators: {
+      icon: '🎬',
+      eyebrow: 'Produto Creators',
+      desc: 'Concessões e overdeliveries pra negociar UGC sem furar margem.',
+      accent: 'rgba(255,168,38,0.18)',
+      accentSoft: '#ffc266',
+    },
+    socialmedia: {
+      icon: '📱',
+      eyebrow: 'Produto Social Media',
+      desc: 'Régua de negociação pra Social Media — Starter, Enterprise e bônus.',
+      accent: 'rgba(18,212,144,0.18)',
+      accentSoft: '#5fe1ad',
+    },
+  };
+  // Ordem de exibição preferida
+  const ORDER = ['onboarding', 'creators', 'socialmedia'];
+
+  const $grid    = document.getElementById('conc-grid');
+  const $modal   = document.getElementById('conc-modal');
+  const $mTitle  = document.getElementById('conc-modal-title');
+  const $mIcon   = document.getElementById('conc-modal-icon');
+  const $mBody   = document.getElementById('conc-modal-content');
+  const $mClose  = document.getElementById('conc-modal-close');
+  if (!$grid || !$modal) return;
+
+  // Renderiza cards
+  function renderGrid() {
+    const slugs = ORDER.filter(s => CONC[s]).concat(
+      Object.keys(CONC).filter(s => !ORDER.includes(s))
+    );
+    if (slugs.length === 0) {
+      $grid.innerHTML = '<p style="color:rgba(255,255,255,0.45);grid-column:1/-1;text-align:center;padding:40px 0;font-size:14px">Nenhuma concessão cadastrada ainda.</p>';
+      return;
+    }
+    $grid.innerHTML = slugs.map(slug => {
+      const data = CONC[slug];
+      const meta = META[slug] || { icon: '📄', eyebrow: 'Documento', desc: '', accent: 'rgba(155,109,255,0.18)', accentSoft: '#c4a8ff' };
+      return `
+        <article class="conc-card" data-conc-slug="${slug}"
+                 style="--accent: ${meta.accent}; --accent-soft: ${meta.accentSoft};">
+          <div class="conc-card-eyebrow">${meta.eyebrow}</div>
+          <div class="conc-card-icon">${meta.icon}</div>
+          <h3 class="conc-card-title">${data.title}</h3>
+          <p class="conc-card-desc">${meta.desc}</p>
+          <span class="conc-card-action">Abrir guia</span>
+        </article>
+      `;
+    }).join('');
+  }
+
+  // Modal open/close
+  function openModal(slug) {
+    const data = CONC[slug];
+    if (!data) return;
+    const meta = META[slug] || { icon: '📄', accentSoft: '#c4a8ff' };
+    $mTitle.textContent = data.title;
+    $mIcon.textContent = meta.icon;
+    $mBody.innerHTML = data.html;
+    $modal.style.setProperty('--accent-soft', meta.accentSoft);
+    $modal.classList.add('is-open');
+    $modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    $modal.classList.remove('is-open');
+    $modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  // Click delegation no grid
+  $grid.addEventListener('click', e => {
+    const card = e.target.closest('.conc-card[data-conc-slug]');
+    if (!card) return;
+    openModal(card.dataset.concSlug);
+  });
+  // Close handlers
+  $mClose.addEventListener('click', closeModal);
+  $modal.addEventListener('click', e => { if (e.target === $modal) closeModal(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $modal.classList.contains('is-open')) closeModal();
+  });
+
+  // Tabs do preview (Preview / Concessões)
+  const tabs = Array.from(document.querySelectorAll('.prop-preview-tab[data-prop-pane]'));
+  const panes = Array.from(document.querySelectorAll('.prop-pane[data-prop-pane-content]'));
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.propPane;
+      tabs.forEach(t => {
+        const active = t === tab;
+        t.classList.toggle('is-active', active);
+        t.setAttribute('aria-selected', active ? 'true' : 'false');
+      });
+      panes.forEach(p => {
+        p.classList.toggle('is-active', p.dataset.propPaneContent === target);
+      });
+    });
+  });
+
+  // Render inicial dos cards
+  renderGrid();
+
+  // API mínima pra uso externo
+  window.__concessoes = { open: openModal, close: closeModal, refresh: renderGrid };
 })();
 
 // ══════════════════════════════════════════════════════════
