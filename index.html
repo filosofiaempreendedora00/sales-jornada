@@ -13002,7 +13002,12 @@ a.xpto-pricing-btn { text-decoration: none; }
 
 <!-- ══════════════════════════════════════════════ -->
 <!--  ID VISUAL — fonte do preview do serviço       -->
+<!--  (oculto fora do modal — só serve de fonte     -->
+<!--  pro preview clonar via sourceId)               -->
 <!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="iv-overlay"></div>
+<button class="xpto-close" id="iv-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="iv-modal">
 <div class="xpto-inner" id="iv-inner">
 
   <!-- SLIDE 01 — HERO -->
@@ -13088,7 +13093,8 @@ a.xpto-pricing-btn { text-decoration: none; }
     </div>
   </section>
 
-</div>
+</div><!-- /#iv-inner -->
+</div><!-- /#iv-modal -->
 <div class="xpto-scroll-hint" id="iv-scroll-hint">
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
