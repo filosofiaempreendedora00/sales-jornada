@@ -3194,6 +3194,235 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-weight: 800;
 }
 
+/* ── Detalhes colapsáveis no form de edição ──────── */
+.cases-form-details {
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 0;
+  overflow: hidden;
+}
+.cases-form-details > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.78);
+  user-select: none;
+  transition: background 0.15s;
+}
+.cases-form-details > summary::-webkit-details-marker { display: none; }
+.cases-form-details > summary::after {
+  content: '▾';
+  margin-left: auto;
+  font-size: 11px;
+  opacity: 0.6;
+  transition: transform 0.2s;
+}
+.cases-form-details[open] > summary::after { transform: rotate(180deg); }
+.cases-form-details > summary:hover { background: rgba(255,255,255,0.03); }
+.cases-form-details > summary small {
+  font-weight: 500;
+  color: rgba(255,255,255,0.40);
+  font-size: 11px;
+  margin-left: 4px;
+}
+.cases-form-details-body {
+  padding: 14px 16px 16px;
+  border-top: 1px dashed rgba(255,255,255,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cases-form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.cases-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.cases-form-field-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.50);
+}
+.cases-form-field select {
+  width: 100%;
+  background: rgba(0,0,0,0.40);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 11px 12px;
+  font-size: 13.5px;
+  color: #fff;
+  font-family: inherit;
+  font-weight: 500;
+  outline: none;
+  color-scheme: dark;
+  cursor: pointer;
+}
+.cases-form-field select:focus {
+  border-color: rgba(155,109,255,0.55);
+  background: rgba(0,0,0,0.55);
+}
+.cases-form-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 12px;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.80);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cases-form-toggle:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.16);
+}
+.cases-form-toggle input[type="checkbox"] {
+  accent-color: #9b6dff;
+  width: 16px; height: 16px;
+  cursor: pointer;
+}
+
+/* ── Badges de meta no card do case ──────────────── */
+.cases-meta-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 14px 12px;
+}
+.cases-meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.78);
+}
+.cases-meta-badge--ecom {
+  background: rgba(13,207,232,0.12);
+  border-color: rgba(13,207,232,0.30);
+  color: #67e8f9;
+}
+.cases-meta-badge--lead {
+  background: rgba(96,165,250,0.12);
+  border-color: rgba(96,165,250,0.30);
+  color: #93c5fd;
+}
+.cases-meta-badge--turbo {
+  background: linear-gradient(135deg, rgba(155,109,255,0.18), rgba(13,207,232,0.14));
+  border-color: rgba(155,109,255,0.40);
+  color: #d6c5ff;
+}
+.cases-meta-badge--es {
+  background: rgba(252,211,77,0.14);
+  border-color: rgba(252,211,77,0.32);
+  color: #fde68a;
+}
+.cases-meta-badge--neutral {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.72);
+}
+
+/* ── Bloco de detalhes (desafios / estratégia / resultados) ─── */
+.cases-detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding: 14px;
+  background: rgba(0,0,0,0.20);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+}
+.cases-detail-block { }
+.cases-detail-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--nicho-color, #c4a8ff);
+  margin: 0 0 6px;
+}
+.cases-detail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.cases-detail-list li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.80);
+  margin-bottom: 4px;
+}
+.cases-detail-list li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 9px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--nicho-color, #c4a8ff);
+  opacity: 0.7;
+}
+.cases-detail-text {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.80);
+  margin: 0;
+}
+
+/* ── Botão de importação no banner WIP ──────────── */
+.cases-wip-import {
+  appearance: none;
+  background: linear-gradient(135deg, rgba(252,211,77,0.22), rgba(245,158,11,0.18));
+  border: 1px solid rgba(252,211,77,0.50);
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: #fef3c7;
+  cursor: pointer;
+  font-family: inherit;
+  margin-top: 10px;
+  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+}
+.cases-wip-import:hover {
+  background: linear-gradient(135deg, rgba(252,211,77,0.32), rgba(245,158,11,0.28));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(252,211,77,0.25);
+}
+.cases-wip-import:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 /* Botões "Adicionar" — versão respirada (v2) */
 .cases-add-btn {
   appearance: none;
@@ -11077,6 +11306,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 
 </style>
 <script src="concessoes-data.js"></script>
+<script src="cases-seed.js?v=2"></script>
 </head>
 <body>
 
@@ -11785,10 +12015,15 @@ a.xpto-pricing-btn { text-decoration: none; }
   <div class="cases-wrap">
     <div class="cases-wip-banner" role="status">
       <span class="cases-wip-banner-icon">🚧</span>
-      <p class="cases-wip-banner-text">
-        <strong>Em construção</strong>
-        A biblioteca de Cases ainda está em desenvolvimento — fluxos, dados e visual podem mudar. Cadastros ficam salvos no seu navegador (localStorage) e podem ser perdidos em atualizações.
-      </p>
+      <div style="flex:1">
+        <p class="cases-wip-banner-text">
+          <strong>Em construção</strong>
+          A biblioteca de Cases ainda está em desenvolvimento — fluxos, dados e visual podem mudar. Cadastros ficam salvos no seu navegador (localStorage) e podem ser perdidos em atualizações.
+        </p>
+        <button type="button" class="cases-wip-import" id="cases-import-btn" hidden>
+          📥 Importar 27 cases do PDF
+        </button>
+      </div>
     </div>
     <header class="cases-header">
       <div class="cases-header-left">
@@ -22783,6 +23018,19 @@ renderProgress();
       subnichos: ['Terapia', 'Mindfulness & apps', 'Coaching', 'Hábitos'] },
     { id: 'fin',       emoji: '💰', name: 'Serviços Financeiros',     color: '#22c55e',
       subnichos: ['Investimentos', 'Crédito', 'Seguros', 'Educação financeira'] },
+    // ── Nichos adicionados pelo seed inicial do PDF ──
+    { id: 'editora',     emoji: '📖', name: 'Editoras & Livrarias',    color: '#8b5cf6',
+      subnichos: ['Livros', 'Assinaturas', 'Conteúdo educacional'] },
+    { id: 'turismo',     emoji: '🏨', name: 'Turismo & Hospitalidade', color: '#0ea5e9',
+      subnichos: ['Pousadas', 'Hotéis', 'Experiências'] },
+    { id: 'oticas',      emoji: '👓', name: 'Óticas & Eyewear',         color: '#06b6d4',
+      subnichos: ['Receituários', 'Solares', 'Lentes de contato'] },
+    { id: 'imobiliario', emoji: '🏗️', name: 'Imobiliário & Construção', color: '#a16207',
+      subnichos: ['Alto padrão', 'Médio padrão', 'Comercial'] },
+    { id: 'clinicas',    emoji: '🩺', name: 'Saúde & Clínicas',         color: '#14b8a6',
+      subnichos: ['Clínica médica', 'Estética', 'Especialidades', 'Telessaúde'] },
+    { id: 'b2b',         emoji: '🏭', name: 'B2B Industrial',           color: '#64748b',
+      subnichos: ['Materiais & Papel', 'Equipamentos', 'Insumos'] },
   ];
 
   // Estado in-memory + sync localStorage
@@ -22802,7 +23050,24 @@ renderProgress();
     }
   } catch (e) {}
 
-  // Migration: instancias → solucoes; garantir instagram/site
+  // Campos novos extras de cada case (descritivos, alimentam o PDF de cases)
+  // Ficam ocultos no form até o usuário expandir 'Mais detalhes'.
+  const CASE_EXTRA_FIELDS = ['funil', 'siteTurbo', 'operacao', 'desafios', 'estrategia', 'resultados', 'clienteLocalEs'];
+  const FUNIL_OPTIONS = [
+    { value: '',           label: '— não informado —' },
+    { value: 'ecommerce',  label: 'E-commerce' },
+    { value: 'lead',       label: 'Lead' },
+  ];
+  const OPERACAO_OPTIONS = [
+    { value: '',      label: '— não informado —' },
+    { value: 'b2c',   label: 'B2C' },
+    { value: 'b2b',   label: 'B2B' },
+    { value: 'ambos', label: 'B2B e B2C' },
+  ];
+  function funilLabel(v) { return (FUNIL_OPTIONS.find(o => o.value === v) || {}).label || ''; }
+  function operacaoLabel(v) { return (OPERACAO_OPTIONS.find(o => o.value === v) || {}).label || ''; }
+
+  // Migration: instancias → solucoes; garantir instagram/site + campos novos
   let migrated = false;
   casesData.forEach(c => {
     if (Array.isArray(c.instancias) && !Array.isArray(c.solucoes)) {
@@ -22813,6 +23078,14 @@ renderProgress();
     if (!('instagram' in c)) { c.instagram = ''; migrated = true; }
     if (!('site' in c))      { c.site = '';      migrated = true; }
     if (!Array.isArray(c.solucoes)) { c.solucoes = []; migrated = true; }
+    // Novos campos descritivos
+    if (!('funil' in c))          { c.funil = '';          migrated = true; }
+    if (!('siteTurbo' in c))      { c.siteTurbo = false;   migrated = true; }
+    if (!('operacao' in c))       { c.operacao = '';       migrated = true; }
+    if (!('desafios' in c))       { c.desafios = '';       migrated = true; }
+    if (!('estrategia' in c))     { c.estrategia = '';     migrated = true; }
+    if (!('resultados' in c))     { c.resultados = '';     migrated = true; }
+    if (!('clienteLocalEs' in c)) { c.clienteLocalEs = false; migrated = true; }
   });
 
   function saveCases() {
@@ -23120,8 +23393,14 @@ renderProgress();
     const solucoes = Array.isArray(c.solucoes) ? c.solucoes : [];
     const count = solucoes.length;
 
-    // Modo edição: form completo (nome + IG + site)
+    // Modo edição: form completo (nome + IG + site + 6 campos colapsáveis)
     if (isEditing) {
+      const funilOpts = FUNIL_OPTIONS.map(o =>
+        `<option value="${escapeAttr(o.value)}"${c.funil === o.value ? ' selected' : ''}>${escapeHtml(o.label)}</option>`
+      ).join('');
+      const operOpts = OPERACAO_OPTIONS.map(o =>
+        `<option value="${escapeAttr(o.value)}"${c.operacao === o.value ? ' selected' : ''}>${escapeHtml(o.label)}</option>`
+      ).join('');
       return `
         <article class="cases-item is-editing" data-case-id="${escapeAttr(c.id)}">
           <form class="cases-form" data-form="edit-case" data-case-id="${escapeAttr(c.id)}"
@@ -23138,6 +23417,51 @@ renderProgress();
               <input type="text" name="site" value="${escapeAttr(c.site || '')}"
                      placeholder="Site do cliente (opcional)">
             </div>
+
+            <details class="cases-form-details">
+              <summary>
+                <span>📋 Mais detalhes do case</span>
+                <small>(funil, operação, desafios, estratégia, resultados)</small>
+              </summary>
+              <div class="cases-form-details-body">
+                <div class="cases-form-grid-2">
+                  <label class="cases-form-field">
+                    <span class="cases-form-field-label">Funil</span>
+                    <select name="funil">${funilOpts}</select>
+                  </label>
+                  <label class="cases-form-field">
+                    <span class="cases-form-field-label">Tipo de operação</span>
+                    <select name="operacao">${operOpts}</select>
+                  </label>
+                </div>
+                <div class="cases-form-grid-2">
+                  <label class="cases-form-toggle">
+                    <input type="checkbox" name="siteTurbo"${c.siteTurbo ? ' checked' : ''}>
+                    <span>Site feito pela Turbo</span>
+                  </label>
+                  <label class="cases-form-toggle">
+                    <input type="checkbox" name="clienteLocalEs"${c.clienteLocalEs ? ' checked' : ''}>
+                    <span>⭐ Cliente local (ES)</span>
+                  </label>
+                </div>
+                <label class="cases-form-field">
+                  <span class="cases-form-field-label">Desafios</span>
+                  <textarea name="desafios" class="cases-form-textarea-tall"
+                            placeholder="O que o cliente precisava resolver — uma frase por linha">${escapeHtml(c.desafios || '')}</textarea>
+                </label>
+                <label class="cases-form-field">
+                  <span class="cases-form-field-label">Estratégia</span>
+                  <textarea name="estrategia" class="cases-form-textarea-tall"
+                            placeholder="O que a Turbo fez">${escapeHtml(c.estrategia || '')}</textarea>
+                </label>
+                <label class="cases-form-field">
+                  <span class="cases-form-field-label">Resultados</span>
+                  <textarea name="resultados" class="cases-form-textarea-tall"
+                            placeholder="Números, conquistas, marcos">${escapeHtml(c.resultados || '')}</textarea>
+                </label>
+              </div>
+            </details>
+
             <div class="cases-form-actions">
               <button type="button" class="cases-form-btn" data-cancel-edit-case>Cancelar</button>
               <button type="submit" class="cases-form-btn cases-form-btn--primary">Salvar</button>
@@ -23175,8 +23499,48 @@ renderProgress();
            <span>🌐</span><span>+ site</span>
          </button>`;
 
+    // Badges de meta — Funil / Site Turbo / Cliente ES — só os preenchidos
+    const metaBadges = [];
+    if (c.funil) {
+      const cls = c.funil === 'ecommerce' ? 'cases-meta-badge--ecom' : 'cases-meta-badge--lead';
+      metaBadges.push(`<span class="cases-meta-badge ${cls}" title="Funil">
+        ${c.funil === 'ecommerce' ? '🛒 E-commerce' : '🎯 Lead'}
+      </span>`);
+    }
+    if (c.siteTurbo) {
+      metaBadges.push(`<span class="cases-meta-badge cases-meta-badge--turbo" title="Site feito pela Turbo">🚀 Site Turbo</span>`);
+    }
+    if (c.clienteLocalEs) {
+      metaBadges.push(`<span class="cases-meta-badge cases-meta-badge--es" title="Cliente local ES">⭐ ES</span>`);
+    }
+    if (c.operacao) {
+      metaBadges.push(`<span class="cases-meta-badge cases-meta-badge--neutral" title="Tipo de operação">${escapeHtml(operacaoLabel(c.operacao))}</span>`);
+    }
+    const metaBadgesHTML = metaBadges.length
+      ? `<div class="cases-meta-badges">${metaBadges.join('')}</div>` : '';
+
+    // Bloco de detalhes (desafios/estratégia/resultados) — só quando expandido E preenchido
+    const detalheBlocks = [];
+    function detalheBlock(icon, label, text) {
+      if (!text || !text.trim()) return '';
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      const list = lines.length > 1
+        ? `<ul class="cases-detail-list">${lines.map(l => `<li>${escapeHtml(l)}</li>`).join('')}</ul>`
+        : `<p class="cases-detail-text">${escapeHtml(lines[0] || '')}</p>`;
+      return `
+        <section class="cases-detail-block">
+          <h4 class="cases-detail-label">${icon} ${label}</h4>
+          ${list}
+        </section>`;
+    }
+    detalheBlocks.push(detalheBlock('🎯', 'Desafios', c.desafios));
+    detalheBlocks.push(detalheBlock('🧠', 'Estratégia', c.estrategia));
+    detalheBlocks.push(detalheBlock('🏆', 'Resultados', c.resultados));
+    const detalhesHTML = detalheBlocks.filter(Boolean).join('');
+
     const bodyHTML = isExpanded ? `
       <div class="cases-item-body">
+        ${detalhesHTML ? `<div class="cases-detail-stack">${detalhesHTML}</div>` : ''}
         ${renderSolucoes(c)}
       </div>
     ` : '';
@@ -23202,6 +23566,7 @@ renderProgress();
                   data-toggle-case data-case-id="${escapeAttr(c.id)}"
                   title="${isExpanded ? 'Recolher' : 'Expandir'}">›</button>
         </header>
+        ${metaBadgesHTML}
         ${bodyHTML}
       </article>
     `;
@@ -23499,7 +23864,16 @@ renderProgress();
       if (!nome) return;
       const instagram = normalizeInstagram(form.elements.instagram.value);
       const site = normalizeSite(form.elements.site.value);
-      casesData[i] = { ...casesData[i], nome, instagram, site };
+      const patch = { nome, instagram, site };
+      // Campos extras (só salva se o form trouxe o input — todos vêm dentro do <details>)
+      if (form.elements.funil)          patch.funil = form.elements.funil.value || '';
+      if (form.elements.operacao)       patch.operacao = form.elements.operacao.value || '';
+      if (form.elements.siteTurbo)      patch.siteTurbo = !!form.elements.siteTurbo.checked;
+      if (form.elements.clienteLocalEs) patch.clienteLocalEs = !!form.elements.clienteLocalEs.checked;
+      if (form.elements.desafios)       patch.desafios = form.elements.desafios.value.trim();
+      if (form.elements.estrategia)     patch.estrategia = form.elements.estrategia.value.trim();
+      if (form.elements.resultados)     patch.resultados = form.elements.resultados.value.trim();
+      casesData[i] = { ...casesData[i], ...patch };
       saveCases();
       editingCaseId = null;
       renderDrawer();
@@ -23604,6 +23978,53 @@ renderProgress();
     });
   }
 
+  // ── Import do seed do PDF ─────────────────────────
+  // Roda só quando localStorage está vazio. Cases já cadastrados
+  // pelo usuário NUNCA são sobrescritos.
+  function importSeed() {
+    const seed = window.__CASES_SEED__;
+    if (!Array.isArray(seed) || seed.length === 0) {
+      alert('Nenhum seed disponível (cases-seed.js não carregou).');
+      return 0;
+    }
+    let added = 0;
+    seed.forEach(s => {
+      // Skip se já existe um case com mesmo nome no mesmo nicho/subnicho
+      const dup = casesData.find(c =>
+        c.nichoId === s.nichoId &&
+        c.subnicho === s.subnicho &&
+        normalize(c.nome) === normalize(s.nome)
+      );
+      if (dup) return;
+      casesData.push({ ...s });
+      added++;
+    });
+    if (added > 0) saveCases();
+    render();
+    if (currentNichoId) renderDrawer();
+    return added;
+  }
+
+  // Botão "Importar 27 cases" no banner WIP — só aparece se localStorage
+  // estiver vazio (pra não tentar reimportar sobre cases já trabalhados).
+  const $importBtn = document.getElementById('cases-import-btn');
+  if ($importBtn) {
+    const updateBtnVisibility = () => {
+      const hasSeed = Array.isArray(window.__CASES_SEED__) && window.__CASES_SEED__.length > 0;
+      $importBtn.hidden = !(hasSeed && casesData.length === 0);
+      if (hasSeed) {
+        $importBtn.textContent = `📥 Importar ${window.__CASES_SEED__.length} cases do PDF`;
+      }
+    };
+    updateBtnVisibility();
+    $importBtn.addEventListener('click', () => {
+      if (!confirm(`Importar ${window.__CASES_SEED__?.length || 0} cases do PDF? Cases já cadastrados não serão duplicados.`)) return;
+      const added = importSeed();
+      alert(`✓ ${added} ${added === 1 ? 'case importado' : 'cases importados'}.`);
+      updateBtnVisibility();
+    });
+  }
+
   // Expõe API mínima pra futuras integrações
   window.__cases = {
     NICHOS,
@@ -23622,6 +24043,7 @@ renderProgress();
     open: openDrawer,
     close: closeDrawer,
     refresh: render,
+    importSeed,
   };
 
   // Primeira render
