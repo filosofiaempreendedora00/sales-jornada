@@ -20136,8 +20136,16 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       if (s.sourceId) {
         const node = document.getElementById(s.sourceId);
         if (!node) continue;
+        // O lazyVideos() IIFE remove src dos <video> pra evitar saturação
+        // do pool de conexões. Quando clonamos pro preview, precisamos
+        // restaurar o src a partir de data-lazy-src — senão os vídeos
+        // chegam vazios no iframe.
+        let html = node.innerHTML.replace(
+          /<video\b([^>]*?)\bdata-lazy-src="([^"]+)"([^>]*?)>/gi,
+          '<video$1 src="$2" data-lazy-src="$2"$3>'
+        );
         sections.push(`<section class="proposal-section proposal-section--${s.id}">
-          <div class="xpto-inner">${node.innerHTML}</div>
+          <div class="xpto-inner">${html}</div>
         </section>`);
       } else if (s.externalUrl) {
         try {
@@ -24173,35 +24181,60 @@ renderProgress();
 })();
 
 // ══════════════════════════════════════════════════════════
-// LAZY <video> — só carrega quando o elemento entra em viewport.
-// Os ~17 vídeos da apresentação Creators têm `autoplay loop muted`
-// e estavam saturando o pool de conexões HTTP/1.1 (limite 6 sockets
-// por host), o que travava o carregamento de imagens em outras
-// views — notadamente o preview do iframe da Proposta. Com isso,
-// vídeos só baixam quando o slide deles entra em viewport (margem
-// de 200px de antecedência pra começo suave).
+// LAZY <video> — só carrega quando entra em viewport OU quando
+// o modal/overlay pai ganha .is-open. Os ~17 vídeos da apresentação
+// Creators têm `autoplay loop muted` e estavam saturando o pool de
+// conexões HTTP/1.1 (limite 6 sockets por host), o que travava o
+// carregamento de imagens em outras views — notadamente o preview
+// do iframe da Proposta.
+//
+// Estratégia:
+//   1. Ao carregar a página, todos os <video src="..."> têm o src
+//      movido pra data-lazy-src (browser não baixa nada).
+//   2. IntersectionObserver: dispara quando o vídeo entra na tela.
+//   3. MutationObserver no .xpto-modal: quando o modal abre
+//      (recebe .is-open), restaura o src dos vídeos lá dentro —
+//      garantia caso o IO não dispare por timing/opacity.
 // ══════════════════════════════════════════════════════════
 (function lazyVideos() {
-  if (!('IntersectionObserver' in window)) return;
+  if (!('IntersectionObserver' in window) || !('MutationObserver' in window)) return;
   const videos = Array.from(document.querySelectorAll('video[src]'));
   videos.forEach(v => {
-    v.dataset.lazySrc = v.src;
+    // Preserva o caminho RELATIVO (getAttribute) em vez do resolvido (.src)
+    // — várias funções downstream (ex: videoUrlToThumbnail no preview da
+    // Proposta) esperam o caminho relativo "Criativos/..." pra mapear thumb.
+    v.dataset.lazySrc = v.getAttribute('src');
     v.removeAttribute('src');
     try { v.load(); } catch (e) {}
   });
+
+  function activateVideo(v) {
+    if (!v || !v.dataset.lazySrc) return;
+    if (v.getAttribute('src')) return;
+    v.setAttribute('src', v.dataset.lazySrc);
+    try { v.load(); } catch (er) {}
+    if (v.autoplay) v.play().catch(() => {});
+  }
+
+  // 1) IntersectionObserver — viewport
   const io = new IntersectionObserver(entries => {
     entries.forEach(e => {
       if (!e.isIntersecting) return;
-      const v = e.target;
-      if (v.dataset.lazySrc && !v.src) {
-        v.src = v.dataset.lazySrc;
-        try { v.load(); } catch (er) {}
-        if (v.autoplay) v.play().catch(() => {});
-      }
-      io.unobserve(v);
+      activateVideo(e.target);
+      io.unobserve(e.target);
     });
   }, { rootMargin: '200px' });
   videos.forEach(v => io.observe(v));
+
+  // 2) MutationObserver — modais .xpto-modal e .xpto-overlay
+  const modals = document.querySelectorAll('.xpto-modal, .xpto-overlay');
+  modals.forEach(m => {
+    const mo = new MutationObserver(() => {
+      if (!m.classList.contains('is-open')) return;
+      m.querySelectorAll('video[data-lazy-src]').forEach(activateVideo);
+    });
+    mo.observe(m, { attributes: true, attributeFilter: ['class'] });
+  });
 })();
 
 </script>
