@@ -3894,6 +3894,19 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   letter-spacing: 0.2px;
   outline: none;
   transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  /* Para <input type="date">: usa widgets de dark mode (texto + ícone claros) */
+  color-scheme: dark;
+}
+/* Calendar picker icon do <input type="date"> — força branco/claro
+   pra ficar legível sobre o fundo escuro do nosso tema. */
+.prop-client-input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.4);
+  opacity: 0.75;
+  cursor: pointer;
+  margin-left: 4px;
+}
+.prop-client-input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 .prop-client-input::placeholder {
   color: var(--text-soft);
