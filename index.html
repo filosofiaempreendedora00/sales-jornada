@@ -23584,14 +23584,37 @@ renderProgress();
     activeFrame     = frame;
     container.querySelectorAll('video').forEach(v => { if (v !== vid) v.pause(); });
 
-    // Mover o <video> já buffered para dentro do lightbox
+    // Mover o <video> para dentro do lightbox
     activeVid = vid;
     vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;';
     lightboxFrame.insertBefore(vid, closeBtn);
 
-    // Unmute e play — zero download, dados já na memória
-    vid.muted = false;
-    vid.play().catch(() => { vid.muted = true; vid.play().catch(() => {}); });
+    // Garante src caso o lazyVideos ainda não tenha ativado o
+    // download (acontece quando o user clica direto no frame, sem
+    // passar pelo overlay de play).
+    if (vid.dataset.lazySrc && !vid.getAttribute('src')) {
+      vid.setAttribute('src', vid.dataset.lazySrc);
+      try { vid.load(); } catch (e) {}
+    }
+
+    // Play robusto: se o video já está pronto, toca direto.
+    // Senão, espera o evento 'loadeddata' antes de tentar.
+    // Em ambos os casos cai pra muted no fallback (autoplay
+    // unmuted pode ser bloqueado em alguns browsers).
+    const tryPlay = () => {
+      vid.muted = false;
+      vid.play().catch(() => {
+        vid.muted = true;
+        vid.play().catch(() => {});
+      });
+    };
+    if (vid.readyState >= 2) {
+      tryPlay();
+    } else {
+      vid.addEventListener('loadeddata', tryPlay, { once: true });
+      // Fail-safe: se o evento não disparar em 1.5s, tenta mesmo assim
+      setTimeout(() => { if (vid.paused) tryPlay(); }, 1500);
+    }
 
     modal.classList.add('is-open');
   }
