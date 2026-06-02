@@ -8489,6 +8489,30 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
 }
 .cp-video-lightbox-close:hover { background: rgba(0,0,0,0.85); }
 
+/* Spinner enquanto o vídeo carrega no lightbox — só visível quando
+   o modal tem .is-loading. Some quando o vídeo dispara 'playing'. */
+.cp-video-lightbox-frame::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 48px; height: 48px;
+  margin: -24px 0 0 -24px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.18);
+  border-top-color: #fff;
+  animation: cp-lightbox-spin 0.9s linear infinite;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 3;
+}
+.cp-video-lightbox.is-loading .cp-video-lightbox-frame::after {
+  opacity: 1;
+}
+@keyframes cp-lightbox-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ── CP SLIDE 07: CASE MINIMAL CLUB ─────────────── */
 .cp-slide-case { overflow: hidden; }
 .cp-slide-case::before {
@@ -23579,67 +23603,92 @@ renderProgress();
     const vid = frame.querySelector('video');
     if (!vid) return;
 
-    // Pause todos os outros vídeos do slide
+    // Pausa todos os outros vídeos do slide
     activeContainer = container;
     activeFrame     = frame;
     container.querySelectorAll('video').forEach(v => { if (v !== vid) v.pause(); });
 
-    // Mover o <video> para dentro do lightbox
+    // Mostra o lightbox PRIMEIRO (com spinner) — evita a sensação
+    // de "cliquei e não acontece nada" enquanto o vídeo carrega.
+    modal.classList.add('is-open');
+    modal.classList.add('is-loading');
+
+    // Move o <video> para dentro do lightbox. Importante: setamos
+    // o src DEPOIS do move pra evitar que o navegador interrompa
+    // um load em progresso quando o elemento é re-inserido no DOM.
     activeVid = vid;
     vid.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:inherit;';
     lightboxFrame.insertBefore(vid, closeBtn);
 
-    // Garante src caso o lazyVideos ainda não tenha ativado o
-    // download (acontece quando o user clica direto no frame, sem
-    // passar pelo overlay de play).
-    if (vid.dataset.lazySrc && !vid.getAttribute('src')) {
+    // (Re)Atribui src e força load(). Funciona mesmo se um
+    // setAttribute anterior estava pendente.
+    if (vid.dataset.lazySrc) {
+      // Sempre re-atribui pra garantir que um load() interrompido
+      // pelo move seja retomado.
       vid.setAttribute('src', vid.dataset.lazySrc);
       try { vid.load(); } catch (e) {}
     }
 
-    // Play robusto: se o video já está pronto, toca direto.
-    // Senão, espera o evento 'loadeddata' antes de tentar.
-    // Em ambos os casos cai pra muted no fallback (autoplay
-    // unmuted pode ser bloqueado em alguns browsers).
+    // Play robusto com loading indicator. Esconde spinner quando
+    // vídeo realmente começa a tocar (evento 'playing').
+    const onPlaying = () => {
+      modal.classList.remove('is-loading');
+    };
+    vid.addEventListener('playing', onPlaying, { once: true });
+
     const tryPlay = () => {
       vid.muted = false;
       vid.play().catch(() => {
         vid.muted = true;
-        vid.play().catch(() => {});
+        vid.play().catch(() => {
+          // Se falhou de tudo, tira o spinner pra mostrar pelo menos a thumbnail
+          modal.classList.remove('is-loading');
+        });
       });
     };
+
     if (vid.readyState >= 2) {
       tryPlay();
     } else {
-      vid.addEventListener('loadeddata', tryPlay, { once: true });
-      // Fail-safe: se o evento não disparar em 1.5s, tenta mesmo assim
-      setTimeout(() => { if (vid.paused) tryPlay(); }, 1500);
+      // Usa 'canplay' (não 'loadeddata') — dispara quando há
+      // dados suficientes pra começar a tocar (mais cedo).
+      vid.addEventListener('canplay', tryPlay, { once: true });
+      // Fallback de 3s — se o evento não disparar (network lenta
+      // ou outro problema), tenta play() mesmo assim.
+      setTimeout(() => { if (vid.paused) tryPlay(); }, 3000);
     }
-
-    modal.classList.add('is-open');
   }
 
   function closeLightbox() {
     modal.classList.remove('is-open');
+    modal.classList.remove('is-loading');
 
     if (activeVid && activeFrame) {
-      // Devolver o <video> ao phone frame de origem
-      activeVid.muted = true;
+      // Devolve o <video> ao phone frame de origem
       activeVid.style.cssText = '';
       activeFrame.insertBefore(activeVid, activeFrame.querySelector('.cp-lightbox-hint'));
-      activeVid.play().catch(() => {});
+
+      // DESCARREGA o vídeo: pausa, volta a posição, remove src e
+      // chama load(). Browser libera os bytes em buffer e o frame
+      // volta ao estado "preview" (thumbnail + play button overlay).
+      // Próximo click vai recarregar.
+      activeVid.pause();
+      try { activeVid.currentTime = 0; } catch (e) {}
+      activeVid.muted = true;
+      if (activeVid.dataset.lazySrc) {
+        activeVid.removeAttribute('src');
+        try { activeVid.load(); } catch (e) {}
+      }
+      // Volta o frame ao estado preview (mostra overlay novamente)
+      activeFrame.classList.remove('is-playing');
+
       activeVid  = null;
       activeFrame = null;
     }
 
-    // Retomar os outros vídeos do slide
-    if (activeContainer) {
-      activeContainer.querySelectorAll('video').forEach(v => {
-        v.muted = true;
-        v.play().catch(() => {});
-      });
-      activeContainer = null;
-    }
+    // Os outros vídeos do slide já estavam descarregados (sem src)
+    // — nada pra retomar. Mantém a página leve.
+    activeContainer = null;
   }
 
   // Mark frames and attach listeners
