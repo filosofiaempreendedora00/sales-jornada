@@ -1096,10 +1096,13 @@ body {
 
 .tools-block {
   background: linear-gradient(135deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.04) 100%);
-  border-radius: 12px;
-  padding: 12px 14px 14px;
+  border-radius: 14px;
+  padding: 14px 14px 14px;
   border: 1px solid rgba(77,141,255,0.22);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .tools-block::before {
@@ -1108,21 +1111,179 @@ body {
   top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, #4d8dff, rgba(77,141,255,0.2));
-  border-radius: 12px 12px 0 0;
+  border-radius: 14px 14px 0 0;
 }
 
 .tools-block .block-label {
   color: rgba(77,141,255,0.65);
-  margin-bottom: 11px;
+  margin-bottom: 2px;
 }
 
-.tools-block .link-row {
-  border-bottom-color: rgba(77,141,255,0.08);
+/* Tool launcher button — mesma estética do sim-launch-btn (gradient
+   roxo→azul→cyan + shimmer), porém pra abrir ferramenta externa. */
+.tool-launch-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  background: linear-gradient(135deg,
+    rgba(77,141,255,0.18) 0%,
+    rgba(13,207,232,0.13) 60%,
+    rgba(13,207,232,0.10) 100%
+  );
+  border-radius: 12px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  border: 1px solid rgba(77,141,255,0.35);
+  box-shadow:
+    0 0 0 1px rgba(77,141,255,0.10),
+    0 3px 18px rgba(77,141,255,0.12),
+    0 1px 0 rgba(255,255,255,0.05) inset,
+    0 -1px 0 rgba(0,0,0,0.20) inset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
+.tool-launch-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 100%
+  );
+  animation: shimmerSlide 4.2s ease-in-out infinite;
+  pointer-events: none;
+}
+.tool-launch-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(77,141,255,0.6);
+  box-shadow:
+    0 0 0 1px rgba(13,207,232,0.25),
+    0 8px 28px rgba(77,141,255,0.20),
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 -1px 0 rgba(0,0,0,0.20) inset;
+}
+.tool-launch-btn:active { transform: translateY(0); }
+.tool-launch-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(13,207,232,0.5));
+}
+.tool-launch-text { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+.tool-launch-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+  background: linear-gradient(90deg, #c4a8ff 0%, #4d8dff 55%, #0dcfe8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.tool-launch-sub {
+  font-size: 10.5px;
+  color: rgba(200, 210, 240, 0.65);
+  line-height: 1.35;
+  font-weight: 500;
+}
+.tool-launch-arrow {
+  font-size: 17px;
+  flex-shrink: 0;
+  color: #0dcfe8;
+  transition: transform 0.2s ease;
+}
+.tool-launch-btn:hover .tool-launch-arrow { transform: translate(3px, -3px); }
 
-.tools-block .link-anchor {
-  color: #4d8dff;
+/* IMPLANTAÇÃO launcher — abre cartilha em modal (xpto-modal#impl-modal).
+   Variante roxa pra diferenciar do tool-launch-btn azul/cyan. */
+.impl-launch-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg,
+    rgba(244,114,182,0.20) 0%,
+    rgba(155,109,255,0.18) 50%,
+    rgba(77,141,255,0.15) 100%
+  );
+  border-radius: 14px;
+  padding: 14px 18px;
+  cursor: pointer;
+  text-align: left;
+  border: 1px solid rgba(244,114,182,0.40);
+  font-family: inherit;
+  color: inherit;
+  margin-top: 10px;
+  box-shadow:
+    0 0 0 1px rgba(244,114,182,0.12),
+    0 4px 24px rgba(244,114,182,0.16),
+    0 1px 0 rgba(255,255,255,0.06) inset,
+    0 -1px 0 rgba(0,0,0,0.22) inset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
+.impl-launch-btn::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.10) 50%, transparent 100%);
+  animation: shimmerSlide 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.impl-launch-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.30) 30%, rgba(244,114,182,0.55) 60%, transparent);
+  animation: borderPulse 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+.impl-launch-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(244,114,182,0.65);
+  box-shadow:
+    0 0 0 1px rgba(244,114,182,0.30),
+    0 8px 34px rgba(244,114,182,0.24),
+    0 1px 0 rgba(255,255,255,0.08) inset,
+    0 -1px 0 rgba(0,0,0,0.22) inset;
+}
+.impl-launch-btn:active { transform: translateY(0); }
+.impl-launch-icon {
+  font-size: 26px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px rgba(244,114,182,0.55));
+}
+.impl-launch-text { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.impl-launch-title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #f9a8d4 0%, #c4a8ff 50%, #4d8dff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.impl-launch-sub {
+  font-size: 11px;
+  color: rgba(220, 200, 230, 0.78);
+  line-height: 1.45;
+  font-weight: 500;
+}
+.impl-launch-arrow {
+  font-size: 20px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, #f9a8d4, #4d8dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  transition: transform 0.2s ease;
+}
+.impl-launch-btn:hover .impl-launch-arrow { transform: translateX(5px); }
 
 .process-block {
   background: linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(16,185,129,0.04) 100%);
@@ -9525,6 +9686,233 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   .cm-step { grid-template-columns: 40px 1fr; padding: 14px 18px; }
 }
 
+/* ── Implantação cartilha (impl-*) ───────────────── */
+.impl-hero-accent {
+  background: linear-gradient(90deg, #f9a8d4, #c4a8ff, #4d8dff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+.impl-section-header { margin-bottom: 32px; }
+.impl-section-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  letter-spacing: -1.2px;
+  line-height: 1.05;
+  margin: 12px 0 12px;
+  color: #fff;
+}
+.impl-section-sub {
+  font-size: clamp(14px, 1.4vw, 16px);
+  color: rgba(255,255,255,0.65);
+  max-width: 720px;
+  margin: 0;
+  line-height: 1.55;
+}
+.impl-checklist {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.impl-checklist li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.85);
+  transition: border-color 0.18s, background 0.18s;
+}
+.impl-checklist li:hover {
+  border-color: rgba(244,114,182,0.30);
+  background: rgba(244,114,182,0.04);
+}
+.impl-check-icon {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(244,114,182,0.30), rgba(155,109,255,0.30));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 900;
+  margin-top: 1px;
+}
+.impl-check-text strong {
+  color: #fff;
+  font-weight: 800;
+}
+.impl-check-text small {
+  display: block;
+  color: rgba(255,255,255,0.50);
+  font-size: 11.5px;
+  margin-top: 3px;
+  font-weight: 500;
+}
+
+.impl-block-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #f9a8d4;
+  margin-bottom: 14px;
+}
+.impl-block-eyebrow::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: #f9a8d4;
+}
+
+.impl-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+}
+.impl-flow-card {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(155,109,255,0.20);
+  border-radius: 16px;
+  padding: 24px 22px;
+  position: relative;
+}
+.impl-flow-card::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #f9a8d4, #4d8dff);
+  border-radius: 4px 0 0 4px;
+  opacity: 0.55;
+}
+.impl-flow-card-icon {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  background: rgba(244,114,182,0.16);
+  color: #f9a8d4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.impl-flow-card-icon--wa {
+  background: rgba(18,212,144,0.16);
+  color: #5fe1ad;
+}
+.impl-flow-card-title {
+  font-size: 18px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 6px;
+  letter-spacing: -0.3px;
+}
+.impl-flow-card-sub {
+  font-size: 12.5px;
+  color: rgba(255,255,255,0.55);
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+.impl-flow-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.impl-flow-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: rgba(255,255,255,0.82);
+}
+.impl-flow-list li::before {
+  content: '→';
+  color: #f9a8d4;
+  font-weight: 800;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.impl-flow-card--wa .impl-flow-list li::before {
+  color: #5fe1ad;
+}
+
+.impl-invest-card {
+  background: linear-gradient(135deg, rgba(244,114,182,0.10), rgba(155,109,255,0.08), rgba(77,141,255,0.06));
+  border: 1px solid rgba(244,114,182,0.32);
+  border-radius: 20px;
+  padding: 36px 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 32px;
+  box-shadow: 0 12px 40px rgba(244,114,182,0.12);
+}
+.impl-invest-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #f9a8d4;
+  margin-bottom: 8px;
+}
+.impl-invest-title {
+  font-size: clamp(22px, 2.6vw, 30px);
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 6px;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+.impl-invest-desc {
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  margin: 0;
+  line-height: 1.5;
+}
+.impl-invest-price {
+  text-align: right;
+}
+.impl-invest-price-value {
+  font-size: clamp(34px, 4vw, 48px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  background: linear-gradient(135deg, #fff 0%, #f9a8d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+}
+.impl-invest-price-installments {
+  font-size: 14px;
+  color: rgba(255,255,255,0.70);
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+@media (max-width: 700px) {
+  .impl-checklist,
+  .impl-grid-2 { grid-template-columns: 1fr; }
+  .impl-invest-card { grid-template-columns: 1fr; text-align: left; }
+  .impl-invest-price { text-align: left; }
+}
+
 /* ── ID Visual presentation slides (iv-*) ───────── */
 .iv-hero-accent {
   background: linear-gradient(90deg, #f9a8d4, #fb923c);
@@ -13751,6 +14139,172 @@ a.xpto-pricing-btn { text-decoration: none; }
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  IMPLANTAÇÃO — cartilha do escopo de automações -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="impl-overlay"></div>
+<button class="xpto-close" id="impl-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="impl-modal">
+<div class="xpto-inner" id="impl-inner">
+
+  <!-- SLIDE 01 — HERO -->
+  <section class="xpto-slide xpto-slide-hero">
+    <div class="xpto-slide-inner" style="text-align:center;">
+      <div class="xpto-eyebrow"><span></span>Implantação · Automações</div>
+      <h1 class="xpto-title">Sua operação automatizada<br><span class="impl-hero-accent">do zero ao primeiro disparo.</span></h1>
+      <p class="xpto-subtitle">Setup técnico completo + 8 fluxos prontos (4 e-mail + 4 WhatsApp) ligados ao seu ERP, loja virtual e checkout — entregue chave-na-mão pela Turbo.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 02 — SETUP TÉCNICO -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="impl-section-header">
+        <div class="xpto-eyebrow"><span></span>Etapa 01 · Setup técnico</div>
+        <h2 class="impl-section-title">Plataforma, integrações<br>e conexões base.</h2>
+        <p class="impl-section-sub">Antes de qualquer fluxo, a infraestrutura precisa estar ligada — número de WhatsApp configurado, ERP integrado, checkout conversando com o CRM.</p>
+      </div>
+      <ul class="impl-checklist">
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Criação de automações</strong>
+            <small>Configuração de gatilhos, condições e ações na plataforma</small>
+          </div>
+        </li>
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Setup de número de WhatsApp</strong>
+            <small>API oficial (WABA) ou não-oficial, conforme o caso</small>
+          </div>
+        </li>
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Integração com ERP</strong>
+            <small>Com lojas físicas — sincroniza estoque e cadastros</small>
+          </div>
+        </li>
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Integração com Loja Virtual</strong>
+            <small>Pedidos, carrinhos e clientes em tempo real</small>
+          </div>
+        </li>
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Integração com Checkout</strong>
+            <small>Eventos de abandono, conversão e rastreio</small>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SLIDE 03 — CONFIGURAÇÕES ESTRATÉGICAS -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="impl-section-header">
+        <div class="xpto-eyebrow"><span></span>Etapa 02 · Configurações estratégicas</div>
+        <h2 class="impl-section-title">Lógica, segmentação<br>e entregabilidade.</h2>
+        <p class="impl-section-sub">A inteligência por trás dos fluxos — quem recebe o quê, quando, e com que confiança a mensagem chega na caixa de entrada.</p>
+      </div>
+      <ul class="impl-checklist">
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Lógica de cashback</strong>
+            <small>Percentuais, regras de acúmulo, expiração e resgate</small>
+          </div>
+        </li>
+        <li>
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Segmentos de clientes</strong>
+            <small>Novos, ativos, recorrentes, inativos — segmentação automática</small>
+          </div>
+        </li>
+        <li style="grid-column: 1 / -1;">
+          <span class="impl-check-icon">✓</span>
+          <div class="impl-check-text">
+            <strong>Entregabilidade de e-mail</strong>
+            <small>Configuração técnica completa: <strong>SPF</strong> (autoriza envio do domínio), <strong>DKIM</strong> (assinatura criptográfica) e <strong>DMARC</strong> (política contra spoofing) — pra e-mails caírem na caixa de entrada, não no spam</small>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SLIDE 04 — FLUXOS -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="impl-section-header">
+        <div class="xpto-eyebrow"><span></span>Etapa 03 · 8 fluxos prontos</div>
+        <h2 class="impl-section-title">Mesmas jornadas,<br>dois canais complementares.</h2>
+        <p class="impl-section-sub">Cobrimos os 4 momentos críticos da operação em E-mail e WhatsApp — porque cada cliente responde melhor em um canal diferente.</p>
+      </div>
+      <div class="impl-grid-2">
+        <!-- E-MAIL -->
+        <div class="impl-flow-card">
+          <div class="impl-flow-card-icon">✉️</div>
+          <h3 class="impl-flow-card-title">E-mail · 4 fluxos</h3>
+          <p class="impl-flow-card-sub">Domínio autenticado (SPF/DKIM/DMARC) com cadência otimizada por etapa do funil.</p>
+          <ul class="impl-flow-list">
+            <li><span><strong>Abandono de carrinho</strong> — recupera quem encheu o carrinho mas não finalizou</span></li>
+            <li><span><strong>Recompra</strong> — sequências em 30, 60 e 90 dias após a primeira compra</span></li>
+            <li><span><strong>Rastreio</strong> — acompanhamento de envio com status do pedido</span></li>
+            <li><span><strong>Cashback</strong> — comunica saldo, expiração e estímulo de uso</span></li>
+          </ul>
+        </div>
+        <!-- WHATSAPP -->
+        <div class="impl-flow-card impl-flow-card--wa">
+          <div class="impl-flow-card-icon impl-flow-card-icon--wa">💬</div>
+          <h3 class="impl-flow-card-title">WhatsApp · 4 fluxos</h3>
+          <p class="impl-flow-card-sub">Mesmas jornadas com taxa de abertura acima de 90% — alcance onde o cliente realmente vê.</p>
+          <ul class="impl-flow-list">
+            <li><span><strong>Abandono de carrinho</strong> — disparo rápido, recupera no quente</span></li>
+            <li><span><strong>Recompra</strong> — sequências em 30, 60 e 90 dias após a primeira compra</span></li>
+            <li><span><strong>Acompanhamento de envio</strong> — atualizações de rastreio direto no chat</span></li>
+            <li><span><strong>Cashback</strong> — saldo + lembrete de uso em momentos certeiros</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 05 — INVESTIMENTO -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="impl-section-header">
+        <div class="xpto-eyebrow"><span></span>Investimento da implantação</div>
+        <h2 class="impl-section-title">Setup completo,<br>pago uma única vez.</h2>
+        <p class="impl-section-sub">Cobre infra técnica + configurações estratégicas + 8 fluxos publicados e funcionando. Após isso, a operação roda no plano mensal do flashCRM.</p>
+      </div>
+      <div class="impl-invest-card">
+        <div>
+          <div class="impl-invest-label">Implantação one-shot</div>
+          <h3 class="impl-invest-title">Setup técnico + 8 fluxos + integrações</h3>
+          <p class="impl-invest-desc">Pagamento único pra deixar tudo no ar. Depois, a operação roda no flashCRM mensal sem novos custos de setup.</p>
+        </div>
+        <div class="impl-invest-price">
+          <div class="impl-invest-price-value">R$ 2.997</div>
+          <div class="impl-invest-price-installments">ou em <strong>2× de R$ 1.498,50</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#impl-inner -->
+</div><!-- /#impl-modal -->
+<div class="xpto-scroll-hint" id="impl-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  SCRIPT                                        -->
 <!-- ══════════════════════════════════════════════ -->
 <script>
@@ -13825,7 +14379,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   };
 
   // Lista completa de overlays de modal/simulador rastreados
-  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'cm-overlay', 'xpto-overlay'];
+  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'cm-overlay', 'impl-overlay', 'xpto-overlay'];
 
   let _applying = false;
   let _started = false;
@@ -15082,21 +15636,35 @@ function buildLinksHTML(links, color, toolsLabel) {
     </div>`;
   }
 
-  // ── Tools block (blue) ───────────────────────────
+  // ── Tools block (azul) — re-renderizado como card-launcher na
+  //    estética do sim-launch-btn. Cada ferramenta vira um botão
+  //    grande com gradient roxo→azul→cyan e shimmer.
   if (toolLinks.length > 0) {
+    const lbl = toolsLabel || 'ferramenta parceira';
     let rows = '';
     toolLinks.forEach(l => {
-      rows += `<div class="link-row">
-        <span class="link-name">${l.label}</span>
-        <a class="link-anchor" href="${l.url}" target="_blank" rel="noopener">↗ abrir</a>
-      </div>`;
+      // Mapa de ícones por label (fallback ⚙️)
+      const iconMap = {
+        'flashCRM': '⚡',
+        'CRO Turbo Tech': '🔬',
+        'Acessar plataforma': '🚀',
+      };
+      const icon = iconMap[l.label] || '⚙️';
+      rows += `
+        <a class="tool-launch-btn" href="${l.url}" target="_blank" rel="noopener">
+          <span class="tool-launch-icon">${icon}</span>
+          <div class="tool-launch-text">
+            <span class="tool-launch-title">${l.label}</span>
+            <span class="tool-launch-sub">Abrir ${lbl.replace(/^a /,'').replace(/^o /,'')}</span>
+          </div>
+          <span class="tool-launch-arrow">↗</span>
+        </a>`;
     });
-
-    const lbl = toolsLabel || 'ferramenta parceira';
-    html += `<div class="tools-block">
-      <p class="block-label">⚙ ${lbl}</p>
-      ${rows}
-    </div>`;
+    html += `
+      <div class="tools-block">
+        <p class="block-label">⚙ ${lbl}</p>
+        ${rows}
+      </div>`;
   }
 
   return html;
@@ -15117,6 +15685,9 @@ function openPanel(nodeId) {
   const isCreators = nodeId === 'criativos';
   const isSocial   = nodeId === 'organico' || nodeId === 'lead-organico';
   const isComunidade = nodeId === 'comunidade';
+  // 'automacoes' aparece só na jornada E-commerce; na Lead vira
+  // 'lead-automacoes' que NÃO tem cartilha de implantação.
+  const isAutomacoes = nodeId === 'automacoes';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -15165,6 +15736,16 @@ function openPanel(nodeId) {
     </button>
     ` : ''}
     ${buildLinksHTML(node.links, color, node.toolsLabel)}
+    ${isAutomacoes ? `
+    <button class="impl-launch-btn" type="button" onclick="if(window.openImplantacao) window.openImplantacao()">
+      <span class="impl-launch-icon">📋</span>
+      <div class="impl-launch-text">
+        <span class="impl-launch-title">Implantação</span>
+        <span class="impl-launch-sub">Escopo completo do setup técnico + 8 fluxos prontos (e-mail e WhatsApp) · R$ 2.997 em 2×</span>
+      </div>
+      <span class="impl-launch-arrow">→</span>
+    </button>
+    ` : ''}
     ${buildChecklistHTML(node)}
   `;
 
@@ -18515,6 +19096,47 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   });
 
   window.openComunidadePres = openComunidadePres;
+})();
+
+// ─────────────────────────────────────────────────
+//  IMPLANTAÇÃO (cartilha do node automacoes)
+// ─────────────────────────────────────────────────
+(function() {
+  const modal = document.getElementById('impl-modal');
+  const overlay = document.getElementById('impl-overlay');
+  const closeBtn = document.getElementById('impl-close');
+  const hint = document.getElementById('impl-scroll-hint');
+  if (!modal || !overlay || !closeBtn) return;
+
+  function openImplantacao() {
+    overlay.classList.add('is-open');
+    modal.classList.add('is-open');
+    closeBtn.style.display = 'flex';
+    if (hint) hint.style.display = 'flex';
+    modal.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeImplantacao() {
+    overlay.classList.remove('is-open');
+    modal.classList.remove('is-open');
+    closeBtn.style.display = 'none';
+    if (hint) hint.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.style.display = 'none';
+  if (hint) hint.style.display = 'none';
+
+  overlay.addEventListener('click', closeImplantacao);
+  closeBtn.addEventListener('click', closeImplantacao);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open'))
+      closeImplantacao();
+  });
+
+  window.openImplantacao = openImplantacao;
+  window.closeImplantacao = closeImplantacao;
 })();
 
 // ─────────────────────────────────────────────────
