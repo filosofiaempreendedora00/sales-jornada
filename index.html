@@ -7860,6 +7860,21 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
     0 0 0 6px rgba(255,255,255,0.10);
   transition: transform 0.22s ease, background 0.22s ease;
 }
+/* Quando o vídeo do Drive é ativado (data-drive-active="1"), o
+   frame esconde o overlay/thumbnail e mostra o iframe ocupando tudo. */
+.cp-phone-frame[data-drive-active="1"] {
+  cursor: default;
+}
+.cp-phone-frame[data-drive-active="1"] .cp-cover-play-overlay { display: none; }
+.cp-phone-frame[data-drive-active="1"] > img { display: none; }
+.cp-phone-frame iframe.cp-drive-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  z-index: 1;
+}
 .cp-phone-frame::before {
   content: '';
   position: absolute;
@@ -13066,25 +13081,28 @@ a.xpto-pricing-btn { text-decoration: none; }
             <p class="cp-cover-subtitle">Aumentamos as vendas da sua empresa a partir de anúncios que não se parecem com anúncios.</p>
           </div>
           <div class="cp-cover-phone">
-            <!-- Vídeo hospedado externamente (Google Drive) — preview estático
-                 com thumbnail; click abre o vídeo no Drive em nova aba.
-                 Mantém o phone-frame original idêntico. -->
+            <!-- Vídeo hospedado externamente (Google Drive) — começa
+                 como thumbnail estático leve. Ao clicar, troca por
+                 iframe do Drive (/preview) e o vídeo toca INLINE,
+                 sem sair da apresentação. Fallback: se JS falhar, o
+                 href abre no Drive em nova aba. -->
             <a class="cp-phone-frame cp-phone-frame--sound cp-phone-frame--link"
                id="cp-cover-phone-frame"
                href="https://drive.google.com/file/d/1f8tdSjytsIt5JwWXxoYtDr_3NwR9bQ2c/view?usp=sharing"
                target="_blank" rel="noopener"
-               aria-label="Assistir vídeo Sulmel (abre no Google Drive)">
+               data-drive-id="1f8tdSjytsIt5JwWXxoYtDr_3NwR9bQ2c"
+               aria-label="Assistir vídeo Sulmel (toca dentro da apresentação)">
               <img src="Criativos/thumbs/Sulmel_Bruna.jpg" alt="Preview do vídeo Sulmel" loading="lazy">
               <div class="cp-cover-play-overlay" aria-hidden="true">
                 <span class="cp-cover-play-icon">▶</span>
               </div>
             </a>
-            <a class="cp-sound-btn"
-               href="https://drive.google.com/file/d/1f8tdSjytsIt5JwWXxoYtDr_3NwR9bQ2c/view?usp=sharing"
-               target="_blank" rel="noopener">
+            <button type="button" class="cp-sound-btn"
+                    data-drive-target="cp-cover-phone-frame"
+                    id="cp-cover-play-btn">
               <span class="cp-sound-btn-icon">▶</span>
-              <span class="cp-sound-btn-label">Assistir vídeo</span>
-            </a>
+              <span class="cp-sound-btn-label">Tocar vídeo aqui</span>
+            </button>
           </div>
         </div>
       </div>
@@ -25016,6 +25034,58 @@ renderProgress();
 
   // API mínima pra uso externo
   window.__concessoes = { open: openModal, close: closeModal, refresh: renderGrid };
+})();
+
+// ══════════════════════════════════════════════════════════
+// DRIVE INLINE — vídeos hospedados no Google Drive tocam DENTRO
+// da apresentação (sem redirecionar). Thumbnail estática leve no
+// load; ao clicar no frame (ou no botão "Tocar vídeo aqui"), o
+// `<img>` é substituído por `<iframe src=".../preview">` do Drive,
+// que toca inline. Cancela navegação do <a> (preventDefault).
+//
+// Marcadores HTML:
+//   - Frame: <a class="cp-phone-frame--link" data-drive-id="<ID>">
+//   - Botão complementar: <button data-drive-target="<frame-id>">
+// ══════════════════════════════════════════════════════════
+(function driveInline() {
+  function activate(frame) {
+    if (!frame || frame.dataset.driveActive === '1') return;
+    const id = frame.dataset.driveId;
+    if (!id) return;
+    frame.dataset.driveActive = '1';
+    const iframe = document.createElement('iframe');
+    iframe.className = 'cp-drive-iframe';
+    iframe.src = `https://drive.google.com/file/d/${id}/preview`;
+    iframe.allow = 'autoplay; encrypted-media; fullscreen';
+    iframe.allowFullscreen = true;
+    iframe.setAttribute('title', frame.getAttribute('aria-label') || 'Vídeo');
+    frame.appendChild(iframe);
+    // Atualiza botão complementar se houver
+    const targetId = frame.id;
+    document.querySelectorAll(`[data-drive-target="${targetId}"]`).forEach(b => {
+      const lbl = b.querySelector('.cp-sound-btn-label');
+      if (lbl) lbl.textContent = 'Tocando…';
+      b.disabled = true;
+      b.style.opacity = '0.55';
+    });
+  }
+
+  // Click no frame (qualquer link com data-drive-id)
+  document.addEventListener('click', (e) => {
+    const frame = e.target.closest('[data-drive-id]');
+    if (frame) {
+      e.preventDefault();
+      activate(frame);
+      return;
+    }
+    // Click num botão "Tocar vídeo aqui" que aponta pra um frame
+    const btn = e.target.closest('[data-drive-target]');
+    if (btn && !btn.disabled) {
+      e.preventDefault();
+      const targetFrame = document.getElementById(btn.dataset.driveTarget);
+      activate(targetFrame);
+    }
+  });
 })();
 
 // ══════════════════════════════════════════════════════════
