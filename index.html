@@ -7860,6 +7860,52 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
     0 0 0 6px rgba(255,255,255,0.10);
   transition: transform 0.22s ease, background 0.22s ease;
 }
+
+/* ── PLAY OVERLAY genérico (todos os <video> click-to-play) ───
+   Injetado por lazyVideos() em todo frame que contém um <video
+   data-lazy-src>. Desaparece quando o frame ganha .is-playing
+   (depois do click). */
+.video-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.30) 100%);
+  transition: opacity 0.25s ease, background 0.25s ease;
+}
+.video-play-overlay:hover {
+  background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, rgba(0,0,0,0.40) 100%);
+}
+.video-play-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  color: #1a0f2e;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4px;
+  box-shadow:
+    0 6px 22px rgba(0,0,0,0.50),
+    0 0 0 5px rgba(255,255,255,0.08);
+  transition: transform 0.22s ease, background 0.22s ease;
+}
+.video-play-overlay:hover .video-play-icon {
+  transform: scale(1.07);
+  background: linear-gradient(135deg, #fff, #f4ebff);
+}
+/* Quando o vídeo está tocando, esconde o overlay. */
+.is-playing > .video-play-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+/* Ajustes finos por contexto */
+.pp-criativos-ad-img .video-play-icon { width: 46px; height: 46px; font-size: 17px; }
+.cp-phone-frame .video-play-icon { width: 60px; height: 60px; font-size: 22px; }
 /* Quando o vídeo do Drive é ativado (data-drive-active="1"), o
    frame esconde o overlay/thumbnail e mostra o iframe ocupando tudo. */
 .cp-phone-frame[data-drive-active="1"] {
@@ -25089,60 +25135,115 @@ renderProgress();
 })();
 
 // ══════════════════════════════════════════════════════════
-// LAZY <video> — só carrega quando entra em viewport OU quando
-// o modal/overlay pai ganha .is-open. Os ~17 vídeos da apresentação
-// Creators têm `autoplay loop muted` e estavam saturando o pool de
-// conexões HTTP/1.1 (limite 6 sockets por host), o que travava o
-// carregamento de imagens em outras views — notadamente o preview
-// do iframe da Proposta.
+// LAZY <video> — CLICK-TO-PLAY (substitui auto-load por viewport).
 //
-// Estratégia:
-//   1. Ao carregar a página, todos os <video src="..."> têm o src
-//      movido pra data-lazy-src (browser não baixa nada).
-//   2. IntersectionObserver: dispara quando o vídeo entra na tela.
-//   3. MutationObserver no .xpto-modal: quando o modal abre
-//      (recebe .is-open), restaura o src dos vídeos lá dentro —
-//      garantia caso o IO não dispare por timing/opacity.
+// Decisão arquitetural: os ~17 vídeos UGC pesam ~942MB no total.
+// Mesmo com preload=none + lazy-on-viewport, o navegador disparava
+// muitas requests paralelas quando o usuário rolava rápido pelo
+// modal Creators, saturando o pool de conexões e dando sensação
+// de travamento.
+//
+// Nova estratégia (mais leve possível):
+//   1. No load, cada <video src="..."> vira <video poster="..."
+//      data-lazy-src="...">. Sem src, browser NÃO baixa nada.
+//   2. O poster (thumbnail .jpg em Criativos/thumbs/) é a única
+//      imagem que carrega — ~40KB cada.
+//   3. Um play button overlay é injetado por cima do frame pai
+//      (.cp-phone-frame ou .pp-criativos-ad-img).
+//   4. Click no overlay (ou no próprio video) → restaura src,
+//      chama .load() + .play(). Só a partir desse momento o
+//      .mp4 é baixado.
+//   5. Re-click pausa e mostra overlay de novo (UX play/pause).
+//
+// Sem IntersectionObserver, sem MutationObserver — o usuário decide
+// quando cada vídeo carrega. Trade-off: perdeu o autoplay automático
+// dos vídeos em background, mas ganhou app rápido e responsivo.
 // ══════════════════════════════════════════════════════════
 (function lazyVideos() {
-  if (!('IntersectionObserver' in window) || !('MutationObserver' in window)) return;
-  const videos = Array.from(document.querySelectorAll('video[src]'));
-  videos.forEach(v => {
-    // Preserva o caminho RELATIVO (getAttribute) em vez do resolvido (.src)
-    // — várias funções downstream (ex: videoUrlToThumbnail no preview da
-    // Proposta) esperam o caminho relativo "Criativos/..." pra mapear thumb.
-    v.dataset.lazySrc = v.getAttribute('src');
-    v.removeAttribute('src');
-    try { v.load(); } catch (e) {}
-  });
-
-  function activateVideo(v) {
-    if (!v || !v.dataset.lazySrc) return;
-    if (v.getAttribute('src')) return;
-    v.setAttribute('src', v.dataset.lazySrc);
-    try { v.load(); } catch (er) {}
-    if (v.autoplay) v.play().catch(() => {});
+  // Helper: deriva caminho da thumbnail a partir do src do vídeo.
+  //   "Criativos/m-Drycat-9x16.mp4"           → "Criativos/thumbs/m-Drycat-9x16.jpg"
+  //   "Criativos/ocean/Roteiro 1 - Hook.mp4"  → "Criativos/thumbs/ocean/Roteiro 1 - Hook.jpg"
+  function thumbFor(videoUrl) {
+    const m = String(videoUrl || '').match(/^(Criativos\/)((?:[^/]+\/)*)([^/]+)\.[^.]+$/);
+    if (!m) return '';
+    return m[1] + 'thumbs/' + m[2] + m[3] + '.jpg';
   }
 
-  // 1) IntersectionObserver — viewport
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      activateVideo(e.target);
-      io.unobserve(e.target);
-    });
-  }, { rootMargin: '200px' });
-  videos.forEach(v => io.observe(v));
+  function injectOverlay(frame) {
+    if (!frame) return null;
+    let ov = frame.querySelector(':scope > .video-play-overlay');
+    if (ov) return ov;
+    ov = document.createElement('div');
+    ov.className = 'video-play-overlay';
+    ov.setAttribute('aria-hidden', 'true');
+    ov.innerHTML = '<span class="video-play-icon">▶</span>';
+    frame.appendChild(ov);
+    return ov;
+  }
 
-  // 2) MutationObserver — modais .xpto-modal e .xpto-overlay
-  const modals = document.querySelectorAll('.xpto-modal, .xpto-overlay');
-  modals.forEach(m => {
-    const mo = new MutationObserver(() => {
-      if (!m.classList.contains('is-open')) return;
-      m.querySelectorAll('video[data-lazy-src]').forEach(activateVideo);
-    });
-    mo.observe(m, { attributes: true, attributeFilter: ['class'] });
-  });
+  function setupVideo(v) {
+    const src = v.getAttribute('src');
+    if (!src) return; // já processado ou já sem src
+    // Move src pra dataset, evita download automático
+    v.dataset.lazySrc = src;
+    v.removeAttribute('src');
+    // Poster estático (thumbnail) — mostra mesmo sem src
+    const thumb = thumbFor(src);
+    if (thumb && !v.hasAttribute('poster')) v.setAttribute('poster', thumb);
+    try { v.load(); } catch (e) {}
+    // Injeta play overlay no frame pai (se ainda não tem)
+    const frame = v.parentElement;
+    if (frame) {
+      // Garante position:relative no parent pra overlay funcionar
+      const cs = getComputedStyle(frame);
+      if (cs.position === 'static') frame.style.position = 'relative';
+      injectOverlay(frame);
+      frame.dataset.videoOnDemand = '1';
+    }
+  }
+
+  function ensureSrc(v) {
+    if (!v || !v.dataset.lazySrc) return false;
+    if (!v.getAttribute('src')) {
+      v.setAttribute('src', v.dataset.lazySrc);
+      try { v.load(); } catch (e) {}
+    }
+    return true;
+  }
+
+  function activate(frame) {
+    if (!frame) return;
+    const v = frame.querySelector(':scope > video[data-lazy-src]');
+    if (!v) return;
+    ensureSrc(v);
+    v.play().catch(() => {});
+    frame.classList.add('is-playing');
+  }
+
+  // Setup inicial: pra cada <video src="..."> no DOM
+  document.querySelectorAll('video[src]').forEach(setupVideo);
+
+  // Click handler em CAPTURE phase — roda ANTES dos outros listeners
+  // existentes nos frames (toggleFrame, lightbox). Garante que o
+  // video tenha src antes desses handlers tentarem manipular.
+  document.addEventListener('click', (e) => {
+    // Click no overlay → setup src + classe playing
+    const overlay = e.target.closest('.video-play-overlay');
+    if (overlay) {
+      activate(overlay.parentElement);
+      return;
+    }
+    // Click no video ou frame → só garante src (deixa o
+    // toggleFrame/openLightbox cuidar do resto)
+    const frame = e.target.closest('.cp-phone-frame[data-video-on-demand], .pp-criativos-ad-img[data-video-on-demand]');
+    if (frame) {
+      const v = frame.querySelector(':scope > video[data-lazy-src]');
+      if (v) {
+        ensureSrc(v);
+        frame.classList.add('is-playing');
+      }
+    }
+  }, true); // capture: true — roda na descida do evento, antes dos bubble listeners
 })();
 
 </script>
