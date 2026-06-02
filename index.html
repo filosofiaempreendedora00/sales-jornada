@@ -7815,6 +7815,51 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     inset 0 0 0 1px rgba(255,255,255,0.04);
   overflow: hidden;
 }
+/* Variante --link: o frame inteiro vira <a> abrindo vídeo externo
+   (Drive). Adiciona play overlay + hover de elevação. */
+a.cp-phone-frame--link {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+a.cp-phone-frame--link:hover {
+  transform: translateY(-3px);
+  border-color: rgba(155,109,255,0.55);
+  box-shadow:
+    0 0 0 1px rgba(155,109,255,0.45),
+    0 38px 90px rgba(0,0,0,0.72),
+    inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+a.cp-phone-frame--link:hover .cp-cover-play-icon {
+  transform: scale(1.08);
+  background: linear-gradient(135deg, #fff, #f0e4ff);
+}
+.cp-cover-play-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 3;
+  background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.35) 100%);
+}
+.cp-cover-play-icon {
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.92);
+  color: #1a0f2e;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 5px; /* compensa o ▶ glyph */
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.45),
+    0 0 0 6px rgba(255,255,255,0.10);
+  transition: transform 0.22s ease, background 0.22s ease;
+}
 .cp-phone-frame::before {
   content: '';
   position: absolute;
@@ -13021,14 +13066,25 @@ a.xpto-pricing-btn { text-decoration: none; }
             <p class="cp-cover-subtitle">Aumentamos as vendas da sua empresa a partir de anúncios que não se parecem com anúncios.</p>
           </div>
           <div class="cp-cover-phone">
-            <div class="cp-phone-frame cp-phone-frame--sound" id="cp-cover-phone-frame">
-              <video id="cp-cover-video" src="Criativos/Sulmel_Bruna.mp4" autoplay loop muted playsinline preload="none"></video>
-              <div class="cp-sound-overlay" id="cp-sound-overlay"></div>
-            </div>
-            <button class="cp-sound-btn" id="cp-sound-btn" type="button">
-              <span class="cp-sound-btn-icon">🔇</span>
-              <span class="cp-sound-btn-label">Toque para ativar o som</span>
-            </button>
+            <!-- Vídeo hospedado externamente (Google Drive) — preview estático
+                 com thumbnail; click abre o vídeo no Drive em nova aba.
+                 Mantém o phone-frame original idêntico. -->
+            <a class="cp-phone-frame cp-phone-frame--sound cp-phone-frame--link"
+               id="cp-cover-phone-frame"
+               href="https://drive.google.com/file/d/1f8tdSjytsIt5JwWXxoYtDr_3NwR9bQ2c/view?usp=sharing"
+               target="_blank" rel="noopener"
+               aria-label="Assistir vídeo Sulmel (abre no Google Drive)">
+              <img src="Criativos/thumbs/Sulmel_Bruna.jpg" alt="Preview do vídeo Sulmel" loading="lazy">
+              <div class="cp-cover-play-overlay" aria-hidden="true">
+                <span class="cp-cover-play-icon">▶</span>
+              </div>
+            </a>
+            <a class="cp-sound-btn"
+               href="https://drive.google.com/file/d/1f8tdSjytsIt5JwWXxoYtDr_3NwR9bQ2c/view?usp=sharing"
+               target="_blank" rel="noopener">
+              <span class="cp-sound-btn-icon">▶</span>
+              <span class="cp-sound-btn-label">Assistir vídeo</span>
+            </a>
           </div>
         </div>
       </div>
