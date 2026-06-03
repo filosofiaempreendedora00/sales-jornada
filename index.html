@@ -3147,6 +3147,100 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .melh-form-btn--ghost { background: transparent; }
 
+/* Upload de imagem */
+.melh-image-area {
+  position: relative;
+}
+.melh-image-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 22px 18px;
+  background: rgba(0,0,0,0.30);
+  border: 1px dashed rgba(255,255,255,0.16);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: center;
+}
+.melh-image-pick:hover {
+  background: rgba(155,109,255,0.08);
+  border-color: rgba(155,109,255,0.45);
+}
+.melh-image-pick-icon { font-size: 22px; line-height: 1; margin-bottom: 4px; opacity: 0.8; }
+.melh-image-pick-text {
+  font-size: 13px; font-weight: 700; color: #fff;
+}
+.melh-image-pick-hint {
+  font-size: 11px; color: rgba(255,255,255,0.40);
+}
+.melh-image-preview {
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+.melh-image-preview img {
+  display: block;
+  width: 100%;
+  max-height: 280px;
+  object-fit: contain;
+  background: #000;
+}
+.melh-image-remove {
+  appearance: none;
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.72);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, transform 0.12s;
+}
+.melh-image-remove:hover { background: rgba(248,113,113,0.85); transform: scale(1.05); }
+
+/* Thumb no card */
+.melh-card-thumb {
+  width: 100%;
+  max-height: 110px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.06);
+  margin-top: 8px;
+  display: block;
+  cursor: zoom-in;
+  transition: opacity 0.18s;
+}
+.melh-card-thumb:hover { opacity: 0.88; }
+
+/* Image lightbox (visualizar anexo em tamanho) */
+.melh-img-lightbox {
+  position: fixed; inset: 0;
+  z-index: 130;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px,3vw,40px);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: zoom-out;
+}
+.melh-img-lightbox.is-open { display: flex; }
+.melh-img-lightbox img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 10px;
+  box-shadow: 0 28px 70px rgba(0,0,0,0.7);
+}
+
 @media (max-width: 1000px) {
   .melh-kanban { grid-template-columns: 1fr; gap: 14px; }
   .melh-column { min-height: 0; }
@@ -13380,27 +13474,20 @@ a.xpto-pricing-btn { text-decoration: none; }
           <textarea id="melh-form-desc" rows="3"
                     placeholder="Detalhe o que precisa ser feito, contexto, links…"></textarea>
         </label>
-        <div class="melh-form-row">
-          <label class="melh-form-field">
-            <span class="melh-form-label">Prioridade</span>
-            <select id="melh-form-priority">
-              <option value="baixa">Baixa</option>
-              <option value="media" selected>Média</option>
-              <option value="alta">Alta</option>
-            </select>
-          </label>
-          <label class="melh-form-field">
-            <span class="melh-form-label">Status</span>
-            <select id="melh-form-status">
-              <option value="pendente" selected>Em aberto</option>
-              <option value="em_andamento">Em andamento</option>
-              <option value="concluido">Concluída</option>
-            </select>
-          </label>
-          <label class="melh-form-field">
-            <span class="melh-form-label">Data alvo <small>(opcional)</small></span>
-            <input type="date" id="melh-form-target" class="prop-client-input">
-          </label>
+        <div class="melh-form-field">
+          <span class="melh-form-label">Imagem <small>(opcional)</small></span>
+          <div class="melh-image-area" id="melh-image-area">
+            <input type="file" id="melh-form-image" accept="image/*" hidden>
+            <label for="melh-form-image" class="melh-image-pick" id="melh-image-pick">
+              <span class="melh-image-pick-icon">📎</span>
+              <span class="melh-image-pick-text">Anexar imagem</span>
+              <span class="melh-image-pick-hint">PNG ou JPG · até ~2 MB · redimensionada automaticamente</span>
+            </label>
+            <div class="melh-image-preview" id="melh-image-preview" hidden>
+              <img id="melh-image-preview-img" alt="Pré-visualização do anexo">
+              <button type="button" class="melh-image-remove" id="melh-image-remove" aria-label="Remover imagem">✕</button>
+            </div>
+          </div>
         </div>
         <label class="melh-form-field">
           <span class="melh-form-label">Solicitado por <small>(opcional)</small></span>
@@ -13416,6 +13503,11 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </form>
     </div>
+  </div>
+
+  <!-- Lightbox para visualizar anexo de imagem em tamanho real -->
+  <div class="melh-img-lightbox" id="melh-img-lightbox" role="dialog" aria-modal="true">
+    <img id="melh-img-lightbox-img" alt="Imagem em tamanho real">
   </div>
 </div>
 
@@ -25809,17 +25901,96 @@ renderProgress();
   const $form   = document.getElementById('melh-form');
   const $title  = document.getElementById('melh-form-title');
   const $desc   = document.getElementById('melh-form-desc');
-  const $prio   = document.getElementById('melh-form-priority');
-  const $status = document.getElementById('melh-form-status');
-  const $target = document.getElementById('melh-form-target');
   const $closer = document.getElementById('melh-form-closer');
+  const $imgFile = document.getElementById('melh-form-image');
+  const $imgPick = document.getElementById('melh-image-pick');
+  const $imgPreview = document.getElementById('melh-image-preview');
+  const $imgPreviewImg = document.getElementById('melh-image-preview-img');
+  const $imgRemove = document.getElementById('melh-image-remove');
   const $idFld  = document.getElementById('melh-form-id');
   const $modalTitle = document.getElementById('melh-modal-title');
   const $delBtn = document.getElementById('melh-form-delete');
   const $statPending = document.getElementById('melh-stat-pending');
   const $statDoing   = document.getElementById('melh-stat-doing');
   const $statDone    = document.getElementById('melh-stat-done');
+  const $imgLightbox = document.getElementById('melh-img-lightbox');
+  const $imgLightboxImg = document.getElementById('melh-img-lightbox-img');
   if (!$kanban || !$modal) return;
+
+  // Estado temporário do form: imagem (data URL) sendo editada
+  let currentImage = '';
+
+  // Carrega imagem do arquivo, redimensiona e comprime pra dataURL.
+  // Mantém o storage controlado (~100-200KB por imagem em vez de
+  // os MB do arquivo original).
+  function compressImageFile(file) {
+    return new Promise((resolve, reject) => {
+      if (!file) return reject(new Error('Sem arquivo'));
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          const MAX = 1200;
+          let { width, height } = img;
+          if (width > MAX || height > MAX) {
+            const r = Math.min(MAX / width, MAX / height);
+            width = Math.round(width * r);
+            height = Math.round(height * r);
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width; canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          // JPEG quality 0.82 — bom balanço entre tamanho e qualidade
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+          resolve(dataUrl);
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function setImagePreview(dataUrl) {
+    currentImage = dataUrl || '';
+    if (currentImage) {
+      $imgPreviewImg.src = currentImage;
+      $imgPreview.hidden = false;
+      $imgPick.style.display = 'none';
+    } else {
+      $imgPreviewImg.src = '';
+      $imgPreview.hidden = true;
+      $imgPick.style.display = '';
+      if ($imgFile) $imgFile.value = '';
+    }
+  }
+
+  // Eventos do uploader
+  if ($imgFile) {
+    $imgFile.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      try {
+        const dataUrl = await compressImageFile(file);
+        setImagePreview(dataUrl);
+      } catch (err) {
+        alert('Não foi possível processar a imagem.');
+      }
+    });
+  }
+  if ($imgRemove) {
+    $imgRemove.addEventListener('click', () => setImagePreview(''));
+  }
+
+  // Lightbox: abre ao clicar no thumb, fecha ao clicar fora ou Esc
+  if ($imgLightbox) {
+    $imgLightbox.addEventListener('click', () => {
+      $imgLightbox.classList.remove('is-open');
+      $imgLightboxImg.src = '';
+    });
+  }
 
   // Lista de solicitantes (closers), deduplicada por nome —
   // ignora o 'Arthur Zon (comercial)' que era o mesmo nome.
@@ -25895,19 +26066,6 @@ renderProgress();
   }
 
   function renderCard(t) {
-    const dateBadge = t.dataAlvo ? (() => {
-      const dn = daysFromNow(t.dataAlvo);
-      const overdue = isOverdue(t.dataAlvo, t.status);
-      const label = overdue
-        ? `⚠ atrasada há ${-dn}d`
-        : (dn === 0 ? '⏱ hoje'
-           : dn === 1 ? '⏱ amanhã'
-           : dn > 0 ? `⏱ em ${dn}d`
-           : `${formatDateBR(t.dataAlvo)}`);
-      const fullDate = `${formatDateBR(t.dataAlvo)} · ${label.replace(/^⏱ |^⚠ /,'')}`;
-      return `<span class="melh-card-badge melh-card-badge--date ${overdue ? 'is-overdue' : ''}" title="${fullDate}">📅 ${label}</span>`;
-    })() : '';
-
     const sol = t.solicitadoPor ? SOLICITANTE_BY_ID[t.solicitadoPor] : null;
     const solicHtml = sol ? `
       <span class="melh-card-solicitante" title="Solicitado por ${escapeHtml(sol.name)}">
@@ -25916,19 +26074,18 @@ renderProgress();
       </span>` : '';
 
     const descHtml = t.descricao ? `<p class="melh-card-desc">${escapeHtml(t.descricao)}</p>` : '';
+    const thumbHtml = t.imagem ? `<img class="melh-card-thumb" data-melh-zoom src="${escapeAttr(t.imagem)}" alt="Anexo">` : '';
+    const metaHtml = solicHtml ? `<div class="melh-card-meta">${solicHtml}</div>` : '';
 
     return `
       <article class="melh-card" data-melh-id="${escapeHtml(t.id)}"
-               data-priority="${t.prioridade}" data-status="${t.status}">
+               data-status="${t.status}">
         <button type="button" class="melh-card-check" data-melh-toggle aria-label="Alternar status"></button>
         <div class="melh-card-body">
           <h3 class="melh-card-title">${escapeHtml(t.titulo)}</h3>
           ${descHtml}
-          <div class="melh-card-meta">
-            <span class="melh-card-badge melh-card-badge--priority-${t.prioridade}">${PRIO_LABEL[t.prioridade] || t.prioridade}</span>
-            ${dateBadge}
-            ${solicHtml}
-          </div>
+          ${thumbHtml}
+          ${metaHtml}
         </div>
         <div class="melh-card-actions">
           <button type="button" class="melh-card-edit" data-melh-edit aria-label="Editar">✎</button>
@@ -25936,6 +26093,7 @@ renderProgress();
       </article>
     `;
   }
+  function escapeAttr(s) { return escapeHtml(s); }
 
   function render() {
     // Stats globais
@@ -25981,18 +26139,15 @@ renderProgress();
       $idFld.value = task.id;
       $title.value = task.titulo;
       $desc.value = task.descricao || '';
-      $prio.value = task.prioridade;
-      $status.value = task.status;
-      $target.value = task.dataAlvo || '';
       if ($closer) $closer.value = task.solicitadoPor || '';
+      setImagePreview(task.imagem || '');
       $delBtn.hidden = false;
     } else {
       $modalTitle.textContent = 'Nova melhoria';
       $idFld.value = '';
       $form.reset();
-      $prio.value = 'media';
-      $status.value = 'pendente';
       if ($closer) $closer.value = '';
+      setImagePreview('');
       $delBtn.hidden = true;
     }
     $modal.hidden = false;
@@ -26021,9 +26176,7 @@ renderProgress();
     const payload = {
       titulo: $title.value.trim(),
       descricao: $desc.value.trim(),
-      prioridade: $prio.value,
-      status: $status.value,
-      dataAlvo: $target.value || '',
+      imagem: currentImage || '',
       solicitadoPor: $closer ? $closer.value : '',
     };
     if (!payload.titulo) { $title.focus(); return; }
@@ -26031,12 +26184,19 @@ renderProgress();
     if (id) {
       const i = data.findIndex(t => t.id === id);
       if (i >= 0) {
+        // Em edição: preserva status, prioridade e dataAlvo existentes.
         data[i] = { ...data[i], ...payload, atualizadoEm: new Date().toISOString() };
       }
     } else {
+      // Em inclusão: status sempre 'pendente'; prioridade e data
+      // ficam vazias (não aparecem no form). Podem ser geridas via
+      // Kanban (status) ou edições futuras.
       data.push({
         id: uid(),
         ...payload,
+        status: 'pendente',
+        prioridade: 'media',
+        dataAlvo: '',
         criadoEm: new Date().toISOString(),
       });
     }
@@ -26065,6 +26225,16 @@ renderProgress();
     const t = data.find(x => x.id === id);
     if (!t) return;
 
+    // Click na thumb abre lightbox (não abre o modal de edição)
+    if (e.target.closest('[data-melh-zoom]')) {
+      e.stopPropagation();
+      if (t.imagem && $imgLightbox) {
+        $imgLightboxImg.src = t.imagem;
+        $imgLightbox.classList.add('is-open');
+      }
+      return;
+    }
+
     // Toggle status no check
     if (e.target.closest('[data-melh-toggle]')) {
       e.stopPropagation();
@@ -26080,6 +26250,14 @@ renderProgress();
     }
     // Edit button OU click no card abre modal
     openModal(t);
+  });
+
+  // Esc fecha o lightbox de imagem (além do modal já tratado)
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && $imgLightbox && $imgLightbox.classList.contains('is-open')) {
+      $imgLightbox.classList.remove('is-open');
+      $imgLightboxImg.src = '';
+    }
   });
 
   // Filtros
