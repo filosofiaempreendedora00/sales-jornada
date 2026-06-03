@@ -3148,6 +3148,9 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 6px;
   font-family: inherit;
 }
+/* display:flex acima sobrescreve o atributo [hidden] (regra de autor vence
+   a do user-agent). Reforçamos pro campo de status sumir de fato na criação. */
+.melh-form-field[hidden] { display: none; }
 .melh-form-label {
   font-size: 11px;
   font-weight: 800;
@@ -13828,6 +13831,16 @@ a.xpto-pricing-btn { text-decoration: none; }
           <span class="melh-form-label">Título <span class="melh-required">*</span></span>
           <input type="text" id="melh-form-title" maxlength="120" required
                  placeholder="Ex: Adicionar drag-and-drop nos cases">
+        </label>
+        <!-- Status: só aparece ao EDITAR um card já criado. Na criação fica
+             escondido (toda melhoria nova nasce em 'Em aberto'). -->
+        <label class="melh-form-field" id="melh-form-status-field" hidden>
+          <span class="melh-form-label">Status</span>
+          <select id="melh-form-status">
+            <option value="pendente">Em aberto</option>
+            <option value="em_andamento">Em andamento</option>
+            <option value="concluido">Concluída</option>
+          </select>
         </label>
         <label class="melh-form-field">
           <span class="melh-form-label">Descrição <small>(opcional)</small></span>
@@ -26460,6 +26473,8 @@ renderProgress();
   const $title  = document.getElementById('melh-form-title');
   const $desc   = document.getElementById('melh-form-desc');
   const $closer = document.getElementById('melh-form-closer');
+  const $statusFld = document.getElementById('melh-form-status-field');
+  const $status = document.getElementById('melh-form-status');
   const $imgFile = document.getElementById('melh-form-image');
   const $imgPick = document.getElementById('melh-image-pick');
   const $imgPreview = document.getElementById('melh-image-preview');
@@ -26727,6 +26742,11 @@ renderProgress();
       $title.value = task.titulo;
       $desc.value = task.descricao || '';
       if ($closer) $closer.value = task.solicitadoPor || '';
+      // Status só é editável em card JÁ criado — mostra o dropdown aqui.
+      if ($statusFld && $status) {
+        $status.value = task.status || 'pendente';
+        $statusFld.hidden = false;
+      }
       setImagePreview(task.imagem || '');
       $delBtn.hidden = false;
     } else {
@@ -26734,6 +26754,8 @@ renderProgress();
       $idFld.value = '';
       $form.reset();
       if ($closer) $closer.value = '';
+      // Na criação NÃO deixa escolher status: nasce sempre em 'Em aberto'.
+      if ($statusFld) $statusFld.hidden = true;
       setImagePreview('');
       $delBtn.hidden = true;
     }
@@ -26771,8 +26793,12 @@ renderProgress();
     if (id) {
       const i = data.findIndex(t => t.id === id);
       if (i >= 0) {
-        // Em edição: preserva status, prioridade e dataAlvo existentes.
-        data[i] = { ...data[i], ...payload, atualizadoEm: new Date().toISOString() };
+        // Em edição: status pode ser alterado pelo dropdown (só existe aqui);
+        // prioridade e dataAlvo existentes são preservadas.
+        const novoStatus = ($status && STATUSES.includes($status.value))
+          ? $status.value
+          : data[i].status;
+        data[i] = { ...data[i], ...payload, status: novoStatus, atualizadoEm: new Date().toISOString() };
       }
     } else {
       // Em inclusão: status sempre 'pendente'; prioridade e data
