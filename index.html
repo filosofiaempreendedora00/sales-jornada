@@ -2820,13 +2820,84 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   border: 1px solid rgba(255,255,255,0.08);
   border-left: 3px solid var(--melh-accent, rgba(155,109,255,0.45));
   border-radius: 10px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+  cursor: grab;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s, opacity 0.15s;
 }
+.melh-card:active { cursor: grabbing; }
 .melh-card:hover {
   background: rgba(255,255,255,0.055);
   border-color: rgba(255,255,255,0.14);
   transform: translateY(-1px);
+}
+/* Card sendo arrastado: desbota e baixa */
+.melh-card.is-dragging {
+  opacity: 0.45;
+  transform: scale(0.97);
+  cursor: grabbing;
+}
+/* Coluna alvo do drop: highlight visual */
+.melh-column.is-drop-target {
+  background: rgba(155,109,255,0.10);
+  border-color: rgba(155,109,255,0.55);
+  box-shadow: 0 0 0 1px rgba(155,109,255,0.30) inset;
+}
+.melh-column.is-drop-target .melh-column-list {
+  outline: 2px dashed rgba(155,109,255,0.40);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+/* Chip de data de vencimento inline (no card) */
+.melh-card-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.04);
+  border: 1px dashed rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.55);
+  cursor: pointer;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.melh-card-date:hover {
+  background: rgba(155,109,255,0.10);
+  border-color: rgba(155,109,255,0.45);
+  border-style: solid;
+  color: #c4a8ff;
+}
+.melh-card-date.has-value {
+  background: rgba(155,109,255,0.10);
+  border-color: rgba(155,109,255,0.30);
+  border-style: solid;
+  color: #c4a8ff;
+}
+.melh-card-date.is-overdue {
+  background: rgba(248,113,113,0.16);
+  border-color: rgba(248,113,113,0.45);
+  color: #fca5a5;
+}
+.melh-card-date-input {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  color-scheme: dark;
+}
+/* Esconde o ícone de calendário nativo do input (já temos o emoji) */
+.melh-card-date-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  opacity: 0;
+  cursor: pointer;
 }
 .melh-card[data-priority="alta"]   { --melh-accent: #f87171; }
 .melh-card[data-priority="media"]  { --melh-accent: #fbbf24; }
@@ -2837,23 +2908,20 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: var(--text-soft);
 }
 .melh-card-check {
-  appearance: none;
   background: rgba(0,0,0,0.30);
   border: 1.5px solid rgba(255,255,255,0.20);
   border-radius: 50%;
   width: 22px; height: 22px;
-  cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 12px;
   color: transparent;
-  transition: all 0.15s;
   flex-shrink: 0;
   margin-top: 2px;
   padding: 0;
+  pointer-events: none;
 }
-.melh-card-check:hover { border-color: rgba(155,109,255,0.55); }
 .melh-card[data-status="em_andamento"] .melh-card-check {
   background: rgba(251,191,36,0.18);
   border-color: rgba(251,191,36,0.60);
@@ -26075,12 +26143,29 @@ renderProgress();
 
     const descHtml = t.descricao ? `<p class="melh-card-desc">${escapeHtml(t.descricao)}</p>` : '';
     const thumbHtml = t.imagem ? `<img class="melh-card-thumb" data-melh-zoom src="${escapeAttr(t.imagem)}" alt="Anexo">` : '';
-    const metaHtml = solicHtml ? `<div class="melh-card-meta">${solicHtml}</div>` : '';
+
+    // Chip de data de vencimento (input nativo type=date estilizado)
+    const overdue = isOverdue(t.dataAlvo, t.status);
+    const dateChipClass = 'melh-card-date'
+      + (t.dataAlvo ? ' has-value' : '')
+      + (overdue ? ' is-overdue' : '');
+    const dateLabel = t.dataAlvo
+      ? (overdue ? `⚠ ${formatDateBR(t.dataAlvo)}` : `📅 ${formatDateBR(t.dataAlvo)}`)
+      : '📅 Definir data';
+    const dateChipHtml = `
+      <label class="${dateChipClass}" title="Definir/editar data de vencimento">
+        <span class="melh-card-date-label">${dateLabel}</span>
+        <input type="date" class="melh-card-date-input" data-melh-date
+               value="${escapeAttr(t.dataAlvo || '')}">
+      </label>`;
+
+    const metaInner = [dateChipHtml, solicHtml].filter(Boolean).join('');
+    const metaHtml = `<div class="melh-card-meta">${metaInner}</div>`;
 
     return `
       <article class="melh-card" data-melh-id="${escapeHtml(t.id)}"
-               data-status="${t.status}">
-        <button type="button" class="melh-card-check" data-melh-toggle aria-label="Alternar status"></button>
+               data-status="${t.status}" draggable="true">
+        <span class="melh-card-check" aria-hidden="true"></span>
         <div class="melh-card-body">
           <h3 class="melh-card-title">${escapeHtml(t.titulo)}</h3>
           ${descHtml}
@@ -26101,20 +26186,13 @@ renderProgress();
     $statDoing.textContent   = data.filter(t => t.status === 'em_andamento').length;
     $statDone.textContent    = data.filter(t => t.status === 'concluido').length;
 
+    // Kanban SEMPRE visível (mesmo sem nenhuma melhoria) — cada
+    // coluna mostra 'Sem itens' individualmente se vazia.
+    $kanban.style.display = '';
+    if ($empty) $empty.hidden = true;
+
     // Aplica filtro (se houver) antes de bucketing
     const visible = data.filter(t => filter === 'all' ? true : t.status === filter);
-
-    if (data.length === 0) {
-      // Nenhuma melhoria ainda — esconde Kanban inteiro
-      $kanban.style.display = 'none';
-      $empty.hidden = false;
-      $empty.querySelector('.melh-empty-text').textContent =
-        'Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".';
-      return;
-    }
-
-    $kanban.style.display = '';
-    $empty.hidden = true;
 
     // Bucketing por status, ordenado dentro de cada
     STATUSES.forEach(st => {
@@ -26217,7 +26295,9 @@ renderProgress();
     closeModal();
   });
 
-  // Kanban: click em editar, toggle check, ou no card pra editar
+  // Kanban: click no card abre modal de edição; click no thumb
+  // abre lightbox; click no input de data não propaga.
+  // (O check virou só indicador visual — não muda status mais.)
   $kanban.addEventListener('click', e => {
     const card = e.target.closest('[data-melh-id]');
     if (!card) return;
@@ -26225,7 +26305,14 @@ renderProgress();
     const t = data.find(x => x.id === id);
     if (!t) return;
 
-    // Click na thumb abre lightbox (não abre o modal de edição)
+    // Click no input de data: não abre modal (o input nativo já
+    // captura o click e abre o datepicker)
+    if (e.target.closest('[data-melh-date]')) {
+      e.stopPropagation();
+      return;
+    }
+
+    // Click na thumb abre lightbox
     if (e.target.closest('[data-melh-zoom]')) {
       e.stopPropagation();
       if (t.imagem && $imgLightbox) {
@@ -26235,21 +26322,71 @@ renderProgress();
       return;
     }
 
-    // Toggle status no check
-    if (e.target.closest('[data-melh-toggle]')) {
-      e.stopPropagation();
-      // pendente → em_andamento → concluido → pendente
-      const next = t.status === 'pendente' ? 'em_andamento'
-                 : t.status === 'em_andamento' ? 'concluido'
-                 : 'pendente';
-      t.status = next;
+    // Click no edit button OU no resto do card abre modal
+    openModal(t);
+  });
+
+  // Mudança no input de data inline → atualiza task.dataAlvo
+  $kanban.addEventListener('change', e => {
+    const inp = e.target.closest('[data-melh-date]');
+    if (!inp) return;
+    const card = e.target.closest('[data-melh-id]');
+    if (!card) return;
+    const t = data.find(x => x.id === card.dataset.melhId);
+    if (!t) return;
+    t.dataAlvo = inp.value || '';
+    t.atualizadoEm = new Date().toISOString();
+    save();
+    render();
+  });
+
+  // ── Drag-and-drop entre colunas ──────────────────
+  let draggingId = null;
+  $kanban.addEventListener('dragstart', e => {
+    const card = e.target.closest('[data-melh-id]');
+    if (!card) return;
+    draggingId = card.dataset.melhId;
+    card.classList.add('is-dragging');
+    try { e.dataTransfer.effectAllowed = 'move'; } catch (err) {}
+    try { e.dataTransfer.setData('text/plain', draggingId); } catch (err) {}
+  });
+  $kanban.addEventListener('dragend', e => {
+    const card = e.target.closest('[data-melh-id]');
+    if (card) card.classList.remove('is-dragging');
+    document.querySelectorAll('.melh-column.is-drop-target').forEach(c => c.classList.remove('is-drop-target'));
+    draggingId = null;
+  });
+  $kanban.addEventListener('dragover', e => {
+    const col = e.target.closest('[data-melh-col]');
+    if (!col) return;
+    e.preventDefault(); // permite drop
+    try { e.dataTransfer.dropEffect = 'move'; } catch (err) {}
+    // Marca a coluna como drop-target (e desmarca as outras)
+    document.querySelectorAll('.melh-column').forEach(c => {
+      c.classList.toggle('is-drop-target', c === col);
+    });
+  });
+  $kanban.addEventListener('dragleave', e => {
+    // Só remove o highlight se realmente saiu da coluna
+    const col = e.target.closest('[data-melh-col]');
+    if (col && !col.contains(e.relatedTarget)) {
+      col.classList.remove('is-drop-target');
+    }
+  });
+  $kanban.addEventListener('drop', e => {
+    const col = e.target.closest('[data-melh-col]');
+    if (!col || !draggingId) return;
+    e.preventDefault();
+    const newStatus = col.dataset.melhCol;
+    const t = data.find(x => x.id === draggingId);
+    if (t && t.status !== newStatus) {
+      t.status = newStatus;
       t.atualizadoEm = new Date().toISOString();
       save();
       render();
-      return;
     }
-    // Edit button OU click no card abre modal
-    openModal(t);
+    col.classList.remove('is-drop-target');
+    draggingId = null;
   });
 
   // Esc fecha o lightbox de imagem (além do modal já tratado)
