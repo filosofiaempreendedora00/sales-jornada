@@ -17,6 +17,7 @@
 //    de entradas, mensagens de erro que NÃO vazam stack traces.
 // ─────────────────────────────────────────────────────────
 
+import './load-env.js'; // PRIMEIRO — carrega .env local antes do db.js ler process.env
 import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
