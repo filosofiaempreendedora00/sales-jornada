@@ -26,13 +26,14 @@ function rowToCase(row, solucoes = []) {
     nome: row.nome,
     instagram: row.instagram || '',
     site: row.site || '',
-    faturamentoInicial: row.faturamento_inicial || '',
-    faturamentoAtual: row.faturamento_atual || '',
-    ticketMedio: row.ticket_medio || '',
-    prazoEvolucao: row.prazo_evolucao || '',
-    trabalhoRealizado: row.trabalho_realizado || '',
-    estrategiaAplicada: row.estrategia_aplicada || '',
-    observacoes: row.observacoes || '',
+    // Campos descritivos (batem com seed + form do front-end)
+    funil: row.funil || '',
+    siteTurbo: !!row.site_turbo,
+    operacao: row.operacao || '',
+    desafios: row.desafios || '',
+    estrategia: row.estrategia || '',
+    resultados: row.resultados || '',
+    clienteLocalEs: !!row.cliente_local_es,
     criadoEm: row.created_at?.toISOString?.() || row.created_at,
     solucoes,
   };
@@ -107,15 +108,13 @@ export async function createCase(req, res) {
     }
     await query(`
       INSERT INTO cases (id, nicho_id, subnicho, nome, instagram, site,
-                         faturamento_inicial, faturamento_atual, ticket_medio,
-                         prazo_evolucao, trabalho_realizado, estrategia_aplicada, observacoes)
+                         funil, site_turbo, operacao, desafios, estrategia, resultados, cliente_local_es)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
     `, [
       b.id, b.nichoId, b.subnicho, b.nome,
       b.instagram || null, b.site || null,
-      b.faturamentoInicial || null, b.faturamentoAtual || null, b.ticketMedio || null,
-      b.prazoEvolucao || null, b.trabalhoRealizado || null,
-      b.estrategiaAplicada || null, b.observacoes || null,
+      b.funil || null, !!b.siteTurbo, b.operacao || null,
+      b.desafios || null, b.estrategia || null, b.resultados || null, !!b.clienteLocalEs,
     ]);
     ok(res, { id: b.id });
   } catch (err) { serverError(res, err); }
@@ -132,20 +131,19 @@ export async function updateCase(req, res, id) {
         nome = COALESCE($4, nome),
         instagram = $5,
         site = $6,
-        faturamento_inicial = $7,
-        faturamento_atual = $8,
-        ticket_medio = $9,
-        prazo_evolucao = $10,
-        trabalho_realizado = $11,
-        estrategia_aplicada = $12,
-        observacoes = $13
+        funil = $7,
+        site_turbo = $8,
+        operacao = $9,
+        desafios = $10,
+        estrategia = $11,
+        resultados = $12,
+        cliente_local_es = $13
       WHERE id = $1
     `, [
       id, b.nichoId || null, b.subnicho || null, b.nome || null,
       b.instagram || null, b.site || null,
-      b.faturamentoInicial || null, b.faturamentoAtual || null, b.ticketMedio || null,
-      b.prazoEvolucao || null, b.trabalhoRealizado || null,
-      b.estrategiaAplicada || null, b.observacoes || null,
+      b.funil || null, !!b.siteTurbo, b.operacao || null,
+      b.desafios || null, b.estrategia || null, b.resultados || null, !!b.clienteLocalEs,
     ]);
     ok(res, { ok: true });
   } catch (err) { serverError(res, err); }
@@ -194,15 +192,13 @@ export async function bulkReplace(req, res) {
           params.push(
             c.id, c.nichoId, c.subnicho, c.nome,
             c.instagram || null, c.site || null,
-            c.faturamentoInicial || null, c.faturamentoAtual || null, c.ticketMedio || null,
-            c.prazoEvolucao || null, c.trabalhoRealizado || null,
-            c.estrategiaAplicada || null, c.observacoes || null
+            c.funil || null, !!c.siteTurbo, c.operacao || null,
+            c.desafios || null, c.estrategia || null, c.resultados || null, !!c.clienteLocalEs
           );
         });
         await client.query(`
           INSERT INTO cases (id, nicho_id, subnicho, nome, instagram, site,
-                             faturamento_inicial, faturamento_atual, ticket_medio,
-                             prazo_evolucao, trabalho_realizado, estrategia_aplicada, observacoes)
+                             funil, site_turbo, operacao, desafios, estrategia, resultados, cliente_local_es)
           VALUES ${placeholders.join(',')}
         `, params);
       }
