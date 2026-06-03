@@ -2740,19 +2740,83 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-size: 13px; font-weight: 900;
 }
 
-/* ── Melhorias: lista de cards ───────────────────── */
-.melh-list {
+/* ── Melhorias: Kanban (3 colunas) ───────────────── */
+.melh-kanban {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  align-items: flex-start;
+}
+.melh-column {
+  background: rgba(255,255,255,0.015);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 14px;
+  padding: 14px 12px 16px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.18s ease;
+}
+.melh-column.is-dimmed { opacity: 0.35; }
+.melh-column-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 4px 12px;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+  margin-bottom: 12px;
+}
+.melh-column-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+.melh-column-dot--pendente     { background: #fbbf24; color: rgba(251,191,36,0.55); }
+.melh-column-dot--em_andamento { background: #c4a8ff; color: rgba(155,109,255,0.55); }
+.melh-column-dot--concluido    { background: #4ade80; color: rgba(74,222,128,0.55); }
+.melh-column-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #fff;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.melh-column-count {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  color: rgba(255,255,255,0.55);
+  padding: 2px 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+.melh-column-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+.melh-column-empty {
+  text-align: center;
+  font-size: 12px;
+  color: rgba(255,255,255,0.30);
+  padding: 16px 8px;
+  font-style: italic;
+}
+
 .melh-card {
   display: grid;
-  grid-template-columns: 28px 1fr auto;
-  gap: 14px;
+  grid-template-columns: 24px 1fr auto;
+  gap: 11px;
   align-items: flex-start;
-  padding: 16px 18px;
-  background: rgba(255,255,255,0.025);
+  padding: 13px 14px;
+  background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.08);
   border-left: 3px solid var(--melh-accent, rgba(155,109,255,0.45));
   border-radius: 10px;
@@ -2760,7 +2824,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   transition: background 0.15s, border-color 0.15s, transform 0.12s;
 }
 .melh-card:hover {
-  background: rgba(255,255,255,0.045);
+  background: rgba(255,255,255,0.055);
   border-color: rgba(255,255,255,0.14);
   transform: translateY(-1px);
 }
@@ -2844,6 +2908,38 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .melh-card-badge--priority-baixa  { background: rgba(96,165,250,0.14); color: #93c5fd; border-color: rgba(96,165,250,0.32); }
 .melh-card-badge--date            { background: rgba(155,109,255,0.10); color: #c4a8ff; border-color: rgba(155,109,255,0.28); }
 .melh-card-badge--date.is-overdue { background: rgba(248,113,113,0.20); color: #fca5a5; border-color: rgba(248,113,113,0.50); }
+/* Solicitante: avatar circular + nome curto */
+.melh-card-solicitante {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.78);
+  padding: 2px 8px 2px 2px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 99px;
+}
+.melh-card-avatar {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9b6dff, #4d8dff);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.melh-card-solicitante-name {
+  white-space: nowrap;
+  max-width: 110px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .melh-card-actions {
   display: flex;
   gap: 4px;
@@ -3051,6 +3147,10 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .melh-form-btn--ghost { background: transparent; }
 
+@media (max-width: 1000px) {
+  .melh-kanban { grid-template-columns: 1fr; gap: 14px; }
+  .melh-column { min-height: 0; }
+}
 @media (max-width: 700px) {
   .melh-toolbar { flex-direction: column; align-items: stretch; }
   .melh-toolbar-actions { justify-content: flex-start; flex-wrap: wrap; }
@@ -13221,10 +13321,38 @@ a.xpto-pricing-btn { text-decoration: none; }
         </button>
       </div>
 
-      <!-- Lista de tasks -->
-      <div class="melh-list" id="melh-list"></div>
+      <!-- Kanban: 3 colunas por status -->
+      <div class="melh-kanban" id="melh-kanban">
+        <section class="melh-column" data-melh-col="pendente">
+          <header class="melh-column-header">
+            <span class="melh-column-dot melh-column-dot--pendente"></span>
+            <span class="melh-column-title">Em aberto</span>
+            <span class="melh-column-count" data-melh-col-count>0</span>
+          </header>
+          <div class="melh-column-list" data-melh-col-list></div>
+          <div class="melh-column-empty" data-melh-col-empty>Sem itens</div>
+        </section>
+        <section class="melh-column" data-melh-col="em_andamento">
+          <header class="melh-column-header">
+            <span class="melh-column-dot melh-column-dot--em_andamento"></span>
+            <span class="melh-column-title">Em andamento</span>
+            <span class="melh-column-count" data-melh-col-count>0</span>
+          </header>
+          <div class="melh-column-list" data-melh-col-list></div>
+          <div class="melh-column-empty" data-melh-col-empty>Sem itens</div>
+        </section>
+        <section class="melh-column" data-melh-col="concluido">
+          <header class="melh-column-header">
+            <span class="melh-column-dot melh-column-dot--concluido"></span>
+            <span class="melh-column-title">Concluídas</span>
+            <span class="melh-column-count" data-melh-col-count>0</span>
+          </header>
+          <div class="melh-column-list" data-melh-col-list></div>
+          <div class="melh-column-empty" data-melh-col-empty>Sem itens</div>
+        </section>
+      </div>
 
-      <!-- Estado vazio -->
+      <!-- Estado vazio global -->
       <div class="melh-empty" id="melh-empty" hidden>
         <span class="melh-empty-icon">📋</span>
         <p class="melh-empty-text">Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".</p>
@@ -13274,6 +13402,13 @@ a.xpto-pricing-btn { text-decoration: none; }
             <input type="date" id="melh-form-target" class="prop-client-input">
           </label>
         </div>
+        <label class="melh-form-field">
+          <span class="melh-form-label">Solicitado por <small>(opcional)</small></span>
+          <select id="melh-form-closer">
+            <option value="">— sem solicitante —</option>
+            <!-- Options populadas pelo JS a partir do CLOSERS dedup -->
+          </select>
+        </label>
         <div class="melh-form-actions">
           <button type="button" class="melh-form-btn melh-form-btn--ghost" data-melh-close>Cancelar</button>
           <button type="button" class="melh-form-btn melh-form-btn--danger" id="melh-form-delete" hidden>Apagar</button>
@@ -25667,7 +25802,7 @@ renderProgress();
   }
 
   // Refs
-  const $list   = document.getElementById('melh-list');
+  const $kanban = document.getElementById('melh-kanban');
   const $empty  = document.getElementById('melh-empty');
   const $addBtn = document.getElementById('melh-add-btn');
   const $modal  = document.getElementById('melh-modal');
@@ -25677,17 +25812,53 @@ renderProgress();
   const $prio   = document.getElementById('melh-form-priority');
   const $status = document.getElementById('melh-form-status');
   const $target = document.getElementById('melh-form-target');
+  const $closer = document.getElementById('melh-form-closer');
   const $idFld  = document.getElementById('melh-form-id');
   const $modalTitle = document.getElementById('melh-modal-title');
   const $delBtn = document.getElementById('melh-form-delete');
   const $statPending = document.getElementById('melh-stat-pending');
   const $statDoing   = document.getElementById('melh-stat-doing');
   const $statDone    = document.getElementById('melh-stat-done');
-  if (!$list || !$modal) return;
+  if (!$kanban || !$modal) return;
+
+  // Lista de solicitantes (closers), deduplicada por nome —
+  // ignora o 'Arthur Zon (comercial)' que era o mesmo nome.
+  // Ordenada com Roberto primeiro (default) e o resto alfabético.
+  const SOLICITANTES = [
+    { id: '1', name: 'Roberto Fachetti' },
+    { id: '4', name: 'Arthur Zon' },
+    { id: '5', name: 'Daniel Basilio' },
+    { id: '3', name: 'Fábio Richard' },
+    { id: '8', name: 'Gustavo Dias' },
+    { id: '7', name: 'João Guarçoni' },
+    { id: '2', name: 'Matheus Scalfoni' },
+    { id: '6', name: 'Ramon Reis' },
+    { id: '9', name: 'Rodrigo Pimenta' },
+  ];
+  const SOLICITANTE_BY_ID = Object.fromEntries(SOLICITANTES.map(s => [s.id, s]));
+
+  // Popula o dropdown do form
+  if ($closer && $closer.options.length <= 1) {
+    SOLICITANTES.forEach(s => {
+      const opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.name;
+      $closer.appendChild(opt);
+    });
+  }
 
   // Helpers de display
   const STATUS_LABEL = { pendente: 'Em aberto', em_andamento: 'Em andamento', concluido: 'Concluída' };
   const PRIO_LABEL   = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
+  const STATUSES     = ['pendente', 'em_andamento', 'concluido'];
+
+  // Função pra extrair iniciais (avatar)
+  function initialsOf(name) {
+    if (!name) return '?';
+    const parts = String(name).trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+    return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  }
 
   function formatDateBR(iso) {
     if (!iso) return '';
@@ -25723,64 +25894,84 @@ renderProgress();
     });
   }
 
-  function render() {
-    const sorted = sortTasks(data);
-    const filtered = sorted.filter(t => filter === 'all' ? true : t.status === filter);
+  function renderCard(t) {
+    const dateBadge = t.dataAlvo ? (() => {
+      const dn = daysFromNow(t.dataAlvo);
+      const overdue = isOverdue(t.dataAlvo, t.status);
+      const label = overdue
+        ? `⚠ atrasada há ${-dn}d`
+        : (dn === 0 ? '⏱ hoje'
+           : dn === 1 ? '⏱ amanhã'
+           : dn > 0 ? `⏱ em ${dn}d`
+           : `${formatDateBR(t.dataAlvo)}`);
+      const fullDate = `${formatDateBR(t.dataAlvo)} · ${label.replace(/^⏱ |^⚠ /,'')}`;
+      return `<span class="melh-card-badge melh-card-badge--date ${overdue ? 'is-overdue' : ''}" title="${fullDate}">📅 ${label}</span>`;
+    })() : '';
 
-    // Stats
+    const sol = t.solicitadoPor ? SOLICITANTE_BY_ID[t.solicitadoPor] : null;
+    const solicHtml = sol ? `
+      <span class="melh-card-solicitante" title="Solicitado por ${escapeHtml(sol.name)}">
+        <span class="melh-card-avatar">${escapeHtml(initialsOf(sol.name))}</span>
+        <span class="melh-card-solicitante-name">${escapeHtml(sol.name)}</span>
+      </span>` : '';
+
+    const descHtml = t.descricao ? `<p class="melh-card-desc">${escapeHtml(t.descricao)}</p>` : '';
+
+    return `
+      <article class="melh-card" data-melh-id="${escapeHtml(t.id)}"
+               data-priority="${t.prioridade}" data-status="${t.status}">
+        <button type="button" class="melh-card-check" data-melh-toggle aria-label="Alternar status"></button>
+        <div class="melh-card-body">
+          <h3 class="melh-card-title">${escapeHtml(t.titulo)}</h3>
+          ${descHtml}
+          <div class="melh-card-meta">
+            <span class="melh-card-badge melh-card-badge--priority-${t.prioridade}">${PRIO_LABEL[t.prioridade] || t.prioridade}</span>
+            ${dateBadge}
+            ${solicHtml}
+          </div>
+        </div>
+        <div class="melh-card-actions">
+          <button type="button" class="melh-card-edit" data-melh-edit aria-label="Editar">✎</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function render() {
+    // Stats globais
     $statPending.textContent = data.filter(t => t.status === 'pendente').length;
     $statDoing.textContent   = data.filter(t => t.status === 'em_andamento').length;
     $statDone.textContent    = data.filter(t => t.status === 'concluido').length;
 
-    if (filtered.length === 0) {
-      $list.innerHTML = '';
+    // Aplica filtro (se houver) antes de bucketing
+    const visible = data.filter(t => filter === 'all' ? true : t.status === filter);
+
+    if (data.length === 0) {
+      // Nenhuma melhoria ainda — esconde Kanban inteiro
+      $kanban.style.display = 'none';
       $empty.hidden = false;
-      if (data.length > 0) {
-        // Filtro ativo mas nada: muda texto
-        $empty.querySelector('.melh-empty-text').textContent = 'Nenhuma melhoria nesse filtro.';
-      } else {
-        $empty.querySelector('.melh-empty-text').textContent =
-          'Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".';
-      }
+      $empty.querySelector('.melh-empty-text').textContent =
+        'Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".';
       return;
     }
+
+    $kanban.style.display = '';
     $empty.hidden = true;
 
-    $list.innerHTML = filtered.map(t => {
-      const dateBadge = t.dataAlvo ? (() => {
-        const dn = daysFromNow(t.dataAlvo);
-        const overdue = isOverdue(t.dataAlvo, t.status);
-        const label = overdue
-          ? `⚠ atrasada há ${-dn}d`
-          : (dn === 0 ? '⏱ hoje'
-             : dn === 1 ? '⏱ amanhã'
-             : dn > 0 ? `⏱ em ${dn}d`
-             : `${formatDateBR(t.dataAlvo)}`);
-        const fullDate = `${formatDateBR(t.dataAlvo)} · ${label.replace(/^⏱ |^⚠ /,'')}`;
-        return `<span class="melh-card-badge melh-card-badge--date ${overdue ? 'is-overdue' : ''}" title="${fullDate}">📅 ${label}</span>`;
-      })() : '';
-
-      const descHtml = t.descricao ? `<p class="melh-card-desc">${escapeHtml(t.descricao)}</p>` : '';
-
-      return `
-        <article class="melh-card" data-melh-id="${escapeHtml(t.id)}"
-                 data-priority="${t.prioridade}" data-status="${t.status}">
-          <button type="button" class="melh-card-check" data-melh-toggle aria-label="Alternar status"></button>
-          <div class="melh-card-body">
-            <h3 class="melh-card-title">${escapeHtml(t.titulo)}</h3>
-            ${descHtml}
-            <div class="melh-card-meta">
-              <span class="melh-card-badge melh-card-badge--priority-${t.prioridade}">${PRIO_LABEL[t.prioridade] || t.prioridade}</span>
-              ${dateBadge}
-              <span class="melh-card-badge">${STATUS_LABEL[t.status] || t.status}</span>
-            </div>
-          </div>
-          <div class="melh-card-actions">
-            <button type="button" class="melh-card-edit" data-melh-edit aria-label="Editar">✎</button>
-          </div>
-        </article>
-      `;
-    }).join('');
+    // Bucketing por status, ordenado dentro de cada
+    STATUSES.forEach(st => {
+      const colItems = sortTasks(visible.filter(t => t.status === st));
+      const col = $kanban.querySelector(`[data-melh-col="${st}"]`);
+      if (!col) return;
+      const listEl  = col.querySelector('[data-melh-col-list]');
+      const countEl = col.querySelector('[data-melh-col-count]');
+      const emptyEl = col.querySelector('[data-melh-col-empty]');
+      countEl.textContent = colItems.length;
+      listEl.innerHTML = colItems.map(renderCard).join('');
+      emptyEl.style.display = colItems.length === 0 ? 'block' : 'none';
+      // Highlight da coluna se um filtro está restringindo
+      col.classList.toggle('is-dimmed', filter !== 'all' && filter !== st);
+    });
   }
 
   // ── Modal ─────────────────────────────────────
@@ -25793,6 +25984,7 @@ renderProgress();
       $prio.value = task.prioridade;
       $status.value = task.status;
       $target.value = task.dataAlvo || '';
+      if ($closer) $closer.value = task.solicitadoPor || '';
       $delBtn.hidden = false;
     } else {
       $modalTitle.textContent = 'Nova melhoria';
@@ -25800,6 +25992,7 @@ renderProgress();
       $form.reset();
       $prio.value = 'media';
       $status.value = 'pendente';
+      if ($closer) $closer.value = '';
       $delBtn.hidden = true;
     }
     $modal.hidden = false;
@@ -25831,6 +26024,7 @@ renderProgress();
       prioridade: $prio.value,
       status: $status.value,
       dataAlvo: $target.value || '',
+      solicitadoPor: $closer ? $closer.value : '',
     };
     if (!payload.titulo) { $title.focus(); return; }
 
@@ -25863,8 +26057,8 @@ renderProgress();
     closeModal();
   });
 
-  // Lista: click em editar, toggle check, ou no card pra editar
-  $list.addEventListener('click', e => {
+  // Kanban: click em editar, toggle check, ou no card pra editar
+  $kanban.addEventListener('click', e => {
     const card = e.target.closest('[data-melh-id]');
     if (!card) return;
     const id = card.dataset.melhId;
