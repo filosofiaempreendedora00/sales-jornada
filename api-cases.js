@@ -73,17 +73,12 @@ function ok(res, body) {
   res.end(JSON.stringify(body));
 }
 
-async function readJson(req) {
-  return new Promise((resolve, reject) => {
-    let raw = '';
-    req.on('data', c => raw += c);
-    req.on('end', () => {
-      if (!raw) return resolve({});
-      try { resolve(JSON.parse(raw)); }
-      catch (e) { reject(e); }
-    });
-    req.on('error', reject);
-  });
+// O body já vem parseado pelo middleware express.json() do server.js.
+// IMPORTANTE: NÃO ler o stream do req manualmente (req.on('data'/'end'))
+// — o express já consumiu o stream, então os eventos nunca disparam e
+// a request pendura pra sempre. Sempre usar req.body.
+function readJson(req) {
+  return req.body || {};
 }
 
 // Lista todos os cases com suas soluções (1 query + 1 query batch)
@@ -106,7 +101,7 @@ export async function listCases(req, res) {
 export async function createCase(req, res) {
   if (!isConfigured()) return notConfigured(res);
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     if (!b.id || !b.nichoId || !b.subnicho || !b.nome) {
       return badRequest(res, 'id, nichoId, subnicho e nome são obrigatórios');
     }
@@ -129,7 +124,7 @@ export async function createCase(req, res) {
 export async function updateCase(req, res, id) {
   if (!isConfigured()) return notConfigured(res);
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     await query(`
       UPDATE cases SET
         nicho_id = COALESCE($2, nicho_id),
@@ -171,7 +166,7 @@ export async function bulkReplace(req, res) {
   if (!isConfigured()) return notConfigured(res);
   const t0 = Date.now();
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     const list = Array.isArray(b.cases) ? b.cases : [];
 
     const cases = list.filter(c => c.id && c.nichoId && c.subnicho && c.nome);
@@ -249,7 +244,7 @@ export async function bulkReplace(req, res) {
 export async function replaceSolucoes(req, res, caseId) {
   if (!isConfigured()) return notConfigured(res);
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     const list = Array.isArray(b.solucoes) ? b.solucoes : [];
     await withClient(async (client) => {
       await client.query('BEGIN');

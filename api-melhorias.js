@@ -48,17 +48,10 @@ function ok(res, body) {
   res.setHeader('Content-Type', 'application/json');
   res.end(JSON.stringify(body));
 }
-async function readJson(req) {
-  return new Promise((resolve, reject) => {
-    let raw = '';
-    req.on('data', c => raw += c);
-    req.on('end', () => {
-      if (!raw) return resolve({});
-      try { resolve(JSON.parse(raw)); }
-      catch (e) { reject(e); }
-    });
-    req.on('error', reject);
-  });
+// Body já parseado pelo express.json() do server.js — usar req.body.
+// Ler o stream manualmente trava a request (express já consumiu).
+function readJson(req) {
+  return req.body || {};
 }
 
 export async function listMelhorias(req, res) {
@@ -72,7 +65,7 @@ export async function listMelhorias(req, res) {
 export async function createMelhoria(req, res) {
   if (!isConfigured()) return notConfigured(res);
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     if (!b.id || !b.titulo) return badRequest(res, 'id e titulo obrigatórios');
     await query(`
       INSERT INTO melhorias (id, titulo, descricao, status, prioridade, data_alvo, imagem, solicitado_por)
@@ -89,7 +82,7 @@ export async function createMelhoria(req, res) {
 export async function updateMelhoria(req, res, id) {
   if (!isConfigured()) return notConfigured(res);
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     await query(`
       UPDATE melhorias SET
         titulo = COALESCE($2, titulo),
@@ -114,7 +107,7 @@ export async function bulkReplace(req, res) {
   if (!isConfigured()) return notConfigured(res);
   const t0 = Date.now();
   try {
-    const b = await readJson(req);
+    const b = readJson(req);
     const list = Array.isArray(b.melhorias) ? b.melhorias : [];
     const items = list.filter(m => m.id && m.titulo);
     const { withClient } = await import('./db.js');
