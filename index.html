@@ -7024,12 +7024,165 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 
 /* ── TURBO SLIDE: CASES (imagem) ─────────────────── */
-.turbo-slide--cases,
-.turbo-slide--servicos {
+.turbo-slide--cases {
   background: #050810;
   padding: 0 !important;
   align-items: stretch;
   justify-content: stretch;
+}
+
+/* ── TURBO SLIDE: SERVIÇOS (catálogo agrupado por fase) ─── */
+.turbo-slide--servicos {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%, rgba(155,109,255,0.12), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(13,207,232,0.10), transparent 60%),
+    #060912;
+  padding: clamp(48px, 5vw, 80px) clamp(28px, 4vw, 64px);
+  align-items: stretch;
+}
+.turbo-slide--servicos .turbo-slide-inner {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3vw, 44px);
+}
+.turbo-servicos-header { max-width: 880px; }
+.turbo-servicos-title {
+  font-size: clamp(28px, 3.4vw, 44px);
+  font-weight: 900;
+  letter-spacing: -1.3px;
+  line-height: 1.08;
+  margin: 12px 0 14px;
+  color: #fff;
+}
+.turbo-servicos-title-accent {
+  background: linear-gradient(90deg, #c4a8ff, #4d8dff, #0dcfe8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.turbo-servicos-sub {
+  font-size: clamp(13px, 1.2vw, 15px);
+  color: rgba(255,255,255,0.62);
+  max-width: 720px;
+  margin: 0;
+  line-height: 1.55;
+}
+.turbo-servicos-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(14px, 1.4vw, 20px);
+}
+.turbo-servicos-cat {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-left: 3px solid var(--svc-color, #9b6dff);
+  border-radius: 14px;
+  padding: 22px 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+  position: relative;
+  overflow: hidden;
+}
+.turbo-servicos-cat::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--svc-color, #9b6dff), transparent);
+  opacity: 0.6;
+}
+.turbo-servicos-cat:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.12);
+}
+.turbo-servicos-cat-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed rgba(255,255,255,0.08);
+}
+.turbo-servicos-cat-num {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  color: var(--svc-color, #9b6dff);
+  background: color-mix(in srgb, var(--svc-color, #9b6dff) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--svc-color, #9b6dff) 35%, transparent);
+  padding: 4px 9px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.turbo-servicos-cat-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 4px;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+.turbo-servicos-cat-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  margin: 0;
+  line-height: 1.4;
+}
+.turbo-servicos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  flex: 1;
+}
+.turbo-servicos-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+.turbo-servicos-list li > span:last-child {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.turbo-servicos-list li strong {
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: -0.1px;
+}
+.turbo-servicos-list li small {
+  color: rgba(255,255,255,0.45);
+  font-size: 11px;
+  font-weight: 500;
+}
+.turbo-svc-icon {
+  width: 28px; height: 28px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--svc-color, #9b6dff) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--svc-color, #9b6dff) 28%, transparent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+@media (max-width: 1100px) {
+  .turbo-servicos-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .turbo-servicos-grid { grid-template-columns: 1fr; }
 }
 .turbo-cases-img {
   width: 100% !important;
@@ -13003,7 +13156,107 @@ a.xpto-pricing-btn { text-decoration: none; }
 
       <!-- SLIDE — SERVIÇOS TURBO (catálogo completo de produtos) -->
       <div class="turbo-slide turbo-slide--servicos">
-        <img src="fotos%20turbo/servicos-turbo.svg" alt="Serviços Turbo Partners" class="turbo-cases-img">
+        <div class="turbo-slide-inner">
+          <div class="turbo-servicos-header">
+            <div class="xpto-eyebrow"><span></span>O que entregamos</div>
+            <h2 class="turbo-servicos-title">Um <span class="turbo-servicos-title-accent">ecossistema</span> de soluções<br>integradas pra escalar o seu negócio.</h2>
+            <p class="turbo-servicos-sub">Da concepção à eficiência operacional — agrupamos os serviços por fase da jornada, mas você consegue contratar qualquer combinação.</p>
+          </div>
+
+          <div class="turbo-servicos-grid">
+            <!-- Categoria 01 — Marca & Identidade -->
+            <div class="turbo-servicos-cat" style="--svc-color:#f9a8d4">
+              <div class="turbo-servicos-cat-head">
+                <span class="turbo-servicos-cat-num">01</span>
+                <div>
+                  <h3 class="turbo-servicos-cat-title">Marca &amp; Identidade</h3>
+                  <p class="turbo-servicos-cat-desc">A fundação que comunica antes da palavra.</p>
+                </div>
+              </div>
+              <ul class="turbo-servicos-list">
+                <li><span class="turbo-svc-icon">🎨</span><span><strong>ID Visual</strong><small>Logo, paleta, manual da marca</small></span></li>
+                <li><span class="turbo-svc-icon">📦</span><span><strong>Embalagem &amp; Rótulo</strong><small>Design físico que vende na gôndola</small></span></li>
+              </ul>
+            </div>
+
+            <!-- Categoria 02 — Plataforma & Web -->
+            <div class="turbo-servicos-cat" style="--svc-color:#4d8dff">
+              <div class="turbo-servicos-cat-head">
+                <span class="turbo-servicos-cat-num">02</span>
+                <div>
+                  <h3 class="turbo-servicos-cat-title">Plataforma &amp; Web</h3>
+                  <p class="turbo-servicos-cat-desc">Onde a venda acontece de verdade.</p>
+                </div>
+              </div>
+              <ul class="turbo-servicos-list">
+                <li><span class="turbo-svc-icon">🛒</span><span><strong>E-commerce</strong><small>DNVB · Moda · Personalizado</small></span></li>
+                <li><span class="turbo-svc-icon">🌐</span><span><strong>Site Institucional</strong><small>Credibilidade que converte lead</small></span></li>
+                <li><span class="turbo-svc-icon">🎯</span><span><strong>Landing Page</strong><small>Página de alta conversão</small></span></li>
+              </ul>
+            </div>
+
+            <!-- Categoria 03 — Aquisição & Mídia -->
+            <div class="turbo-servicos-cat" style="--svc-color:#0dcfe8">
+              <div class="turbo-servicos-cat-head">
+                <span class="turbo-servicos-cat-num">03</span>
+                <div>
+                  <h3 class="turbo-servicos-cat-title">Aquisição &amp; Mídia</h3>
+                  <p class="turbo-servicos-cat-desc">Tráfego orientado a dados de negócio.</p>
+                </div>
+              </div>
+              <ul class="turbo-servicos-list">
+                <li><span class="turbo-svc-icon">📈</span><span><strong>Gestão de Performance</strong><small>Anúncios pagos orientados a CAC, ROAS e margem</small></span></li>
+                <li><span class="turbo-svc-icon">🎬</span><span><strong>Creators UGC</strong><small>Vídeos que não parecem anúncio</small></span></li>
+                <li><span class="turbo-svc-icon">🔄</span><span><strong>Remarketing</strong><small>Re-impacto pra quem já demonstrou interesse</small></span></li>
+              </ul>
+            </div>
+
+            <!-- Categoria 04 — Conteúdo & Comunidade -->
+            <div class="turbo-servicos-cat" style="--svc-color:#12d490">
+              <div class="turbo-servicos-cat-head">
+                <span class="turbo-servicos-cat-num">04</span>
+                <div>
+                  <h3 class="turbo-servicos-cat-title">Conteúdo &amp; Comunidade</h3>
+                  <p class="turbo-servicos-cat-desc">Crescimento orgânico que sustenta o pago.</p>
+                </div>
+              </div>
+              <ul class="turbo-servicos-list">
+                <li><span class="turbo-svc-icon">📱</span><span><strong>Social Media</strong><small>Presença mensal estratégica</small></span></li>
+                <li><span class="turbo-svc-icon">🤝</span><span><strong>Gestão de Comunidade</strong><small>Creators afiliados &amp; rede própria</small></span></li>
+              </ul>
+            </div>
+
+            <!-- Categoria 05 — Retenção & Automação -->
+            <div class="turbo-servicos-cat" style="--svc-color:#9b6dff">
+              <div class="turbo-servicos-cat-head">
+                <span class="turbo-servicos-cat-num">05</span>
+                <div>
+                  <h3 class="turbo-servicos-cat-title">Retenção &amp; Automação</h3>
+                  <p class="turbo-servicos-cat-desc">Vender pra base é 5× mais barato.</p>
+                </div>
+              </div>
+              <ul class="turbo-servicos-list">
+                <li><span class="turbo-svc-icon">📊</span><span><strong>CRM Estratégico</strong><small>Réguas, broadcasts e segmentação</small></span></li>
+                <li><span class="turbo-svc-icon">⚙️</span><span><strong>Implantação de Automações</strong><small>E-mail + WhatsApp ligados ao checkout</small></span></li>
+              </ul>
+            </div>
+
+            <!-- Categoria 06 — Eficiência & Escala -->
+            <div class="turbo-servicos-cat" style="--svc-color:#f97316">
+              <div class="turbo-servicos-cat-head">
+                <span class="turbo-servicos-cat-num">06</span>
+                <div>
+                  <h3 class="turbo-servicos-cat-title">Eficiência &amp; Escala</h3>
+                  <p class="turbo-servicos-cat-desc">1% de conversão a mais pode dobrar receita.</p>
+                </div>
+              </div>
+              <ul class="turbo-servicos-list">
+                <li><span class="turbo-svc-icon">🔬</span><span><strong>CRO</strong><small>Otimização de taxa de conversão</small></span></li>
+                <li><span class="turbo-svc-icon">📰</span><span><strong>Advertorial &amp; Listicle</strong><small>Funis alternativos pra mercados saturados</small></span></li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- SLIDE 05 — CASES E-COMMERCE -->
