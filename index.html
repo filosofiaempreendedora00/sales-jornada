@@ -7246,6 +7246,132 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   .turbo-fase-desc { flex: none; }
   .turbo-fase-sep { transform: rotate(90deg); }
 }
+
+/* ── TURBO SLIDE: DEPOIMENTOS (opiniões de clientes) ─── */
+.turbo-slide--depo {
+  background:
+    radial-gradient(ellipse 70% 50% at 12% 12%, rgba(77,141,255,0.12), transparent 60%),
+    radial-gradient(ellipse 60% 50% at 88% 88%, rgba(13,207,232,0.10), transparent 60%),
+    #060912;
+  padding: clamp(38px, 4.4vw, 70px) clamp(22px, 3.4vw, 54px);
+  align-items: stretch;
+}
+.turbo-slide--depo .turbo-slide-inner {
+  max-width: 1240px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(22px, 2.8vh, 40px);
+}
+.turbo-depo-header {
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.turbo-depo-header .xpto-eyebrow { margin-bottom: 0; align-self: flex-start; }
+.turbo-depo-title {
+  font-size: clamp(30px, 4vw, 54px);
+  font-weight: 900;
+  letter-spacing: -1.6px;
+  line-height: 1.04;
+  margin: 2px 0 0;
+  color: #fff;
+}
+.turbo-depo-title-accent {
+  background: linear-gradient(90deg, #0dcfe8, #12d490);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.turbo-depo-grid {
+  column-count: 3;
+  column-gap: clamp(12px, 1.4vw, 20px);
+}
+.turbo-depo-card {
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  margin-bottom: clamp(12px, 1.4vw, 20px);
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 20px 20px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+}
+.turbo-depo-card::before {
+  content: '\201C';
+  position: absolute;
+  top: 2px; right: 16px;
+  font-size: 60px;
+  line-height: 1;
+  font-family: Georgia, 'Times New Roman', serif;
+  color: color-mix(in srgb, var(--depo-accent, #0dcfe8) 24%, transparent);
+  pointer-events: none;
+}
+.turbo-depo-card:hover {
+  transform: translateY(-3px);
+  background: rgba(255,255,255,0.045);
+  border-color: color-mix(in srgb, var(--depo-accent, #0dcfe8) 42%, transparent);
+}
+.turbo-depo-quote {
+  font-size: clamp(12.5px, 0.95vw, 13.8px);
+  line-height: 1.5;
+  color: rgba(255,255,255,0.82);
+  margin: 0 0 15px;
+  position: relative;
+  z-index: 1;
+}
+.turbo-depo-author {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.turbo-depo-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  color: var(--depo-accent, #0dcfe8);
+  background: color-mix(in srgb, var(--depo-accent, #0dcfe8) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--depo-accent, #0dcfe8) 34%, transparent);
+}
+.turbo-depo-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.turbo-depo-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+.turbo-depo-role {
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.3;
+}
+.turbo-depo-handle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--depo-accent, #0dcfe8);
+  line-height: 1.3;
+}
+@media (max-width: 1100px) { .turbo-depo-grid { column-count: 2; } }
+@media (max-width: 680px)  { .turbo-depo-grid { column-count: 1; } }
+
 .turbo-cases-img {
   width: 100% !important;
   height: 100% !important;
@@ -13224,6 +13350,83 @@ a.xpto-pricing-btn { text-decoration: none; }
       <!-- SLIDE 05 — CASES LEAD -->
       <div class="turbo-slide turbo-slide--cases">
         <img src="fotos%20turbo/logos-lead-novo.svg" alt="Cases Lead Generation Turbo" class="turbo-cases-img">
+      </div>
+
+      <!-- SLIDE — DEPOIMENTOS (opiniões de clientes) — penúltimo -->
+      <div class="turbo-slide turbo-slide--depo">
+        <div class="turbo-slide-inner">
+          <div class="turbo-depo-header">
+            <div class="xpto-eyebrow"><span></span>Depoimentos</div>
+            <h2 class="turbo-depo-title">Opiniões que <span class="turbo-depo-title-accent">importam</span>.</h2>
+          </div>
+
+          <div class="turbo-depo-grid">
+            <!-- 1 — Arthur / Noway -->
+            <article class="turbo-depo-card" style="--depo-accent:#9b6dff">
+              <p class="turbo-depo-quote">“Via de regra eu nunca gostei de botar nossa marketing na mão de agência, eu sempre tive muita desconfiança e com a Turbo foi muito pelo contrário. Eles estão sempre preocupados com nosso resultado final. A Turbo foi nossa parceria, desde o D+0 até o crescimento de 10x esse ano”</p>
+              <div class="turbo-depo-author">
+                <span class="turbo-depo-avatar">AR</span>
+                <div class="turbo-depo-meta">
+                  <span class="turbo-depo-name">Arthur</span>
+                  <span class="turbo-depo-role">Co-fundador da Noway</span>
+                  <span class="turbo-depo-handle">@nowaydrink</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- 2 — João Pedro / Grano Square -->
+            <article class="turbo-depo-card" style="--depo-accent:#4d8dff">
+              <p class="turbo-depo-quote">“Algumas questões que a gente cobrava bastante, no início, quando tivemos essa troca de agência foi essa proatividade e a Turbo vem fazendo isso muito bem. E para complementar, tivemos recorde de vendas agora nessa Black Friday de 2025.”</p>
+              <div class="turbo-depo-author">
+                <span class="turbo-depo-avatar">JP</span>
+                <div class="turbo-depo-meta">
+                  <span class="turbo-depo-name">João Pedro</span>
+                  <span class="turbo-depo-role">Gerente de E-commerce</span>
+                  <span class="turbo-depo-handle">@granosquare</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- 3 — Enzo Moreira / Guday -->
+            <article class="turbo-depo-card" style="--depo-accent:#0dcfe8">
+              <p class="turbo-depo-quote">“Só tenho a falar bem. Foi muito completo o desenvolvimento dos fluxos de automações e os E-mails e estamos bem satisfeitos”</p>
+              <div class="turbo-depo-author">
+                <span class="turbo-depo-avatar">EM</span>
+                <div class="turbo-depo-meta">
+                  <span class="turbo-depo-name">Enzo Moreira</span>
+                  <span class="turbo-depo-role">Co-fundador da Guday</span>
+                  <span class="turbo-depo-handle">@guday.br</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- 4 — Ana Luíza / Óticas Paris -->
+            <article class="turbo-depo-card" style="--depo-accent:#12d490">
+              <p class="turbo-depo-quote">“É um trabalho que nos conquistou muito, porque é um trabalho muito ativo, muito presente no nosso dia a dia. É uma agência de extrema qualidade, com profissionais super qualificados”</p>
+              <div class="turbo-depo-author">
+                <span class="turbo-depo-avatar">AL</span>
+                <div class="turbo-depo-meta">
+                  <span class="turbo-depo-name">Ana Luíza</span>
+                  <span class="turbo-depo-role">Diretora Executiva das Óticas Paris</span>
+                  <span class="turbo-depo-handle">@oticasparis</span>
+                </div>
+              </div>
+            </article>
+
+            <!-- 5 — Amanda Wandekoken / Pedra Azul Editora -->
+            <article class="turbo-depo-card" style="--depo-accent:#f97316">
+              <p class="turbo-depo-quote">“Nós conhecemos a Turbo no Ecommerce ES, de 2024 e foi uma grata surpresa. Os resultados foram diferentes logo de cara. Com a ajuda da Turbo nós estamos chegando cada vez mais perto do que almejamos ser.”</p>
+              <div class="turbo-depo-author">
+                <span class="turbo-depo-avatar">AW</span>
+                <div class="turbo-depo-meta">
+                  <span class="turbo-depo-name">Amanda Wandekoken</span>
+                  <span class="turbo-depo-role">Sócia e CMO da Pedra Azul Editora</span>
+                  <span class="turbo-depo-handle">@pedrazuleditora</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
       </div>
 
       <!-- SLIDE — METODOLOGIA TURBO (5 fases macro + CTA jornadas) -->
