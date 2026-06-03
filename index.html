@@ -7080,29 +7080,32 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: clamp(26px, 3.4vh, 50px);
 }
 .turbo-metodo-header {
-  max-width: 760px;
+  max-width: 820px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 14px;
 }
+/* eyebrow só envolve o texto (não estica na coluna flex) */
+.turbo-metodo-header .xpto-eyebrow { margin-bottom: 0; align-self: flex-start; }
 .turbo-metodo-title {
-  font-size: clamp(27px, 3.3vw, 46px);
+  font-size: clamp(34px, 4.6vw, 62px);
   font-weight: 900;
-  letter-spacing: -1.4px;
-  line-height: 1.06;
-  margin: 6px 0 0;
+  letter-spacing: -1.8px;
+  line-height: 1.03;
+  margin: 2px 0 0;
   color: #fff;
 }
 .turbo-metodo-title-accent {
-  background: linear-gradient(90deg, #9b6dff, #4d8dff, #0dcfe8, #12d490, #f97316);
+  background: linear-gradient(90deg, #0dcfe8, #12d490);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 .turbo-metodo-sub {
-  font-size: clamp(13px, 1.2vw, 15.5px);
-  color: rgba(255,255,255,0.62);
-  max-width: 700px;
+  font-size: clamp(13.5px, 1.25vw, 16px);
+  color: rgba(255,255,255,0.66);
+  max-width: 720px;
   margin: 0;
   line-height: 1.55;
 }
@@ -7189,9 +7192,12 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .turbo-fase-sep {
   flex: 0 0 auto;
   align-self: center;
-  font-size: 20px;
-  color: rgba(255,255,255,0.25);
-  font-weight: 700;
+  font-size: clamp(26px, 2.4vw, 36px);
+  line-height: 1;
+  color: rgba(255,255,255,0.78);
+  font-weight: 900;
+  text-shadow: 0 0 14px rgba(13,207,232,0.45);
+  padding: 0 2px;
 }
 .turbo-metodo-cta {
   display: flex;
@@ -13223,7 +13229,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="turbo-metodo-header">
             <div class="xpto-eyebrow"><span></span>Metodologia Turbo</div>
             <h2 class="turbo-metodo-title">5 fases que levam<br>do <span class="turbo-metodo-title-accent">zero ao lucro</span>.</h2>
-            <p class="turbo-metodo-sub">Cada fase prepara a próxima. Pular etapa vira gargalo lá na frente — por isso seguimos a ordem, no ritmo do seu negócio.</p>
+            <p class="turbo-metodo-sub">Atendemos marcas em diferentes estágios de maturidade — da primeira venda à escala com previsibilidade. Cada negócio entra na fase certa pro seu momento.</p>
           </div>
 
           <div class="turbo-metodo-flow">
@@ -13233,11 +13239,12 @@ a.xpto-pricing-btn { text-decoration: none; }
               <h3 class="turbo-fase-nome">Concepção</h3>
               <p class="turbo-fase-desc">Direção antes de velocidade — estratégia, oferta e validação de mercado.</p>
               <ul class="turbo-fase-exs">
-                <li>Protocolo Do Zero ao Lucro</li>
-                <li>ICP &amp; precificação</li>
+                <li>Definições estratégicas</li>
+                <li>Oferta &amp; precificação</li>
+                <li>Validação de mercado</li>
               </ul>
             </div>
-            <div class="turbo-fase-sep">▸</div>
+            <div class="turbo-fase-sep">→</div>
 
             <!-- 02 Aquecimento -->
             <div class="turbo-fase" style="--fase-color:#4d8dff">
@@ -13250,7 +13257,7 @@ a.xpto-pricing-btn { text-decoration: none; }
                 <li>Automações</li>
               </ul>
             </div>
-            <div class="turbo-fase-sep">▸</div>
+            <div class="turbo-fase-sep">→</div>
 
             <!-- 03 Aceleração -->
             <div class="turbo-fase" style="--fase-color:#0dcfe8">
@@ -13263,7 +13270,7 @@ a.xpto-pricing-btn { text-decoration: none; }
                 <li>Comunidade</li>
               </ul>
             </div>
-            <div class="turbo-fase-sep">▸</div>
+            <div class="turbo-fase-sep">→</div>
 
             <!-- 04 Eficiência -->
             <div class="turbo-fase" style="--fase-color:#12d490">
@@ -13276,7 +13283,7 @@ a.xpto-pricing-btn { text-decoration: none; }
                 <li>Remarketing</li>
               </ul>
             </div>
-            <div class="turbo-fase-sep">▸</div>
+            <div class="turbo-fase-sep">→</div>
 
             <!-- 05 Fine Tuning -->
             <div class="turbo-fase" style="--fase-color:#f97316">
@@ -13292,9 +13299,8 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
 
           <div class="turbo-metodo-cta">
-            <span class="turbo-metodo-cta-label">Explore a jornada interativa:</span>
-            <button type="button" class="turbo-metodo-btn" data-goto-jornada="ecommerce">🛒 E-commerce</button>
-            <button type="button" class="turbo-metodo-btn" data-goto-jornada="lead">🎯 Lead</button>
+            <span class="turbo-metodo-cta-label">Veja a metodologia aplicada, fase por fase:</span>
+            <button type="button" class="turbo-metodo-btn" data-goto-jornada="ecommerce">Explorar a jornada interativa →</button>
           </div>
         </div>
       </div>
