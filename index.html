@@ -2683,6 +2683,36 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex: 1;
   justify-content: center;
 }
+/* Seletor de ordenação */
+.melh-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.melh-sort-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-soft);
+}
+.melh-sort-select {
+  appearance: none;
+  background: rgba(255,255,255,0.04) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23999' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 7px 28px 7px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, background-color 0.15s;
+  color-scheme: dark;
+}
+.melh-sort-select:hover { border-color: rgba(155,109,255,0.40); }
+.melh-sort-select:focus { border-color: rgba(155,109,255,0.65); }
 .melh-filter-chip {
   appearance: none;
   background: rgba(255,255,255,0.02);
@@ -13736,6 +13766,15 @@ a.xpto-pricing-btn { text-decoration: none; }
           <button type="button" class="melh-filter-chip" data-melh-filter="em_andamento">Em andamento</button>
           <button type="button" class="melh-filter-chip" data-melh-filter="concluido">Concluídas</button>
         </div>
+        <label class="melh-sort">
+          <span class="melh-sort-label">Ordenar:</span>
+          <select id="melh-sort-select" class="melh-sort-select">
+            <option value="data_asc">📅 Vencimento (urgente primeiro)</option>
+            <option value="data_desc">📅 Vencimento (distante primeiro)</option>
+            <option value="recentes">🕐 Mais recentes</option>
+            <option value="antigas">🕐 Mais antigas</option>
+          </select>
+        </label>
         <button type="button" class="melh-add-btn" id="melh-add-btn">
           <span class="melh-add-btn-icon">+</span>
           <span>Nova melhoria</span>
@@ -26557,19 +26596,37 @@ renderProgress();
     return Math.round((d - today) / 86400000);
   }
 
+  // Modo de ordenação dentro de cada coluna (controlado pelo seletor)
+  // data_asc  → vencimento mais próximo/atrasado primeiro (default)
+  // data_desc → vencimento mais distante primeiro
+  // recentes  → criadas por último primeiro
+  // antigas   → criadas primeiro
+  let sortMode = 'data_asc';
+
   function sortTasks(list) {
-    // Ordem: 1) pendente/em_andamento > concluído, 2) data alvo crescente (sem data por último), 3) prioridade
-    const statusOrder = { em_andamento: 0, pendente: 1, concluido: 2 };
-    const prioOrder   = { alta: 0, media: 1, baixa: 2 };
-    return list.slice().sort((a, b) => {
-      const so = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
-      if (so !== 0) return so;
-      // Por data alvo (mais próximas primeiro; sem data vai pro fim)
-      const da = a.dataAlvo || '9999-12-31';
-      const db = b.dataAlvo || '9999-12-31';
-      if (da !== db) return da.localeCompare(db);
+    const arr = list.slice();
+    if (sortMode === 'recentes' || sortMode === 'antigas') {
+      arr.sort((a, b) => {
+        const ca = a.criadoEm || '';
+        const cb = b.criadoEm || '';
+        return sortMode === 'recentes' ? cb.localeCompare(ca) : ca.localeCompare(cb);
+      });
+      return arr;
+    }
+    // Ordenação por data alvo (vencimento). Cards sem data vão pro fim
+    // em ambos os modos (não faz sentido "distante" pra quem não tem data).
+    const prioOrder = { alta: 0, media: 1, baixa: 2 };
+    arr.sort((a, b) => {
+      const hasA = !!a.dataAlvo, hasB = !!b.dataAlvo;
+      if (hasA !== hasB) return hasA ? -1 : 1; // com data sempre antes de sem data
+      if (hasA && hasB) {
+        const cmp = a.dataAlvo.localeCompare(b.dataAlvo);
+        if (cmp !== 0) return sortMode === 'data_desc' ? -cmp : cmp;
+      }
+      // Empate (mesma data ou ambos sem data) → prioridade como desempate
       return (prioOrder[a.prioridade] ?? 9) - (prioOrder[b.prioridade] ?? 9);
     });
+    return arr;
   }
 
   function renderCard(t) {
@@ -26847,6 +26904,15 @@ renderProgress();
       render();
     });
   });
+
+  // Seletor de ordenação
+  const $sortSelect = document.getElementById('melh-sort-select');
+  if ($sortSelect) {
+    $sortSelect.addEventListener('change', () => {
+      sortMode = $sortSelect.value;
+      render();
+    });
+  }
 
   // API mínima
   window.__melhorias = {
