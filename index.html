@@ -13668,18 +13668,6 @@ a.xpto-pricing-btn { text-decoration: none; }
 <!-- ══════════════════════════════════════════════ -->
 <div class="view" id="view-cases">
   <div class="cases-wrap">
-    <div class="cases-wip-banner" role="status">
-      <span class="cases-wip-banner-icon">🚧</span>
-      <div style="flex:1">
-        <p class="cases-wip-banner-text">
-          <strong>Em construção</strong>
-          A biblioteca de Cases ainda está em desenvolvimento — fluxos, dados e visual podem mudar. Cadastros ficam salvos no seu navegador (localStorage) e podem ser perdidos em atualizações.
-        </p>
-        <button type="button" class="cases-wip-import" id="cases-import-btn" hidden>
-          📥 Importar 27 cases do PDF
-        </button>
-      </div>
-    </div>
     <header class="cases-header">
       <div class="cases-header-left">
         <h1 class="cases-title">
@@ -26283,25 +26271,10 @@ renderProgress();
     return added;
   }
 
-  // Botão "Importar 27 cases" no banner WIP — só aparece se localStorage
-  // estiver vazio (pra não tentar reimportar sobre cases já trabalhados).
-  const $importBtn = document.getElementById('cases-import-btn');
-  if ($importBtn) {
-    const updateBtnVisibility = () => {
-      const hasSeed = Array.isArray(window.__CASES_SEED__) && window.__CASES_SEED__.length > 0;
-      $importBtn.hidden = !(hasSeed && casesData.length === 0);
-      if (hasSeed) {
-        $importBtn.textContent = `📥 Importar ${window.__CASES_SEED__.length} cases do PDF`;
-      }
-    };
-    updateBtnVisibility();
-    $importBtn.addEventListener('click', () => {
-      if (!confirm(`Importar ${window.__CASES_SEED__?.length || 0} cases do PDF? Cases já cadastrados não serão duplicados.`)) return;
-      const added = importSeed();
-      alert(`✓ ${added} ${added === 1 ? 'case importado' : 'cases importados'}.`);
-      updateBtnVisibility();
-    });
-  }
+  // Importação do seed (PDF) ficou só disponível via API
+  // (window.__cases.importSeed) pra uso pontual — o botão visível
+  // foi removido pois os 27 cases já estão no banco e o controle é
+  // só de manutenção, não algo pro usuário final ver.
 
   // Expõe API mínima pra futuras integrações
   window.__cases = {
