@@ -26141,7 +26141,9 @@ renderProgress();
         <span class="melh-card-solicitante-name">${escapeHtml(sol.name)}</span>
       </span>` : '';
 
-    const descHtml = t.descricao ? `<p class="melh-card-desc">${escapeHtml(t.descricao)}</p>` : '';
+    // Descrição NÃO aparece no preview do card — só ao clicar e abrir
+    // o modal de edição. O card no Kanban fica enxuto: título + thumb
+    // + meta (data + solicitante).
     const thumbHtml = t.imagem ? `<img class="melh-card-thumb" data-melh-zoom src="${escapeAttr(t.imagem)}" alt="Anexo">` : '';
 
     // Chip de data de vencimento (input nativo type=date estilizado)
@@ -26168,7 +26170,6 @@ renderProgress();
         <span class="melh-card-check" aria-hidden="true"></span>
         <div class="melh-card-body">
           <h3 class="melh-card-title">${escapeHtml(t.titulo)}</h3>
-          ${descHtml}
           ${thumbHtml}
           ${metaHtml}
         </div>
