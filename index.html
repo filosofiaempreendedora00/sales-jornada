@@ -7100,7 +7100,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: #fff;
 }
 .turbo-metodo-title-accent {
-  background: linear-gradient(90deg, #0dcfe8, #12d490);
+  background: linear-gradient(90deg, #c49bff 0%, #4d8dff 50%, #0dcfe8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -7282,7 +7282,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: #fff;
 }
 .turbo-depo-title-accent {
-  background: linear-gradient(90deg, #0dcfe8, #12d490);
+  background: linear-gradient(90deg, #c49bff 0%, #4d8dff 50%, #0dcfe8 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -7292,6 +7292,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   column-gap: clamp(12px, 1.4vw, 20px);
 }
 .turbo-depo-card {
+  --depo-accent: #9b6dff; /* cor padrão da ID (igual aos eyebrows) — sem arco-íris */
   break-inside: avoid;
   -webkit-column-break-inside: avoid;
   margin-bottom: clamp(12px, 1.4vw, 20px);
@@ -7332,18 +7333,13 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 11px;
 }
 .turbo-depo-avatar {
-  width: 38px; height: 38px;
+  width: 42px; height: 42px;
   border-radius: 50%;
   flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12.5px;
-  font-weight: 800;
-  letter-spacing: 0.3px;
-  color: var(--depo-accent, #0dcfe8);
-  background: color-mix(in srgb, var(--depo-accent, #0dcfe8) 16%, transparent);
-  border: 1px solid color-mix(in srgb, var(--depo-accent, #0dcfe8) 34%, transparent);
+  object-fit: cover;
+  object-position: center top;
+  background: color-mix(in srgb, var(--depo-accent, #9b6dff) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--depo-accent, #9b6dff) 36%, transparent);
 }
 .turbo-depo-meta {
   min-width: 0;
@@ -13362,10 +13358,10 @@ a.xpto-pricing-btn { text-decoration: none; }
 
           <div class="turbo-depo-grid">
             <!-- 1 — Arthur / Noway -->
-            <article class="turbo-depo-card" style="--depo-accent:#9b6dff">
+            <article class="turbo-depo-card">
               <p class="turbo-depo-quote">“Via de regra eu nunca gostei de botar nossa marketing na mão de agência, eu sempre tive muita desconfiança e com a Turbo foi muito pelo contrário. Eles estão sempre preocupados com nosso resultado final. A Turbo foi nossa parceria, desde o D+0 até o crescimento de 10x esse ano”</p>
               <div class="turbo-depo-author">
-                <span class="turbo-depo-avatar">AR</span>
+                <img class="turbo-depo-avatar" src="Sobre%20turbo/feedbacks%20clientes/arthur-noway.png" alt="Arthur" loading="lazy">
                 <div class="turbo-depo-meta">
                   <span class="turbo-depo-name">Arthur</span>
                   <span class="turbo-depo-role">Co-fundador da Noway</span>
@@ -13375,10 +13371,10 @@ a.xpto-pricing-btn { text-decoration: none; }
             </article>
 
             <!-- 2 — João Pedro / Grano Square -->
-            <article class="turbo-depo-card" style="--depo-accent:#4d8dff">
+            <article class="turbo-depo-card">
               <p class="turbo-depo-quote">“Algumas questões que a gente cobrava bastante, no início, quando tivemos essa troca de agência foi essa proatividade e a Turbo vem fazendo isso muito bem. E para complementar, tivemos recorde de vendas agora nessa Black Friday de 2025.”</p>
               <div class="turbo-depo-author">
-                <span class="turbo-depo-avatar">JP</span>
+                <img class="turbo-depo-avatar" src="Sobre%20turbo/feedbacks%20clientes/joao-pedro-grano.png" alt="João Pedro" loading="lazy">
                 <div class="turbo-depo-meta">
                   <span class="turbo-depo-name">João Pedro</span>
                   <span class="turbo-depo-role">Gerente de E-commerce</span>
@@ -13388,10 +13384,10 @@ a.xpto-pricing-btn { text-decoration: none; }
             </article>
 
             <!-- 3 — Enzo Moreira / Guday -->
-            <article class="turbo-depo-card" style="--depo-accent:#0dcfe8">
+            <article class="turbo-depo-card">
               <p class="turbo-depo-quote">“Só tenho a falar bem. Foi muito completo o desenvolvimento dos fluxos de automações e os E-mails e estamos bem satisfeitos”</p>
               <div class="turbo-depo-author">
-                <span class="turbo-depo-avatar">EM</span>
+                <img class="turbo-depo-avatar" src="Sobre%20turbo/feedbacks%20clientes/enzo-guday.png" alt="Enzo Moreira" loading="lazy">
                 <div class="turbo-depo-meta">
                   <span class="turbo-depo-name">Enzo Moreira</span>
                   <span class="turbo-depo-role">Co-fundador da Guday</span>
@@ -13401,10 +13397,10 @@ a.xpto-pricing-btn { text-decoration: none; }
             </article>
 
             <!-- 4 — Ana Luíza / Óticas Paris -->
-            <article class="turbo-depo-card" style="--depo-accent:#12d490">
+            <article class="turbo-depo-card">
               <p class="turbo-depo-quote">“É um trabalho que nos conquistou muito, porque é um trabalho muito ativo, muito presente no nosso dia a dia. É uma agência de extrema qualidade, com profissionais super qualificados”</p>
               <div class="turbo-depo-author">
-                <span class="turbo-depo-avatar">AL</span>
+                <img class="turbo-depo-avatar" src="Sobre%20turbo/feedbacks%20clientes/ana%20luiza-oticas.png" alt="Ana Luíza" loading="lazy">
                 <div class="turbo-depo-meta">
                   <span class="turbo-depo-name">Ana Luíza</span>
                   <span class="turbo-depo-role">Diretora Executiva das Óticas Paris</span>
@@ -13414,10 +13410,10 @@ a.xpto-pricing-btn { text-decoration: none; }
             </article>
 
             <!-- 5 — Amanda Wandekoken / Pedra Azul Editora -->
-            <article class="turbo-depo-card" style="--depo-accent:#f97316">
+            <article class="turbo-depo-card">
               <p class="turbo-depo-quote">“Nós conhecemos a Turbo no Ecommerce ES, de 2024 e foi uma grata surpresa. Os resultados foram diferentes logo de cara. Com a ajuda da Turbo nós estamos chegando cada vez mais perto do que almejamos ser.”</p>
               <div class="turbo-depo-author">
-                <span class="turbo-depo-avatar">AW</span>
+                <img class="turbo-depo-avatar" src="Sobre%20turbo/feedbacks%20clientes/amanda-pedra-azul.png" alt="Amanda Wandekoken" loading="lazy">
                 <div class="turbo-depo-meta">
                   <span class="turbo-depo-name">Amanda Wandekoken</span>
                   <span class="turbo-depo-role">Sócia e CMO da Pedra Azul Editora</span>
