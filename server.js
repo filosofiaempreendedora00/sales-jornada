@@ -23,6 +23,9 @@ import { fileURLToPath } from 'url';
 import { readFile } from 'fs/promises';
 import Anthropic from '@anthropic-ai/sdk';
 import * as cheerio from 'cheerio';
+import * as db from './db.js';
+import * as casesApi from './api-cases.js';
+import * as melhApi from './api-melhorias.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -73,10 +76,26 @@ app.get('/api/health', (req, res) => {
     ok: true,
     ai: HAS_AI ? 'live' : 'mock',
     model: HAS_AI ? ANTHROPIC_MODEL : null,
+    db: db.isConfigured() ? 'live' : 'off',
     ts: Date.now(),
     streaming: true, // marca a versão com streaming SSE
   });
 });
+
+// ── API REST: Cases ──────────────────────────────────────
+app.get   ('/api/cases',                       (req, res) => casesApi.listCases(req, res));
+app.post  ('/api/cases',                       (req, res) => casesApi.createCase(req, res));
+app.put   ('/api/cases/:id',                   (req, res) => casesApi.updateCase(req, res, req.params.id));
+app.delete('/api/cases/:id',                   (req, res) => casesApi.deleteCase(req, res, req.params.id));
+app.post  ('/api/cases/:id/solucoes/replace',  (req, res) => casesApi.replaceSolucoes(req, res, req.params.id));
+app.post  ('/api/cases/bulk-replace',          (req, res) => casesApi.bulkReplace(req, res));
+
+// ── API REST: Melhorias ──────────────────────────────────
+app.get   ('/api/melhorias',                 (req, res) => melhApi.listMelhorias(req, res));
+app.post  ('/api/melhorias',                 (req, res) => melhApi.createMelhoria(req, res));
+app.put   ('/api/melhorias/:id',             (req, res) => melhApi.updateMelhoria(req, res, req.params.id));
+app.delete('/api/melhorias/:id',             (req, res) => melhApi.deleteMelhoria(req, res, req.params.id));
+app.post  ('/api/melhorias/bulk-replace',    (req, res) => melhApi.bulkReplace(req, res));
 
 // ── Health stream — testa SSE sem chamar Anthropic ──────
 // Útil pra diagnosticar se proxy/streaming está OK independente da IA.
@@ -1327,11 +1346,22 @@ app.use((req, res) => {
 });
 
 // ── Start ───────────────────────────────────────────────
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log('───────────────────────────────────────');
   console.log(`  Jornada Online — server up on :${PORT}`);
   console.log(`  AI mode: ${HAS_AI ? `LIVE (${ANTHROPIC_MODEL})` : 'MOCK (sem ANTHROPIC_API_KEY)'}`);
+  console.log(`  DB:      ${db.isConfigured() ? 'LIVE' : 'OFF (sem env vars)'}`);
   console.log('───────────────────────────────────────');
+  // Roda migrations no startup (idempotente — _migrations controla)
+  if (db.isConfigured()) {
+    try {
+      const r = await db.runMigrations();
+      if (r.ran) console.log(`[db] ${r.ran} migration(s) aplicada(s).`);
+      else if (!r.skipped) console.log('[db] schema atualizado.');
+    } catch (err) {
+      console.error('[db] FALHA ao rodar migrations:', err.message);
+    }
+  }
 });
 
 // Graceful shutdown

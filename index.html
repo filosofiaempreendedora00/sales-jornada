@@ -24909,10 +24909,60 @@ renderProgress();
     if (!('clienteLocalEs' in c)) { c.clienteLocalEs = false; migrated = true; }
   });
 
+  // Sync com backend (Postgres) — debounced bulk replace. Salva local
+  // imediatamente pra resposta instantânea + envia ao servidor em
+  // até 800ms. Se a request falhar, segue funcionando offline com o
+  // localStorage e tenta de novo na próxima mutação.
+  let pushTimer = null;
+  let pushInFlight = false;
+  let pushDirty = false;
+  async function pushCasesRemote() {
+    if (pushInFlight) { pushDirty = true; return; }
+    pushInFlight = true;
+    pushDirty = false;
+    try {
+      const r = await fetch('/api/cases/bulk-replace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cases: casesData }),
+      });
+      if (!r.ok && r.status !== 503) console.warn('[cases] sync falhou:', r.status);
+    } catch (e) {
+      console.warn('[cases] sync offline:', e.message);
+    } finally {
+      pushInFlight = false;
+      if (pushDirty) setTimeout(pushCasesRemote, 200);
+    }
+  }
   function saveCases() {
     try { localStorage.setItem('cases-data', JSON.stringify(casesData)); } catch (e) {}
+    clearTimeout(pushTimer);
+    pushTimer = setTimeout(pushCasesRemote, 800);
   }
   if (migrated) saveCases();
+
+  // Pull on init — busca o estado do servidor e sobrescreve o local
+  // se o servidor tem dados. Se 503/erro, segue com localStorage.
+  (async function pullCasesOnInit() {
+    try {
+      const r = await fetch('/api/cases');
+      if (!r.ok) return;
+      const j = await r.json();
+      if (Array.isArray(j.cases) && j.cases.length > 0) {
+        // Merge defensivo: usa dados do servidor mas mantém campos
+        // que não estão na tabela (ex: campos legados em transição)
+        casesData = j.cases.map(c => ({
+          siteTurbo: false, clienteLocalEs: false, funil: '', operacao: '',
+          desafios: '', estrategia: '', resultados: '',
+          ...c,
+          solucoes: Array.isArray(c.solucoes) ? c.solucoes : [],
+        }));
+        try { localStorage.setItem('cases-data', JSON.stringify(casesData)); } catch (e) {}
+        if (typeof render === 'function') render();
+        if (typeof renderDrawer === 'function' && currentNichoId) renderDrawer();
+      }
+    } catch (e) { /* offline ok */ }
+  })();
 
   // Filtros UI
   let searchTerm = '';
@@ -25953,9 +26003,47 @@ renderProgress();
   } catch (e) {}
   let filter = 'all'; // 'all' | 'pendente' | 'em_andamento' | 'concluido'
 
+  // Sync com backend (mesmo padrão dos Cases)
+  let melhPushTimer = null;
+  let melhPushInFlight = false;
+  let melhPushDirty = false;
+  async function pushMelhoriasRemote() {
+    if (melhPushInFlight) { melhPushDirty = true; return; }
+    melhPushInFlight = true;
+    melhPushDirty = false;
+    try {
+      const r = await fetch('/api/melhorias/bulk-replace', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ melhorias: data }),
+      });
+      if (!r.ok && r.status !== 503) console.warn('[melhorias] sync falhou:', r.status);
+    } catch (e) {
+      console.warn('[melhorias] sync offline:', e.message);
+    } finally {
+      melhPushInFlight = false;
+      if (melhPushDirty) setTimeout(pushMelhoriasRemote, 200);
+    }
+  }
   function save() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+    clearTimeout(melhPushTimer);
+    melhPushTimer = setTimeout(pushMelhoriasRemote, 800);
   }
+
+  // Pull on init — busca do servidor e sobrescreve local se houver
+  (async function pullMelhoriasOnInit() {
+    try {
+      const r = await fetch('/api/melhorias');
+      if (!r.ok) return;
+      const j = await r.json();
+      if (Array.isArray(j.melhorias)) {
+        data = j.melhorias;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+        if (typeof render === 'function') render();
+      }
+    } catch (e) { /* offline ok */ }
+  })();
 
   function uid() {
     return 'm-' + Math.random().toString(36).slice(2, 9) + '-' + (data.length + 1);
