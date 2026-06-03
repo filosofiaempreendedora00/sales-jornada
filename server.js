@@ -27,6 +27,7 @@ import * as cheerio from 'cheerio';
 import * as db from './db.js';
 import * as casesApi from './api-cases.js';
 import * as melhApi from './api-melhorias.js';
+import * as presetsApi from './api-presets.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -97,6 +98,13 @@ app.post  ('/api/melhorias',                 (req, res) => melhApi.createMelhori
 app.put   ('/api/melhorias/:id',             (req, res) => melhApi.updateMelhoria(req, res, req.params.id));
 app.delete('/api/melhorias/:id',             (req, res) => melhApi.deleteMelhoria(req, res, req.params.id));
 app.post  ('/api/melhorias/bulk-replace',    (req, res) => melhApi.bulkReplace(req, res));
+
+// ── API: Presets de proposta (público, sem Anthropic) ────
+// Pra integrações externas (ex: NEXUS Voice Router) gerarem propostas
+// via HTTP. Reaproveita o conteúdo real da apresentação do app.
+app.get    ('/api/presets',                       (req, res) => presetsApi.listPresets(req, res));
+app.options('/api/presets/proposta-padrao',       (req, res) => presetsApi.preflight(req, res));
+app.post   ('/api/presets/proposta-padrao',       (req, res) => presetsApi.generatePropostaPadrao(req, res));
 
 // ── Health stream — testa SSE sem chamar Anthropic ──────
 // Útil pra diagnosticar se proxy/streaming está OK independente da IA.
