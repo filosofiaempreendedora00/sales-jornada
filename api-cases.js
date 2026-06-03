@@ -164,51 +164,84 @@ export async function deleteCase(req, res, id) {
   } catch (err) { serverError(res, err); }
 }
 
-// Bulk replace — substitui TODOS os cases (+ solucoes) pelo estado
-// enviado pelo cliente. Estratégia simples: ideal pra um único
-// usuário/sincronização total. Não escala pra muitos clientes
-// concorrentes, mas pro nosso caso (poucos vendedores, baixa freq)
-// é suficiente e elimina a necessidade de diff client-side.
+// Bulk replace — OTIMIZADO com multi-row INSERT.
+// Antes: 1 query por linha (N+M round-trips). Agora: 2 INSERTs
+// totais. Para 27 cases + ~100 solucoes, reduz de ~25s pra <1s.
 export async function bulkReplace(req, res) {
   if (!isConfigured()) return notConfigured(res);
+  const t0 = Date.now();
   try {
     const b = await readJson(req);
     const list = Array.isArray(b.cases) ? b.cases : [];
+
+    const cases = list.filter(c => c.id && c.nichoId && c.subnicho && c.nome);
+    const sols = [];
+    cases.forEach(c => {
+      (Array.isArray(c.solucoes) ? c.solucoes : []).forEach((s, i) => {
+        if (s.id && s.nome) sols.push({ ...s, caseId: c.id, ordem: i });
+      });
+    });
+
     await withClient(async (client) => {
       await client.query('BEGIN');
       await client.query('DELETE FROM solucoes');
       await client.query('DELETE FROM cases');
-      for (const c of list) {
-        if (!c.id || !c.nichoId || !c.subnicho || !c.nome) continue;
+
+      if (cases.length > 0) {
+        const COLS = 13;
+        const placeholders = [];
+        const params = [];
+        cases.forEach((c, i) => {
+          const off = i * COLS;
+          placeholders.push(
+            `($${off+1},$${off+2},$${off+3},$${off+4},$${off+5},$${off+6},$${off+7},$${off+8},$${off+9},$${off+10},$${off+11},$${off+12},$${off+13})`
+          );
+          params.push(
+            c.id, c.nichoId, c.subnicho, c.nome,
+            c.instagram || null, c.site || null,
+            c.faturamentoInicial || null, c.faturamentoAtual || null, c.ticketMedio || null,
+            c.prazoEvolucao || null, c.trabalhoRealizado || null,
+            c.estrategiaAplicada || null, c.observacoes || null
+          );
+        });
         await client.query(`
           INSERT INTO cases (id, nicho_id, subnicho, nome, instagram, site,
                              faturamento_inicial, faturamento_atual, ticket_medio,
                              prazo_evolucao, trabalho_realizado, estrategia_aplicada, observacoes)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
-        `, [
-          c.id, c.nichoId, c.subnicho, c.nome,
-          c.instagram || null, c.site || null,
-          c.faturamentoInicial || null, c.faturamentoAtual || null, c.ticketMedio || null,
-          c.prazoEvolucao || null, c.trabalhoRealizado || null,
-          c.estrategiaAplicada || null, c.observacoes || null,
-        ]);
-        const sols = Array.isArray(c.solucoes) ? c.solucoes : [];
-        for (let i = 0; i < sols.length; i++) {
-          const s = sols[i];
-          if (!s.id || !s.nome) continue;
-          await client.query(`
-            INSERT INTO solucoes (id, case_id, sol_cat_id, nome, icon, stage, url, conteudo, ordem)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-          `, [
-            s.id, c.id, s.solCatId || null, s.nome, s.icon || null,
-            s.stage || null, s.url || null, s.conteudo || null, i,
-          ]);
-        }
+          VALUES ${placeholders.join(',')}
+        `, params);
       }
+
+      if (sols.length > 0) {
+        const COLS = 9;
+        const placeholders = [];
+        const params = [];
+        sols.forEach((s, i) => {
+          const off = i * COLS;
+          placeholders.push(
+            `($${off+1},$${off+2},$${off+3},$${off+4},$${off+5},$${off+6},$${off+7},$${off+8},$${off+9})`
+          );
+          params.push(
+            s.id, s.caseId, s.solCatId || null, s.nome, s.icon || null,
+            s.stage || null, s.url || null, s.conteudo || null, s.ordem
+          );
+        });
+        await client.query(`
+          INSERT INTO solucoes (id, case_id, sol_cat_id, nome, icon, stage, url, conteudo, ordem)
+          VALUES ${placeholders.join(',')}
+        `, params);
+      }
+
       await client.query('COMMIT');
     });
-    ok(res, { ok: true, count: list.length });
-  } catch (err) { serverError(res, err); }
+    const ms = Date.now() - t0;
+    console.log(`[bulk-replace cases] ok — ${cases.length} cases + ${sols.length} solucoes em ${ms}ms`);
+    ok(res, { ok: true, count: cases.length, ms });
+  } catch (err) {
+    const ms = Date.now() - t0;
+    console.error(`[bulk-replace cases] FALHA em ${ms}ms:`, err.message);
+    serverError(res, err);
+  }
 }
 
 // Substitui TODAS as soluções de um case por uma nova lista.

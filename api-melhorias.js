@@ -109,32 +109,48 @@ export async function updateMelhoria(req, res, id) {
   } catch (err) { serverError(res, err); }
 }
 
-// Bulk replace — substitui TODAS as melhorias pelo estado enviado.
-// Mesmo padrão de cases — sincronização total simples.
+// Bulk replace — OTIMIZADO com multi-row INSERT (1 query só)
 export async function bulkReplace(req, res) {
   if (!isConfigured()) return notConfigured(res);
+  const t0 = Date.now();
   try {
     const b = await readJson(req);
     const list = Array.isArray(b.melhorias) ? b.melhorias : [];
+    const items = list.filter(m => m.id && m.titulo);
     const { withClient } = await import('./db.js');
     await withClient(async (client) => {
       await client.query('BEGIN');
       await client.query('DELETE FROM melhorias');
-      for (const m of list) {
-        if (!m.id || !m.titulo) continue;
+      if (items.length > 0) {
+        const COLS = 8;
+        const placeholders = [];
+        const params = [];
+        items.forEach((m, i) => {
+          const off = i * COLS;
+          placeholders.push(
+            `($${off+1},$${off+2},$${off+3},$${off+4},$${off+5},$${off+6},$${off+7},$${off+8})`
+          );
+          params.push(
+            m.id, m.titulo, m.descricao || null,
+            m.status || 'pendente', m.prioridade || 'media',
+            m.dataAlvo || null, m.imagem || null, m.solicitadoPor || null
+          );
+        });
         await client.query(`
           INSERT INTO melhorias (id, titulo, descricao, status, prioridade, data_alvo, imagem, solicitado_por)
-          VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-        `, [
-          m.id, m.titulo, m.descricao || null,
-          m.status || 'pendente', m.prioridade || 'media',
-          m.dataAlvo || null, m.imagem || null, m.solicitadoPor || null,
-        ]);
+          VALUES ${placeholders.join(',')}
+        `, params);
       }
       await client.query('COMMIT');
     });
-    ok(res, { ok: true, count: list.length });
-  } catch (err) { serverError(res, err); }
+    const ms = Date.now() - t0;
+    console.log(`[bulk-replace melhorias] ok — ${items.length} itens em ${ms}ms`);
+    ok(res, { ok: true, count: items.length, ms });
+  } catch (err) {
+    const ms = Date.now() - t0;
+    console.error(`[bulk-replace melhorias] FALHA em ${ms}ms:`, err.message);
+    serverError(res, err);
+  }
 }
 
 export async function deleteMelhoria(req, res, id) {
