@@ -22176,8 +22176,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // 1. Apresentação Turbo (sempre)
     const turboNode = document.getElementById('apres-sub-turbo');
     if (turboNode) {
+      // Clona pra poder ajustar SÓ a versão da proposta sem tocar na
+      // apresentação "Sobre a Turbo". No slide de METODOLOGIA, o rodapé
+      // com o botão "Explorar a jornada interativa" não faz sentido dentro
+      // da proposta (não há pra onde navegar), então removemos só aqui.
+      const turboClone = turboNode.cloneNode(true);
+      turboClone.querySelectorAll('.turbo-metodo-cta').forEach(el => el.remove());
       sections.push(`<section class="proposal-section proposal-section--turbo">
-        <div class="apres-subview is-active">${turboNode.innerHTML}</div>
+        <div class="apres-subview is-active">${turboClone.innerHTML}</div>
       </section>`);
     }
     // 2. Soluções selecionadas, na ordem de SOLUTIONS
