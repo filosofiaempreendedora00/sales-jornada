@@ -200,6 +200,61 @@ ${closeSection}
 </html>`;
 }
 
+// Formulário simples mostrado quando a URL é aberta sem ?cliente.
+// O submit é GET pra MESMA rota → vira a proposta renderizada.
+function proposalFormHtml() {
+  return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gerar Proposta · Turbo</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(155,109,255,0.16), transparent 60%), #07070f;
+    color: #e6e8f2; padding: 24px;
+  }
+  .card {
+    width: 100%; max-width: 440px; background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.10); border-radius: 20px; padding: 36px 34px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  }
+  .eyebrow { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 800; color: #b89aff; }
+  h1 { font-size: 26px; font-weight: 900; letter-spacing: -0.6px; margin: 8px 0 4px; color: #fff; }
+  p.sub { margin: 0 0 24px; font-size: 13.5px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+  label { display: block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin: 16px 0 7px; }
+  input {
+    width: 100%; padding: 13px 15px; border-radius: 11px; font-size: 15px; font-family: inherit;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.14); color: #fff; outline: none;
+  }
+  input:focus { border-color: rgba(155,109,255,0.65); }
+  button {
+    width: 100%; margin-top: 26px; padding: 14px; border: none; border-radius: 12px; cursor: pointer;
+    font-size: 15px; font-weight: 800; font-family: inherit; color: #04211b;
+    background: linear-gradient(135deg, #0dcfe8, #12d490); box-shadow: 0 10px 26px rgba(13,207,232,0.25);
+    transition: transform .15s, filter .18s;
+  }
+  button:hover { transform: translateY(-2px); filter: brightness(1.06); }
+</style>
+</head>
+<body>
+  <form class="card" method="GET" action="">
+    <div class="eyebrow">Turbo Partners</div>
+    <h1>Gerar proposta</h1>
+    <p class="sub">Preencha o nome do cliente (e o valor, se quiser) e clique pra gerar a proposta padrão.</p>
+    <label for="cliente">Cliente</label>
+    <input id="cliente" name="cliente" type="text" placeholder="Ex: João da Silva" required autofocus autocomplete="off">
+    <label for="valor">Valor do investimento (opcional)</label>
+    <input id="valor" name="valor" type="text" inputmode="numeric" placeholder="Ex: 5000" autocomplete="off">
+    <button type="submit">Gerar proposta →</button>
+  </form>
+</body>
+</html>`;
+}
+
 // ── CORS (endpoint público p/ outro app do Roberto) ─────────
 function setCors(res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -274,9 +329,13 @@ export function renderPropostaPadrao(req, res) {
     const valor = q.valor != null ? q.valor : (q.value != null ? q.value : null);
 
     if (!cliente) {
-      res.statusCode = 400;
+      // Sem cliente → mostra um formulário simples (Cliente + Valor + Gerar).
+      // Assim o NEXUS só precisa abrir ESTA URL fixa por voz ("gerar
+      // proposta"); o vendedor digita o nome e clica. Funciona pra
+      // QUALQUER cliente, sem depender de o NEXUS reconhecer o nome falado.
+      res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.end('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;background:#0a0a0c;color:#fff;padding:40px"><h2>Faltou informar o cliente</h2><p>Use <code>?cliente=Nome&valor=5000</code></p></body>');
+      return res.end(proposalFormHtml());
     }
 
     const html = buildPropostaPadraoHTML({ cliente, valor, baseUrl: baseUrlOf(req) });
