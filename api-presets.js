@@ -261,3 +261,32 @@ export function generatePropostaPadrao(req, res) {
     res.end(JSON.stringify({ error: 'server-error', detail: err.message }));
   }
 }
+
+// GET /api/presets/proposta-padrao?cliente=...&valor=...
+// Versão "abrir como URL": devolve o HTML direto (text/html) pra abrir
+// no navegador. É o formato que o NEXUS Voice Router usa — ele monta a
+// URL com os slots e abre. Mesma geração do POST, sem Anthropic.
+export function renderPropostaPadrao(req, res) {
+  setCors(res);
+  try {
+    const q = req.query || {};
+    const cliente = (q.cliente || q.clientName || q.nome || '').toString().trim();
+    const valor = q.valor != null ? q.valor : (q.value != null ? q.value : null);
+
+    if (!cliente) {
+      res.statusCode = 400;
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.end('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;background:#0a0a0c;color:#fff;padding:40px"><h2>Faltou informar o cliente</h2><p>Use <code>?cliente=Nome&valor=5000</code></p></body>');
+    }
+
+    const html = buildPropostaPadraoHTML({ cliente, valor, baseUrl: baseUrlOf(req) });
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.end(html);
+  } catch (err) {
+    console.error('[api-presets] erro ao renderizar proposta-padrao:', err);
+    res.statusCode = 500;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.end('<!doctype html><meta charset="utf-8"><body style="font-family:sans-serif;background:#0a0a0c;color:#fff;padding:40px"><h2>Erro ao gerar a proposta</h2><pre>' + escapeHtml(err.message) + '</pre></body>');
+  }
+}

@@ -105,6 +105,8 @@ app.post  ('/api/melhorias/bulk-replace',    (req, res) => melhApi.bulkReplace(r
 app.get    ('/api/presets',                       (req, res) => presetsApi.listPresets(req, res));
 app.options('/api/presets/proposta-padrao',       (req, res) => presetsApi.preflight(req, res));
 app.post   ('/api/presets/proposta-padrao',       (req, res) => presetsApi.generatePropostaPadrao(req, res));
+// GET = "abrir como URL" (formato que o NEXUS usa: monta a URL e abre no browser)
+app.get    ('/api/presets/proposta-padrao',       (req, res) => presetsApi.renderPropostaPadrao(req, res));
 
 // ── Health stream — testa SSE sem chamar Anthropic ──────
 // Útil pra diagnosticar se proxy/streaming está OK independente da IA.
