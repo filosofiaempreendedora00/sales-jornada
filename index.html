@@ -25115,14 +25115,9 @@ renderProgress();
   //   criadoEm,
   //   solucoes: [{ id, nome, url, conteudo, criadoEm }]
   // }]
+  // DB-only — sem fallback de localStorage. O estado real
+  // (casesData) é populado por pullCasesOnInit() logo abaixo.
   let casesData = [];
-  try {
-    const raw = localStorage.getItem('cases-data');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) casesData = parsed;
-    }
-  } catch (e) {}
 
   // Campos novos extras de cada case (descritivos, alimentam o PDF de cases)
   // Ficam ocultos no form até o usuário expandir 'Mais detalhes'.
@@ -25162,13 +25157,38 @@ renderProgress();
     if (!('clienteLocalEs' in c)) { c.clienteLocalEs = false; migrated = true; }
   });
 
-  // Sync com backend (Postgres) — debounced bulk replace. Salva local
-  // imediatamente pra resposta instantânea + envia ao servidor em
-  // até 800ms. Se a request falhar, segue funcionando offline com o
-  // localStorage e tenta de novo na próxima mutação.
+  // Sync com backend (Postgres) — DB é fonte única de verdade.
+  // Cada save() faz POST imediato (debounce mínimo). Sem
+  // persistência em localStorage. Em caso de erro de rede ou
+  // 503, mostra toast pro usuário saber que algo deu errado.
   let pushTimer = null;
   let pushInFlight = false;
   let pushDirty = false;
+  function showDbError(msg) {
+    // Toast simples reutilizando estilo do cases-undo-toast
+    let el = document.getElementById('cases-db-error-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'cases-db-error-toast';
+      el.className = 'cases-undo-toast';
+      el.style.borderColor = 'rgba(248,113,113,0.55)';
+      el.style.background = '#2a1414';
+      el.innerHTML = `
+        <span class="cases-undo-toast-icon">⚠️</span>
+        <span class="cases-undo-toast-msg"></span>
+        <button type="button" class="cases-undo-toast-btn" style="border-color:rgba(248,113,113,0.55);background:rgba(248,113,113,0.20)">OK</button>
+      `;
+      document.body.appendChild(el);
+      el.querySelector('button').addEventListener('click', () => {
+        el.classList.remove('is-open');
+        setTimeout(() => el.hidden = true, 240);
+      });
+    }
+    el.querySelector('.cases-undo-toast-msg').innerHTML = msg;
+    el.hidden = false;
+    requestAnimationFrame(() => el.classList.add('is-open'));
+  }
+
   async function pushCasesRemote() {
     if (pushInFlight) { pushDirty = true; return; }
     pushInFlight = true;
@@ -25179,42 +25199,73 @@ renderProgress();
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cases: casesData }),
       });
-      if (!r.ok && r.status !== 503) console.warn('[cases] sync falhou:', r.status);
+      if (!r.ok) {
+        const msg = r.status === 503
+          ? 'Banco de dados indisponível. Suas alterações <strong>não foram salvas</strong>.'
+          : `Erro ao salvar (HTTP ${r.status}). Tente novamente.`;
+        showDbError(msg);
+      }
     } catch (e) {
-      console.warn('[cases] sync offline:', e.message);
+      showDbError(`Sem conexão. Suas alterações <strong>não foram salvas</strong>.`);
     } finally {
       pushInFlight = false;
-      if (pushDirty) setTimeout(pushCasesRemote, 200);
+      if (pushDirty) setTimeout(pushCasesRemote, 100);
     }
   }
   function saveCases() {
-    try { localStorage.setItem('cases-data', JSON.stringify(casesData)); } catch (e) {}
+    // Push imediato (sem localStorage) — debounce mínimo (50ms) só
+    // pra agrupar mutações sequenciais (ex: criar case + add solução).
     clearTimeout(pushTimer);
-    pushTimer = setTimeout(pushCasesRemote, 800);
+    pushTimer = setTimeout(pushCasesRemote, 50);
   }
-  if (migrated) saveCases();
 
-  // Pull on init — busca o estado do servidor e sobrescreve o local
-  // se o servidor tem dados. Se 503/erro, segue com localStorage.
+  // Pull on init — DB é a única fonte de verdade. Se falhar,
+  // mostra erro e mantém casesData vazio.
+  // Migration única: se houver cases salvos no localStorage (legado)
+  // E o DB estiver vazio, envia pro DB antes de limpar.
+  let casesReady = false;
   (async function pullCasesOnInit() {
     try {
       const r = await fetch('/api/cases');
-      if (!r.ok) return;
-      const j = await r.json();
-      if (Array.isArray(j.cases) && j.cases.length > 0) {
-        // Merge defensivo: usa dados do servidor mas mantém campos
-        // que não estão na tabela (ex: campos legados em transição)
-        casesData = j.cases.map(c => ({
-          siteTurbo: false, clienteLocalEs: false, funil: '', operacao: '',
-          desafios: '', estrategia: '', resultados: '',
-          ...c,
-          solucoes: Array.isArray(c.solucoes) ? c.solucoes : [],
-        }));
-        try { localStorage.setItem('cases-data', JSON.stringify(casesData)); } catch (e) {}
-        if (typeof render === 'function') render();
-        if (typeof renderDrawer === 'function' && currentNichoId) renderDrawer();
+      if (!r.ok) {
+        showDbError(`Não foi possível carregar os cases (HTTP ${r.status}).`);
+        return;
       }
-    } catch (e) { /* offline ok */ }
+      const j = await r.json();
+      let serverCases = Array.isArray(j.cases) ? j.cases : [];
+
+      // Migration de localStorage legado pra DB (uma vez só)
+      let legacy = [];
+      try {
+        const raw = localStorage.getItem('cases-data');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) legacy = parsed;
+        }
+      } catch (e) {}
+      if (legacy.length > 0 && serverCases.length === 0) {
+        console.log('[cases] migrando', legacy.length, 'cases do localStorage pro DB…');
+        casesData = legacy;
+        await pushCasesRemote();
+        // Recarrega do servidor após push pra ter IDs e ordenação canônicos
+        const r2 = await fetch('/api/cases');
+        if (r2.ok) serverCases = (await r2.json()).cases || [];
+      }
+      // Limpa localStorage independente do resultado — DB é a fonte agora
+      try { localStorage.removeItem('cases-data'); } catch (e) {}
+
+      casesData = serverCases.map(c => ({
+        siteTurbo: false, clienteLocalEs: false, funil: '', operacao: '',
+        desafios: '', estrategia: '', resultados: '',
+        ...c,
+        solucoes: Array.isArray(c.solucoes) ? c.solucoes : [],
+      }));
+      if (typeof render === 'function') render();
+      if (typeof renderDrawer === 'function' && currentNichoId) renderDrawer();
+      casesReady = true;
+    } catch (e) {
+      showDbError('Sem conexão com o servidor. Tente recarregar a página.');
+    }
   })();
 
   // Filtros UI
@@ -26243,23 +26294,38 @@ renderProgress();
 // prioridade e status. Persistido em localStorage 'octopus-melhorias'.
 // ══════════════════════════════════════════════════════════
 (function () {
-  const STORAGE_KEY = 'octopus-melhorias';
-
-  // Estado em memória
+  // DB-only — sem fallback de localStorage. data é populada por
+  // pullMelhoriasOnInit() logo abaixo.
   let data = [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) data = parsed;
-    }
-  } catch (e) {}
   let filter = 'all'; // 'all' | 'pendente' | 'em_andamento' | 'concluido'
 
-  // Sync com backend (mesmo padrão dos Cases)
+  // Sync com backend — DB é fonte única de verdade. Sem localStorage.
   let melhPushTimer = null;
   let melhPushInFlight = false;
   let melhPushDirty = false;
+  function showMelhError(msg) {
+    let el = document.getElementById('melh-db-error-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'melh-db-error-toast';
+      el.className = 'cases-undo-toast';
+      el.style.borderColor = 'rgba(248,113,113,0.55)';
+      el.style.background = '#2a1414';
+      el.innerHTML = `
+        <span class="cases-undo-toast-icon">⚠️</span>
+        <span class="cases-undo-toast-msg"></span>
+        <button type="button" class="cases-undo-toast-btn" style="border-color:rgba(248,113,113,0.55);background:rgba(248,113,113,0.20)">OK</button>
+      `;
+      document.body.appendChild(el);
+      el.querySelector('button').addEventListener('click', () => {
+        el.classList.remove('is-open');
+        setTimeout(() => el.hidden = true, 240);
+      });
+    }
+    el.querySelector('.cases-undo-toast-msg').innerHTML = msg;
+    el.hidden = false;
+    requestAnimationFrame(() => el.classList.add('is-open'));
+  }
   async function pushMelhoriasRemote() {
     if (melhPushInFlight) { melhPushDirty = true; return; }
     melhPushInFlight = true;
@@ -26270,32 +26336,58 @@ renderProgress();
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ melhorias: data }),
       });
-      if (!r.ok && r.status !== 503) console.warn('[melhorias] sync falhou:', r.status);
+      if (!r.ok) {
+        const msg = r.status === 503
+          ? 'Banco de dados indisponível. Suas alterações <strong>não foram salvas</strong>.'
+          : `Erro ao salvar (HTTP ${r.status}). Tente novamente.`;
+        showMelhError(msg);
+      }
     } catch (e) {
-      console.warn('[melhorias] sync offline:', e.message);
+      showMelhError(`Sem conexão. Suas alterações <strong>não foram salvas</strong>.`);
     } finally {
       melhPushInFlight = false;
-      if (melhPushDirty) setTimeout(pushMelhoriasRemote, 200);
+      if (melhPushDirty) setTimeout(pushMelhoriasRemote, 100);
     }
   }
   function save() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
     clearTimeout(melhPushTimer);
-    melhPushTimer = setTimeout(pushMelhoriasRemote, 800);
+    melhPushTimer = setTimeout(pushMelhoriasRemote, 50);
   }
 
-  // Pull on init — busca do servidor e sobrescreve local se houver
+  // Pull on init — DB é única fonte de verdade
+  // Migration única: localStorage legado → DB se DB estiver vazio
   (async function pullMelhoriasOnInit() {
     try {
       const r = await fetch('/api/melhorias');
-      if (!r.ok) return;
-      const j = await r.json();
-      if (Array.isArray(j.melhorias)) {
-        data = j.melhorias;
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
-        if (typeof render === 'function') render();
+      if (!r.ok) {
+        showMelhError(`Não foi possível carregar (HTTP ${r.status}).`);
+        return;
       }
-    } catch (e) { /* offline ok */ }
+      const j = await r.json();
+      let serverItems = Array.isArray(j.melhorias) ? j.melhorias : [];
+
+      let legacy = [];
+      try {
+        const raw = localStorage.getItem('octopus-melhorias');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) legacy = parsed;
+        }
+      } catch (e) {}
+      if (legacy.length > 0 && serverItems.length === 0) {
+        console.log('[melhorias] migrando', legacy.length, 'melhorias pro DB…');
+        data = legacy;
+        await pushMelhoriasRemote();
+        const r2 = await fetch('/api/melhorias');
+        if (r2.ok) serverItems = (await r2.json()).melhorias || [];
+      }
+      try { localStorage.removeItem('octopus-melhorias'); } catch (e) {}
+
+      data = serverItems;
+      if (typeof render === 'function') render();
+    } catch (e) {
+      showMelhError('Sem conexão com o servidor.');
+    }
   })();
 
   function uid() {
