@@ -2474,6 +2474,25 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 3px;
   overflow: hidden;
 }
+/* Sub-divisões do nav: top empurra Configurações pro bottom */
+.sidebar-nav-top {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  overflow-y: auto;
+}
+.sidebar-nav-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-item--config { color: var(--text-soft); }
+.nav-item--config:hover { color: var(--text); }
+.nav-item--config.is-active { color: var(--text); }
 
 .nav-section-label {
   font-size: 9px;
@@ -2567,6 +2586,477 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 
 /* ── CASES (biblioteca de referências) ───────────── */
+/* ── VIEW: CONFIGURAÇÕES ─────────────────────────── */
+#view-config { display: none; }
+#view-config.is-active {
+  display: block;
+  height: 100vh;
+  overflow-y: auto;
+  background: var(--bg);
+}
+.config-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: clamp(28px,4vw,56px) clamp(20px,3vw,40px);
+}
+.config-header { margin-bottom: 24px; }
+.config-title {
+  font-size: clamp(28px, 3.4vw, 40px);
+  font-weight: 900;
+  letter-spacing: -1.5px;
+  margin: 0 0 8px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.config-title-icon { font-size: 0.85em; line-height: 1; }
+.config-subtitle {
+  font-size: 14.5px;
+  color: var(--text-soft);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 700px;
+}
+.config-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  width: fit-content;
+  margin: 28px 0 24px;
+}
+.config-tab {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s, color 0.15s;
+}
+.config-tab:hover { color: #fff; }
+.config-tab.is-active {
+  background: linear-gradient(180deg, rgba(155,109,255,0.20), rgba(155,109,255,0.12));
+  color: #fff;
+  box-shadow: inset 0 0 0 1px rgba(155,109,255,0.40);
+}
+.config-tab-icon { font-size: 14px; line-height: 1; }
+.config-pane { display: none; }
+.config-pane.is-active { display: block; }
+
+/* ── Melhorias: toolbar + filtros ────────────────── */
+.melh-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
+.melh-toolbar-stats {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-soft);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+.melh-stat strong { color: #fff; font-weight: 800; }
+.melh-stat-sep { color: rgba(255,255,255,0.20); }
+.melh-toolbar-actions {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+}
+.melh-filter-chip {
+  appearance: none;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 99px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.melh-filter-chip:hover {
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+}
+.melh-filter-chip.is-active {
+  background: rgba(155,109,255,0.18);
+  color: #fff;
+  border-color: rgba(155,109,255,0.55);
+}
+.melh-add-btn {
+  appearance: none;
+  background: linear-gradient(135deg, rgba(155,109,255,0.30), rgba(77,141,255,0.22));
+  border: 1px solid rgba(155,109,255,0.55);
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  letter-spacing: 0.2px;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s, box-shadow 0.15s;
+  flex-shrink: 0;
+}
+.melh-add-btn:hover {
+  background: linear-gradient(135deg, rgba(155,109,255,0.42), rgba(77,141,255,0.30));
+  border-color: rgba(155,109,255,0.75);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(155,109,255,0.25);
+}
+.melh-add-btn:active { transform: translateY(0); }
+.melh-add-btn-icon {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900;
+}
+
+/* ── Melhorias: lista de cards ───────────────────── */
+.melh-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.melh-card {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-left: 3px solid var(--melh-accent, rgba(155,109,255,0.45));
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+}
+.melh-card:hover {
+  background: rgba(255,255,255,0.045);
+  border-color: rgba(255,255,255,0.14);
+  transform: translateY(-1px);
+}
+.melh-card[data-priority="alta"]   { --melh-accent: #f87171; }
+.melh-card[data-priority="media"]  { --melh-accent: #fbbf24; }
+.melh-card[data-priority="baixa"]  { --melh-accent: #60a5fa; }
+.melh-card[data-status="concluido"] { opacity: 0.55; }
+.melh-card[data-status="concluido"] .melh-card-title {
+  text-decoration: line-through;
+  color: var(--text-soft);
+}
+.melh-card-check {
+  appearance: none;
+  background: rgba(0,0,0,0.30);
+  border: 1.5px solid rgba(255,255,255,0.20);
+  border-radius: 50%;
+  width: 22px; height: 22px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: transparent;
+  transition: all 0.15s;
+  flex-shrink: 0;
+  margin-top: 2px;
+  padding: 0;
+}
+.melh-card-check:hover { border-color: rgba(155,109,255,0.55); }
+.melh-card[data-status="em_andamento"] .melh-card-check {
+  background: rgba(251,191,36,0.18);
+  border-color: rgba(251,191,36,0.60);
+  color: #fbbf24;
+}
+.melh-card[data-status="em_andamento"] .melh-card-check::before { content: '◐'; }
+.melh-card[data-status="concluido"] .melh-card-check {
+  background: #4ade80;
+  border-color: #4ade80;
+  color: #0a0a14;
+}
+.melh-card[data-status="concluido"] .melh-card-check::before { content: '✓'; }
+.melh-card-body { min-width: 0; }
+.melh-card-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 4px;
+  line-height: 1.35;
+  word-wrap: break-word;
+}
+.melh-card-desc {
+  font-size: 12.5px;
+  color: var(--text-soft);
+  margin: 4px 0 0;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+.melh-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.melh-card-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-soft);
+}
+.melh-card-badge--priority-alta   { background: rgba(248,113,113,0.14); color: #fca5a5; border-color: rgba(248,113,113,0.32); }
+.melh-card-badge--priority-media  { background: rgba(251,191,36,0.14); color: #fcd34d; border-color: rgba(251,191,36,0.32); }
+.melh-card-badge--priority-baixa  { background: rgba(96,165,250,0.14); color: #93c5fd; border-color: rgba(96,165,250,0.32); }
+.melh-card-badge--date            { background: rgba(155,109,255,0.10); color: #c4a8ff; border-color: rgba(155,109,255,0.28); }
+.melh-card-badge--date.is-overdue { background: rgba(248,113,113,0.20); color: #fca5a5; border-color: rgba(248,113,113,0.50); }
+.melh-card-actions {
+  display: flex;
+  gap: 4px;
+  align-items: flex-start;
+  padding-top: 2px;
+}
+.melh-card-edit {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  width: 26px; height: 26px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.45);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  font-family: inherit;
+}
+.melh-card-edit:hover {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border-color: rgba(255,255,255,0.10);
+}
+
+/* Empty state */
+.melh-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-soft);
+}
+.melh-empty-icon { font-size: 36px; display: block; margin-bottom: 12px; opacity: 0.5; }
+.melh-empty-text { font-size: 14px; margin: 0; }
+
+/* ── Modal de criar/editar ───────────────────────── */
+.melh-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 3vw, 40px);
+}
+.melh-modal:not([hidden]) { display: flex; }
+.melh-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(7,7,15,0.78);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.melh-modal-panel {
+  position: relative;
+  background: #0a0a14;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  width: min(640px, 100%);
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.55);
+}
+.melh-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 24px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+.melh-modal-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  flex: 1;
+}
+.melh-modal-close {
+  appearance: none;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  font-size: 13px;
+  color: var(--text-soft);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.melh-modal-close:hover { background: rgba(255,255,255,0.10); color: #fff; }
+
+.melh-form {
+  padding: 22px 24px 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.melh-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: inherit;
+}
+.melh-form-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.melh-form-label small {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(255,255,255,0.35);
+  margin-left: 4px;
+}
+.melh-required { color: #f87171; font-weight: 900; }
+.melh-form-field input,
+.melh-form-field textarea,
+.melh-form-field select {
+  width: 100%;
+  background: rgba(0,0,0,0.40);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 8px;
+  padding: 11px 13px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  color-scheme: dark;
+}
+.melh-form-field input:focus,
+.melh-form-field textarea:focus,
+.melh-form-field select:focus {
+  border-color: rgba(155,109,255,0.65);
+  background: rgba(0,0,0,0.55);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.12);
+}
+.melh-form-field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+.melh-form-field input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.4);
+  opacity: 0.75;
+  cursor: pointer;
+}
+.melh-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+.melh-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(255,255,255,0.06);
+}
+.melh-form-btn {
+  appearance: none;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.12s;
+}
+.melh-form-btn:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+.melh-form-btn--primary {
+  background: rgba(155,109,255,0.22);
+  border-color: rgba(155,109,255,0.55);
+  color: #fff;
+}
+.melh-form-btn--primary:hover {
+  background: rgba(155,109,255,0.34);
+  border-color: rgba(155,109,255,0.80);
+  transform: translateY(-1px);
+}
+.melh-form-btn--danger {
+  background: rgba(248,113,113,0.10);
+  border-color: rgba(248,113,113,0.35);
+  color: #fca5a5;
+}
+.melh-form-btn--danger:hover {
+  background: rgba(248,113,113,0.18);
+  border-color: rgba(248,113,113,0.65);
+  color: #fff;
+}
+.melh-form-btn--ghost { background: transparent; }
+
+@media (max-width: 700px) {
+  .melh-toolbar { flex-direction: column; align-items: stretch; }
+  .melh-toolbar-actions { justify-content: flex-start; flex-wrap: wrap; }
+  .melh-form-row { grid-template-columns: 1fr; }
+}
+
 #view-cases { display: none; }
 #view-cases.is-active {
   display: block;
@@ -11928,25 +12418,33 @@ a.xpto-pricing-btn { text-decoration: none; }
     </button>
   </div>
   <div class="sidebar-nav">
-    <div class="nav-item is-active" data-view="apresentacao">
-      <span class="nav-item-icon">✦</span>
-      <span class="nav-item-label">Apresentação</span>
+    <div class="sidebar-nav-top">
+      <div class="nav-item is-active" data-view="apresentacao">
+        <span class="nav-item-icon">✦</span>
+        <span class="nav-item-label">Apresentação</span>
+      </div>
+      <div class="nav-item" data-view="jornada">
+        <span class="nav-item-icon">🗺️</span>
+        <span class="nav-item-label">Jornadas</span>
+      </div>
+      <div class="nav-item" data-view="cases">
+        <span class="nav-item-icon">🏆</span>
+        <span class="nav-item-label">Cases</span>
+      </div>
+      <div class="nav-item" data-view="calculadora">
+        <span class="nav-item-icon">🧮</span>
+        <span class="nav-item-label">Calculadora</span>
+      </div>
+      <div class="nav-item" data-view="propostas">
+        <span class="nav-item-icon">💼</span>
+        <span class="nav-item-label">Propostas</span>
+      </div>
     </div>
-    <div class="nav-item" data-view="jornada">
-      <span class="nav-item-icon">🗺️</span>
-      <span class="nav-item-label">Jornadas</span>
-    </div>
-    <div class="nav-item" data-view="cases">
-      <span class="nav-item-icon">🏆</span>
-      <span class="nav-item-label">Cases</span>
-    </div>
-    <div class="nav-item" data-view="calculadora">
-      <span class="nav-item-icon">🧮</span>
-      <span class="nav-item-label">Calculadora</span>
-    </div>
-    <div class="nav-item" data-view="propostas">
-      <span class="nav-item-icon">💼</span>
-      <span class="nav-item-label">Propostas</span>
+    <div class="sidebar-nav-bottom">
+      <div class="nav-item nav-item--config" data-view="config">
+        <span class="nav-item-icon">⚙️</span>
+        <span class="nav-item-label">Configurações</span>
+      </div>
     </div>
   </div>
 </nav>
@@ -12676,6 +13174,112 @@ a.xpto-pricing-btn { text-decoration: none; }
     <div class="cases-empty" id="cases-empty" hidden>
       <span class="cases-empty-icon">🔭</span>
       <p class="cases-empty-text">Nenhum nicho corresponde à busca.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: CONFIGURAÇÕES                           -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view" id="view-config">
+  <div class="config-wrap">
+    <header class="config-header">
+      <h1 class="config-title">
+        <span class="config-title-icon">⚙️</span>
+        Configurações
+      </h1>
+      <p class="config-subtitle">Espaço pessoal pra organizar a evolução do Octopus.</p>
+    </header>
+
+    <nav class="config-tabs" role="tablist">
+      <button type="button" class="config-tab is-active" data-config-pane="melhorias" role="tab">
+        <span class="config-tab-icon">📋</span>
+        <span>Melhorias</span>
+      </button>
+      <!-- futuras abas (Preferências, Dados, etc) entram aqui -->
+    </nav>
+
+    <!-- Painel: Melhorias -->
+    <section class="config-pane is-active" data-config-pane-content="melhorias">
+      <div class="melh-toolbar">
+        <div class="melh-toolbar-stats">
+          <span class="melh-stat"><strong id="melh-stat-pending">0</strong> em aberto</span>
+          <span class="melh-stat-sep">·</span>
+          <span class="melh-stat"><strong id="melh-stat-doing">0</strong> em andamento</span>
+          <span class="melh-stat-sep">·</span>
+          <span class="melh-stat"><strong id="melh-stat-done">0</strong> concluídas</span>
+        </div>
+        <div class="melh-toolbar-actions">
+          <button type="button" class="melh-filter-chip is-active" data-melh-filter="all">Todas</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="pendente">Em aberto</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="em_andamento">Em andamento</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="concluido">Concluídas</button>
+        </div>
+        <button type="button" class="melh-add-btn" id="melh-add-btn">
+          <span class="melh-add-btn-icon">+</span>
+          <span>Nova melhoria</span>
+        </button>
+      </div>
+
+      <!-- Lista de tasks -->
+      <div class="melh-list" id="melh-list"></div>
+
+      <!-- Estado vazio -->
+      <div class="melh-empty" id="melh-empty" hidden>
+        <span class="melh-empty-icon">📋</span>
+        <p class="melh-empty-text">Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Modal de criar/editar melhoria -->
+  <div class="melh-modal" id="melh-modal" hidden>
+    <div class="melh-modal-overlay" data-melh-close></div>
+    <div class="melh-modal-panel" role="dialog" aria-modal="true" aria-labelledby="melh-modal-title">
+      <header class="melh-modal-header">
+        <h3 class="melh-modal-title" id="melh-modal-title">Nova melhoria</h3>
+        <button type="button" class="melh-modal-close" data-melh-close aria-label="Fechar">✕</button>
+      </header>
+      <form class="melh-form" id="melh-form" autocomplete="off">
+        <input type="hidden" id="melh-form-id">
+        <label class="melh-form-field">
+          <span class="melh-form-label">Título <span class="melh-required">*</span></span>
+          <input type="text" id="melh-form-title" maxlength="120" required
+                 placeholder="Ex: Adicionar drag-and-drop nos cases">
+        </label>
+        <label class="melh-form-field">
+          <span class="melh-form-label">Descrição <small>(opcional)</small></span>
+          <textarea id="melh-form-desc" rows="3"
+                    placeholder="Detalhe o que precisa ser feito, contexto, links…"></textarea>
+        </label>
+        <div class="melh-form-row">
+          <label class="melh-form-field">
+            <span class="melh-form-label">Prioridade</span>
+            <select id="melh-form-priority">
+              <option value="baixa">Baixa</option>
+              <option value="media" selected>Média</option>
+              <option value="alta">Alta</option>
+            </select>
+          </label>
+          <label class="melh-form-field">
+            <span class="melh-form-label">Status</span>
+            <select id="melh-form-status">
+              <option value="pendente" selected>Em aberto</option>
+              <option value="em_andamento">Em andamento</option>
+              <option value="concluido">Concluída</option>
+            </select>
+          </label>
+          <label class="melh-form-field">
+            <span class="melh-form-label">Data alvo <small>(opcional)</small></span>
+            <input type="date" id="melh-form-target" class="prop-client-input">
+          </label>
+        </div>
+        <div class="melh-form-actions">
+          <button type="button" class="melh-form-btn melh-form-btn--ghost" data-melh-close>Cancelar</button>
+          <button type="button" class="melh-form-btn melh-form-btn--danger" id="melh-form-delete" hidden>Apagar</button>
+          <button type="submit" class="melh-form-btn melh-form-btn--primary">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -14472,6 +15076,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     { name: 'prop.personalizada',        re: /^\/propostas\/personalizada\/?$/,             params: [] },
     { name: 'propostas',                 re: /^\/propostas\/?$/,                            params: [] },
     { name: 'cases',                     re: /^\/cases\/?$/,                                params: [] },
+    { name: 'config',                    re: /^\/configuracoes\/?$/,                        params: [] },
     { name: 'simulador',                 re: /^\/simulador\/(performance|lead-performance)\/?$/, params: ['sim'] },
     { name: 'apresentar',                re: /^\/apresentar\/(performance|creators|social|comunidade)\/?$/, params: ['what'] },
     { name: 'protocolo',                 re: /^\/protocolo\/?$/,                            params: [] },
@@ -14715,6 +15320,11 @@ a.xpto-pricing-btn { text-decoration: none; }
           break;
         case 'cases': {
           const navItem = document.querySelector('.nav-item[data-view="cases"]');
+          if (navItem && !navItem.classList.contains('is-active')) navItem.click();
+          break;
+        }
+        case 'config': {
+          const navItem = document.querySelector('.nav-item[data-view="config"]');
           if (navItem && !navItem.classList.contains('is-active')) navItem.click();
           break;
         }
@@ -23746,6 +24356,7 @@ renderProgress();
         'calculadora':  `/calculadora/${currentJourney()}`,
         'propostas':    '/propostas/padrao',
         'cases':        '/cases',
+        'config':       '/configuracoes',
       };
       const p = map[view];
       if (p) R.navigate(p);
@@ -25017,6 +25628,282 @@ renderProgress();
     close: closeDrawer,
     refresh: render,
     importSeed,
+  };
+
+  // Primeira render
+  render();
+})();
+
+// ══════════════════════════════════════════════════════════
+// MELHORIAS (Configurações) — CRUD simples de tasks com data,
+// prioridade e status. Persistido em localStorage 'octopus-melhorias'.
+// ══════════════════════════════════════════════════════════
+(function () {
+  const STORAGE_KEY = 'octopus-melhorias';
+
+  // Estado em memória
+  let data = [];
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) data = parsed;
+    }
+  } catch (e) {}
+  let filter = 'all'; // 'all' | 'pendente' | 'em_andamento' | 'concluido'
+
+  function save() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) {}
+  }
+
+  function uid() {
+    return 'm-' + Math.random().toString(36).slice(2, 9) + '-' + (data.length + 1);
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  // Refs
+  const $list   = document.getElementById('melh-list');
+  const $empty  = document.getElementById('melh-empty');
+  const $addBtn = document.getElementById('melh-add-btn');
+  const $modal  = document.getElementById('melh-modal');
+  const $form   = document.getElementById('melh-form');
+  const $title  = document.getElementById('melh-form-title');
+  const $desc   = document.getElementById('melh-form-desc');
+  const $prio   = document.getElementById('melh-form-priority');
+  const $status = document.getElementById('melh-form-status');
+  const $target = document.getElementById('melh-form-target');
+  const $idFld  = document.getElementById('melh-form-id');
+  const $modalTitle = document.getElementById('melh-modal-title');
+  const $delBtn = document.getElementById('melh-form-delete');
+  const $statPending = document.getElementById('melh-stat-pending');
+  const $statDoing   = document.getElementById('melh-stat-doing');
+  const $statDone    = document.getElementById('melh-stat-done');
+  if (!$list || !$modal) return;
+
+  // Helpers de display
+  const STATUS_LABEL = { pendente: 'Em aberto', em_andamento: 'Em andamento', concluido: 'Concluída' };
+  const PRIO_LABEL   = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
+
+  function formatDateBR(iso) {
+    if (!iso) return '';
+    const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return iso;
+    return `${m[3]}/${m[2]}/${m[1]}`;
+  }
+  function isOverdue(iso, status) {
+    if (!iso || status === 'concluido') return false;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(iso); d.setHours(0,0,0,0);
+    return d < today;
+  }
+  function daysFromNow(iso) {
+    if (!iso) return null;
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(iso); d.setHours(0,0,0,0);
+    return Math.round((d - today) / 86400000);
+  }
+
+  function sortTasks(list) {
+    // Ordem: 1) pendente/em_andamento > concluído, 2) data alvo crescente (sem data por último), 3) prioridade
+    const statusOrder = { em_andamento: 0, pendente: 1, concluido: 2 };
+    const prioOrder   = { alta: 0, media: 1, baixa: 2 };
+    return list.slice().sort((a, b) => {
+      const so = (statusOrder[a.status] ?? 9) - (statusOrder[b.status] ?? 9);
+      if (so !== 0) return so;
+      // Por data alvo (mais próximas primeiro; sem data vai pro fim)
+      const da = a.dataAlvo || '9999-12-31';
+      const db = b.dataAlvo || '9999-12-31';
+      if (da !== db) return da.localeCompare(db);
+      return (prioOrder[a.prioridade] ?? 9) - (prioOrder[b.prioridade] ?? 9);
+    });
+  }
+
+  function render() {
+    const sorted = sortTasks(data);
+    const filtered = sorted.filter(t => filter === 'all' ? true : t.status === filter);
+
+    // Stats
+    $statPending.textContent = data.filter(t => t.status === 'pendente').length;
+    $statDoing.textContent   = data.filter(t => t.status === 'em_andamento').length;
+    $statDone.textContent    = data.filter(t => t.status === 'concluido').length;
+
+    if (filtered.length === 0) {
+      $list.innerHTML = '';
+      $empty.hidden = false;
+      if (data.length > 0) {
+        // Filtro ativo mas nada: muda texto
+        $empty.querySelector('.melh-empty-text').textContent = 'Nenhuma melhoria nesse filtro.';
+      } else {
+        $empty.querySelector('.melh-empty-text').textContent =
+          'Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".';
+      }
+      return;
+    }
+    $empty.hidden = true;
+
+    $list.innerHTML = filtered.map(t => {
+      const dateBadge = t.dataAlvo ? (() => {
+        const dn = daysFromNow(t.dataAlvo);
+        const overdue = isOverdue(t.dataAlvo, t.status);
+        const label = overdue
+          ? `⚠ atrasada há ${-dn}d`
+          : (dn === 0 ? '⏱ hoje'
+             : dn === 1 ? '⏱ amanhã'
+             : dn > 0 ? `⏱ em ${dn}d`
+             : `${formatDateBR(t.dataAlvo)}`);
+        const fullDate = `${formatDateBR(t.dataAlvo)} · ${label.replace(/^⏱ |^⚠ /,'')}`;
+        return `<span class="melh-card-badge melh-card-badge--date ${overdue ? 'is-overdue' : ''}" title="${fullDate}">📅 ${label}</span>`;
+      })() : '';
+
+      const descHtml = t.descricao ? `<p class="melh-card-desc">${escapeHtml(t.descricao)}</p>` : '';
+
+      return `
+        <article class="melh-card" data-melh-id="${escapeHtml(t.id)}"
+                 data-priority="${t.prioridade}" data-status="${t.status}">
+          <button type="button" class="melh-card-check" data-melh-toggle aria-label="Alternar status"></button>
+          <div class="melh-card-body">
+            <h3 class="melh-card-title">${escapeHtml(t.titulo)}</h3>
+            ${descHtml}
+            <div class="melh-card-meta">
+              <span class="melh-card-badge melh-card-badge--priority-${t.prioridade}">${PRIO_LABEL[t.prioridade] || t.prioridade}</span>
+              ${dateBadge}
+              <span class="melh-card-badge">${STATUS_LABEL[t.status] || t.status}</span>
+            </div>
+          </div>
+          <div class="melh-card-actions">
+            <button type="button" class="melh-card-edit" data-melh-edit aria-label="Editar">✎</button>
+          </div>
+        </article>
+      `;
+    }).join('');
+  }
+
+  // ── Modal ─────────────────────────────────────
+  function openModal(task) {
+    if (task) {
+      $modalTitle.textContent = 'Editar melhoria';
+      $idFld.value = task.id;
+      $title.value = task.titulo;
+      $desc.value = task.descricao || '';
+      $prio.value = task.prioridade;
+      $status.value = task.status;
+      $target.value = task.dataAlvo || '';
+      $delBtn.hidden = false;
+    } else {
+      $modalTitle.textContent = 'Nova melhoria';
+      $idFld.value = '';
+      $form.reset();
+      $prio.value = 'media';
+      $status.value = 'pendente';
+      $delBtn.hidden = true;
+    }
+    $modal.hidden = false;
+    setTimeout(() => $title.focus(), 60);
+  }
+  function closeModal() {
+    $modal.hidden = true;
+  }
+
+  // ── Wire-up ───────────────────────────────────
+  $addBtn.addEventListener('click', () => openModal(null));
+
+  $modal.addEventListener('click', e => {
+    if (e.target.closest('[data-melh-close]')) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !$modal.hidden) closeModal();
+  });
+
+  $form.addEventListener('submit', e => {
+    e.preventDefault();
+    const id = $idFld.value;
+    const payload = {
+      titulo: $title.value.trim(),
+      descricao: $desc.value.trim(),
+      prioridade: $prio.value,
+      status: $status.value,
+      dataAlvo: $target.value || '',
+    };
+    if (!payload.titulo) { $title.focus(); return; }
+
+    if (id) {
+      const i = data.findIndex(t => t.id === id);
+      if (i >= 0) {
+        data[i] = { ...data[i], ...payload, atualizadoEm: new Date().toISOString() };
+      }
+    } else {
+      data.push({
+        id: uid(),
+        ...payload,
+        criadoEm: new Date().toISOString(),
+      });
+    }
+    save();
+    render();
+    closeModal();
+  });
+
+  $delBtn.addEventListener('click', () => {
+    const id = $idFld.value;
+    if (!id) return;
+    const t = data.find(x => x.id === id);
+    if (!t) return;
+    if (!confirm(`Apagar a melhoria "${t.titulo}"?`)) return;
+    data = data.filter(x => x.id !== id);
+    save();
+    render();
+    closeModal();
+  });
+
+  // Lista: click em editar, toggle check, ou no card pra editar
+  $list.addEventListener('click', e => {
+    const card = e.target.closest('[data-melh-id]');
+    if (!card) return;
+    const id = card.dataset.melhId;
+    const t = data.find(x => x.id === id);
+    if (!t) return;
+
+    // Toggle status no check
+    if (e.target.closest('[data-melh-toggle]')) {
+      e.stopPropagation();
+      // pendente → em_andamento → concluido → pendente
+      const next = t.status === 'pendente' ? 'em_andamento'
+                 : t.status === 'em_andamento' ? 'concluido'
+                 : 'pendente';
+      t.status = next;
+      t.atualizadoEm = new Date().toISOString();
+      save();
+      render();
+      return;
+    }
+    // Edit button OU click no card abre modal
+    openModal(t);
+  });
+
+  // Filtros
+  document.querySelectorAll('[data-melh-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      filter = btn.dataset.melhFilter;
+      document.querySelectorAll('[data-melh-filter]').forEach(b => {
+        b.classList.toggle('is-active', b === btn);
+      });
+      render();
+    });
+  });
+
+  // API mínima
+  window.__melhorias = {
+    getAll: () => data.slice(),
+    add: (t) => { data.push({ id: uid(), criadoEm: new Date().toISOString(), prioridade: 'media', status: 'pendente', ...t }); save(); render(); },
+    refresh: render,
   };
 
   // Primeira render
