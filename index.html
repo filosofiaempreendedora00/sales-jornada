@@ -15804,6 +15804,16 @@ a.xpto-pricing-btn { text-decoration: none; }
     background: linear-gradient(90deg,#c49bff,#4d8dff,#0dcfe8);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
+  /* imagem central preservada (slide 6) */
+  #crm-modal .crm-dash {
+    width: 100%; max-width: 1080px; height: auto; display: block; margin: 26px auto 0;
+    border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 16px 48px rgba(0,0,0,0.55);
+  }
+  #crm-modal .crm-s6-foot {
+    margin: 24px auto 0; max-width: 780px; font-size: clamp(14px,1.3vw,17.5px); line-height: 1.5;
+    color: rgba(255,255,255,0.7);
+  }
+  #crm-modal .crm-s6-foot strong { color: #fff; font-weight: 700; }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
@@ -15904,7 +15914,13 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <div class="crm-takeaway">No fim, o que importa é a relação <strong>LTV / CAC</strong></div>
       </section>
-      <img class="crm-slide-img" src="crm-slides/crm-06.svg" alt="CRM Estratégico — slide 6" loading="lazy">
+      <!-- SLIDE 6 — recriado na ID; dashboard RFM central preservado -->
+      <section class="crm-slideo">
+        <div class="crm-eyebrow"><span></span>CRM · Segmentação</div>
+        <h2 class="crm-stitle">Segmentação de <span class="crm-accent">base</span></h2>
+        <img class="crm-dash" src="crm-slides/crm-06-dash.jpg" alt="Matriz RFM — segmentação da base de clientes" loading="lazy">
+        <p class="crm-s6-foot">Se comunique de maneira <strong>personalizada</strong> com cada cliente — ele tem que se sentir especial.</p>
+      </section>
       <img class="crm-slide-img" src="crm-slides/crm-07.svg" alt="CRM Estratégico — slide 7" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-08.svg" alt="CRM Estratégico — slide 8" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-09.svg" alt="CRM Estratégico — slide 9" loading="lazy">
