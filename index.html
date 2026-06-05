@@ -15834,6 +15834,12 @@ a.xpto-pricing-btn { text-decoration: none; }
   #crm-modal .crm-res-big { font-size: clamp(30px,3.6vw,46px); font-weight: 900; }
   #crm-modal .crm-res-arrow { color: rgba(255,255,255,0.4); margin: 0 4px; }
   @media (max-width: 760px) { #crm-modal .crm-results { grid-template-columns: 1fr; } }
+  /* escopo (slides 11 e 12) */
+  #crm-modal .crm-scope { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; width: 100%; max-width: 1000px; margin: 30px auto 0; text-align: left; }
+  #crm-modal .crm-scope-item { display: flex; align-items: center; gap: 13px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 13px; padding: 16px 18px; font-size: clamp(13.5px,1.2vw,16px); line-height: 1.35; color: rgba(255,255,255,0.86); transition: border-color 0.2s, background 0.2s; }
+  #crm-modal .crm-scope-item:hover { border-color: rgba(155,109,255,0.35); background: rgba(155,109,255,0.06); }
+  #crm-modal .crm-scope-ck { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; background: rgba(155,109,255,0.18); border: 1px solid rgba(155,109,255,0.42); color: #c4a8ff; }
+  @media (max-width: 760px) { #crm-modal .crm-scope { grid-template-columns: 1fr; } }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
@@ -16008,8 +16014,32 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
         </div>
       </section>
-      <img class="crm-slide-img" src="crm-slides/crm-11.svg" alt="CRM Estratégico — slide 11" loading="lazy">
-      <img class="crm-slide-img" src="crm-slides/crm-12.svg" alt="CRM Estratégico — slide 12" loading="lazy">
+      <!-- SLIDE 11 — escopo Broadcast recriado na ID -->
+      <section class="crm-slideo">
+        <div class="crm-eyebrow"><span></span>Escopo de Entrega</div>
+        <h2 class="crm-stitle">Escopo <span class="crm-accent">Broadcast</span></h2>
+        <div class="crm-scope">
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Configuração da plataforma de disparo</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Envio de relatórios semanais</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Planejamento, gestão e estratégia das campanhas</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Redação e design personalizados</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Trackeamento dos resultados</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Copywriting otimizado para venda direta</div>
+        </div>
+      </section>
+      <!-- SLIDE 12 — escopo Régua de automação recriado na ID -->
+      <section class="crm-slideo">
+        <div class="crm-eyebrow"><span></span>Escopo de Entrega</div>
+        <h2 class="crm-stitle">Escopo da <span class="crm-accent">régua de automação</span></h2>
+        <div class="crm-scope">
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Configuração da plataforma de disparo</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Envio de relatórios semanais</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Planejamento, gestão e estratégia das campanhas</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Redação e design personalizados</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Trackeamento dos resultados</div>
+          <div class="crm-scope-item"><span class="crm-scope-ck">✓</span>Copywriting otimizado para venda direta</div>
+        </div>
+      </section>
     </div>
   </div>
 </div>
