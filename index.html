@@ -15677,6 +15677,42 @@ a.xpto-pricing-btn { text-decoration: none; }
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
+<!--  CRM ESTRATÉGICO — apresentação (slides SVG)   -->
+<!--  Passo 1: sobe os SVGs em ordem. Depois recriar -->
+<!--  na ID do Octopus (com cuidado nos e-mails).    -->
+<!-- ══════════════════════════════════════════════ -->
+<style>
+  #crm-modal .crm-deck {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 16px; padding: 8px 0 56px; background: #06060c;
+  }
+  #crm-modal .crm-slide-img {
+    display: block; width: 100%; max-width: 1120px; height: auto;
+    border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+  }
+</style>
+<div class="xpto-overlay" id="crm-overlay"></div>
+<button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="crm-modal">
+  <div class="xpto-inner" id="crm-inner">
+    <div class="crm-deck">
+      <img class="crm-slide-img" src="crm-slides/crm-01.svg" alt="CRM Estratégico — slide 1" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-02.svg" alt="CRM Estratégico — slide 2" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-03.svg" alt="CRM Estratégico — slide 3" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-04.svg" alt="CRM Estratégico — slide 4" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-05.svg" alt="CRM Estratégico — slide 5" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-06.svg" alt="CRM Estratégico — slide 6" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-07.svg" alt="CRM Estratégico — slide 7" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-08.svg" alt="CRM Estratégico — slide 8" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-09.svg" alt="CRM Estratégico — slide 9" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-10.svg" alt="CRM Estratégico — slide 10" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-11.svg" alt="CRM Estratégico — slide 11" loading="lazy">
+      <img class="crm-slide-img" src="crm-slides/crm-12.svg" alt="CRM Estratégico — slide 12" loading="lazy">
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
 <!--  IMPLANTAÇÃO — cartilha do escopo de automações -->
 <!-- ══════════════════════════════════════════════ -->
 <div class="xpto-overlay" id="impl-overlay"></div>
@@ -17223,6 +17259,7 @@ function openPanel(nodeId) {
   // 'automacoes' aparece só na jornada E-commerce; na Lead vira
   // 'lead-automacoes' que NÃO tem cartilha de implantação.
   const isAutomacoes = nodeId === 'automacoes';
+  const isCrm = nodeId === 'crm-estrategico';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -17267,6 +17304,13 @@ function openPanel(nodeId) {
     <button class="pres-launch-btn" onclick="if(window.openComunidadePres) window.openComunidadePres()">
       <span class="pres-launch-icon">🤝</span>
       <span class="pres-launch-title">Apresentação de Gestão de Comunidade</span>
+      <span class="pres-launch-arrow">→</span>
+    </button>
+    ` : ''}
+    ${isCrm ? `
+    <button class="pres-launch-btn" onclick="if(window.openCrmPres) window.openCrmPres()">
+      <span class="pres-launch-icon">💬</span>
+      <span class="pres-launch-title">Apresentação de CRM Estratégico</span>
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
@@ -21178,6 +21222,40 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   });
 
   window.openComunidadePres = openComunidadePres;
+})();
+
+// ─────────────────────────────────────────────────
+//  CRM ESTRATÉGICO — apresentação (slides SVG)
+//  Passo 1: abre o modal com os SVGs em ordem.
+// ─────────────────────────────────────────────────
+(function () {
+  const overlay  = document.getElementById('crm-overlay');
+  const modal    = document.getElementById('crm-modal');
+  const closeBtn = document.getElementById('crm-close');
+  if (!overlay || !modal || !closeBtn) return;
+
+  function openCrmPres() {
+    overlay.classList.add('is-open');
+    modal.classList.add('is-open');
+    closeBtn.style.display = 'flex';
+    modal.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+  function closeCrmPres() {
+    overlay.classList.remove('is-open');
+    modal.classList.remove('is-open');
+    closeBtn.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  closeBtn.style.display = 'none';
+  overlay.addEventListener('click', closeCrmPres);
+  closeBtn.addEventListener('click', closeCrmPres);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open')) closeCrmPres();
+  });
+
+  window.openCrmPres = openCrmPres;
 })();
 
 // ─────────────────────────────────────────────────
