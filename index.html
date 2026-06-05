@@ -16919,23 +16919,14 @@ function renderFlow() {
       if (stage.id === concepcaoId && ni === 0) {
         const btn = document.createElement('button');
         btn.className = 'proto-btn';
-        if (activeJourney === 'lead') {
-          btn.disabled = true;
-          btn.style.cursor = 'not-allowed';
-          btn.style.opacity = '0.5';
-          btn.style.pointerEvents = 'none';
-        } else {
-          btn.onclick = () => openXpto();
-        }
+        // E-commerce abre openXpto; Lead abre a cópia openXptoLead (mesmo modal).
+        btn.onclick = () => (activeJourney === 'lead' ? openXptoLead() : openXpto());
         btn.innerHTML = `
           <span class="proto-btn-text">
             <span class="proto-btn-new">NOVO</span>
             <span class="proto-btn-title">Protocolo Do Zero ao Lucro</span>
           </span>
-          ${activeJourney === 'lead'
-            ? `<span class="proto-btn-wip">Em construção</span>`
-            : `<span class="proto-btn-arrow">→</span>`
-          }
+          <span class="proto-btn-arrow">→</span>
         `;
         wrap.appendChild(btn);
       }
@@ -20441,6 +20432,576 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXpto(); });
 
   window.openXpto = openXpto;
+})();
+
+// ─────────────────────────────────────────────────
+//  PROTOCOLO DO ZERO AO LUCRO — VERSÃO LEAD (duplicado do e-commerce)
+//  Cópia independente pra editar livremente na jornada de Lead.
+//  Exposto como window.openXptoLead (abre o MESMO modal #xpto-*).
+// ─────────────────────────────────────────────────
+(function () {
+
+  const MODULES = [
+    {
+      icon: '🎯', title: 'Diagnóstico Estratégico', price: 'R$497',
+      micro: 'Entendemos de onde você parte — antes de qualquer movimento',
+      items: ['1h de diagnóstico aprofundado em call com especialista', 'Mapeamento de gargalos e identificação de oportunidades', 'Priorização das ações que são mais latentes no momento']
+    },
+    {
+      icon: '🔍', title: 'Análise SWOT da Marca', price: 'R$497',
+      micro: 'Uma visão clara de onde você está forte e onde está vulnerável',
+      items: ['Forças que podem ser amplificadas agora', 'Fraquezas que travam o crescimento', 'Oportunidades de mercado identificadas', 'Ameaças competitivas mapeadas']
+    },
+    {
+      icon: '🔧', title: 'Kit de ferramentas para cada estágio', price: 'R$497',
+      micro: 'Recomendações de ferramentas para nível básico, intermediário e avançado',
+      items: ['Plataformas de loja virtual recomendadas', 'Soluções de logística e fulfillment', 'Gateways de pagamento e parcelamento', 'ERPs e CRMs adequados ao seu porte', 'Plugins e features de conversão']
+    },
+    {
+      icon: '📊', title: 'Benchmarking', price: 'R$697',
+      micro: 'Mais inteligente que reinventar a roda é modelar os maiores',
+      items: ['Análise de social media dos concorrentes', 'Sugestões de features interessantes de lojas virtuais de concorrentes', 'Espionagem de anúncios escalados no Brasil e no mundo']
+    },
+    {
+      icon: '💎', title: 'Criação de Ofertas', price: 'R$697',
+      micro: 'Estruturas que facilitam a venda dos seus produtos',
+      items: ['Estratégia para aumentar ticket médio', 'Estrutura de picos de vendas planejados', 'Calendário de ofertas sazonais']
+    },
+    {
+      icon: '⚡', title: 'Réguas de Comunicação', price: 'R$497',
+      micro: 'Seu cliente continua comprando — no piloto automático',
+      items: ['Sugestão de fluxos de automação por e-mail e WhatsApp', 'Estratégias de retenção e recompra', 'Sequências de pós-venda e recuperação']
+    },
+    {
+      icon: '🎨', title: 'Manual visual da marca', price: 'R$2.997',
+      micro: 'Uma marca que é reconhecida antes de ser lida',
+      items: ['Definição de paleta de cores', 'Tipografia e hierarquia visual', 'Orientações de uso e consistência', 'Direito a 01 revisão do material', 'Entrega de arquivos editáveis'],
+      note: '⚠️ Este módulo não inclui criação de logotipo.'
+    },
+    {
+      icon: '📝', title: 'Manual de Comunicação', price: 'R$1.997',
+      micro: 'Para sua marca comunicar sempre do mesmo jeito, em qualquer canal',
+      items: ['Posicionamento de marca definido', 'Tom de voz e estilo de escrita', 'Narrativa central e pilares da marca', 'Ângulos e formatos de criativos', 'Guia prático de produção de conteúdo']
+    },
+    {
+      icon: '📡', title: 'Auditoria de Mídia', price: 'R$1.497',
+      micro: 'Antes de escalar, feche os buracos por onde o dinheiro está saindo',
+      items: ['Auditoria completa de Google Ads', 'Auditoria completa de Meta Ads', 'Diagnóstico de desperdício e oportunidade']
+    },
+    {
+      icon: '🎬', title: 'Criativos de Venda', price: 'R$1.497',
+      micro: 'Peças feitas para converter — não só gerar clique, mas gerar receita',
+      items: ['2 criativos gráficos (estáticos)', '2 criativos em vídeo', 'Adaptados para os diferentes formatos — feed e stories']
+    },
+    {
+      icon: '🗺️', title: 'Estrutura de Campanhas', price: 'R$997',
+      micro: 'Para saber exatamente onde colocar cada real e o que esperar em troca',
+      items: ['Distribuição de verba por canal e objetivo', 'Estrutura completa de Meta Ads', 'Estrutura completa de Google Ads', 'Planejamento estratégico de 3 meses']
+    },
+    {
+      icon: '🤝', title: 'Apresentação Estratégica', price: 'R$297',
+      micro: 'Tudo explicado e entregue pessoalmente, sem deixar ponta solta',
+      items: ['01h de call com especialista para apresentação completa do material', 'Sessão de perguntas e respostas', 'Entrega do plano estratégico consolidado']
+    },
+  ];
+
+  const BONUSES = [
+    {
+      icon: '🚀', tag: 'Bônus 01', price: 'R$997',
+      title: 'Treinamento de Performance',
+      desc: 'Aprenda a operar e escalar tráfego pago do zero — com a metodologia que usamos nos nossos clientes.',
+      detail: 'Meta Ads, Google Ads, estrutura de campanhas, leitura de métricas e tomada de decisão baseada em dados.'
+    },
+    {
+      icon: '📊', tag: 'Bônus 02', price: 'R$297',
+      title: 'DRE Performance',
+      desc: 'A planilha financeira completa para você saber exatamente se está lucrando — ou só faturando.',
+      detail: 'Receita, custos, margem, CPA, ROAS e ponto de equilíbrio. Tudo em um dashboard prático e editável.'
+    },
+    {
+      icon: '💬', tag: 'Bônus 03', price: 'R$199',
+      title: '1 Mês de flashCRM',
+      desc: 'Um mês completo da melhor ferramenta de retenção e relacionamento — incluso na implantação.',
+      detail: 'Automações de e-mail, WhatsApp e SMS já configuradas para recuperar vendas e fidelizar clientes desde o dia 1.',
+      link: 'https://www.flashcrm.com.br/'
+    }
+  ];
+
+  function buildModal() {
+    const modSlides = MODULES.map((m, i) => `
+      <section class="xpto-slide xpto-slide-module-single">
+        <div class="xpto-slide-inner">
+          <div class="xpto-mod-top-bar">
+            <p class="xpto-section-label">O que está incluído</p>
+            <span class="xpto-mod-counter">Módulo ${String(i + 1).padStart(2, '0')} de ${MODULES.length}</span>
+          </div>
+          <div class="xpto-mod-hero">
+            <div class="xpto-mod-icon-lg">${m.icon}</div>
+            <div class="xpto-mod-title-group">
+              <div class="xpto-card-num">Módulo ${String(i + 1).padStart(2, '0')}</div>
+              <h2 class="xpto-mod-title">${m.title}</h2>
+              <div class="xpto-mod-price-tag">${m.price}</div>
+              <p class="xpto-mod-micro">${m.micro}</p>
+            </div>
+          </div>
+          <div class="xpto-mod-bullets-wrap">
+            <ul class="xpto-bullet-list">
+              ${m.items.map(it => `<li>${it}</li>`).join('')}
+            </ul>
+            ${m.note ? `<p class="xpto-card-note">${m.note}</p>` : ''}
+          </div>
+        </div>
+      </section>
+    `).join('');
+
+    const bonusSlides = BONUSES.map((b, i) => `
+      <section class="xpto-slide xpto-slide-bonus-single">
+        <div class="xpto-slide-inner">
+          <div class="xpto-mod-top-bar">
+            <p class="xpto-bonus-eyebrow-label">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="#ffa826"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Bônus exclusivos
+            </p>
+            <span class="xpto-mod-counter xpto-bonus-counter">Bônus ${String(i + 1).padStart(2, '0')} de ${BONUSES.length}</span>
+          </div>
+          <div class="xpto-mod-hero">
+            <div class="xpto-mod-icon-lg xpto-bonus-icon-lg">${b.icon}</div>
+            <div class="xpto-mod-title-group">
+              <div class="xpto-card-num xpto-bonus-num">${b.tag}</div>
+              <h2 class="xpto-mod-title">${b.title}</h2>
+              <div class="xpto-bonus-mod-price-tag">${b.price}</div>
+            </div>
+          </div>
+          <div class="xpto-mod-bullets-wrap xpto-bonus-bullets-wrap">
+            <p class="xpto-bonus-slide-desc">${b.desc}</p>
+            <p class="xpto-bonus-slide-detail">${b.detail}</p>
+            ${b.link ? `<a class="xpto-bonus-link" href="${b.link}" target="_blank" rel="noopener">${b.link.replace(/^https?:\/\//, '').replace(/\/$/, '')} ↗</a>` : ''}
+          </div>
+        </div>
+      </section>
+    `).join('');
+
+    return `
+      <section class="xpto-slide xpto-slide-hero">
+        <div class="xpto-slide-inner">
+          <div class="xpto-hero">
+            <div class="xpto-eyebrow"><span></span>Sistema Completo</div>
+            <h1 class="xpto-title">Protocolo Do Zero ao Lucro</h1>
+            <p class="xpto-subtitle">Encurte sua jornada: toda a estrutura que você precisa para tirar um&nbsp;e&#8209;commerce do absoluto zero, até ele se tornar lucrativo</p>
+            <ul class="xpto-hero-bullets">
+            <li><span class="xpto-hb-icon xpto-hb-check">✓</span>Com o máximo de segurança</li>
+            <li><span class="xpto-hb-icon xpto-hb-check">✓</span>No menor tempo possível</li>
+            <li><span class="xpto-hb-icon xpto-hb-check">✓</span>Sabendo exatamente o que priorizar em cada etapa</li>
+          </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-bready">
+        <div class="xpto-slide-inner xpto-bready-inner">
+          <img src="beady-logo.png" alt="Bready" class="xpto-bready-logo">
+
+          <div class="xpto-bready-card">
+            <div class="xpto-bready-shimmer"></div>
+            <div class="xpto-bready-origin">
+              <span class="xpto-bready-origin-val">R$0</span>
+              <span class="xpto-bready-origin-sub">início</span>
+            </div>
+            <div class="xpto-bready-micro-arrow"></div>
+            <div class="xpto-bready-num-row">
+              <span class="xpto-bready-big">R$1,5M</span><span class="xpto-bready-unit">/mês</span>
+            </div>
+            <span class="xpto-bready-card-note">em menos de 3 anos</span>
+          </div>
+
+          <span class="xpto-bready-brands-label">marcas que escalamos praticamente do zero</span>
+          <div class="xpto-bready-brands">
+            <div class="xpto-bready-brand-item">
+              <img src="noway.png" alt="Noway" class="xpto-bready-brand-logo">
+            </div>
+            <div class="xpto-bready-brand-item">
+              <img src="dot.png" alt="Dot" class="xpto-bready-brand-logo is-center">
+            </div>
+            <div class="xpto-bready-brand-item">
+              <img src="logo jui.png" alt="Jui" class="xpto-bready-brand-logo">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-methodology">
+        <div class="xpto-slide-inner">
+      <div class="xpto-for-section">
+        <div class="xpto-for-header">
+          <p class="xpto-section-label">Metodologia</p>
+          <h2 class="xpto-for-heading">Três pilares. Um sistema.</h2>
+          <p class="xpto-for-subheading">O Protocolo Do Zero ao Lucro é construído em cima de três fundamentos — na ordem certa.</p>
+        </div>
+        <div class="xpto-for-grid">
+          <div class="xpto-for-card">
+            <div class="xpto-for-bg-num">01</div>
+            <div class="xpto-for-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="11" stroke="#9b6dff" stroke-width="1.2" opacity="0.35"/>
+                <circle cx="13" cy="13" r="11" stroke="#9b6dff" stroke-width="1.2" stroke-dasharray="3 3" opacity="0.5"/>
+                <g style="transform-origin:13px 13px;animation:xpto-spin 10s linear infinite">
+                  <polygon points="13,3 14.4,13 13,11.6 11.6,13" fill="#9b6dff"/>
+                  <polygon points="13,23 14.4,13 13,14.4 11.6,13" fill="#9b6dff" opacity="0.25"/>
+                </g>
+                <circle cx="13" cy="13" r="2" fill="#9b6dff"/>
+              </svg>
+            </div>
+            <h3 class="xpto-for-pillar">Clareza</h3>
+            <p class="xpto-for-hook">Ter segurança antes de pisar fundo no acelerador.</p>
+          </div>
+          <div class="xpto-for-card">
+            <div class="xpto-for-bg-num">02</div>
+            <div class="xpto-for-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <rect x="2" y="19" width="22" height="4" rx="1.5" fill="#9b6dff" style="animation:xpto-bar 2s 0s ease-in-out infinite"/>
+                <rect x="5" y="13" width="16" height="4" rx="1.5" fill="#9b6dff" style="animation:xpto-bar 2s .45s ease-in-out infinite"/>
+                <rect x="8" y="7"  width="10" height="4" rx="1.5" fill="#9b6dff" style="animation:xpto-bar 2s .9s ease-in-out infinite"/>
+              </svg>
+            </div>
+            <h3 class="xpto-for-pillar">Estrutura</h3>
+            <p class="xpto-for-hook">Uma base que aguenta quando o crescimento chegar.</p>
+          </div>
+          <div class="xpto-for-card">
+            <div class="xpto-for-bg-num">03</div>
+            <div class="xpto-for-icon-wrap">
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                <circle cx="13" cy="13" r="11" stroke="#9b6dff" stroke-width="1" style="animation:xpto-pulse 2.8s 0s ease-in-out infinite"/>
+                <circle cx="13" cy="13" r="7"  stroke="#9b6dff" stroke-width="1.2" style="animation:xpto-pulse 2.8s .4s ease-in-out infinite"/>
+                <circle cx="13" cy="13" r="3.5" stroke="#9b6dff" stroke-width="1.5" opacity="0.8"/>
+                <circle cx="13" cy="13" r="1.5" fill="#9b6dff"/>
+              </svg>
+            </div>
+            <h3 class="xpto-for-pillar">Direção</h3>
+            <p class="xpto-for-hook">Um plano claro — não mais tentativa e erro.</p>
+          </div>
+        </div>
+      </div>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-icp">
+        <div class="xpto-slide-inner">
+          <div class="xpto-icp-section">
+            <div class="xpto-icp-header">
+              <p class="xpto-section-label">Para quem é</p>
+              <h2 class="xpto-icp-heading">O Protocolo Do Zero ao Lucro é pra quem quer:</h2>
+            </div>
+            <div class="xpto-icp-list">
+              <div class="xpto-icp-item">
+                <div class="xpto-icp-check">✦</div>
+                <div class="xpto-icp-content">
+                  <h3 class="xpto-icp-title">Tirar uma marca do zero</h3>
+                  <p class="xpto-icp-sub2">pra viver dela ou vendê-la no futuro</p>
+                </div>
+              </div>
+              <div class="xpto-icp-item">
+                <div class="xpto-icp-check">✦</div>
+                <div class="xpto-icp-content">
+                  <h3 class="xpto-icp-title">Minimizar os erros</h3>
+                  <p class="xpto-icp-sub2">ao criar e escalar um e-commerce no digital</p>
+                </div>
+              </div>
+              <div class="xpto-icp-item">
+                <div class="xpto-icp-check">✦</div>
+                <div class="xpto-icp-content">
+                  <h3 class="xpto-icp-title">Economizar tempo e dinheiro</h3>
+                  <p class="xpto-icp-sub2">absorvendo know-how de quem chegou lá</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      ${modSlides}
+
+      ${bonusSlides}
+
+      <section class="xpto-slide xpto-slide-anchor">
+        <div class="xpto-slide-inner">
+          <p class="xpto-anchor-eyebrow">Valor total se comprado separado</p>
+          <div class="xpto-anchor-value">
+            <span class="xpto-anchor-num-wrap">
+              <span class="xpto-anchor-currency">R$</span>
+              <span class="xpto-anchor-amount">${(MODULES.reduce((s,m)=>s+parseXptoPrice(m.price),0)+BONUSES.reduce((s,b)=>s+parseXptoPrice(b.price),0)).toLocaleString('pt-BR')}</span>
+            </span>
+          </div>
+          <p class="xpto-anchor-sub">12 módulos + 3 bônus contratados individualmente no mercado</p>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-anchor">
+        <div class="xpto-slide-inner">
+          <p class="xpto-anchor-eyebrow">Mesmo assim, uma oferta justa custaria</p>
+          <div class="xpto-anchor-value">
+            <span class="xpto-anchor-num-wrap">
+              <span class="xpto-anchor-currency">R$</span>
+              <span class="xpto-anchor-amount">10.000</span>
+            </span>
+          </div>
+          <p class="xpto-anchor-sub">Isso já seria um preço especial pelo conjunto completo</p>
+        </div>
+      </section>
+
+      <section class="xpto-slide xpto-slide-pricing">
+        <div class="xpto-slide-inner">
+          <p class="xpto-bundle-section-label">O que está incluído</p>
+          <div class="xpto-bundle-list">
+            ${MODULES.map(m => `
+              <div class="xpto-bundle-item">
+                <div class="xpto-bundle-dot"></div>
+                <span class="xpto-bundle-icon">${m.icon}</span>
+                <span class="xpto-bundle-name">${m.title}</span>
+                <span class="xpto-bundle-price">${m.price}</span>
+              </div>
+            `).join('')}
+            <p class="xpto-bundle-section-label" style="margin-top:12px">Bônus exclusivos</p>
+            ${BONUSES.map(b => `
+              <div class="xpto-bundle-item is-bonus">
+                <div class="xpto-bundle-dot"></div>
+                <span class="xpto-bundle-icon">${b.icon}</span>
+                <span class="xpto-bundle-name">${b.title}</span>
+                <span class="xpto-bundle-price">${b.price}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="xpto-pricing">
+            <div class="xpto-pricing-eyebrow">✦ Investimento</div>
+            <div class="xpto-pricing-main">
+              <div class="xpto-pricing-installments">
+                <span class="xpto-pricing-label">12x de</span>
+                <span class="xpto-pricing-currency">R$</span>
+                <span class="xpto-pricing-amount">620,23</span>
+              </div>
+            </div>
+            <p class="xpto-pricing-or">ou</p>
+            <p class="xpto-pricing-cash"><strong>R$ 5.997</strong> à vista</p>
+            <div class="xpto-countdown" id="xpto-countdown">
+              <div class="xpto-countdown-label">Oferta expira em</div>
+              <div class="xpto-countdown-digits">
+                <div class="xpto-cd-block">
+                  <span class="xpto-cd-num" id="xpto-cd-h">48</span>
+                  <span class="xpto-cd-unit">horas</span>
+                </div>
+                <span class="xpto-cd-sep">:</span>
+                <div class="xpto-cd-block">
+                  <span class="xpto-cd-num" id="xpto-cd-m">00</span>
+                  <span class="xpto-cd-unit">min</span>
+                </div>
+                <span class="xpto-cd-sep">:</span>
+                <div class="xpto-cd-block">
+                  <span class="xpto-cd-num" id="xpto-cd-s">00</span>
+                  <span class="xpto-cd-unit">seg</span>
+                </div>
+              </div>
+            </div>
+            <a href="https://pay.kiwify.com.br/Hk2p3mm" target="_blank" rel="noopener" class="xpto-pricing-btn">Vamos com Turbo!</a>
+            <p class="xpto-pricing-guarantee">12 módulos + 3 bônus incluídos</p>
+            <button class="xpto-think-btn" id="xpto-think-btn">Preciso pensar melhor</button>
+          </div>
+        </div>
+      </section>
+    `;
+  }
+
+  function parseXptoPrice(str) {
+    return parseInt(str.replace(/[R$.\s]/g, ''), 10) || 0;
+  }
+
+  function setupValueBar(inner, modal) {
+    const vb       = document.getElementById('xpto-value-bar');
+    const amountEl = vb.querySelector('.xpto-vb-amount');
+
+    // Pre-calculate offsetTop once (stable after DOM render, avoids BoundingClientRect
+    // flickering during snap-scroll animation)
+    const valuedSlides = [];
+    inner.querySelectorAll('.xpto-slide-module-single').forEach((el, i) => {
+      valuedSlides.push({ top: el.offsetTop, value: parseXptoPrice(MODULES[i].price) });
+    });
+    inner.querySelectorAll('.xpto-slide-bonus-single').forEach((el, i) => {
+      valuedSlides.push({ top: el.offsetTop, value: parseXptoPrice(BONUSES[i].price) });
+    });
+
+    let displayed = 0;
+    let target    = 0;
+    let rafId     = null;
+
+    function countTo(newTarget) {
+      if (newTarget === target) return;
+      target = newTarget;
+      if (rafId) cancelAnimationFrame(rafId);
+      const from     = displayed;
+      const diff     = target - from;
+      const duration = Math.min(500, Math.abs(diff) * 0.06 + 180);
+      const t0       = performance.now();
+      function tick(now) {
+        const p = Math.min((now - t0) / duration, 1);
+        const e = 1 - Math.pow(1 - p, 3);
+        displayed = Math.round(from + diff * e);
+        amountEl.textContent = displayed.toLocaleString('pt-BR');
+        if (p < 1) rafId = requestAnimationFrame(tick);
+        else { displayed = target; rafId = null; }
+      }
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function onScroll() {
+      const mid = modal.scrollTop + modal.clientHeight * 0.5;
+      let total = 0;
+      valuedSlides.forEach(({ top, value }) => {
+        if (top <= mid) total += value;
+      });
+      const firstReached = valuedSlides[0] && valuedSlides[0].top <= mid;
+      vb.classList.toggle('is-visible', firstReached);
+      countTo(total);
+    }
+
+    modal.addEventListener('scroll', onScroll, { passive: true });
+    modal._xptoVbCleanup = () => modal.removeEventListener('scroll', onScroll);
+  }
+
+  function setupCountdown() {
+    const DURATION = 48 * 60 * 60 * 1000;
+    const modal = document.getElementById('xpto-modal');
+    if (!modal) return;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+    let tid = null;
+
+    window._xptoStartCountdown = function() {
+      if (tid) clearInterval(tid);
+      const deadline = Date.now() + DURATION;
+      function tick() {
+        const elH  = document.getElementById('xpto-cd-h');
+        const elM  = document.getElementById('xpto-cd-m');
+        const elS  = document.getElementById('xpto-cd-s');
+        const wrap = document.getElementById('xpto-countdown');
+        if (!wrap) { clearInterval(tid); return; }
+        const diff = deadline - Date.now();
+        if (diff <= 0) {
+          wrap.innerHTML = '<span class="xpto-countdown-expired">⏰ Oferta encerrada</span>';
+          clearInterval(tid); tid = null; return;
+        }
+        if (elH && elM && elS) {
+          elH.textContent = pad(Math.floor(diff / 3600000));
+          elM.textContent = pad(Math.floor((diff % 3600000) / 60000));
+          elS.textContent = pad(Math.floor((diff % 60000) / 1000));
+        }
+      }
+      tick();
+      tid = setInterval(tick, 1000);
+    };
+
+    const observer = new MutationObserver(() => {
+      if (!modal.classList.contains('is-open')) {
+        if (tid) clearInterval(tid);
+        observer.disconnect();
+        delete window._xptoStartCountdown;
+      }
+    });
+    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  function openXpto() {
+    const inner  = document.getElementById('xpto-inner');
+    const modal  = document.getElementById('xpto-modal');
+    const hint   = document.getElementById('xpto-scroll-hint');
+
+    inner.innerHTML = buildModal();
+    modal.scrollTop = 0;
+
+    document.getElementById('xpto-overlay').classList.add('is-open');
+    modal.classList.add('is-open');
+    document.getElementById('xpto-close').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Show scroll hint
+    hint.classList.add('is-visible');
+    hint.classList.remove('is-faded');
+
+    modal.addEventListener('scroll', function onScroll() {
+      const atBottom = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 60;
+      hint.classList.toggle('is-faded', atBottom);
+    });
+
+    setupValueBar(inner, modal);
+    setupCountdown();
+
+    const thinkBtn = inner.querySelector('#xpto-think-btn');
+    if (thinkBtn) {
+      thinkBtn.addEventListener('click', () => {
+        const cd = inner.querySelector('#xpto-countdown');
+        if (cd) cd.classList.add('is-visible');
+        thinkBtn.classList.add('is-hidden');
+        if (window._xptoStartCountdown) window._xptoStartCountdown();
+      });
+    }
+
+    inner.querySelectorAll('.xpto-slide-anchor').forEach(slide => {
+      const io = new IntersectionObserver(entries => {
+        if (!entries[0].isIntersecting) return;
+        io.disconnect();
+
+        const wrap   = slide.querySelector('.xpto-anchor-num-wrap');
+        const amount = wrap.querySelector('.xpto-anchor-amount');
+        const w    = wrap.offsetWidth;
+        const h    = wrap.offsetHeight;
+        const diag = Math.round(Math.sqrt(w * w + h * h)) + 20;
+        const ang  = Math.atan2(h, w) * 180 / Math.PI;
+        // Center on the big number; subtract rotation offset so X crosses at midY
+        const midY      = Math.round(amount.offsetTop + amount.offsetHeight / 2);
+        const angRad    = ang * Math.PI / 180;
+        const rotOffset = Math.round((diag / 2) * Math.sin(angRad));
+
+        function makeLine(dir, delay) {
+          const ln = document.createElement('span');
+          ln.className = 'xpto-strike-line';
+          const left = Math.round((w - diag) / 2);
+          const top  = midY - rotOffset - 2;
+          ln.style.cssText = `
+            width:${diag}px;
+            left:${left}px;
+            top:${top}px;
+            transform-origin:${dir > 0 ? 'left' : 'right'} center;
+            transform:rotate(${dir * ang}deg) scaleX(0);
+          `;
+          wrap.appendChild(ln);
+          setTimeout(() => {
+            ln.style.transition = `transform 0.58s cubic-bezier(0.4,0,0.2,1)`;
+            ln.style.transform  = `rotate(${dir * ang}deg) scaleX(1)`;
+          }, delay);
+        }
+
+        setTimeout(() => {
+          makeLine(1,  0);    // top-left → bottom-right
+          makeLine(-1, 520);  // top-right → bottom-left
+        }, 120);
+      }, { root: modal, threshold: 0.5 });
+      io.observe(slide);
+    });
+  }
+
+  function closeXpto() {
+    const modal = document.getElementById('xpto-modal');
+    document.getElementById('xpto-overlay').classList.remove('is-open');
+    modal.classList.remove('is-open');
+    document.getElementById('xpto-scroll-hint').classList.remove('is-visible');
+    document.getElementById('xpto-value-bar').classList.remove('is-visible');
+    document.getElementById('xpto-close').style.display = 'none';
+    document.body.style.overflow = '';
+    if (modal._xptoVbCleanup) { modal._xptoVbCleanup(); modal._xptoVbCleanup = null; }
+  }
+
+  document.getElementById('xpto-overlay').addEventListener('click', closeXpto);
+  document.getElementById('xpto-close').addEventListener('click', closeXpto);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXpto(); });
+
+  window.openXptoLead = openXpto;
 })();
 
 // ─────────────────────────────────────────────────
