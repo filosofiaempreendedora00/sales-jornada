@@ -15785,6 +15785,15 @@ a.xpto-pricing-btn { text-decoration: none; }
     #crm-modal .crm-split { grid-template-columns: 1fr; }
     #crm-modal .crm-split-right { margin-top: 22px; }
   }
+  /* KPIs + nota (slide 4) */
+  #crm-modal .crm-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; margin: 22px 0 0; }
+  #crm-modal .crm-kpi { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 13px; padding: 14px 16px; display: flex; flex-direction: column; gap: 3px; }
+  #crm-modal .crm-kpi--hot { background: rgba(155,109,255,0.10); border-color: rgba(155,109,255,0.32); grid-column: 1 / -1; }
+  #crm-modal .crm-kpi-val { font-size: clamp(18px,1.9vw,25px); font-weight: 900; color: #fff; letter-spacing: -0.5px; }
+  #crm-modal .crm-kpi--hot .crm-kpi-val { background: linear-gradient(90deg,#c49bff,#4d8dff,#0dcfe8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  #crm-modal .crm-kpi-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.4px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+  #crm-modal .crm-note { margin: 18px 0 0; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-left: 3px solid #9b6dff; border-radius: 11px; padding: 16px 18px; font-size: clamp(12.5px,1.05vw,14.5px); line-height: 1.55; color: rgba(255,255,255,0.72); }
+  #crm-modal .crm-note strong { color: #fff; font-weight: 700; }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
@@ -15841,7 +15850,25 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
         </div>
       </section>
-      <img class="crm-slide-img" src="crm-slides/crm-04.svg" alt="CRM Estratégico — slide 4" loading="lazy">
+      <!-- SLIDE 4 — métricas recriadas na ID; e-mails da direita preservados -->
+      <section class="crm-slideo">
+        <div class="crm-split">
+          <div class="crm-split-left">
+            <div class="crm-eyebrow"><span></span>Resultado · E-mail</div>
+            <h2 class="crm-stitle">E-mail — <span class="crm-accent">Dia do Consumidor</span></h2>
+            <div class="crm-kpis">
+              <div class="crm-kpi"><span class="crm-kpi-val">32.216</span><span class="crm-kpi-lbl">Base</span></div>
+              <div class="crm-kpi"><span class="crm-kpi-val">41,93%</span><span class="crm-kpi-lbl">Taxa de abertura</span></div>
+              <div class="crm-kpi"><span class="crm-kpi-val">1,04%</span><span class="crm-kpi-lbl">Taxa de clique</span></div>
+              <div class="crm-kpi crm-kpi--hot"><span class="crm-kpi-val">R$ 17.047,99</span><span class="crm-kpi-lbl">Receita direta</span></div>
+            </div>
+            <div class="crm-note"><strong>💡 Motivo do desempenho:</strong> a campanha usou fortemente o gatilho de escassez, enviada em um momento estratégico para uma base já aquecida por disparos anteriores — gerando alto engajamento e contribuindo para um resultado total de <strong>mais de R$ 50 mil</strong> em receita atribuída ao e-mail marketing (considerando disparos complementares e recompra).</div>
+          </div>
+          <div class="crm-split-right">
+            <img src="crm-slides/crm-04-emails.jpg" alt="E-mails do Dia do Consumidor (Guday)" loading="lazy">
+          </div>
+        </div>
+      </section>
       <img class="crm-slide-img" src="crm-slides/crm-05.svg" alt="CRM Estratégico — slide 5" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-06.svg" alt="CRM Estratégico — slide 6" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-07.svg" alt="CRM Estratégico — slide 7" loading="lazy">
