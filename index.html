@@ -15724,6 +15724,36 @@ a.xpto-pricing-btn { text-decoration: none; }
   #crm-modal .crm-mockups {
     width: 100%; max-width: 1180px; height: auto; display: block; margin: 26px auto 0;
   }
+  /* Slide 2 — comparação Broadcast x Régua */
+  #crm-modal .crm-cmp-grid {
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch;
+    gap: clamp(12px, 1.8vw, 26px); width: 100%; max-width: 1120px; margin: 30px auto 0;
+  }
+  #crm-modal .crm-cmp-card {
+    background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px; padding: 26px 26px 24px; text-align: left;
+  }
+  #crm-modal .crm-cmp-card--hot { background: rgba(155,109,255,0.07); border-color: rgba(155,109,255,0.30); }
+  #crm-modal .crm-cmp-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  #crm-modal .crm-cmp-ico {
+    width: 42px; height: 42px; border-radius: 11px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 20px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.10);
+  }
+  #crm-modal .crm-cmp-card--hot .crm-cmp-ico { background: rgba(155,109,255,0.16); border-color: rgba(155,109,255,0.36); }
+  #crm-modal .crm-cmp-head h3 { font-size: clamp(16px,1.7vw,21px); font-weight: 900; color: #fff; margin: 0; letter-spacing: -0.3px; line-height: 1.15; }
+  #crm-modal .crm-cmp-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 14px; }
+  #crm-modal .crm-cmp-list li { position: relative; padding-left: 22px; font-size: clamp(13px,1.15vw,15px); line-height: 1.5; color: rgba(255,255,255,0.74); }
+  #crm-modal .crm-cmp-list li::before { content: ''; position: absolute; left: 3px; top: 8px; width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.38); }
+  #crm-modal .crm-cmp-card--hot .crm-cmp-list li::before { background: #9b6dff; box-shadow: 0 0 6px #9b6dff; }
+  #crm-modal .crm-cmp-list strong { color: #fff; font-weight: 700; }
+  #crm-modal .crm-cmp-vs {
+    align-self: center; font-size: clamp(30px,3.6vw,52px); font-weight: 900; color: #fff; opacity: 0.85;
+  }
+  @media (max-width: 820px) {
+    #crm-modal .crm-cmp-grid { grid-template-columns: 1fr; }
+    #crm-modal .crm-cmp-vs { transform: rotate(90deg); margin: 4px 0; }
+  }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
@@ -15737,7 +15767,31 @@ a.xpto-pricing-btn { text-decoration: none; }
         <p class="crm-ssub">Marcas que escalam relacionamento e recompra com a régua de CRM da Turbo.</p>
         <img class="crm-mockups" src="crm-slides/crm-01-mockups.jpg" alt="Mockups de e-mail dos clientes: borana, Jui, N'Arte e Guday" loading="lazy">
       </section>
-      <img class="crm-slide-img" src="crm-slides/crm-02.svg" alt="CRM Estratégico — slide 2" loading="lazy">
+      <!-- SLIDE 2 — recriado 100% na ID do Octopus (Broadcast x Régua) -->
+      <section class="crm-slideo">
+        <div class="crm-eyebrow"><span></span>CRM · Conceito-chave</div>
+        <h2 class="crm-stitle">Broadcast não é <span class="crm-accent">régua de automação</span></h2>
+        <p class="crm-ssub">São coisas diferentes — e o CRM estratégico usa as duas, cada uma no seu papel.</p>
+        <div class="crm-cmp-grid">
+          <div class="crm-cmp-card crm-cmp-card--cold">
+            <div class="crm-cmp-head"><span class="crm-cmp-ico">📣</span><h3>Broadcast</h3></div>
+            <ul class="crm-cmp-list">
+              <li>Campanhas de E-mails/WhatsApp/SMS enviadas ao usuário <strong>independente da ação</strong> dele no site.</li>
+              <li>É feita uma <strong>segmentação da base</strong> para aumentar a eficácia das campanhas.</li>
+              <li>Promoções, novidades, notícias e informações importantes.</li>
+            </ul>
+          </div>
+          <div class="crm-cmp-vs">≠</div>
+          <div class="crm-cmp-card crm-cmp-card--hot">
+            <div class="crm-cmp-head"><span class="crm-cmp-ico">🔄</span><h3>Régua de automação em CRM</h3></div>
+            <ul class="crm-cmp-list">
+              <li>E-mails/WhatsApp/SMS enviados <strong>automaticamente</strong> a partir de uma ação do cliente no site.</li>
+              <li>São criados <strong>fluxos de comunicação</strong>.</li>
+              <li>Carrinho abandonado, boas-vindas, cliente VIP, cliente inativo, atualização do pedido.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
       <img class="crm-slide-img" src="crm-slides/crm-03.svg" alt="CRM Estratégico — slide 3" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-04.svg" alt="CRM Estratégico — slide 4" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-05.svg" alt="CRM Estratégico — slide 5" loading="lazy">
