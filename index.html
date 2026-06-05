@@ -22444,6 +22444,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'social',      icon: '📱', name: 'Social Media',         color: '#12d490', sourceId: 'sm-inner' },
     { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
     { id: 'idvisual',    icon: '🎨', name: 'ID Visual',             color: '#f9a8d4', sourceId: 'iv-inner' },
+    { id: 'crm',         icon: '💬', name: 'CRM Estratégico',       color: '#9b6dff', sourceId: 'crm-inner' },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
@@ -22521,6 +22522,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       starter:    { label: 'Starter',    value: 'R$ 4.997,00' },
       enterprise: { label: 'Enterprise', value: 'R$ 9.997,00' }
     },
+    crm: {
+      'bc-starter':     { label: 'Broadcast · Starter',     value: 'R$ 1.997,00' },
+      'bc-scale':       { label: 'Broadcast · Scale',       value: 'R$ 2.997,00' },
+      'bc-enterprise':  { label: 'Broadcast · Enterprise',  value: 'R$ 4.997,00' },
+      'crm-starter':    { label: 'Plataforma · Starter',    value: 'R$ 197,00' },
+      'crm-scale':      { label: 'Plataforma · Scale',      value: 'R$ 297,00' },
+      'crm-enterprise': { label: 'Plataforma · Enterprise', value: 'R$ 597,00' }
+    },
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.497,00' },
       moda:          { label: 'Moda',          value: 'R$ 15.997,00' },
@@ -22577,6 +22586,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
     idvisual:    ['starter', 'enterprise'],
+    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
   };
 
@@ -22716,7 +22726,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Hoje: 'fee' do Performance (Fee de implantação R$ 2.997,00).
   // Default Fee marcado, sem persistência entre sessões.
   const DEFAULT_ENABLED_EXTRAS = {
-    performance: ['fee']
+    performance: ['fee'],
+    crm:         ['fee']
   };
   const enabledExtras = {};
   for (const sol in DEFAULT_ENABLED_EXTRAS) {
@@ -22927,12 +22938,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
     $invest.innerHTML = visibleSols.map(s => {
       const feeEnabled = isExtraEnabled(s.id, 'fee');
-      // Extras por solução. Hoje só Performance tem (Fee de implantação).
-      const extrasHtml = s.id === 'performance' ? `
+      // Extras por solução — Fee de implantação. Performance: R$ 2.997,00;
+      // CRM Estratégico: R$ 10.000,00 (implantação da plataforma).
+      const FEE_VALUES = { performance: 'R$ 2.997,00', crm: 'R$ 10.000,00' };
+      const extrasHtml = FEE_VALUES[s.id] ? `
         <div class="prop-invest-extras">
           <div class="prop-invest-extra-field${feeEnabled ? '' : ' is-disabled'}">
             <span class="prop-invest-extra-label">Fee de implantação</span>
-            <span class="prop-invest-extra-value">R$ 2.997,00</span>
+            <span class="prop-invest-extra-value">${FEE_VALUES[s.id]}</span>
             <input type="checkbox" class="prop-invest-check"
               data-sol="${s.id}" data-extra="fee"
               ${feeEnabled ? 'checked' : ''}
@@ -23400,6 +23413,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const hasSocial     = selected.has('social');
     const hasComunidade = selected.has('comunidade');
     const hasIdVisual   = selected.has('idvisual');
+    const hasCrm        = selected.has('crm');
     const hasEcommerce  = selected.has('ecommerce');
     const ecommerceTier = hasEcommerce ? ([...(enabledTiers.ecommerce || [])][0] || 'dnvb') : null;
     const ecommerceSub  = ecommerceTier ? ECOMMERCE_SUBTYPES[ecommerceTier] : null;
@@ -23589,11 +23603,94 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
+    // CRM Estratégico — dois grupos de pacotes: Broadcast (e-mail marketing
+    // gerenciado) + Implementação de CRM (plataforma unificada). Cada grupo
+    // tem 3 tiers; o SCALE é o destaque (mais vendido) em ambos.
+    const crmBroadcastCards = [];
+    const crmPlatformCards = [];
+    if (hasCrm) {
+      const crmDeliverables = `
+            <li>Configuração da plataforma de disparo</li>
+            <li>Planejamento, gestão e estratégia das campanhas</li>
+            <li>Trackeamento dos resultados</li>
+            <li>Envio de relatórios semanais</li>
+            <li>Redação e Design personalizados</li>
+            <li>Copywriting otimizado para venda direta</li>`;
+      if (isTierEnabled('crm', 'bc-starter')) crmBroadcastCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          ${priceWithAnchor('crm', 'bc-starter')}
+          <span class="pacote-tag">4 envios de e-mails</span>
+          <ul class="pacote-features">${crmDeliverables}</ul>
+        </div>`);
+      if (isTierEnabled('crm', 'bc-scale')) crmBroadcastCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          ${priceWithAnchor('crm', 'bc-scale')}
+          <span class="pacote-tag">8 envios de e-mails</span>
+          <ul class="pacote-features">${crmDeliverables}</ul>
+        </div>`);
+      if (isTierEnabled('crm', 'bc-enterprise')) crmBroadcastCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          ${priceWithAnchor('crm', 'bc-enterprise')}
+          <span class="pacote-tag">16 envios de e-mails</span>
+          <ul class="pacote-features">${crmDeliverables}</ul>
+        </div>`);
+
+      if (isTierEnabled('crm', 'crm-starter')) crmPlatformCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          ${priceWithAnchor('crm', 'crm-starter')}
+          <span class="pacote-tag">1 usuário · até 500 contatos</span>
+          <ul class="pacote-features">
+            <li>CRM</li>
+            <li>Calendário</li>
+            <li>Formulário integrado com CRM</li>
+            <li>Pesquisas</li>
+            <li>Automações</li>
+            <li>Relatórios</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('crm', 'crm-scale')) crmPlatformCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          ${priceWithAnchor('crm', 'crm-scale')}
+          <span class="pacote-tag">5 usuários · até 25.000 contatos</span>
+          <ul class="pacote-features">
+            <li><strong>Tudo do Starter</strong>, mais:</li>
+            <li>Integração com redes sociais</li>
+            <li>Campanhas de email marketing</li>
+            <li>Templates de email</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('crm', 'crm-enterprise')) crmPlatformCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          ${priceWithAnchor('crm', 'crm-enterprise')}
+          <span class="pacote-tag">50 usuários · até 100.000 contatos</span>
+          <ul class="pacote-features">
+            <li><strong>Tudo do Scale</strong>, mais:</li>
+            <li>Centralização de mensagens</li>
+            <li>Criação de funis, blogs e sites</li>
+            <li>E muito mais!</li>
+          </ul>
+        </div>`);
+    }
+
     // E-commerce — layout split (texto à esquerda, preço à direita).
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || crmBroadcastCards.length || crmPlatformCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -23670,6 +23767,37 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <p class="pacotes-sub">Identidade visual estratégica — do logo ao manual aplicado</p>
             </div>
             <div class="pacotes-grid pacotes-grid--two">${idvisualCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3f-bis. CRM Estratégico — dois slides de pacotes: Broadcast (e-mail
+      // marketing gerenciado) e Implementação de CRM (plataforma). O Fee de
+      // implantação (R$ 10.000,00) aparece no rodapé do slide de plataforma.
+      if (crmBroadcastCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Pacotes de <span class="pacotes-title-accent">Broadcast</span></h2>
+              <p class="pacotes-sub">E-mail marketing estratégico — disparos gerenciados de ponta a ponta</p>
+            </div>
+            <div class="pacotes-grid">${crmBroadcastCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+      if (crmPlatformCards.length) {
+        const crmFeeHtml = isExtraEnabled('crm', 'fee') ? `
+            <div class="pacotes-footer">
+              <span class="pacotes-footer-label">Fee de implantação:</span>
+              <span class="pacotes-footer-value">R$ 10.000,00</span>
+            </div>` : '';
+        sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Implementação de <span class="pacotes-title-accent">CRM</span></h2>
+              <p class="pacotes-sub">Plataforma unificada de marketing e vendas</p>
+            </div>
+            <div class="pacotes-grid">${crmPlatformCards.join('')}</div>${crmFeeHtml}
           </div>
         </section>`);
       }
@@ -23857,6 +23985,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           min-height: 540px !important;
           padding: 40px 20px !important;
         }
+      }
+      /* ── CRM Estratégico (apresentação): cada .crm-slideo ocupa 100vh no
+         app → na proposta vira documento (altura mínima harmônica) e perde
+         o scroll-snap, fluindo como as demais soluções. */
+      .proposal-section--crm .crm-deck { display: block !important; }
+      .proposal-section--crm .crm-slideo {
+        min-height: 720px !important;
+        scroll-snap-align: none !important;
+      }
+      .proposal-section--crm .crm-slideo + .crm-slideo {
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+      @media (max-width: 600px) {
+        .proposal-section--crm .crm-slideo { min-height: 540px !important; }
       }
       /* ── Turbo / Missão: colapsar zoom-section e mostrar orbit já aberto + animado ──
          No app, a sequência depende de scroll-driven JS:
@@ -24461,6 +24603,135 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         }
         /* Ordem natural mantida: STARTER → SCALE → ENTERPRISE.
            (Removido order:-1 anterior que jogava o featured pro topo.) */
+      }
+
+      /* ── Pacotes CRM Estratégico (Broadcast + Implementação de CRM) ──
+         Reusa a estética padrão dos slides de pacotes (cyan/azul). Bloco
+         dedicado (em vez de entrar nas listas de seletores acima) para
+         ficar isolado e não tocar nas regras existentes. */
+      .proposal-section--pacotes-crm { background: #050810; }
+      .proposal-section--pacotes-crm .pacotes-slide {
+        position: relative;
+        min-height: 720px;
+        padding: clamp(56px, 6vw, 80px) clamp(40px, 5vw, 72px);
+        display: flex; flex-direction: column; gap: 32px;
+        background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(155,109,255,0.12) 0%, transparent 55%);
+      }
+      .proposal-section--pacotes-crm .pacotes-header { text-align: center; }
+      .proposal-section--pacotes-crm .pacotes-title {
+        font-size: clamp(34px, 4.6vw, 56px); font-weight: 900;
+        letter-spacing: -1.6px; line-height: 1.1; margin: 0 0 8px;
+        color: rgba(255,255,255,0.95);
+      }
+      .proposal-section--pacotes-crm .pacotes-title-accent {
+        background: linear-gradient(120deg, #0dcfe8 0%, #4d8dff 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text; filter: drop-shadow(0 0 18px rgba(13,207,232,0.35));
+      }
+      .proposal-section--pacotes-crm .pacotes-sub {
+        font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.55);
+        letter-spacing: 0.3px; margin: 0;
+      }
+      .proposal-section--pacotes-crm .pacotes-grid {
+        display: flex; flex-wrap: wrap; justify-content: center;
+        gap: 18px; align-items: stretch;
+      }
+      .proposal-section--pacotes-crm .pacote-card {
+        position: relative; background: rgba(255,255,255,0.025);
+        border: 1px solid rgba(255,255,255,0.10); border-radius: 20px;
+        padding: 28px 22px 24px; display: flex; flex-direction: column;
+        gap: 14px; flex: 1 1 280px; min-width: 220px; max-width: 340px;
+        transition: border-color 0.18s, transform 0.18s;
+      }
+      .proposal-section--pacotes-crm .pacote-card:hover {
+        border-color: rgba(155,109,255,0.30); transform: translateY(-3px);
+      }
+      .proposal-section--pacotes-crm .pacote-card--featured {
+        background:
+          linear-gradient(165deg, rgba(13,207,232,0.18) 0%, rgba(77,141,255,0.20) 45%, rgba(155,109,255,0.22) 100%),
+          #0a1430;
+        border-color: rgba(13,207,232,0.42);
+        box-shadow:
+          0 0 0 1px rgba(13,207,232,0.25),
+          0 24px 60px rgba(13,80,200,0.35),
+          inset 0 1px 0 rgba(255,255,255,0.08);
+      }
+      .proposal-section--pacotes-crm .pacote-icon {
+        align-self: center; width: 38px; height: 38px;
+        display: flex; align-items: center; justify-content: center;
+        color: #0dcfe8; filter: drop-shadow(0 0 12px rgba(13,207,232,0.45));
+      }
+      .proposal-section--pacotes-crm .pacote-card--featured .pacote-icon {
+        color: #ffffff; filter: drop-shadow(0 0 12px rgba(255,255,255,0.45));
+      }
+      .proposal-section--pacotes-crm .pacote-icon svg { width: 100%; height: 100%; }
+      .proposal-section--pacotes-crm .pacote-name {
+        font-size: 16px; font-weight: 800; letter-spacing: 1.6px;
+        text-align: center; color: rgba(255,255,255,0.90); margin: 0;
+      }
+      .proposal-section--pacotes-crm .pacote-price {
+        font-size: clamp(24px, 2.4vw, 32px); font-weight: 900;
+        letter-spacing: -1px; text-align: center; color: #ffffff; margin: -4px 0 4px;
+      }
+      .proposal-section--pacotes-crm .pacote-price-anchor {
+        font-size: clamp(15px, 1.6vw, 19px); font-weight: 600; letter-spacing: -0.2px;
+        text-align: center; color: rgba(255,255,255,0.42);
+        text-decoration: line-through; text-decoration-color: rgba(255,107,142,0.55);
+        text-decoration-thickness: 2px; margin: 6px 0 -4px;
+      }
+      .proposal-section--pacotes-crm .pacote-price small {
+        font-size: 0.5em; font-weight: 600; letter-spacing: 0;
+        color: rgba(255,255,255,0.55); margin-left: 2px;
+      }
+      .proposal-section--pacotes-crm .pacote-tag {
+        display: block; text-align: center; font-size: 12px; font-weight: 600;
+        color: rgba(255,255,255,0.72); padding: 7px 12px;
+        border: 1px solid rgba(255,255,255,0.14); border-radius: 99px;
+        background: rgba(255,255,255,0.025); line-height: 1.3;
+      }
+      .proposal-section--pacotes-crm .pacote-card--featured .pacote-tag {
+        border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.95);
+      }
+      .proposal-section--pacotes-crm .pacote-features {
+        list-style: none; padding: 0; margin: 8px 0 0;
+        display: flex; flex-direction: column; gap: 10px;
+      }
+      .proposal-section--pacotes-crm .pacote-features li {
+        position: relative; padding-left: 27px; font-size: 12.5px;
+        line-height: 1.45; color: rgba(255,255,255,0.78);
+      }
+      .proposal-section--pacotes-crm .pacote-features li::before {
+        content: '✓'; position: absolute; left: 0; top: 1px;
+        width: 18px; height: 18px; border-radius: 5px;
+        background: rgba(13,207,232,0.14); color: #0dcfe8;
+        font-weight: 800; font-size: 11px;
+        display: flex; align-items: center; justify-content: center;
+      }
+      .proposal-section--pacotes-crm .pacote-card--featured .pacote-features li { color: rgba(255,255,255,0.92); }
+      .proposal-section--pacotes-crm .pacote-card--featured .pacote-features li::before { background: rgba(255,255,255,0.20); color: #ffffff; }
+      .proposal-section--pacotes-crm .pacote-features li small { font-size: 0.88em; color: rgba(255,255,255,0.55); font-weight: 400; }
+      .proposal-section--pacotes-crm .pacote-features li strong { color: rgba(255,255,255,0.95); font-weight: 700; }
+      .proposal-section--pacotes-crm .pacote-badge {
+        position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+        background: linear-gradient(135deg, #12d490, #0dcfe8); color: #00251a;
+        font-size: 10.5px; font-weight: 800; letter-spacing: 0.8px;
+        padding: 6px 14px; border-radius: 99px; text-transform: lowercase;
+        white-space: nowrap; box-shadow: 0 6px 20px rgba(18,212,144,0.35);
+      }
+      .proposal-section--pacotes-crm .pacotes-footer {
+        align-self: center; display: inline-flex; align-items: center; gap: 12px;
+        background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.10);
+        border-radius: 14px; padding: 12px 24px; margin-top: 4px;
+      }
+      .proposal-section--pacotes-crm .pacotes-footer-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); }
+      .proposal-section--pacotes-crm .pacotes-footer-value {
+        font-size: 15px; font-weight: 800;
+        background: linear-gradient(120deg, #0dcfe8 0%, #4d8dff 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      }
+      @media (max-width: 900px) {
+        .proposal-section--pacotes-crm .pacote-card { flex: 1 1 100%; max-width: none; }
       }
 
       /* Pacotes Social tem no máximo 2 cards (Starter + Enterprise) — largura
