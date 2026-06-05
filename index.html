@@ -15754,6 +15754,37 @@ a.xpto-pricing-btn { text-decoration: none; }
     #crm-modal .crm-cmp-grid { grid-template-columns: 1fr; }
     #crm-modal .crm-cmp-vs { transform: rotate(90deg); margin: 4px 0; }
   }
+  /* Slides com lista à esquerda + e-mails preservados à direita (3,4,9,10) */
+  #crm-modal .crm-split {
+    display: grid; grid-template-columns: 1.2fr 0.8fr; gap: clamp(22px, 3vw, 50px);
+    align-items: center; width: 100%; max-width: 1180px; margin: 8px auto 0; text-align: left;
+  }
+  #crm-modal .crm-split-left { display: flex; flex-direction: column; align-items: flex-start; }
+  #crm-modal .crm-split-left .crm-stitle { text-align: left; margin: 12px 0 0; }
+  #crm-modal .crm-split-left .crm-ssub { text-align: left; margin: 8px 0 0; }
+  #crm-modal .crm-tipos { list-style: none; margin: 24px 0 0; padding: 0; display: flex; flex-direction: column; gap: 12px; width: 100%; }
+  #crm-modal .crm-tipo {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 13px; padding: 14px 18px;
+    font-size: clamp(13.5px, 1.15vw, 16px); line-height: 1.4; color: rgba(255,255,255,0.8);
+  }
+  #crm-modal .crm-tipo--goal { background: rgba(155,109,255,0.10); border-color: rgba(155,109,255,0.34); color: #fff; }
+  #crm-modal .crm-tipo-num {
+    flex-shrink: 0; width: 32px; height: 32px; border-radius: 9px;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.55);
+  }
+  #crm-modal .crm-tipo--goal .crm-tipo-num { background: rgba(155,109,255,0.20); border-color: rgba(155,109,255,0.42); color: #c4a8ff; }
+  #crm-modal .crm-split-right { display: flex; align-items: center; justify-content: center; }
+  #crm-modal .crm-split-right img {
+    width: 100%; max-width: 460px; height: auto; display: block;
+    border-radius: 12px; box-shadow: 0 14px 44px rgba(0,0,0,0.5);
+  }
+  @media (max-width: 860px) {
+    #crm-modal .crm-split { grid-template-columns: 1fr; }
+    #crm-modal .crm-split-right { margin-top: 22px; }
+  }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
@@ -15792,7 +15823,24 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
         </div>
       </section>
-      <img class="crm-slide-img" src="crm-slides/crm-03.svg" alt="CRM Estratégico — slide 3" loading="lazy">
+      <!-- SLIDE 3 — esquerda recriada na ID; e-mails da direita preservados -->
+      <section class="crm-slideo">
+        <div class="crm-split">
+          <div class="crm-split-left">
+            <div class="crm-eyebrow"><span></span>Diagnóstico</div>
+            <h2 class="crm-stitle">Existem <span class="crm-accent">4 tipos</span> de empresas</h2>
+            <ul class="crm-tipos">
+              <li class="crm-tipo"><span class="crm-tipo-num">01</span>As que não têm estratégias de E-mail marketing</li>
+              <li class="crm-tipo"><span class="crm-tipo-num">02</span>As que fazem comunicações manuais</li>
+              <li class="crm-tipo"><span class="crm-tipo-num">03</span>As que têm estratégias, mas sentem que estão subutilizando esse canal</li>
+              <li class="crm-tipo crm-tipo--goal"><span class="crm-tipo-num">04</span>As que dominam as estratégias de relacionamento e retenção de clientes</li>
+            </ul>
+          </div>
+          <div class="crm-split-right">
+            <img src="crm-slides/crm-03-emails.jpg" alt="Exemplos de e-mails de clientes (Misfits, Hidratei)" loading="lazy">
+          </div>
+        </div>
+      </section>
       <img class="crm-slide-img" src="crm-slides/crm-04.svg" alt="CRM Estratégico — slide 4" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-05.svg" alt="CRM Estratégico — slide 5" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-06.svg" alt="CRM Estratégico — slide 6" loading="lazy">
