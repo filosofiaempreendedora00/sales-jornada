@@ -15819,6 +15819,21 @@ a.xpto-pricing-btn { text-decoration: none; }
   #crm-modal .crm-cover-logo { width: 60px; height: auto; opacity: 0.95; margin-bottom: 22px; }
   #crm-modal .crm-cover-title { font-size: clamp(40px, 6.4vw, 84px); font-weight: 900; letter-spacing: -2.4px; line-height: 1; color: #fff; margin: 16px 0 14px; }
   #crm-modal .crm-cover-sub { font-size: clamp(14px, 1.4vw, 18px); color: rgba(255,255,255,0.62); max-width: 620px; margin: 0 auto; line-height: 1.55; }
+  /* objetivos + resultados (slide 8) */
+  #crm-modal .crm-obj { list-style: none; margin: 22px auto 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; max-width: 860px; }
+  #crm-modal .crm-obj li { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 11px; padding: 12px 18px; font-size: clamp(13.5px,1.15vw,15.5px); color: rgba(255,255,255,0.85); }
+  #crm-modal .crm-obj li::before { content: '✓'; color: #9b6dff; font-weight: 900; }
+  #crm-modal .crm-results { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; width: 100%; max-width: 980px; margin: 26px auto 0; }
+  #crm-modal .crm-res { background: rgba(155,109,255,0.08); border: 1px solid rgba(155,109,255,0.26); border-radius: 14px; padding: 22px 18px; display: flex; flex-direction: column; gap: 10px; align-items: center; text-align: center; justify-content: center; }
+  #crm-modal .crm-res-lbl { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+  #crm-modal .crm-res-val { font-size: clamp(17px,1.8vw,23px); font-weight: 800; color: rgba(255,255,255,0.85); }
+  #crm-modal .crm-res-val strong, #crm-modal .crm-res-big {
+    background: linear-gradient(90deg,#c49bff,#4d8dff,#0dcfe8);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  #crm-modal .crm-res-big { font-size: clamp(30px,3.6vw,46px); font-weight: 900; }
+  #crm-modal .crm-res-arrow { color: rgba(255,255,255,0.4); margin: 0 4px; }
+  @media (max-width: 760px) { #crm-modal .crm-results { grid-template-columns: 1fr; } }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
@@ -15932,7 +15947,29 @@ a.xpto-pricing-btn { text-decoration: none; }
         <h2 class="crm-cover-title">Case da <span class="crm-accent">Guday</span></h2>
         <p class="crm-cover-sub">E-mail marketing & CRM transformando relacionamento em recompra recorrente.</p>
       </section>
-      <img class="crm-slide-img" src="crm-slides/crm-08.svg" alt="CRM Estratégico — slide 8" loading="lazy">
+      <!-- SLIDE 8 — recriado 100% na ID (objetivos + resultados) -->
+      <section class="crm-slideo">
+        <div class="crm-eyebrow"><span></span>Case Guday · Objetivos</div>
+        <h2 class="crm-stitle">Principais <span class="crm-accent">objetivos iniciais</span></h2>
+        <ul class="crm-obj">
+          <li>Aumentar a taxa de abertura</li>
+          <li>Aumentar o faturamento do canal de e-mail</li>
+        </ul>
+        <div class="crm-results">
+          <div class="crm-res">
+            <span class="crm-res-lbl">Taxa de abertura</span>
+            <span class="crm-res-val">25–32% <span class="crm-res-arrow">→</span> <strong>39–45%</strong></span>
+          </div>
+          <div class="crm-res">
+            <span class="crm-res-lbl">Crescimento de faturamento</span>
+            <span class="crm-res-big">+136%</span>
+          </div>
+          <div class="crm-res">
+            <span class="crm-res-lbl">Volume de disparos</span>
+            <span class="crm-res-val">8 <span class="crm-res-arrow">→</span> <strong>25+</strong> /mês</span>
+          </div>
+        </div>
+      </section>
       <img class="crm-slide-img" src="crm-slides/crm-09.svg" alt="CRM Estratégico — slide 9" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-10.svg" alt="CRM Estratégico — slide 10" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-11.svg" alt="CRM Estratégico — slide 11" loading="lazy">
