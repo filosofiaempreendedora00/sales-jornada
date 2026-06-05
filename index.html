@@ -15682,25 +15682,31 @@ a.xpto-pricing-btn { text-decoration: none; }
 <!--  na ID do Octopus (com cuidado nos e-mails).    -->
 <!-- ══════════════════════════════════════════════ -->
 <style>
-  #crm-modal .crm-deck {
-    display: flex; flex-direction: column; align-items: center;
-    gap: 16px; padding: 8px 0 56px; background: #06060c;
-  }
+  #crm-modal .crm-deck { display: block; }
   #crm-modal .crm-slide-img {
     display: block; width: 100%; max-width: 1120px; height: auto;
     border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
   }
   /* ── Slides recriados na ID do Octopus ── */
+  /* cada slide = 1 tela cheia (igual às outras apresentações: 100vh + snap) */
   #crm-modal .crm-slideo {
-    width: 100%; max-width: 1280px; box-sizing: border-box;
-    border-radius: 10px; overflow: hidden;
+    width: 100%; box-sizing: border-box;
+    min-height: 100vh;
+    scroll-snap-align: start; scroll-snap-stop: always;
     background:
-      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(155,109,255,0.16), transparent 60%),
+      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(155,109,255,0.14), transparent 60%),
       radial-gradient(ellipse 60% 50% at 90% 100%, rgba(13,207,232,0.10), transparent 60%),
       #07070e;
-    padding: clamp(38px, 5vw, 70px) clamp(22px, 3.5vw, 56px) clamp(20px, 2.6vw, 40px);
-    display: flex; flex-direction: column; align-items: center; text-align: center;
+    padding: clamp(56px, 7vh, 96px) clamp(24px, 5vw, 80px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
   }
+  /* títulos com largura confortável (grids/imagens já têm max-width próprio) */
+  #crm-modal .crm-slideo .crm-stitle { max-width: 1100px; }
+  /* slide 1 (clientes): fundo preto chapado p/ mockups e logos flutuarem direto */
+  #crm-modal .crm-slideo.crm-s1 {
+    background: #000;
+  }
+  #crm-modal .crm-slideo.crm-s1 .crm-mockups { box-shadow: none; }
   #crm-modal .crm-eyebrow {
     display: inline-flex; align-items: center; gap: 8px;
     background: rgba(155,109,255,0.10); border: 1px solid rgba(155,109,255,0.22);
@@ -15815,7 +15821,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   }
   #crm-modal .crm-s6-foot strong { color: #fff; font-weight: 700; }
   /* capa de case (slide 7) */
-  #crm-modal .crm-cover { min-height: 64vh; justify-content: center; }
+  #crm-modal .crm-cover { justify-content: center; }
   #crm-modal .crm-cover-logo { width: 60px; height: auto; opacity: 0.95; margin-bottom: 22px; }
   #crm-modal .crm-cover-title { font-size: clamp(40px, 6.4vw, 84px); font-weight: 900; letter-spacing: -2.4px; line-height: 1; color: #fff; margin: 16px 0 14px; }
   #crm-modal .crm-cover-sub { font-size: clamp(14px, 1.4vw, 18px); color: rgba(255,255,255,0.62); max-width: 620px; margin: 0 auto; line-height: 1.55; }
@@ -15847,7 +15853,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   <div class="xpto-inner" id="crm-inner">
     <div class="crm-deck">
       <!-- SLIDE 1 — recriado na ID do Octopus (mockups + logos preservados da imagem) -->
-      <section class="crm-slideo">
+      <section class="crm-slideo crm-s1">
         <div class="crm-eyebrow"><span></span>CRM · E-mail Marketing</div>
         <h2 class="crm-stitle">Nossos clientes de <span class="crm-accent">e-mail marketing</span></h2>
         <p class="crm-ssub">Marcas que escalam relacionamento e recompra com a régua de CRM da Turbo.</p>
