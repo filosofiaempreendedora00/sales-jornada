@@ -15690,13 +15690,53 @@ a.xpto-pricing-btn { text-decoration: none; }
     display: block; width: 100%; max-width: 1120px; height: auto;
     border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
   }
+  /* ── Slides recriados na ID do Octopus ── */
+  #crm-modal .crm-slideo {
+    width: 100%; max-width: 1280px; box-sizing: border-box;
+    border-radius: 10px; overflow: hidden;
+    background:
+      radial-gradient(ellipse 70% 55% at 50% 0%, rgba(155,109,255,0.16), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 90% 100%, rgba(13,207,232,0.10), transparent 60%),
+      #07070e;
+    padding: clamp(38px, 5vw, 70px) clamp(22px, 3.5vw, 56px) clamp(20px, 2.6vw, 40px);
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+  }
+  #crm-modal .crm-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(155,109,255,0.10); border: 1px solid rgba(155,109,255,0.22);
+    border-radius: 99px; padding: 6px 15px;
+    font-size: 11px; font-weight: 800; letter-spacing: 2.4px; text-transform: uppercase;
+    color: #b89aff;
+  }
+  #crm-modal .crm-eyebrow span { width: 5px; height: 5px; border-radius: 50%; background: #9b6dff; box-shadow: 0 0 7px #9b6dff; }
+  #crm-modal .crm-stitle {
+    font-size: clamp(27px, 3.6vw, 48px); font-weight: 900; letter-spacing: -1.4px;
+    line-height: 1.06; color: #fff; margin: 16px 0 6px;
+  }
+  #crm-modal .crm-accent {
+    background: linear-gradient(90deg, #c49bff 0%, #4d8dff 50%, #0dcfe8 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  #crm-modal .crm-ssub {
+    font-size: clamp(13.5px, 1.2vw, 16px); color: rgba(255,255,255,0.6);
+    max-width: 720px; margin: 0 auto; line-height: 1.5;
+  }
+  #crm-modal .crm-mockups {
+    width: 100%; max-width: 1180px; height: auto; display: block; margin: 26px auto 0;
+  }
 </style>
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
 <div class="xpto-modal" id="crm-modal">
   <div class="xpto-inner" id="crm-inner">
     <div class="crm-deck">
-      <img class="crm-slide-img" src="crm-slides/crm-01.svg" alt="CRM Estratégico — slide 1" loading="lazy">
+      <!-- SLIDE 1 — recriado na ID do Octopus (mockups + logos preservados da imagem) -->
+      <section class="crm-slideo">
+        <div class="crm-eyebrow"><span></span>CRM · E-mail Marketing</div>
+        <h2 class="crm-stitle">Nossos clientes de <span class="crm-accent">e-mail marketing</span></h2>
+        <p class="crm-ssub">Marcas que escalam relacionamento e recompra com a régua de CRM da Turbo.</p>
+        <img class="crm-mockups" src="crm-slides/crm-01-mockups.jpg" alt="Mockups de e-mail dos clientes: borana, Jui, N'Arte e Guday" loading="lazy">
+      </section>
       <img class="crm-slide-img" src="crm-slides/crm-02.svg" alt="CRM Estratégico — slide 2" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-03.svg" alt="CRM Estratégico — slide 3" loading="lazy">
       <img class="crm-slide-img" src="crm-slides/crm-04.svg" alt="CRM Estratégico — slide 4" loading="lazy">
