@@ -22553,9 +22553,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       enterprise: { label: 'Enterprise', value: 'R$ 9.997,00' }
     },
     crm: {
-      'bc-starter':     { label: 'Broadcast · Starter',     value: 'R$ 1.997,00' },
-      'bc-scale':       { label: 'Broadcast · Scale',       value: 'R$ 2.997,00' },
-      'bc-enterprise':  { label: 'Broadcast · Enterprise',  value: 'R$ 4.997,00' },
+      'bc-starter':       { label: 'Broadcast · Starter',       value: 'R$ 1.997,00' },
+      'bc-scale':         { label: 'Broadcast · Scale',         value: 'R$ 2.997,00' },
+      'bc-enterprise':    { label: 'Broadcast · Enterprise',    value: 'R$ 4.779,00' },
+      'bc-personalizado': { label: 'Broadcast · Personalizado', value: 'R$ 6.759,00' },
+      'rg-basic':       { label: 'Régua · Basic (transacionais)', value: 'R$ 3.997,00' },
+      'rg-starter':     { label: 'Régua · Starter',     value: 'R$ 10.890,00' },
+      'rg-scale':       { label: 'Régua · Scale',       value: 'R$ 19.997,00' },
+      'rg-enterprise':  { label: 'Régua · Enterprise',  value: 'R$ 28.900,00' },
       'crm-starter':    { label: 'Plataforma · Starter',    value: 'R$ 197,00' },
       'crm-scale':      { label: 'Plataforma · Scale',      value: 'R$ 297,00' },
       'crm-enterprise': { label: 'Plataforma · Enterprise', value: 'R$ 597,00' }
@@ -22616,7 +22621,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
     idvisual:    ['starter', 'enterprise'],
-    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'crm-starter', 'crm-scale', 'crm-enterprise'],
+    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
   };
 
@@ -23637,21 +23642,26 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // gerenciado) + Implementação de CRM (plataforma unificada). Cada grupo
     // tem 3 tiers; o SCALE é o destaque (mais vendido) em ambos.
     const crmBroadcastCards = [];
+    const crmReguaCards = [];
     const crmPlatformCards = [];
     if (hasCrm) {
+      // Entregáveis comuns a todos os planos de Broadcast
       const crmDeliverables = `
-            <li>Configuração da plataforma de disparo</li>
-            <li>Planejamento, gestão e estratégia das campanhas</li>
-            <li>Trackeamento dos resultados</li>
-            <li>Envio de relatórios semanais</li>
-            <li>Redação e Design personalizados</li>
-            <li>Copywriting otimizado para venda direta</li>`;
+            <li>Planejamento promocional</li>
+            <li>Copywriting estratégico</li>
+            <li>Design personalizado</li>
+            <li>Segmentação de base</li>
+            <li>Relatórios semanais e mensais</li>
+            <li>Configuração da plataforma</li>
+            <li>Trackeamento de resultados</li>`;
+      // Bônus por tier (WhatsApp / SMS / Dash) — pílula de destaque no rodapé
+      const crmBonus = (txt) => `<span class="pacote-tag pacote-tag--bonus">🎁 ${txt}</span>`;
       if (isTierEnabled('crm', 'bc-starter')) crmBroadcastCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
           ${priceWithAnchor('crm', 'bc-starter')}
-          <span class="pacote-tag">4 envios de e-mails</span>
+          <span class="pacote-tag">6 campanhas mensais de e-mail <small>(sem WhatsApp)</small></span>
           <ul class="pacote-features">${crmDeliverables}</ul>
         </div>`);
       if (isTierEnabled('crm', 'bc-scale')) crmBroadcastCards.push(`
@@ -23660,16 +23670,81 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           ${pacoteIcon}
           <h3 class="pacote-name">SCALE</h3>
           ${priceWithAnchor('crm', 'bc-scale')}
-          <span class="pacote-tag">8 envios de e-mails</span>
+          <span class="pacote-tag">10 campanhas mensais de e-mail</span>
           <ul class="pacote-features">${crmDeliverables}</ul>
+          ${crmBonus('Ganhe 5 disparos de WhatsApp')}
         </div>`);
       if (isTierEnabled('crm', 'bc-enterprise')) crmBroadcastCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
           ${priceWithAnchor('crm', 'bc-enterprise')}
-          <span class="pacote-tag">16 envios de e-mails</span>
+          <span class="pacote-tag">16 campanhas mensais de e-mail</span>
           <ul class="pacote-features">${crmDeliverables}</ul>
+          ${crmBonus('Ganhe 10 disparos de WhatsApp + 10 SMS')}
+        </div>`);
+      if (isTierEnabled('crm', 'bc-personalizado')) crmBroadcastCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">PERSONALIZADO</h3>
+          ${priceWithAnchor('crm', 'bc-personalizado')}
+          <span class="pacote-tag">25 campanhas mensais de e-mail</span>
+          <ul class="pacote-features">${crmDeliverables}</ul>
+          ${crmBonus('Ganhe 15 disparos de WhatsApp + 15 SMS + Email Dash grátis')}
+        </div>`);
+
+      // ── Réguas de Comunicação (automação de e-mail) ──
+      // Basic = e-mails transacionais padrão (pagamento único, não editáveis).
+      // Starter/Scale/Enterprise = réguas personalizadas (12/25/50 e-mails) + WhatsApp Over Delivery.
+      const reguaDeliverables = `
+            <li>Redação e Design personalizados</li>
+            <li>Configuração da plataforma de disparo</li>
+            <li>Planejamento, gestão e estratégia das campanhas</li>
+            <li>Trackeamento dos resultados</li>
+            <li>Envio de relatórios semanais e mensais</li>
+            <li>Copywriting otimizado para venda direta</li>`;
+      if (isTierEnabled('crm', 'rg-basic')) crmReguaCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">BASIC</h3>
+          ${priceWithAnchor('crm', 'rg-basic')}
+          <span class="pacote-tag">5 e-mails transacionais <small>· pagamento único</small></span>
+          <ul class="pacote-features">
+            <li>E-mail de Boas-vindas</li>
+            <li>Pedido confirmado</li>
+            <li>Pagamento confirmado</li>
+            <li>Pedido enviado</li>
+            <li>Pagamento pendente</li>
+          </ul>
+          <span class="pacote-tag pacote-tag--alt">Modelo padrão — e-mails não personalizáveis</span>
+        </div>`);
+      if (isTierEnabled('crm', 'rg-starter')) crmReguaCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          ${priceWithAnchor('crm', 'rg-starter')}
+          <span class="pacote-tag">12 e-mails personalizados</span>
+          <ul class="pacote-features">${reguaDeliverables}</ul>
+          ${crmBonus('WhatsApp Over Delivery')}
+        </div>`);
+      if (isTierEnabled('crm', 'rg-scale')) crmReguaCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          ${priceWithAnchor('crm', 'rg-scale')}
+          <span class="pacote-tag">25 e-mails personalizados</span>
+          <ul class="pacote-features">${reguaDeliverables}</ul>
+          ${crmBonus('WhatsApp Over Delivery')}
+        </div>`);
+      if (isTierEnabled('crm', 'rg-enterprise')) crmReguaCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          ${priceWithAnchor('crm', 'rg-enterprise')}
+          <span class="pacote-tag">50 e-mails personalizados</span>
+          <ul class="pacote-features">${reguaDeliverables}</ul>
+          ${crmBonus('WhatsApp Over Delivery')}
         </div>`);
 
       if (isTierEnabled('crm', 'crm-starter')) crmPlatformCards.push(`
@@ -23720,7 +23795,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || crmBroadcastCards.length || crmPlatformCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || crmBroadcastCards.length || crmReguaCards.length || crmPlatformCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -23801,9 +23876,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3f-bis. CRM Estratégico — dois slides de pacotes: Broadcast (e-mail
-      // marketing gerenciado) e Implementação de CRM (plataforma). O Fee de
-      // implantação (R$ 10.000,00) aparece no rodapé do slide de plataforma.
+      // 3f-bis. CRM Estratégico — três slides de pacotes: Broadcast (campanhas),
+      // Réguas de Comunicação (automação) e Implementação de CRM (plataforma).
+      // O Fee de implantação (R$ 10.000,00) aparece no rodapé da plataforma.
       if (crmBroadcastCards.length) {
         sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
           <div class="pacotes-slide">
@@ -23812,6 +23887,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <p class="pacotes-sub">E-mail marketing estratégico — disparos gerenciados de ponta a ponta</p>
             </div>
             <div class="pacotes-grid">${crmBroadcastCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+      if (crmReguaCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Réguas de <span class="pacotes-title-accent">Comunicação</span></h2>
+              <p class="pacotes-sub">Automação de e-mail que vende no piloto automático</p>
+            </div>
+            <div class="pacotes-grid">${crmReguaCards.join('')}</div>
           </div>
         </section>`);
       }
@@ -24722,6 +24808,28 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-crm .pacote-card--featured .pacote-tag {
         border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08);
         color: rgba(255,255,255,0.95);
+      }
+      /* Pílula de bônus (WhatsApp/SMS/Dash) — destaque roxo/ciano no rodapé */
+      .proposal-section--pacotes-crm .pacote-tag--bonus {
+        margin-top: 2px;
+        background: linear-gradient(135deg, rgba(155,109,255,0.22), rgba(13,207,232,0.16));
+        border-color: rgba(155,109,255,0.45);
+        color: #dcccff;
+        font-weight: 700;
+      }
+      .proposal-section--pacotes-crm .pacote-card--featured .pacote-tag--bonus {
+        background: linear-gradient(135deg, rgba(155,109,255,0.34), rgba(13,207,232,0.24));
+        border-color: rgba(196,168,255,0.6);
+        color: #ffffff;
+      }
+      /* Nota discreta (ex.: 'e-mails não personalizáveis' no Basic da Régua) */
+      .proposal-section--pacotes-crm .pacote-tag--alt {
+        margin-top: 2px;
+        background: transparent;
+        border-color: rgba(255,255,255,0.10);
+        color: rgba(255,255,255,0.55);
+        font-weight: 500;
+        font-size: 11px;
       }
       .proposal-section--pacotes-crm .pacote-features {
         list-style: none; padding: 0; margin: 8px 0 0;
