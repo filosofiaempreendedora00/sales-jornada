@@ -5413,6 +5413,57 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: #fff;
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 12%, transparent);
 }
+/* CRM modular: botões de módulo (multi-seleção) — reusa o visual dos subtipos,
+   mas pode ter vários ativos ao mesmo tempo. */
+.prop-invest-modules {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 4px;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+}
+.prop-invest-module-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 8px 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  color: var(--text-soft);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  line-height: 1.2;
+}
+.prop-invest-module-btn:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.prop-invest-module-btn.is-active {
+  background: color-mix(in srgb, var(--card-color, #9b6dff) 18%, transparent);
+  border-color: color-mix(in srgb, var(--card-color, #9b6dff) 55%, transparent);
+  color: #fff;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--card-color, #9b6dff) 12%, transparent);
+}
+.prop-invest-module-group { margin-top: 14px; }
+.prop-invest-subhead {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--card-color, #9b6dff);
+  margin: 0 0 7px;
+  opacity: 0.92;
+}
+.prop-invest-modules-hint {
+  font-size: 11.5px;
+  color: var(--text-soft);
+  margin: 8px 2px 0;
+  line-height: 1.4;
+}
 /* Linha de tier em modo exclusivo (sub-pacote escolhido) — sem
    checkbox E sem label do tier (redundante com o picker acima, que
    já mostra qual está selecionado). Input ocupa toda a largura. */
@@ -22561,6 +22612,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       'rg-starter':     { label: 'Régua · Starter',     value: 'R$ 10.890,00' },
       'rg-scale':       { label: 'Régua · Scale',       value: 'R$ 19.997,00' },
       'rg-enterprise':  { label: 'Régua · Enterprise',  value: 'R$ 28.900,00' },
+      'sus-basic':      { label: 'Sustentação · Basic', value: 'R$ 2.500,00' },
+      'sus-scale':      { label: 'Sustentação · Scale', value: 'R$ 3.997,00' },
       'crm-starter':    { label: 'Plataforma · Starter',    value: 'R$ 197,00' },
       'crm-scale':      { label: 'Plataforma · Scale',      value: 'R$ 297,00' },
       'crm-enterprise': { label: 'Plataforma · Enterprise', value: 'R$ 597,00' }
@@ -22621,7 +22674,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
     idvisual:    ['starter', 'enterprise'],
-    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'crm-starter', 'crm-scale', 'crm-enterprise'],
+    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
   };
 
@@ -22755,6 +22808,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   function isTierEnabled(sol, tier) {
     return enabledTiers[sol]?.has(tier) ?? false;
   }
+
+  // ── CRM Estratégico: módulos (Broadcast / Régua / Plataforma) ──
+  // Em vez de despejar os 11 preços de uma vez, o CRM é "modular": cada
+  // módulo é um botão que liga/desliga (multi-seleção). Só os módulos
+  // ativos mostram seus preços no painel E aparecem na proposta.
+  const CRM_MODULES = [
+    { id: 'broadcast',   label: 'Broadcast',            tiers: ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado'] },
+    { id: 'regua',       label: 'Régua de Comunicação', tiers: ['rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise'] },
+    { id: 'sustentacao', label: 'Sustentação CRM',      tiers: ['sus-basic', 'sus-scale'] },
+    { id: 'plataforma',  label: 'Plataforma CRM',       tiers: ['crm-starter', 'crm-scale', 'crm-enterprise'] },
+  ];
+  // Default: só Broadcast ligado (clean). Os outros aparecem ao clicar.
+  const enabledCrmModules = new Set(['broadcast']);
+  function isCrmModuleOn(id) { return enabledCrmModules.has(id); }
 
   // Extras = elementos opcionais que não são pacotes mas podem ser
   // incluídos/removidos via checkbox no card de Investimento.
@@ -23017,6 +23084,40 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         `;
       }
 
+      // CRM Estratégico: modular. Botões de módulo (multi-seleção) +
+      // só os tiers dos módulos ativos. O Fee de implantação fica no
+      // módulo Plataforma.
+      if (s.id === 'crm') {
+        const modBtns = CRM_MODULES.map(m => {
+          const on = isCrmModuleOn(m.id);
+          return `<button type="button"
+            class="prop-invest-module-btn${on ? ' is-active' : ''}"
+            data-crm-module="${m.id}"
+            aria-pressed="${on ? 'true' : 'false'}">${m.label}</button>`;
+        }).join('');
+        const activeGroups = CRM_MODULES.filter(m => isCrmModuleOn(m.id)).map(m => `
+          <div class="prop-invest-module-group">
+            <div class="prop-invest-subhead">${m.label}</div>
+            <div class="prop-invest-tiers">
+              ${m.tiers.map(tier => renderTierRow('crm', tier, prices.crm[tier])).join('')}
+            </div>
+            ${m.id === 'plataforma' ? extrasHtml : ''}
+          </div>`).join('');
+        const emptyHint = enabledCrmModules.size === 0
+          ? `<p class="prop-invest-modules-hint">Selecione os módulos que entram nesta proposta.</p>` : '';
+        return `
+        <div class="prop-invest-card" style="--card-color:${s.color}">
+          <div class="prop-invest-card-head">
+            <span class="prop-invest-icon">${s.icon}</span>
+            <span class="prop-invest-name">${s.name}</span>
+          </div>
+          <div class="prop-invest-modules">${modBtns}</div>
+          ${emptyHint}
+          ${activeGroups}
+        </div>
+        `;
+      }
+
       // Soluções padrão: todos os tiers como checkboxes
       return `
       <div class="prop-invest-card" style="--card-color:${s.color}">
@@ -23061,6 +23162,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         const tier = btn.dataset.tier;
         enabledTiers[sol] = new Set([tier]);
         saveEnabledTiers();
+        renderInvestimento();
+        schedulePreviewRebuild();
+      });
+    });
+
+    // Módulos do CRM (multi-seleção) — liga/desliga o módulo inteiro.
+    $invest.querySelectorAll('.prop-invest-module-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        const m = btn.dataset.crmModule;
+        if (enabledCrmModules.has(m)) enabledCrmModules.delete(m);
+        else                          enabledCrmModules.add(m);
         renderInvestimento();
         schedulePreviewRebuild();
       });
@@ -23643,8 +23757,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // tem 3 tiers; o SCALE é o destaque (mais vendido) em ambos.
     const crmBroadcastCards = [];
     const crmReguaCards = [];
+    const crmSustentacaoCards = [];
     const crmPlatformCards = [];
     if (hasCrm) {
+      // Um tier do CRM só entra se: (a) o tier está habilitado E (b) o
+      // módulo dele (Broadcast/Régua/Plataforma) está ligado. Assim a
+      // proposta só mostra os módulos que o vendedor selecionou.
+      const crmTierOn = (tier) => {
+        if (!isTierEnabled('crm', tier)) return false;
+        const mod = CRM_MODULES.find(m => m.tiers.includes(tier));
+        return mod ? isCrmModuleOn(mod.id) : true;
+      };
       // Entregáveis comuns a todos os planos de Broadcast
       const crmDeliverables = `
             <li>Planejamento promocional</li>
@@ -23656,7 +23779,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Trackeamento de resultados</li>`;
       // Bônus por tier (WhatsApp / SMS / Dash) — pílula de destaque no rodapé
       const crmBonus = (txt) => `<span class="pacote-tag pacote-tag--bonus">🎁 ${txt}</span>`;
-      if (isTierEnabled('crm', 'bc-starter')) crmBroadcastCards.push(`
+      if (crmTierOn('bc-starter')) crmBroadcastCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
@@ -23664,7 +23787,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <span class="pacote-tag">6 campanhas mensais de e-mail <small>(sem WhatsApp)</small></span>
           <ul class="pacote-features">${crmDeliverables}</ul>
         </div>`);
-      if (isTierEnabled('crm', 'bc-scale')) crmBroadcastCards.push(`
+      if (crmTierOn('bc-scale')) crmBroadcastCards.push(`
         <div class="pacote-card pacote-card--featured">
           <span class="pacote-badge">mais vendido</span>
           ${pacoteIcon}
@@ -23674,7 +23797,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <ul class="pacote-features">${crmDeliverables}</ul>
           ${crmBonus('Ganhe 5 disparos de WhatsApp')}
         </div>`);
-      if (isTierEnabled('crm', 'bc-enterprise')) crmBroadcastCards.push(`
+      if (crmTierOn('bc-enterprise')) crmBroadcastCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
@@ -23683,7 +23806,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <ul class="pacote-features">${crmDeliverables}</ul>
           ${crmBonus('Ganhe 10 disparos de WhatsApp + 10 SMS')}
         </div>`);
-      if (isTierEnabled('crm', 'bc-personalizado')) crmBroadcastCards.push(`
+      if (crmTierOn('bc-personalizado')) crmBroadcastCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">PERSONALIZADO</h3>
@@ -23703,7 +23826,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Trackeamento dos resultados</li>
             <li>Envio de relatórios semanais e mensais</li>
             <li>Copywriting otimizado para venda direta</li>`;
-      if (isTierEnabled('crm', 'rg-basic')) crmReguaCards.push(`
+      if (crmTierOn('rg-basic')) crmReguaCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">BASIC</h3>
@@ -23718,7 +23841,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           </ul>
           <span class="pacote-tag pacote-tag--alt">Modelo padrão — e-mails não personalizáveis</span>
         </div>`);
-      if (isTierEnabled('crm', 'rg-starter')) crmReguaCards.push(`
+      if (crmTierOn('rg-starter')) crmReguaCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
@@ -23727,7 +23850,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <ul class="pacote-features">${reguaDeliverables}</ul>
           ${crmBonus('WhatsApp Over Delivery')}
         </div>`);
-      if (isTierEnabled('crm', 'rg-scale')) crmReguaCards.push(`
+      if (crmTierOn('rg-scale')) crmReguaCards.push(`
         <div class="pacote-card pacote-card--featured">
           <span class="pacote-badge">mais vendido</span>
           ${pacoteIcon}
@@ -23737,7 +23860,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <ul class="pacote-features">${reguaDeliverables}</ul>
           ${crmBonus('WhatsApp Over Delivery')}
         </div>`);
-      if (isTierEnabled('crm', 'rg-enterprise')) crmReguaCards.push(`
+      if (crmTierOn('rg-enterprise')) crmReguaCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
@@ -23747,7 +23870,33 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           ${crmBonus('WhatsApp Over Delivery')}
         </div>`);
 
-      if (isTierEnabled('crm', 'crm-starter')) crmPlatformCards.push(`
+      // ── Sustentação de Automação CRM (retainer mensal) ──
+      // Manutenção contínua das réguas/fluxos. Difere por nº de novos
+      // e-mails/otimizações por mês (5 no Basic, 12 no Scale).
+      const sustentacaoDeliverables = `
+            <li>Otimização dos fluxos e análises</li>
+            <li>Ajustes de copy</li>
+            <li>Relatórios semanais e mensais</li>
+            <li>Suporte contínuo nas automações</li>`;
+      if (crmTierOn('sus-basic')) crmSustentacaoCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">BASIC</h3>
+          ${priceWithAnchor('crm', 'sus-basic', '<small>/mês</small>')}
+          <span class="pacote-tag">Até 5 novos e-mails ou otimizações</span>
+          <ul class="pacote-features">${sustentacaoDeliverables}</ul>
+        </div>`);
+      if (crmTierOn('sus-scale')) crmSustentacaoCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          ${priceWithAnchor('crm', 'sus-scale', '<small>/mês</small>')}
+          <span class="pacote-tag">Até 12 novos e-mails ou otimizações</span>
+          <ul class="pacote-features">${sustentacaoDeliverables}</ul>
+        </div>`);
+
+      if (crmTierOn('crm-starter')) crmPlatformCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
@@ -23762,7 +23911,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Relatórios</li>
           </ul>
         </div>`);
-      if (isTierEnabled('crm', 'crm-scale')) crmPlatformCards.push(`
+      if (crmTierOn('crm-scale')) crmPlatformCards.push(`
         <div class="pacote-card pacote-card--featured">
           <span class="pacote-badge">mais vendido</span>
           ${pacoteIcon}
@@ -23776,7 +23925,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Templates de email</li>
           </ul>
         </div>`);
-      if (isTierEnabled('crm', 'crm-enterprise')) crmPlatformCards.push(`
+      if (crmTierOn('crm-enterprise')) crmPlatformCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
@@ -23795,7 +23944,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || crmBroadcastCards.length || crmReguaCards.length || crmPlatformCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -23898,6 +24047,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <p class="pacotes-sub">Automação de e-mail que vende no piloto automático</p>
             </div>
             <div class="pacotes-grid">${crmReguaCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+      if (crmSustentacaoCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Sustentação de <span class="pacotes-title-accent">Automação CRM</span></h2>
+              <p class="pacotes-sub">Manutenção contínua das suas réguas e fluxos — evolução mês a mês</p>
+            </div>
+            <div class="pacotes-grid">${crmSustentacaoCards.join('')}</div>
           </div>
         </section>`);
       }
