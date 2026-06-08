@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce de Roupas — Turbo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #080510;
+            --primary: #4d8dff;
+            --secondary: #c4a8ff;
+            --medium: #3b2f8f;
+            --white: #FFFFFF;
+            --body: rgba(255,255,255,0.55);
+            --card-border: rgba(196,168,255,0.11);
+            --card-hover-border: rgba(77,141,255,0.5);
+            --partial: #FBBF24;
+            --no: #EF4444;
+            --check: #6ee7b7;
+        }
+
+        html { scroll-behavior: smooth; overflow: hidden; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--white);
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(77,141,255,0.13) 0%, transparent 52%),
+                radial-gradient(ellipse at 80% 75%, rgba(59,47,143,0.09) 0%, transparent 50%),
+                var(--bg);
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .presentation { height: 100vh; overflow: hidden; position: relative; }
+
+        .slides-wrapper {
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            padding: 60px 80px;
+        }
+
+        .slide-inner {
+            max-width: 1280px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .section-label {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3.5px;
+            text-transform: uppercase;
+            color: var(--secondary);
+            margin-bottom: 13px;
+            opacity: 0.75;
+        }
+
+        .slide-title {
+            font-size: clamp(34px, 4.2vw, 60px);
+            font-weight: 800;
+            letter-spacing: -2px;
+            line-height: 1.05;
+            color: var(--white);
+            margin-bottom: 32px;
+        }
+
+        .slide-title span { color: var(--secondary); }
+
+        .cards-grid   { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+        .cards-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        .cards-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+        .card {
+            background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 26px;
+            transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+        }
+
+        .card:hover {
+            border-color: var(--card-hover-border);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 36px rgba(77,141,255,0.16), 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .card-accent { border-left: 2px solid rgba(196,168,255,0.35); }
+
+        .card-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, rgba(77,141,255,0.24) 0%, rgba(77,141,255,0.07) 100%);
+            border: 1px solid rgba(196,168,255,0.18);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .card-icon svg {
+            width: 20px; height: 20px;
+            stroke: var(--secondary); fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .card h3 { font-size: 17px; font-weight: 700; color: var(--white); margin-bottom: 6px; letter-spacing: -0.3px; }
+        .card p  { font-size: 15px; color: var(--body); line-height: 1.55; }
+
+        /* Number cards */
+        .numbers-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .number-card {
+            background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 22px 26px;
+            flex: 1;
+            min-width: 155px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .number-card:hover {
+            border-color: rgba(77,141,255,0.35);
+            box-shadow: 0 8px 24px rgba(77,141,255,0.11);
+        }
+
+        .number-card .big-number {
+            font-size: clamp(24px, 2.6vw, 36px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 20%, #c4a8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            line-height: 1.1;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .number-card .number-label { font-size: 15px; color: var(--body); margin-top: 5px; line-height: 1.4; }
+
+        .brand-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+
+        .brand-tag {
+            font-size: 14px;
+            font-weight: 500;
+            padding: 5px 12px;
+            border-radius: 100px;
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.38);
+            background: transparent;
+        }
+
+        .brand-tag.highlight {
+            color: var(--secondary);
+            border-color: rgba(196,168,255,0.25);
+            background: rgba(196,168,255,0.05);
+        }
+
+        /* Comparison table */
+        .table-wrapper { overflow-x: auto; }
+
+        .comparison-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+
+        .comparison-table thead th {
+            padding: 13px 16px;
+            font-weight: 700;
+            font-size: 16px;
+            color: var(--white);
+            text-align: center;
+            border-bottom: 1px solid rgba(196,168,255,0.09);
+        }
+
+        .comparison-table thead th:first-child { text-align: left; }
+
+        .comparison-table thead th.shopify-col {
+            border-top: 2px solid var(--primary);
+            background: rgba(77,141,255,0.09);
+            color: var(--secondary);
+        }
+
+        .comparison-table tbody td {
+            padding: 11px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            text-align: center;
+            color: var(--body);
+            vertical-align: middle;
+        }
+
+        .comparison-table tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+        .comparison-table tbody td:first-child {
+            text-align: left;
+            color: rgba(255,255,255,0.78);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .comparison-table tbody td:first-child svg {
+            width: 15px; height: 15px;
+            stroke: rgba(196,168,255,0.55); fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        .comparison-table tbody td.shopify-col { background: rgba(77,141,255,0.06); }
+
+        .table-check   { color: var(--check);   font-weight: 600; }
+        .table-partial { color: var(--partial); font-weight: 600; }
+        .table-no      { color: rgba(239,68,68,0.75); font-weight: 600; }
+
+        .table-legend {
+            display: flex;
+            gap: 22px;
+            margin-top: 14px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .table-legend span { display: flex; align-items: center; gap: 6px; }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            align-items: flex-start;
+            position: relative;
+            margin-top: 14px;
+        }
+
+        .timeline-step {
+            flex: 1;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 0 12px;
+        }
+
+        .timeline-dot {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border: 2px solid rgba(196,168,255,0.3);
+            border-radius: 50%;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 16px rgba(77,141,255,0.55), 0 0 0 4px rgba(77,141,255,0.1);
+        }
+
+        .timeline-line {
+            position: absolute;
+            top: 8px; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(77,141,255,0.45) 20%, rgba(196,168,255,0.18) 50%, rgba(77,141,255,0.45) 80%, transparent);
+            z-index: 1;
+        }
+
+        .timeline-step h4     { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+        .timeline-step .timeline-days { font-size: 13px; font-weight: 600; color: var(--secondary); margin-bottom: 6px; opacity: 0.8; }
+        .timeline-step p      { font-size: 14px; color: var(--body); line-height: 1.5; max-width: 155px; }
+
+        /* Price card */
+        .price-card {
+            background: linear-gradient(145deg, rgba(77,141,255,0.11) 0%, rgba(77,141,255,0.03) 100%);
+            border: 1px solid rgba(196,168,255,0.15);
+            border-radius: 22px;
+            padding: 44px 48px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(77,141,255,0.13), 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .price-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, var(--primary) 30%, var(--secondary) 50%, var(--primary) 70%, transparent 100%);
+        }
+
+        .price-card::after {
+            content: '';
+            position: absolute;
+            top: -60px; left: 50%;
+            transform: translateX(-50%);
+            width: 280px; height: 280px;
+            background: radial-gradient(circle, rgba(77,141,255,0.11), transparent 70%);
+            pointer-events: none;
+        }
+
+        .price-card .price-amount {
+            font-size: clamp(36px, 4.2vw, 52px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 20%, #c4a8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -2px;
+            margin: 12px 0 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-card .price-installment {
+            font-size: 17px;
+            color: rgba(196,168,255,0.65);
+            font-weight: 500;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .price-badge {
+            font-size: 13px;
+            font-weight: 600;
+            padding: 5px 15px;
+            border-radius: 100px;
+            border: 1px solid rgba(77,141,255,0.4);
+            color: var(--secondary);
+            background: rgba(77,141,255,0.1);
+        }
+
+        .features-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px 24px;
+            text-align: left;
+            margin-top: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features-list .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        .features-list .feature-item svg {
+            width: 15px; height: 15px;
+            stroke: var(--check); fill: none;
+            stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+            flex-shrink: 0;
+        }
+
+        /* CTA */
+        .cta-slide { text-align: center; position: relative; }
+
+        .cta-glow {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(77,141,255,0.17), transparent 65%);
+            pointer-events: none;
+        }
+
+        .cta-glow-2 {
+            position: absolute; top: 65%; left: 38%;
+            transform: translate(-50%, -50%);
+            width: 380px; height: 380px;
+            background: radial-gradient(circle, rgba(59,47,143,0.13), transparent 65%);
+            pointer-events: none;
+        }
+
+        .cta-title {
+            font-size: clamp(36px, 4.6vw, 65px);
+            font-weight: 800;
+            letter-spacing: -2.5px;
+            line-height: 1.02;
+            color: var(--white);
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title span {
+            background: linear-gradient(135deg, #ffffff 0%, #c4a8ff 55%, #6a8dff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .cta-sub {
+            font-size: 19px;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            background: var(--primary);
+            color: var(--white);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 15px 34px;
+            border-radius: 13px;
+            border: 1px solid rgba(196,168,255,0.18);
+            cursor: pointer;
+            transition: box-shadow 0.3s ease, transform 0.3s ease, background 0.3s ease;
+            position: relative;
+            z-index: 2;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            background: #5b86ff;
+            box-shadow: 0 0 50px rgba(77,141,255,0.45), 0 8px 24px rgba(77,141,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        .cta-button svg {
+            width: 17px; height: 17px;
+            stroke: rgba(255,255,255,0.9); fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .cta-logo {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            color: rgba(255,255,255,0.09);
+            margin-top: 52px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Nav dots */
+        .nav-dots {
+            position: fixed;
+            left: 26px; top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 7px;
+            z-index: 100;
+        }
+
+        .nav-dot {
+            width: 6px; height: 6px;
+            border-radius: 3px;
+            background: rgba(255,255,255,0.18);
+            cursor: pointer;
+            transition: width 0.35s cubic-bezier(0.22,1,0.36,1), background 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+
+        .nav-dot.active { width: 22px; background: var(--primary); box-shadow: 0 0 10px rgba(77,141,255,0.5); }
+        .nav-dot:hover:not(.active) { background: rgba(196,168,255,0.4); }
+
+        .nav-arrows {
+            position: fixed;
+            right: 26px; top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 9px;
+            z-index: 100;
+        }
+
+        .nav-arrow {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(196,168,255,0.09);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease, background 0.3s ease, transform 0.2s ease;
+        }
+
+        .nav-arrow:hover { border-color: rgba(77,141,255,0.45); background: rgba(77,141,255,0.1); transform: scale(1.07); }
+
+        .nav-arrow svg {
+            width: 17px; height: 17px;
+            stroke: rgba(255,255,255,0.55); fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 26px; right: 26px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.2);
+            z-index: 100;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .progress-bar {
+            position: fixed;
+            bottom: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.6s cubic-bezier(0.22,1,0.36,1);
+            z-index: 200;
+        }
+
+        /* Animations */
+        @keyframes cardEnter {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes titleReveal {
+            from { opacity: 0; transform: translateY(9px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide .section-label,
+        .slide .slide-title,
+        .slide .card,
+        .slide .number-card,
+        .slide .timeline-step,
+        .slide .price-card,
+        .slide .brand-tags,
+        .slide .table-wrapper,
+        .slide .table-legend,
+        .slide .cta-title,
+        .slide .cta-sub,
+        .slide .cta-button,
+        .slide .credentials-left,
+        .slide .logos-grid,
+        .slide .advisory-seal,
+        .slide .pilar-card,
+        .slide .cred-left-v2,
+        .slide .cred-img-placeholder,
+        .slide .partner-badges,
+        .slide .security-note,
+        .slide .features-layout,
+        .slide .pres-features-grid-full,
+        .slide .process-grid { opacity: 0; }
+
+        .slide.active .section-label { animation: titleReveal 0.45s cubic-bezier(0.22,1,0.36,1) 0.04s both; }
+        .slide.active .slide-title   { animation: titleReveal 0.5s  cubic-bezier(0.22,1,0.36,1) 0.10s both; }
+
+        .slide.active .card:nth-child(1) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.17s both; }
+        .slide.active .card:nth-child(2) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.23s both; }
+        .slide.active .card:nth-child(3) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.29s both; }
+        .slide.active .card:nth-child(4) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.35s both; }
+        .slide.active .card:nth-child(5) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.41s both; }
+        .slide.active .card:nth-child(6) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.47s both; }
+        .slide.active .card:nth-child(7) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.53s both; }
+        .slide.active .card:nth-child(8) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.59s both; }
+
+        .slide.active .number-card:nth-child(1) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.17s both; }
+        .slide.active .number-card:nth-child(2) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.25s both; }
+        .slide.active .number-card:nth-child(3) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.33s both; }
+        .slide.active .number-card:nth-child(4) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.41s both; }
+        .slide.active .number-card:nth-child(5) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.49s both; }
+
+        .slide.active .timeline-step:nth-child(2) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.17s both; }
+        .slide.active .timeline-step:nth-child(3) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.30s both; }
+        .slide.active .timeline-step:nth-child(4) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.43s both; }
+        .slide.active .timeline-step:nth-child(5) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.56s both; }
+
+        .slide.active .brand-tags    { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.65s both; }
+        .slide.active .table-wrapper { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+        .slide.active .table-legend  { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.38s both; }
+        .slide.active .price-card    { animation: cardEnter   0.6s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+        .slide.active .cta-title     { animation: titleReveal 0.6s cubic-bezier(0.22,1,0.36,1) 0.10s both; }
+        .slide.active .cta-sub       { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.22s both; }
+        .slide.active .cta-button    { animation: cardEnter   0.5s cubic-bezier(0.22,1,0.36,1) 0.34s both; }
+
+        .slide.active .credentials-left { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.08s both; }
+        .slide.active .logos-grid       { animation: cardEnter  0.6s cubic-bezier(0.22,1,0.36,1) 0.22s both; }
+        .slide.active .advisory-seal    { animation: cardEnter  0.5s cubic-bezier(0.22,1,0.36,1) 0.38s both; }
+
+        .slide.active .pilar-card:nth-child(1) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.17s both; }
+        .slide.active .pilar-card:nth-child(2) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.28s both; }
+        .slide.active .pilar-card:nth-child(3) { animation: cardEnter 0.5s cubic-bezier(0.22,1,0.36,1) 0.39s both; }
+        .slide.active .cred-left-v2        { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.10s both; }
+        .slide.active .partner-badges      { animation: cardEnter  0.5s cubic-bezier(0.22,1,0.36,1) 0.26s both; }
+        .slide.active .cred-img-placeholder { animation: cardEnter 0.6s cubic-bezier(0.22,1,0.36,1) 0.16s both; }
+        .slide.active .security-note       { animation: titleReveal 0.5s cubic-bezier(0.22,1,0.36,1) 0.62s both; }
+        .slide.active .features-layout     { animation: cardEnter  0.55s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+        .slide.active .pres-features-grid-full { animation: cardEnter 0.55s cubic-bezier(0.22,1,0.36,1) 0.18s both; }
+        .slide.active .process-grid        { animation: cardEnter  0.55s cubic-bezier(0.22,1,0.36,1) 0.16s both; }
+
+        /* ── Case cards ── */
+        .case-card {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .case-brand {
+            font-size: 17px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 20%, #c4a8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.4px;
+        }
+
+        .case-niche {
+            font-size: 13px;
+            color: var(--body);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 600;
+            margin-top: -8px;
+        }
+
+        .case-metrics {
+            display: flex;
+            gap: 20px;
+        }
+
+        .case-metric-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--secondary);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+        }
+
+        .case-metric-label {
+            font-size: 13px;
+            color: var(--body);
+            margin-top: 2px;
+            line-height: 1.4;
+        }
+
+        .case-excerpt {
+            font-size: 15px;
+            color: var(--body);
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        .case-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--primary);
+            text-decoration: none;
+            transition: gap 0.2s ease, color 0.2s ease;
+            margin-top: auto;
+        }
+
+        .case-link:hover { gap: 10px; color: var(--secondary); }
+
+        .case-link svg {
+            width: 14px; height: 14px;
+            stroke: currentColor; fill: none;
+            stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+        }
+
+        /* ── Credentials slide ── */
+        .credentials-layout {
+            display: grid !important;
+            grid-template-columns: 38fr 62fr;
+            gap: 52px;
+            align-items: center;
+        }
+
+        .credentials-left { display: flex; flex-direction: column; gap: 14px; }
+
+        .cred-title {
+            font-size: clamp(22px, 2.5vw, 34px);
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            line-height: 1.1;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+
+        .cred-title span { color: var(--secondary); }
+
+        .cred-desc {
+            font-size: 17px;
+            color: var(--body);
+            line-height: 1.65;
+            max-width: 360px;
+        }
+
+        .advisory-seal {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-top: 6px;
+        }
+
+        .seal-img {
+            width: 78px; height: 78px;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .clients-count { display: flex; flex-direction: column; }
+
+        .clients-num {
+            font-size: 34px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 20%, #c4a8ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+
+        .clients-label { font-size: 15px; color: var(--body); margin-top: 2px; }
+
+        .logos-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 3px;
+            background: rgba(196,168,255,0.04);
+            border: 1px solid rgba(196,168,255,0.07);
+            border-radius: 16px;
+            overflow: hidden;
+            padding: 4px;
+        }
+
+        .logo-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 10px;
+            aspect-ratio: 2 / 1;
+            background: rgba(255,255,255,0.02);
+            border-radius: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .logo-item:hover { background: rgba(255,255,255,0.05); }
+
+        .logo-item img {
+            max-width: 100%;
+            max-height: 32px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.5;
+            transition: opacity 0.2s ease;
+        }
+
+        .logo-item:hover img { opacity: 0.85; }
+
+        *:focus-visible { outline: 2px solid var(--secondary); outline-offset: 2px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .slides-wrapper, .card, .number-card, .cta-button, .nav-arrow, .nav-dot, .progress-bar { transition: none; }
+            .card:hover, .cta-button:hover { transform: none; }
+            .slide .section-label, .slide .slide-title, .slide .card, .slide .number-card,
+            .slide .timeline-step, .slide .price-card, .slide .brand-tags, .slide .table-wrapper,
+            .slide .table-legend, .slide .cta-title, .slide .cta-sub, .slide .cta-button,
+            .slide .credentials-left, .slide .logos-grid, .slide .advisory-seal {
+                opacity: 1 !important; animation: none !important;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .slide { padding: 40px 48px; }
+            .credentials-layout { grid-template-columns: 1fr; gap: 32px; }
+            .logos-grid { grid-template-columns: repeat(4, 1fr); }
+            .cards-grid-3 { grid-template-columns: repeat(2, 1fr); }
+            .cards-grid-4 { grid-template-columns: repeat(2, 1fr); }
+            .timeline { flex-wrap: wrap; gap: 28px; }
+            .timeline-line { display: none; }
+            .timeline-step { flex: 0 0 calc(50% - 14px); }
+        }
+
+        @media (max-width: 768px) {
+            .slide { padding: 28px 18px; }
+            .cards-grid, .cards-grid-3, .cards-grid-4 { grid-template-columns: 1fr; }
+            .nav-arrows { display: none; }
+            .slide-title { font-size: clamp(26px, 6vw, 36px); margin-bottom: 18px; }
+            .timeline-step { flex: 0 0 100%; }
+            .features-list { grid-template-columns: 1fr; }
+            .price-card { padding: 26px 18px; }
+            .numbers-grid { gap: 9px; }
+            .number-card { min-width: 130px; padding: 16px; }
+            .comparison-table { font-size: 13px; }
+            .comparison-table thead th, .comparison-table tbody td { padding: 9px 9px; }
+            .nav-dots { left: 14px; }
+        }
+
+        /* ── Pilares ── */
+        .pilares-intro { font-size: clamp(13px, 1.4vw, 16px); color: var(--body); max-width: 560px; margin-bottom: 36px; line-height: 1.65; }
+        .pilares-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .pilar-card {
+            background: linear-gradient(145deg, rgba(77,141,255,0.10) 0%, rgba(77,141,255,0.02) 100%);
+            border: 1px solid var(--card-border); border-radius: 20px; padding: 30px 26px;
+            position: relative; overflow: hidden;
+            transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .pilar-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, rgba(77,141,255,0.6), transparent); }
+        .pilar-card:hover { border-color: var(--card-hover-border); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(77,141,255,0.18); }
+        .pilar-number { font-size: 10px; font-weight: 800; letter-spacing: 3px; color: rgba(196,168,255,0.4); margin-bottom: 18px; }
+        .pilar-icon { width: 46px; height: 46px; background: linear-gradient(135deg, rgba(77,141,255,0.28) 0%, rgba(77,141,255,0.08) 100%); border: 1px solid rgba(196,168,255,0.2); border-radius: 11px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .pilar-icon svg { width: 21px; height: 21px; stroke: var(--secondary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .pilar-title { font-size: 18px; font-weight: 800; letter-spacing: -0.4px; color: var(--white); margin-bottom: 9px; }
+        .pilar-desc { font-size: 13px; color: var(--body); line-height: 1.6; }
+
+        /* ── Credenciais nova layout ── */
+        .cred-layout-v2 { display: grid; grid-template-columns: 44fr 56fr; gap: 52px; align-items: center; }
+        .cred-left-v2 { display: flex; flex-direction: column; gap: 16px; }
+        .cred-big-num { font-size: clamp(50px, 6vw, 78px); font-weight: 800; letter-spacing: -3px; line-height: 1; background: linear-gradient(135deg, #fff 20%, #c4a8ff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .cred-sub { font-size: clamp(14px, 1.5vw, 17px); font-weight: 600; color: rgba(255,255,255,0.72); letter-spacing: -0.3px; }
+        .cred-body-text { font-size: 16px; color: var(--body); line-height: 1.65; max-width: 370px; }
+        .partner-badges { display: flex; flex-direction: column; gap: 9px; margin-top: 4px; }
+        .partner-badge { display: flex; align-items: center; gap: 12px; padding: 11px 15px; background: linear-gradient(145deg, rgba(77,141,255,0.10) 0%, rgba(77,141,255,0.02) 100%); border: 1px solid var(--card-border); border-radius: 11px; font-size: 15px; font-weight: 600; color: var(--white); transition: border-color 0.25s ease; }
+        .partner-badge:hover { border-color: rgba(77,141,255,0.45); }
+        .partner-badge-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--secondary); flex-shrink: 0; box-shadow: 0 0 7px rgba(196,168,255,0.5); }
+        .cred-img-placeholder { background: linear-gradient(145deg, rgba(77,141,255,0.07) 0%, rgba(77,141,255,0.015) 100%); border: 1px dashed rgba(196,168,255,0.18); border-radius: 18px; aspect-ratio: 16/10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: rgba(196,168,255,0.28); }
+        .cred-img-placeholder svg { width: 34px; height: 34px; stroke: rgba(196,168,255,0.22); fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .cred-img-placeholder span { font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase; font-weight: 600; }
+
+        /* ── Security note ── */
+        .security-note { display: flex; align-items: flex-start; gap: 12px; margin-top: 10px; padding: 13px 17px; background: rgba(77,141,255,0.07); border: 1px solid rgba(196,168,255,0.09); border-left: 2px solid rgba(196,168,255,0.35); border-radius: 0 11px 11px 0; }
+        .security-note svg { width: 17px; height: 17px; flex-shrink: 0; stroke: var(--secondary); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
+        .security-note p { font-size: 15px; color: rgba(255,255,255,0.5); line-height: 1.55; }
+        .security-note strong { color: rgba(255,255,255,0.78); }
+
+        /* ── Features layout (slides 7-8) ── */
+        .features-layout { display: grid; grid-template-columns: 34fr 66fr; gap: 36px; align-items: start; }
+        .feat-col-title { font-size: 10.5px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(196,168,255,0.45); margin-bottom: 12px; }
+        .checklist-items { display: flex; flex-direction: column; }
+        .checklist-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 15px; color: rgba(255,255,255,0.67); line-height: 1.45; }
+        .checklist-item:last-child { border-bottom: none; }
+        .checklist-item svg { width: 13px; height: 13px; flex-shrink: 0; stroke: var(--check); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
+        .pres-features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+        .pres-features-grid-full { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .pres-feature-tag { display: flex; align-items: stretch; background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 11px; overflow: hidden; cursor: pointer; height: 50px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .pres-feature-tag:hover { border-color: rgba(77,141,255,0.5); box-shadow: 0 4px 14px rgba(77,141,255,0.13); }
+        .pres-feature-label { flex: 1; display: flex; align-items: center; padding: 0 13px; font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.72); }
+        .pres-feature-preview { position: relative; width: 68px; flex-shrink: 0; overflow: hidden; background: rgba(0,0,0,0.3); }
+        .pres-feature-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pres-feature-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); }
+        .pres-feature-play svg { width: 17px; height: 17px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+
+        /* ── Process grid ── */
+        .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
+        .process-step { background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 13px; padding: 18px; display: flex; flex-direction: column; gap: 7px; transition: border-color 0.25s ease; }
+        .process-step:hover { border-color: rgba(77,141,255,0.45); }
+        .process-step-num { font-size: 12px; font-weight: 800; color: var(--secondary); background: rgba(77,141,255,0.15); border: 1px solid rgba(77,141,255,0.25); border-radius: 5px; padding: 2px 7px; width: fit-content; letter-spacing: 0.05em; }
+        .process-step h4 { font-size: 16px; font-weight: 700; color: var(--white); letter-spacing: -0.2px; }
+        .process-step p { font-size: 14px; color: var(--body); line-height: 1.5; }
+
+        /* ── Video modal (apresentação) ── */
+        .pres-video-modal { display: none; position: fixed; inset: 0; z-index: 500; align-items: center; justify-content: center; }
+        .pres-video-modal.active { display: flex; }
+        .pres-video-backdrop { position: absolute; inset: 0; background: rgba(8,5,16,0.88); backdrop-filter: blur(6px); }
+        .pres-video-box { position: relative; z-index: 1; background: #0d0b1a; border: 1px solid rgba(196,168,255,0.12); border-radius: 16px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+        .pres-video-header { display: flex; align-items: center; justify-content: space-between; padding: 11px 16px; border-bottom: 1px solid rgba(196,168,255,0.07); }
+        .pres-video-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.78); }
+        .pres-video-close { width: 27px; height: 27px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease; font-family: inherit; }
+        .pres-video-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+        .pres-video-box video { display: block; width: 640px; max-width: 85vw; max-height: 65vh; background: #000; }
+    </style>
+<style id="octopus-id-override">
+.slide-title span,.slide-title .accent,.gradient-text{background:linear-gradient(90deg,#c49bff 0%,#4d8dff 50%,#0dcfe8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent !important}
+.section-label{color:#c4a8ff !important}
+</style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="presentation">
+        <div class="slides-wrapper" id="slidesWrapper">
+
+            <!-- SLIDE 1: Pilares -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// O QUE FAZEMOS</div>
+                    <h1 class="slide-title">E-commerce feito para <span>converter</span></h1>
+                    <p class="pilares-intro">A diferença entre uma loja que vende e uma loja que só existe está em três pilares. É neles que a Turbo trabalha em cada projeto.</p>
+                    <div class="pilares-grid">
+                        <div class="pilar-card">
+                            <div class="pilar-number">01</div>
+                            <div class="pilar-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+                            <div class="pilar-title">Clareza na Oferta</div>
+                            <p class="pilar-desc">O cliente precisa entender em segundos o que você vende e por que deve comprar agora. Sem isso, nenhum tráfego converte.</p>
+                        </div>
+                        <div class="pilar-card">
+                            <div class="pilar-number">02</div>
+                            <div class="pilar-icon"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+                            <div class="pilar-title">Clareza nos Benefícios</div>
+                            <p class="pilar-desc">Cada seção responde uma objeção ou reforça um benefício. Layout, copy e hierarquia visual trabalhando juntos para guiar a compra.</p>
+                        </div>
+                        <div class="pilar-card">
+                            <div class="pilar-number">03</div>
+                            <div class="pilar-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+                            <div class="pilar-title">Performance</div>
+                            <p class="pilar-desc">Velocidade, estabilidade e conversão são inseparáveis. Uma loja lenta perde venda. A estrutura Turbo é otimizada para que cada milissegundo trabalhe a seu favor.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Metodologia -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// NOSSA METODOLOGIA</div>
+                    <h1 class="slide-title">Construímos e-commerces prontos para <span>evoluir</span></h1>
+                    <div class="cards-grid">
+                        <div class="card card-accent">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+                            <h3>Seções Modulares</h3>
+                            <p>Blocos reutilizáveis que permitem reorganizar, expandir e escalar a loja sem retrabalho de desenvolvimento.</p>
+                        </div>
+                        <div class="card card-accent">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+                            <h3>Biblioteca de Seções Turbo</h3>
+                            <p>Acesso ao nosso acervo de seções prontas e validadas. Você pode testar novos formatos e experiências sem precisar criar do zero.</p>
+                        </div>
+                        <div class="card card-accent">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+                            <h3>Manutenção Simplificada</h3>
+                            <p>Fácil de qualquer pessoa da equipe mexer, sem precisar de programador. Texto, imagem ou seções direto no painel da Shopify.</p>
+                        </div>
+                        <div class="card card-accent">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div>
+                            <h3>Pensando no CRO</h3>
+                            <p>Cada decisão de layout é baseada em dados de conversão. Hierarquia visual, CTAs e fluxos definidos para aumentar vendas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: Credenciais -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// QUEM SOMOS</div>
+                    <div class="cred-layout-v2">
+                        <div class="cred-left-v2">
+                            <div class="cred-big-num">200+</div>
+                            <div class="cred-sub">e-commerces entregues na Shopify</div>
+                            <p class="cred-body-text">Somos parceiros oficiais da Shopify com os três maiores selos do ecossistema. Acesso a recursos exclusivos, suporte prioritário e os melhores parceiros do mercado.</p>
+                            <div class="partner-badges">
+                                <div class="partner-badge"><span class="partner-badge-dot"></span>Shopify Partners</div>
+                                <div class="partner-badge"><span class="partner-badge-dot"></span>Shopify Expert</div>
+                                <div class="partner-badge"><span class="partner-badge-dot"></span>Shopify Plus Partner</div>
+                            </div>
+                        </div>
+                        <div class="cred-img-placeholder">
+                            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            <span>Imagem a inserir</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: Shopify números -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// A PLATAFORMA</div>
+                    <h1 class="slide-title">A Shopify é uma das melhores <span>opções do mercado</span></h1>
+                    <div class="numbers-grid">
+                        <div class="number-card"><div class="big-number" data-count="4.8" data-suffix="M+">4.8M+</div><div class="number-label">Lojas ativas no mundo</div></div>
+                        <div class="number-card"><div class="big-number" data-prefix="US$" data-count="1" data-suffix="T+">US$1T+</div><div class="number-label">GMV total processado</div></div>
+                        <div class="number-card"><div class="big-number">99.99%</div><div class="number-label">Uptime garantido</div></div>
+                        <div class="number-card"><div class="big-number" data-count="10" data-suffix="%">10%</div><div class="number-label">Do e-commerce nos EUA</div></div>
+                        <div class="number-card"><div class="big-number" data-count="8000" data-suffix="+">8K+</div><div class="number-label">Apps no ecossistema</div></div>
+                    </div>
+                    <div class="security-note">
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <p><strong>Infraestrutura de nível enterprise:</strong> SSL nativo, PCI DSS Level 1 (máximo grau de segurança para pagamentos), proteção contra fraudes integrada e CDN global com servidores em mais de 200 países.</p>
+                    </div>
+                    <div class="brand-tags">
+                        <span class="brand-tag">Gymshark</span>
+                        <span class="brand-tag">Allbirds</span>
+                        <span class="brand-tag">Heinz</span>
+                        <span class="brand-tag">Red Bull</span>
+                        <span class="brand-tag">Supreme</span>
+                        <span class="brand-tag highlight">Granado</span>
+                        <span class="brand-tag highlight">Reserva</span>
+                        <span class="brand-tag highlight">Anacapri</span>
+                        <span class="brand-tag highlight">Amaro</span>
+                        <span class="brand-tag highlight">Vivara</span>
+                        <span class="brand-tag highlight">Schutz</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: Por que Shopify -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// POR QUE SHOPIFY?</div>
+                    <h1 class="slide-title">A plataforma que escala com <span>você</span></h1>
+                    <div class="cards-grid-3">
+                        <div class="card">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+                            <h3>Performance extrema</h3>
+                            <p>CDN global, cache automático e 99.99% de uptime garantido.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+                            <h3>Segurança total</h3>
+                            <p>SSL, PCI DSS Level 1 e proteção contra fraudes nativa.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+                            <h3>Personalização total</h3>
+                            <p>Liquid, Metafields e APIs para criar qualquer experiência.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M16 18a4 4 0 0 0-8 0"/><circle cx="12" cy="11" r="3"/><rect x="2" y="2" width="20" height="20" rx="4"/></svg></div>
+                            <h3>Ecossistema gigante</h3>
+                            <p>8.000+ apps, integrações nativas e uma comunidade ativa.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
+                            <h3>Analytics avançado</h3>
+                            <p>Dashboard completo, relatórios em tempo real e rastreamento nativo.</p>
+                        </div>
+                        <div class="card">
+                            <div class="card-icon"><svg viewBox="0 0 24 24"><path d="M12 3v2m0 14v2M5.6 5.6l1.4 1.4m10 10 1.4 1.4M3 12h2m14 0h2M5.6 18.4l1.4-1.4m10-10 1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg></div>
+                            <h3>IA nativa</h3>
+                            <p>Shopify Magic para textos, imagens e recomendações automáticas.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: Comparação -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// MERCADO</div>
+                    <h1 class="slide-title">Shopify × VTEX × Nuvem Shop</h1>
+                    <div class="table-wrapper">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th style="width:22%"></th>
+                                    <th class="shopify-col" style="width:26%">Shopify</th>
+                                    <th style="width:26%">VTEX</th>
+                                    <th style="width:26%">Nuvem Shop</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg> Plano inicial</td>
+                                    <td class="shopify-col table-check">US$39/mês</td>
+                                    <td class="table-no">Sob consulta</td>
+                                    <td>R$119/mês</td>
+                                </tr>
+                                <tr>
+                                    <td><svg viewBox="0 0 24 24"><path d="M12 3v2m0 14v2M5.6 5.6l1.4 1.4m10 10 1.4 1.4M3 12h2m14 0h2M5.6 18.4l1.4-1.4m10-10 1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg> IA nativa</td>
+                                    <td class="shopify-col table-check">Sim</td>
+                                    <td class="table-no">Não</td>
+                                    <td class="table-partial">Limitado</td>
+                                </tr>
+                                <tr>
+                                    <td><svg viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> Analytics</td>
+                                    <td class="shopify-col table-check">Completo</td>
+                                    <td class="table-check">Completo</td>
+                                    <td class="table-partial">Básico</td>
+                                </tr>
+                                <tr>
+                                    <td><svg viewBox="0 0 24 24"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"/><path d="M12 14l4-4"/><path d="M12 6v2"/></svg> Automação</td>
+                                    <td class="shopify-col table-check">Flow nativo</td>
+                                    <td class="table-partial">Via API</td>
+                                    <td class="table-no">Não</td>
+                                </tr>
+                                <tr>
+                                    <td><svg viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r="2.5"/><path d="M17 3a2.83 2.83 0 0 0 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg> Edição</td>
+                                    <td class="shopify-col table-check">Visual + código</td>
+                                    <td class="table-partial">Código</td>
+                                    <td class="table-check">Visual</td>
+                                </tr>
+                                <tr>
+                                    <td><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> Ideal para</td>
+                                    <td class="shopify-col">PME a Enterprise</td>
+                                    <td>Enterprise</td>
+                                    <td>Iniciantes</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-legend">
+                        <span><span class="table-check" style="font-size:14px;">&#10003;</span> Completo</span>
+                        <span><span class="table-partial" style="font-size:14px;">~</span> Parcial</span>
+                        <span><span class="table-no" style="font-size:14px;">&#10005;</span> Indisponível</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: O que entregamos pt1 (ESPECÍFICO ROUPAS) -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// O QUE ENTREGAMOS</div>
+                    <h1 class="slide-title">Tudo que sua loja de moda precisa para <span>vender</span></h1>
+                    <div class="features-layout">
+                        <div>
+                            <div class="feat-col-title">// O que está incluído</div>
+                            <div class="checklist-items">
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Página Home</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>PDP com até 5 seções</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Todos os Produtos + Filtros</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Página Quem Somos</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Páginas de Políticas</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Notificações de E-mail</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Treinamentos personalizados</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>ERP, Gateway e Logística</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automação de checkout abandonado</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Acesso à comunidade Turbo</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="feat-col-title">// Funcionalidades Destaque — clique para ver</div>
+                            <div class="pres-features-grid">
+                                <span class="pres-feature-tag" data-video="../assets/videos/search-inteligente.mp4" data-title="Search Inteligente">Search Inteligente</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral + Frete">Carrinho Lateral + Frete</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">Barra de Frete Grátis</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/orderbump.mp4" data-title="Orderbump">Orderbump</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/separa-agrega.mp4" data-title="Separa e Agrega">Separa e Agrega</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/reviews-judgme.mp4" data-title="Reviews de Clientes">Reviews de Clientes</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/add-to-cart-fixo.mp4" data-title="Add to Cart Fixo">Add to Cart Fixo</span>
+                                <span class="pres-feature-tag" data-video="../assets/videos/wishlist.mp4" data-title="Wishlist">Wishlist</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: O que entregamos pt2 (ESPECÍFICO ROUPAS) -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// FUNCIONALIDADES EM DESTAQUE</div>
+                    <h1 class="slide-title">Cada detalhe pensado para <span>conversão</span></h1>
+                    <div>
+                        <div class="feat-col-title" style="margin-bottom:14px;">// Clique em qualquer funcionalidade para ver em ação</div>
+                        <div class="pres-features-grid-full">
+                            <span class="pres-feature-tag" data-video="../assets/videos/visualizacoes-personalizadas.mp4" data-title="Visualizações Personalizadas">Visualizações Personalizadas</span>
+                            <span class="pres-feature-tag" data-video="../assets/videos/popup-personalizado.mp4" data-title="Popup Personalizado">Popup Personalizado</span>
+                            <span class="pres-feature-tag" data-video="../assets/videos/sales-notification.mp4" data-title="Sales Notification">Sales Notification</span>
+                            <span class="pres-feature-tag" data-video="../assets/videos/barra-estoque.mp4" data-title="Barra de Estoque">Barra de Estoque</span>
+                            <span class="pres-feature-tag" data-video="../assets/videos/compre-com.mp4" data-title="Compre Com">Compre Com</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: Processo -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// PROCESSO</div>
+                    <h1 class="slide-title">Do kickoff ao go-live em <span>etapas claras</span></h1>
+                    <div class="process-grid">
+                        <div class="process-step"><span class="process-step-num">01</span><h4>Kickoff</h4><p>Alinhamento de objetivos, coleta de informações e definição de expectativas.</p></div>
+                        <div class="process-step"><span class="process-step-num">02</span><h4>Estratégia</h4><p>Definição da estrutura de páginas e quais funcionalidades farão parte do projeto.</p></div>
+                        <div class="process-step"><span class="process-step-num">03</span><h4>Montagem da Estrutura</h4><p>Configuração base da loja: tema, identidade visual e organização das seções.</p></div>
+                        <div class="process-step"><span class="process-step-num">04</span><h4>Instalações</h4><p>Integração de ERP, gateway de pagamento, logística e apps essenciais.</p></div>
+                        <div class="process-step"><span class="process-step-num">05</span><h4>Dev. na Shopify</h4><p>Desenvolvimento e customização das páginas com a Estrutura Turbo.</p></div>
+                        <div class="process-step"><span class="process-step-num">06</span><h4>1ª Apresentação</h4><p>Apresentação da loja ao cliente para review e coleta de feedback.</p></div>
+                        <div class="process-step"><span class="process-step-num">07</span><h4>Execução da Review</h4><p>Ajustes e refinamentos com base no retorno do cliente.</p></div>
+                        <div class="process-step"><span class="process-step-num">08</span><h4>Entrega Final</h4><p>2ª apresentação, aprovação e entrega com treinamento para o time.</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 10: Cases (antigo slide 8) -->
+            <div class="slide">
+                <div class="slide-inner">
+                    <div class="section-label">// CASES</div>
+                    <h1 class="slide-title">Quem já <span>transformou</span> com a Turbo</h1>
+                    <div class="cards-grid-3">
+
+                        <!-- CASE 1 — edite com dados reais do cliente -->
+                        <div class="card case-card">
+                            <div class="case-brand">Marca Cliente A</div>
+                            <div class="case-niche">Moda Feminina · Roupas</div>
+                            <div class="case-metrics">
+                                <div class="case-metric">
+                                    <div class="case-metric-value">+210%</div>
+                                    <div class="case-metric-label">conversão</div>
+                                </div>
+                                <div class="case-metric">
+                                    <div class="case-metric-value">42d</div>
+                                    <div class="case-metric-label">até o ar</div>
+                                </div>
+                            </div>
+                            <p class="case-excerpt">Loja de moda feminina com Separa e Agrega, lookbooks, guia de tamanhos e wishlist integrada.</p>
+                            <a href="cases/case-template.html" target="_blank" class="case-link">
+                                Ver case completo
+                                <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                        <!-- CASE 2 — edite com dados reais do cliente -->
+                        <div class="card case-card">
+                            <div class="case-brand">Marca Cliente B</div>
+                            <div class="case-niche">Streetwear · DTC</div>
+                            <div class="case-metrics">
+                                <div class="case-metric">
+                                    <div class="case-metric-value">R$1.8M</div>
+                                    <div class="case-metric-label">em 60 dias</div>
+                                </div>
+                                <div class="case-metric">
+                                    <div class="case-metric-value">4.8★</div>
+                                    <div class="case-metric-label">reviews</div>
+                                </div>
+                            </div>
+                            <p class="case-excerpt">E-commerce de streetwear com Sales Notification, barra de estoque e carrinho lateral com upsell.</p>
+                            <a href="cases/case-template.html" target="_blank" class="case-link">
+                                Ver case completo
+                                <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                        <!-- CASE 3 — edite com dados reais do cliente -->
+                        <div class="card case-card">
+                            <div class="case-brand">Marca Cliente C</div>
+                            <div class="case-niche">Acessórios · Fashion</div>
+                            <div class="case-metrics">
+                                <div class="case-metric">
+                                    <div class="case-metric-value">+155%</div>
+                                    <div class="case-metric-label">ticket médio</div>
+                                </div>
+                                <div class="case-metric">
+                                    <div class="case-metric-value">2.9x</div>
+                                    <div class="case-metric-label">ROI</div>
+                                </div>
+                            </div>
+                            <p class="case-excerpt">Migração para Shopify com foco em Compre Com, search inteligente e integração com ERP.</p>
+                            <a href="cases/case-template.html" target="_blank" class="case-link">
+                                Ver case completo
+                                <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 11: Investimento (antigo slide 9) -->
+            <div class="slide">
+                <div class="slide-inner" style="align-items: center;">
+                    <div class="section-label">// INVESTIMENTO</div>
+                    <h1 class="slide-title" style="text-align: center;">E-commerce de <span>Roupas</span></h1>
+                    <div class="price-card">
+                        <div class="price-amount">R$15.997</div>
+                        <div class="price-installment">ou 3× R$5.332 no boleto</div>
+                        <div class="price-badges">
+                            <span class="price-badge">Template Turbo</span>
+                            <span class="price-badge">45 dias úteis</span>
+                        </div>
+                        <div class="features-list">
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Search inteligente com filtros</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Wishlist + alertas</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Separa e Agrega</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Add to Cart fixo + Carrinho lateral</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Judgme Reviews integrado</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sales Notification + Barra estoque</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Lookbooks + Guia de tamanhos</div>
+                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>ERP, gateway e treinamento</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 12: CTA (antigo slide 10) -->
+            <div class="slide">
+                <div class="slide-inner cta-slide" style="align-items: center;">
+                    <div class="cta-glow"></div>
+                    <div class="cta-glow-2"></div>
+                    <h1 class="cta-title">Vamos transformar sua marca de <span>moda</span>?</h1>
+                    <p class="cta-sub">Agende uma conversa com nosso time comercial</p>
+                    <a href="#" class="cta-button" aria-label="Falar com a Turbo">
+                        Falar com a Turbo
+                        <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <div class="cta-logo">TURBO.</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="nav-dots" id="navDots">
+        <button class="nav-dot" aria-label="Ir para slide 1"  title="Pilares"></button>
+        <button class="nav-dot" aria-label="Ir para slide 2"  title="Metodologia"></button>
+        <button class="nav-dot" aria-label="Ir para slide 3"  title="Credenciais"></button>
+        <button class="nav-dot" aria-label="Ir para slide 4"  title="A Shopify"></button>
+        <button class="nav-dot" aria-label="Ir para slide 5"  title="Por que Shopify"></button>
+        <button class="nav-dot" aria-label="Ir para slide 6"  title="Comparação"></button>
+        <button class="nav-dot" aria-label="Ir para slide 7"  title="O que entregamos 1"></button>
+        <button class="nav-dot" aria-label="Ir para slide 8"  title="O que entregamos 2"></button>
+        <button class="nav-dot" aria-label="Ir para slide 9"  title="Processo"></button>
+        <button class="nav-dot" aria-label="Ir para slide 10" title="Cases"></button>
+        <button class="nav-dot" aria-label="Ir para slide 11" title="Investimento"></button>
+        <button class="nav-dot" aria-label="Ir para slide 12" title="Próximos Passos"></button>
+    </div>
+
+    <div class="nav-arrows">
+        <button class="nav-arrow" id="prevBtn" aria-label="Slide anterior">
+            <svg viewBox="0 0 24 24"><path d="M18 15l-6-6-6 6"/></svg>
+        </button>
+        <button class="nav-arrow" id="nextBtn" aria-label="Próximo slide">
+            <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">01 / 12</div>
+
+    <!-- Video Modal -->
+    <div class="pres-video-modal" id="presVideoModal">
+        <div class="pres-video-backdrop" id="presVideoBackdrop"></div>
+        <div class="pres-video-box">
+            <div class="pres-video-header">
+                <span class="pres-video-title" id="presVideoTitle"></span>
+                <button class="pres-video-close" id="presVideoClose">✕</button>
+            </div>
+            <video id="presVideoPlayer" controls playsinline></video>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        var wrapper  = document.getElementById('slidesWrapper');
+        var slides   = document.querySelectorAll('.slide');
+        var dots     = document.querySelectorAll('.nav-dot');
+        var counter  = document.getElementById('slideCounter');
+        var progress = document.getElementById('progressBar');
+        var total    = 12;
+        var current  = 0;
+        var busy     = false;
+        var touchY   = 0;
+        var counted  = {};
+
+        function pad(n) { return String(n).padStart(2, '0'); }
+
+        function updateUI() {
+            wrapper.style.transform = 'translateY(-' + (current * 100) + 'vh)';
+            dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
+            counter.textContent = pad(current + 1) + ' / ' + pad(total);
+            progress.style.width = ((current + 1) / total * 100) + '%';
+        }
+
+        function countUp(slideEl) {
+            slideEl.querySelectorAll('[data-count]').forEach(function(el) {
+                var tgt = parseFloat(el.getAttribute('data-count'));
+                var pre = el.getAttribute('data-prefix') || '';
+                var suf = el.getAttribute('data-suffix') || '';
+                var dur = 1100;
+                var start = null;
+                function ease(t) { return 1 - Math.pow(1 - t, 3); }
+                function fmt(v) {
+                    if (tgt >= 1000) return pre + Math.round(v).toLocaleString('pt-BR') + suf;
+                    if (tgt !== Math.floor(tgt)) return pre + v.toFixed(1) + suf;
+                    return pre + Math.round(v) + suf;
+                }
+                function tick(ts) {
+                    if (!start) start = ts;
+                    var p = Math.min((ts - start) / dur, 1);
+                    el.textContent = fmt(tgt * ease(p));
+                    if (p < 1) requestAnimationFrame(tick);
+                    else el.textContent = fmt(tgt);
+                }
+                requestAnimationFrame(tick);
+            });
+        }
+
+        function goTo(idx) {
+            if (idx < 0 || idx >= total || busy) return;
+            busy = true;
+            slides[current].classList.remove('active');
+            current = idx;
+            updateUI();
+            setTimeout(function() {
+                slides[current].classList.add('active');
+                if (current === 3 && !counted[3]) { counted[3] = true; countUp(slides[3]); }
+            }, 130);
+            setTimeout(function() { busy = false; }, 760);
+        }
+
+        function next() { goTo(current + 1); }
+        function prev() { goTo(current - 1); }
+
+        // Feature tags com vídeo
+        function closePresentationVideo() {
+            document.getElementById('presVideoModal').classList.remove('active');
+            var p = document.getElementById('presVideoPlayer');
+            p.pause(); p.src = '';
+        }
+        function openPresentationVideo(src, title) {
+            if (!src) return;
+            var p = document.getElementById('presVideoPlayer');
+            document.getElementById('presVideoTitle').textContent = title || '';
+            p.src = src;
+            document.getElementById('presVideoModal').classList.add('active');
+            p.play().catch(function(){});
+        }
+        document.querySelectorAll('.pres-feature-tag[data-video]').forEach(function(tag) {
+            var src = tag.dataset.video, title = tag.dataset.title || '';
+            var labelEl = document.createElement('span'); labelEl.className = 'pres-feature-label'; labelEl.textContent = title;
+            var previewEl = document.createElement('span'); previewEl.className = 'pres-feature-preview';
+            var videoEl = document.createElement('video'); videoEl.src = src; videoEl.muted = true; videoEl.loop = true; videoEl.playsInline = true; videoEl.autoplay = true;
+            var playEl = document.createElement('span'); playEl.className = 'pres-feature-play';
+            playEl.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="white" stroke="white" stroke-linejoin="round" stroke-width="1"/></svg>';
+            previewEl.appendChild(videoEl); previewEl.appendChild(playEl);
+            tag.innerHTML = ''; tag.appendChild(labelEl); tag.appendChild(previewEl);
+            tag.addEventListener('click', function(e) { e.stopPropagation(); openPresentationVideo(src, title); });
+        });
+        document.getElementById('presVideoBackdrop').addEventListener('click', closePresentationVideo);
+        document.getElementById('presVideoClose').addEventListener('click', closePresentationVideo);
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closePresentationVideo(); });
+
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('presVideoModal').classList.contains('active')) return;
+            if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+            if (e.key === 'ArrowUp'   || e.key === 'ArrowLeft')                  { e.preventDefault(); prev(); }
+            if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+            if (e.key === 'End')  { e.preventDefault(); goTo(total - 1); }
+        });
+
+        var wt = null;
+        document.addEventListener('wheel', function(e) {
+            if (document.getElementById('presVideoModal').classList.contains('active')) return;
+            e.preventDefault();
+            if (wt) return;
+            wt = setTimeout(function() { wt = null; }, 860);
+            if (e.deltaY > 0) next(); else prev();
+        }, { passive: false });
+
+        document.addEventListener('touchstart', function(e) { touchY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', function(e) {
+            var d = touchY - e.changedTouches[0].clientY;
+            if (Math.abs(d) > 50) { if (d > 0) next(); else prev(); }
+        }, { passive: true });
+
+        dots.forEach(function(d, i) { d.addEventListener('click', function() { goTo(i); }); });
+        document.getElementById('prevBtn').addEventListener('click', prev);
+        document.getElementById('nextBtn').addEventListener('click', next);
+
+        slides[0].classList.add('active');
+        updateUI();
+    })();
+    </script>
+</body>
+</html>

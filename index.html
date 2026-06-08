@@ -4014,6 +4014,64 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-direction: column;
   gap: 12px;
 }
+/* ── Formulário completo de novo case (modal) ── */
+.caseform-overlay {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(0,0,0,0.62); backdrop-filter: blur(3px);
+  opacity: 0; transition: opacity 0.2s ease;
+}
+.caseform-overlay.is-open { opacity: 1; }
+.caseform-overlay[hidden] { display: none; }
+.caseform-modal {
+  position: fixed; z-index: 2001;
+  top: 50%; left: 50%; transform: translate(-50%, -48%);
+  width: min(640px, calc(100vw - 32px));
+  max-height: 90vh; overflow-y: auto;
+  background: #14101f;
+  border: 1px solid rgba(155,109,255,0.28);
+  border-radius: 18px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+  opacity: 0; transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.caseform-modal.is-open { opacity: 1; transform: translate(-50%, -50%); }
+.caseform-modal[hidden] { display: none; }
+.caseform-head {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  background: #14101f;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  border-radius: 18px 18px 0 0;
+}
+.caseform-title { font-size: 17px; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.3px; }
+.caseform-close {
+  width: 34px; height: 34px; border-radius: 9px;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  color: #fff; font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.18s, border-color 0.18s;
+}
+.caseform-close:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+.caseform { padding: 20px 22px 22px; display: flex; flex-direction: column; gap: 14px; }
+.caseform-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .caseform-grid2 { grid-template-columns: 1fr; } }
+.caseform-req { color: #ff8a8a; font-weight: 800; }
+.caseform select,
+.caseform input[type="text"],
+.caseform textarea {
+  width: 100%;
+  background: rgba(0,0,0,0.28);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 9px;
+  padding: 10px 12px;
+  color: #fff; font-family: inherit; font-size: 13.5px;
+  outline: none; transition: border-color 0.18s, background 0.18s;
+}
+.caseform select:focus,
+.caseform input[type="text"]:focus,
+.caseform textarea:focus { border-color: rgba(155,109,255,0.55); background: rgba(0,0,0,0.4); }
+.caseform select option { background: #14101f; color: #fff; }
+.caseform-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 6px; }
 .cases-form input,
 .cases-form textarea {
   width: 100%;
@@ -14039,6 +14097,9 @@ a.xpto-pricing-btn { text-decoration: none; }
         <input type="checkbox" id="cases-filter-only-with">
         <span>Mostrar só nichos com cases</span>
       </label>
+      <button type="button" class="cases-add-btn cases-add-btn--small" id="cases-new-form-btn">
+        <span class="cases-add-btn-icon">+</span> Novo case
+      </button>
     </div>
 
     <div class="cases-grid" id="cases-grid">
@@ -14208,6 +14269,71 @@ a.xpto-pricing-btn { text-decoration: none; }
   <div class="melh-img-lightbox" id="melh-img-lightbox" role="dialog" aria-modal="true">
     <img id="melh-img-lightbox-img" alt="Imagem em tamanho real">
   </div>
+</div>
+
+<!-- Formulário completo de novo case (todos os campos padrão de uma vez) -->
+<div class="caseform-overlay" id="caseform-overlay" hidden></div>
+<div class="caseform-modal" id="caseform-modal" hidden role="dialog" aria-modal="true" aria-label="Novo case">
+  <div class="caseform-head">
+    <h2 class="caseform-title">📝 Novo case</h2>
+    <button type="button" class="caseform-close" id="caseform-close" aria-label="Fechar">✕</button>
+  </div>
+  <form class="caseform" id="caseform" autocomplete="off">
+    <div class="caseform-grid2">
+      <label class="cases-form-field">
+        <span class="cases-form-field-label">Nicho <span class="caseform-req">*</span></span>
+        <select name="nichoId" id="caseform-nicho" required></select>
+      </label>
+      <label class="cases-form-field">
+        <span class="cases-form-field-label">Subnicho <span class="caseform-req">*</span></span>
+        <select name="subnicho" id="caseform-subnicho" required></select>
+      </label>
+    </div>
+    <label class="cases-form-field">
+      <span class="cases-form-field-label">Nome do cliente <span class="caseform-req">*</span></span>
+      <input type="text" name="nome" maxlength="80" required placeholder="Ex: Sallve, Nubank…">
+    </label>
+    <div class="caseform-grid2">
+      <label class="cases-form-field">
+        <span class="cases-form-field-label">Instagram</span>
+        <input type="text" name="instagram" placeholder="@instagram (opcional)">
+      </label>
+      <label class="cases-form-field">
+        <span class="cases-form-field-label">Site</span>
+        <input type="text" name="site" placeholder="ex: sallve.com.br (opcional)">
+      </label>
+    </div>
+    <div class="caseform-grid2">
+      <label class="cases-form-field">
+        <span class="cases-form-field-label">Funil</span>
+        <select name="funil" id="caseform-funil"></select>
+      </label>
+      <label class="cases-form-field">
+        <span class="cases-form-field-label">Tipo de operação</span>
+        <select name="operacao" id="caseform-operacao"></select>
+      </label>
+    </div>
+    <div class="caseform-grid2">
+      <label class="cases-form-toggle"><input type="checkbox" name="siteTurbo"><span>Site feito pela Turbo</span></label>
+      <label class="cases-form-toggle"><input type="checkbox" name="clienteLocalEs"><span>⭐ Cliente local (ES)</span></label>
+    </div>
+    <label class="cases-form-field">
+      <span class="cases-form-field-label">Desafios</span>
+      <textarea name="desafios" class="cases-form-textarea-tall" placeholder="O que o cliente precisava resolver — uma frase por linha"></textarea>
+    </label>
+    <label class="cases-form-field">
+      <span class="cases-form-field-label">Estratégia</span>
+      <textarea name="estrategia" class="cases-form-textarea-tall" placeholder="O que a Turbo fez"></textarea>
+    </label>
+    <label class="cases-form-field">
+      <span class="cases-form-field-label">Resultados</span>
+      <textarea name="resultados" class="cases-form-textarea-tall" placeholder="Números, conquistas, marcos"></textarea>
+    </label>
+    <div class="caseform-actions">
+      <button type="button" class="cases-form-btn" id="caseform-cancel">Cancelar</button>
+      <button type="submit" class="cases-form-btn cases-form-btn--primary">Salvar case</button>
+    </div>
+  </form>
 </div>
 
 <!-- Drawer de detalhe do nicho (PR2) -->
@@ -15980,6 +16106,102 @@ a.xpto-pricing-btn { text-decoration: none; }
   .crm-deck .crm-scope-ck { flex-shrink: 0; width: 28px; height: 28px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 900; background: rgba(155,109,255,0.18); border: 1px solid rgba(155,109,255,0.42); color: #c4a8ff; }
   @media (max-width: 760px) { .crm-deck .crm-scope { grid-template-columns: 1fr; } }
 </style>
+<!-- ══════════════════════════════════════════════════ -->
+<!--  E-COMMERCE (Slides Tech) — apresentações por modelo  -->
+<!--  DNVB / Moda / Personalizado. Embeddadas via iframe,   -->
+<!--  abertas do node "Loja virtual" na jornada.            -->
+<!--  EM CONSTRUÇÃO — NÃO entram em Propostas.               -->
+<!-- ══════════════════════════════════════════════════ -->
+<style>
+  #tech-modal {
+    position: fixed; inset: 0; z-index: 9000;
+    background: #07070e;
+    display: flex; flex-direction: column;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+  #tech-modal.is-open { opacity: 1; pointer-events: auto; }
+  .tech-modal-bar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 18px;
+    background: rgba(0,0,0,0.45);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+  .tech-modal-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+    color: #ffce8a; background: rgba(255,168,38,0.12);
+    border: 1px solid rgba(255,168,38,0.40);
+    padding: 6px 14px; border-radius: 99px;
+  }
+  .tech-modal-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85); letter-spacing: 0.2px; }
+  .tech-modal-close {
+    margin-left: auto; width: 36px; height: 36px; border-radius: 10px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    color: #fff; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.18s, border-color 0.18s;
+  }
+  .tech-modal-close:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
+  #tech-frame { flex: 1; width: 100%; border: 0; background: #07070e; }
+  /* Grupo de launch no painel da Loja virtual */
+  .pres-launch-group { margin: 6px 0 2px; }
+  .pres-launch-group-label {
+    display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
+    font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+    color: rgba(255,255,255,0.55); margin: 8px 0 10px;
+  }
+  .pres-soon-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+    color: #ffce8a; background: rgba(255,168,38,0.12);
+    border: 1px solid rgba(255,168,38,0.40);
+    padding: 3px 10px; border-radius: 99px;
+  }
+</style>
+<div id="tech-modal" role="dialog" aria-modal="true" aria-label="Apresentação de e-commerce">
+  <div class="tech-modal-bar">
+    <span class="tech-modal-badge">🚧 Em construção</span>
+    <span class="tech-modal-name" id="tech-modal-name"></span>
+    <button class="tech-modal-close" onclick="if(window.closeTechPres) window.closeTechPres()" aria-label="Fechar">✕</button>
+  </div>
+  <iframe id="tech-frame" title="Apresentação de e-commerce" src="about:blank" loading="lazy"></iframe>
+</div>
+<script>
+  (function () {
+    const FILES = {
+      dnvb:          { src: 'Slides Tech/apresentacao-dnvb.html',          name: 'E-commerce · DNVB' },
+      moda:          { src: 'Slides Tech/apresentacao-moda.html',          name: 'E-commerce · Moda' },
+      personalizado: { src: 'Slides Tech/apresentacao-personalizado.html', name: 'E-commerce · Personalizado' },
+    };
+    let _v = 0;
+    window.openTechPres = function (model) {
+      const f = FILES[model];
+      const modal = document.getElementById('tech-modal');
+      const frame = document.getElementById('tech-frame');
+      const nameEl = document.getElementById('tech-modal-name');
+      if (!f || !modal || !frame) return;
+      frame.src = f.src + '?v=' + (++_v) + '-' + Date.now(); // cache-bust
+      if (nameEl) nameEl.textContent = f.name;
+      modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+    };
+    window.closeTechPres = function () {
+      const modal = document.getElementById('tech-modal');
+      const frame = document.getElementById('tech-frame');
+      if (modal) modal.classList.remove('is-open');
+      if (frame) frame.src = 'about:blank';
+      document.body.style.overflow = '';
+    };
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape') return;
+      const modal = document.getElementById('tech-modal');
+      if (modal && modal.classList.contains('is-open')) window.closeTechPres();
+    });
+  })();
+</script>
+
 <div class="xpto-overlay" id="crm-overlay"></div>
 <button class="xpto-close" id="crm-close" aria-label="Fechar">✕</button>
 <div class="xpto-modal" id="crm-modal">
@@ -17731,6 +17953,7 @@ function openPanel(nodeId) {
   // 'lead-automacoes' que NÃO tem cartilha de implantação.
   const isAutomacoes = nodeId === 'automacoes';
   const isCrm = nodeId === 'crm-estrategico';
+  const isLoja = nodeId === 'loja';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -17784,6 +18007,26 @@ function openPanel(nodeId) {
       <span class="pres-launch-title">Apresentação de CRM Estratégico</span>
       <span class="pres-launch-arrow">→</span>
     </button>
+    ` : ''}
+    ${isLoja ? `
+    <div class="pres-launch-group">
+      <p class="pres-launch-group-label">Apresentações por modelo <span class="pres-soon-tag">🚧 em construção</span></p>
+      <button class="pres-launch-btn" onclick="if(window.openTechPres) window.openTechPres('dnvb')">
+        <span class="pres-launch-icon">🛍️</span>
+        <span class="pres-launch-title">E-commerce DNVB</span>
+        <span class="pres-launch-arrow">→</span>
+      </button>
+      <button class="pres-launch-btn" onclick="if(window.openTechPres) window.openTechPres('moda')">
+        <span class="pres-launch-icon">👗</span>
+        <span class="pres-launch-title">E-commerce Moda</span>
+        <span class="pres-launch-arrow">→</span>
+      </button>
+      <button class="pres-launch-btn" onclick="if(window.openTechPres) window.openTechPres('personalizado')">
+        <span class="pres-launch-icon">✨</span>
+        <span class="pres-launch-title">E-commerce Personalizado</span>
+        <span class="pres-launch-arrow">→</span>
+      </button>
+    </div>
     ` : ''}
     ${buildLinksHTML(node.links, color, node.toolsLabel)}
     ${isAutomacoes ? `
@@ -22946,6 +23189,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // mostra "Desconto inválido" e o botão de gerar/baixar é bloqueado.
   // Onde não há mínimo definido, não há validação (qualquer preço vale).
   // Obs: Creators usa o mesmo mínimo nos dois modos (Pontual/Recorrente).
+  //
+  // ⚠ DESATIVADO TEMPORARIAMENTE (a pedido). Pra reativar a regra inteira,
+  // basta voltar este flag pra true — todo o resto do código continua pronto.
+  const MIN_PRICES_ENABLED = false;
   const MIN_PRICES = {
     performance: { starter: 3297, scale: 4997, enterprise: 7497 },
     social:      { starter: 2997, scale: 3997 },
@@ -22967,6 +23214,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return 'R$ ' + intStr + ',00';
   }
   function isBelowMin(sol, tier) {
+    if (!MIN_PRICES_ENABLED) return false; // regra desativada temporariamente
     const min = minForTier(sol, tier);
     if (min == null) return false;
     const cur = priceToNumber(prices[sol]?.[tier]?.value);
@@ -28250,6 +28498,84 @@ renderProgress();
       render();
     });
   }
+
+  // ── Formulário completo de novo case (modal com todos os campos padrão) ──
+  (function setupCaseForm() {
+    const openBtn   = document.getElementById('cases-new-form-btn');
+    const overlay   = document.getElementById('caseform-overlay');
+    const modal     = document.getElementById('caseform-modal');
+    const form      = document.getElementById('caseform');
+    const closeBtn  = document.getElementById('caseform-close');
+    const cancelBtn = document.getElementById('caseform-cancel');
+    const nichoSel  = document.getElementById('caseform-nicho');
+    const subSel    = document.getElementById('caseform-subnicho');
+    const funilSel  = document.getElementById('caseform-funil');
+    const operSel   = document.getElementById('caseform-operacao');
+    if (!openBtn || !modal || !form || !nichoSel || !subSel) return;
+
+    // Popular selects estáticos
+    nichoSel.innerHTML = '<option value="">— selecione o nicho —</option>' +
+      NICHOS.map(n => `<option value="${n.id}">${n.emoji} ${escapeHtml(n.name)}</option>`).join('');
+    funilSel.innerHTML = FUNIL_OPTIONS.map(o => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`).join('');
+    operSel.innerHTML  = OPERACAO_OPTIONS.map(o => `<option value="${escapeAttr(o.value)}">${escapeHtml(o.label)}</option>`).join('');
+
+    function fillSubnichos() {
+      const n = NICHOS.find(x => x.id === nichoSel.value);
+      if (!n) { subSel.innerHTML = '<option value="">— escolha o nicho primeiro —</option>'; subSel.disabled = true; return; }
+      subSel.disabled = false;
+      subSel.innerHTML = '<option value="">— selecione o subnicho —</option>' +
+        n.subnichos.map(s => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join('');
+    }
+    nichoSel.addEventListener('change', fillSubnichos);
+    fillSubnichos();
+
+    function openModal() {
+      form.reset();
+      fillSubnichos();
+      overlay.hidden = false; modal.hidden = false;
+      void modal.offsetWidth; // força reflow pra transição rodar (rAF é throttled em alguns contextos)
+      overlay.classList.add('is-open'); modal.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => nichoSel.focus(), 60);
+    }
+    function closeModal() {
+      overlay.classList.remove('is-open'); modal.classList.remove('is-open');
+      setTimeout(() => { overlay.hidden = true; modal.hidden = true; document.body.style.overflow = ''; }, 220);
+    }
+    openBtn.addEventListener('click', openModal);
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!form.reportValidity()) return;
+      const newCase = {
+        id: uid('case'),
+        nichoId: nichoSel.value,
+        subnicho: subSel.value,
+        nome: form.elements.nome.value.trim(),
+        instagram: normalizeInstagram(form.elements.instagram.value),
+        site: normalizeSite(form.elements.site.value),
+        funil: form.elements.funil.value || '',
+        operacao: form.elements.operacao.value || '',
+        siteTurbo: !!form.elements.siteTurbo.checked,
+        clienteLocalEs: !!form.elements.clienteLocalEs.checked,
+        desafios: form.elements.desafios.value.trim(),
+        estrategia: form.elements.estrategia.value.trim(),
+        resultados: form.elements.resultados.value.trim(),
+        criadoEm: new Date().toISOString(),
+        solucoes: [],
+      };
+      casesData.push(newCase);
+      saveCases();
+      render();
+      closeModal();
+      // Abre o drawer do nicho pra confirmar o case recém-criado
+      setTimeout(() => { if (typeof openDrawer === 'function') openDrawer(newCase.nichoId); }, 240);
+    });
+  })();
 
   // ── Import do seed do PDF ─────────────────────────
   // Roda só quando localStorage está vazio. Cases já cadastrados
