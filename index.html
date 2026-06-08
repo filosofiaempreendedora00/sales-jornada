@@ -23190,9 +23190,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Onde não há mínimo definido, não há validação (qualquer preço vale).
   // Obs: Creators usa o mesmo mínimo nos dois modos (Pontual/Recorrente).
   //
-  // ⚠ DESATIVADO TEMPORARIAMENTE (a pedido). Pra reativar a regra inteira,
-  // basta voltar este flag pra true — todo o resto do código continua pronto.
-  const MIN_PRICES_ENABLED = false;
+  // Reativado. Pra desativar a regra inteira de novo, basta voltar pra false.
+  const MIN_PRICES_ENABLED = true;
   const MIN_PRICES = {
     performance: { starter: 3297, scale: 4997, enterprise: 7497 },
     social:      { starter: 2997, scale: 3997 },
