@@ -26712,6 +26712,26 @@ renderProgress();
         body: JSON.stringify({ cases: casesData }),
       });
       if (!r.ok) {
+        if (r.status === 409) {
+          // 🛡️ Trava de segurança do backend: tentou salvar lista vazia por
+          // cima de cases existentes. Nada foi apagado — recarrega do banco.
+          showDbError('Proteção ativada: a lista estava vazia, mas o banco tem cases. <strong>Nada foi apagado</strong> — recarregando do banco…');
+          try {
+            const rr = await fetch('/api/cases');
+            if (rr.ok) {
+              const jj = await rr.json();
+              casesData = (Array.isArray(jj.cases) ? jj.cases : []).map(c => ({
+                siteTurbo: false, clienteLocalEs: false, funil: '', operacao: '',
+                desafios: '', estrategia: '', resultados: '',
+                ...c,
+                solucoes: Array.isArray(c.solucoes) ? c.solucoes : [],
+              }));
+              if (typeof render === 'function') render();
+              if (typeof renderDrawer === 'function' && currentNichoId) renderDrawer();
+            }
+          } catch (e) {}
+          return;
+        }
         const msg = r.status === 503
           ? 'Banco de dados indisponível. Suas alterações <strong>não foram salvas</strong>.'
           : `Erro ao salvar (HTTP ${r.status}). Tente novamente.`;
@@ -27861,6 +27881,20 @@ renderProgress();
         body: JSON.stringify({ melhorias: data }),
       });
       if (!r.ok) {
+        if (r.status === 409) {
+          // 🛡️ Trava de segurança do backend: o quadro tentou salvar uma lista
+          // vazia por cima de dados existentes (provável quadro carregado vazio
+          // por falha de conexão). Nada foi apagado — recarregamos do banco.
+          showMelhError('Proteção ativada: o quadro estava vazio, mas o banco tem melhorias. <strong>Nada foi apagado</strong> — recarregando do banco…');
+          try {
+            const rr = await fetch('/api/melhorias');
+            if (rr.ok) {
+              data = (await rr.json()).melhorias || data;
+              if (typeof render === 'function') render();
+            }
+          } catch (e) {}
+          return;
+        }
         const msg = r.status === 503
           ? 'Banco de dados indisponível. Suas alterações <strong>não foram salvas</strong>.'
           : `Erro ao salvar (HTTP ${r.status}). Tente novamente.`;

@@ -175,6 +175,27 @@ export async function bulkReplace(req, res) {
       });
     });
 
+    // 🛡️ TRAVA DE SEGURANÇA contra perda de dados (mesma lógica das melhorias).
+    // O bulk-replace apaga tudo e regrava. Se a lista chega VAZIA mas o banco
+    // já tem cases, é quase sempre acidente (lista carregada vazia por falha de
+    // conexão). Recusamos a operação destrutiva. Para esvaziar de propósito,
+    // enviar { confirmarVazio: true }.
+    if (cases.length === 0 && b.confirmarVazio !== true) {
+      const cnt = await query('SELECT COUNT(*)::int AS n FROM cases');
+      const n = cnt.rows[0]?.n || 0;
+      if (n > 0) {
+        console.warn(`[bulk-replace cases] BLOQUEADO por segurança: lista vazia recebida, mas há ${n} case(s) no banco. Operação recusada.`);
+        res.statusCode = 409;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({
+          error: 'protecao-lista-vazia',
+          detail: `Operação recusada: a lista enviada está vazia, mas o banco tem ${n} case(s). Recarregue a página antes de salvar.`,
+          dbCount: n,
+        }));
+        return;
+      }
+    }
+
     await withClient(async (client) => {
       await client.query('BEGIN');
       await client.query('DELETE FROM solucoes');

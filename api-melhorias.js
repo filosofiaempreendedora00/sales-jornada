@@ -110,6 +110,30 @@ export async function bulkReplace(req, res) {
     const b = readJson(req);
     const list = Array.isArray(b.melhorias) ? b.melhorias : [];
     const items = list.filter(m => m.id && m.titulo);
+
+    // 🛡️ TRAVA DE SEGURANÇA contra perda de dados.
+    // O bulk-replace apaga tudo e regrava. Se a lista chega VAZIA mas o
+    // banco já tem melhorias, isso é quase sempre um acidente (o quadro
+    // carregou vazio por falha de conexão e disparou um "salvar" por cima).
+    // Nesse caso recusamos a operação destrutiva — os dados ficam intactos.
+    // Para esvaziar de propósito, é preciso enviar { confirmarVazio: true }.
+    if (items.length === 0 && b.confirmarVazio !== true) {
+      const cnt = await query('SELECT COUNT(*)::int AS n FROM melhorias');
+      const n = cnt.rows[0]?.n || 0;
+      if (n > 0) {
+        console.warn(`[bulk-replace melhorias] BLOQUEADO por segurança: lista vazia recebida, mas há ${n} melhoria(s) no banco. Operação recusada.`);
+        res.statusCode = 409;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({
+          error: 'protecao-lista-vazia',
+          detail: `Operação recusada: a lista enviada está vazia, mas o banco tem ${n} melhoria(s). Recarregue a página antes de salvar.`,
+          dbCount: n,
+        }));
+        return;
+      }
+      // banco já está vazio → nada a apagar, segue o fluxo normal (no-op)
+    }
+
     const { withClient } = await import('./db.js');
     await withClient(async (client) => {
       await client.query('BEGIN');
