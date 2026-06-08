@@ -4710,6 +4710,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 7px;
   margin-top: 14px;
 }
+/* Switcher Pontual/Recorrente dentro do card de Creators no Investimento */
+.prop-creators-switcher { margin-bottom: 10px; }
 
 /* "Em construção" callout */
 .prop-mode-soon {
@@ -22617,9 +22619,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // proposta usa estes valores ao renderizar os pacotes.
   const DEFAULT_PRICES = {
     performance: {
-      starter:    { label: 'Starter',    value: 'R$ 2.997,00' },
-      scale:      { label: 'Scale',      value: 'R$ 4.997,00' },
-      enterprise: { label: 'Enterprise', value: 'R$ 7.497,00' }
+      starter:    { label: 'Starter',    value: 'R$ 3.997,00' },
+      scale:      { label: 'Scale',      value: 'R$ 5.997,00' },
+      enterprise: { label: 'Enterprise', value: 'R$ 8.497,00' }
     },
     creators: {
       starter:    { label: 'Starter',    value: 'R$ 7.997,00' },
@@ -22628,7 +22630,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     },
     social: {
       starter: { label: 'Starter',    value: 'R$ 3.397,00' },
-      scale:   { label: 'Enterprise', value: 'R$ 3.897,00' }
+      scale:   { label: 'Enterprise', value: 'R$ 4.497,00' }
     },
     comunidade: {
       unico: { label: 'Único', value: 'R$ 10.000,00' }
@@ -22653,8 +22655,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       'crm-enterprise': { label: 'Plataforma · Enterprise', value: 'R$ 597,00' }
     },
     ecommerce: {
-      dnvb:          { label: 'DNVB',          value: 'R$ 19.497,00' },
-      moda:          { label: 'Moda',          value: 'R$ 15.997,00' },
+      dnvb:          { label: 'DNVB',          value: 'R$ 19.997,00' },
+      moda:          { label: 'Moda',          value: 'R$ 17.497,00' },
       personalizado: { label: 'Personalizado', value: 'R$ 35.000,00' }
     }
   };
@@ -22695,6 +22697,22 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }
   }
 
+  // Creators: 2 modelos de contratação com preços distintos.
+  //  - Pontual (default): prices.creators (= DEFAULT_PRICES.creators)
+  //  - Recorrente: preços abaixo + tag "A partir de 4 entregas" na proposta
+  // O switcher no card de Investimento alterna os dois fazendo swap dos stores
+  // (preserva edições de cada modo na sessão).
+  let creatorsMode = 'pontual';
+  const CREATORS_RECORRENTE_DEFAULT = {
+    starter:    { label: 'Starter',    value: 'R$ 6.497,00' },
+    scale:      { label: 'Scale',      value: 'R$ 7.497,00' },
+    enterprise: { label: 'Enterprise', value: 'R$ 12.997,00' }
+  };
+  let creatorsInactivePrices = JSON.parse(JSON.stringify(CREATORS_RECORRENTE_DEFAULT));
+  for (const tier in creatorsInactivePrices) {
+    creatorsInactivePrices[tier].value = buildPriceValue(stripCurrency(creatorsInactivePrices[tier].value));
+  }
+
   // No-op intencional: edições de preço são por-sessão, não persistem.
   // Mantemos a função pra não quebrar call sites.
   function savePriceOverrides() {}
@@ -22721,7 +22739,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       titleHtml: 'E-commerce <span class="pacotes-title-accent">DTC / DNVB</span>',
       subtitle: 'Utilizaremos a biblioteca de seções da Turbo para criar o e-commerce. Fora disso, passa a ser um e-commerce personalizado.',
       prazo: '50 dias úteis',
-      installmentsHtml: 'ou em <strong>3x de R$ 6.499,00</strong> no boleto',
+      installmentsHtml: 'ou em <strong>3x de R$ 6.665,67</strong> no boleto',
       features: [
         'Página Home',
         'PDP com até 7 seções',
@@ -22759,7 +22777,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       titleHtml: 'E-commerce <span class="pacotes-title-accent">Moda</span>',
       subtitle: 'Estrutura Turbo otimizada para marcas de moda — biblioteca de seções da Turbo. Fora disso, passa a ser um e-commerce personalizado.',
       prazo: '45 dias úteis',
-      installmentsHtml: 'ou em <strong>3x de R$ 5.332,34</strong> no boleto',
+      installmentsHtml: 'ou em <strong>3x de R$ 5.832,34</strong> no boleto',
       features: [
         'Página Home',
         '1 Modelo de PDP <small>(até 5 seções)</small>',
@@ -22904,6 +22922,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   }
 
   function isPriceDefault(sol, tier) {
+    if (sol === 'creators' && creatorsMode === 'recorrente') {
+      return prices.creators?.[tier]?.value === buildPriceValue(stripCurrency(CREATORS_RECORRENTE_DEFAULT[tier]?.value));
+    }
     return prices[sol]?.[tier]?.value === DEFAULT_PRICES[sol]?.[tier]?.value;
   }
 
@@ -23175,6 +23196,28 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         `;
       }
 
+      // Creators: switcher Pontual / Recorrente (preços distintos). Recorrente
+      // usa CREATORS_RECORRENTE e mostra a tag "A partir de 4 entregas" na proposta.
+      if (s.id === 'creators') {
+        const modeBtns = [['pontual', 'Pontual'], ['recorrente', 'Recorrente']].map(([m, lbl]) =>
+          `<button type="button" class="prop-type-btn${creatorsMode === m ? ' is-active' : ''}"
+            data-creators-mode="${m}" aria-pressed="${creatorsMode === m ? 'true' : 'false'}">${lbl}</button>`
+        ).join('');
+        return `
+        <div class="prop-invest-card" style="--card-color:${s.color}">
+          <div class="prop-invest-card-head">
+            <span class="prop-invest-icon">${s.icon}</span>
+            <span class="prop-invest-name">${s.name}</span>
+          </div>
+          <div class="prop-mode-switcher prop-creators-switcher" role="tablist" aria-label="Modelo de contratação Creators">${modeBtns}</div>
+          ${creatorsMode === 'recorrente' ? '<p class="prop-invest-modules-hint">Recorrente — exibe a tag “A partir de 4 entregas” na proposta.</p>' : ''}
+          <div class="prop-invest-tiers">
+            ${Object.entries(prices.creators).map(([tier, td]) => renderTierRow('creators', tier, td)).join('')}
+          </div>
+        </div>
+        `;
+      }
+
       // Soluções padrão: todos os tiers como checkboxes
       return `
       <div class="prop-invest-card" style="--card-color:${s.color}">
@@ -23219,6 +23262,23 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         const tier = btn.dataset.tier;
         enabledTiers[sol] = new Set([tier]);
         saveEnabledTiers();
+        renderInvestimento();
+        schedulePreviewRebuild();
+      });
+    });
+
+    // Creators: switcher Pontual / Recorrente — faz swap dos stores de preço
+    // (cada modo preserva suas edições na sessão) e re-renderiza.
+    $invest.querySelectorAll('[data-creators-mode]').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        e.preventDefault();
+        const m = btn.dataset.creatorsMode;
+        if (m === creatorsMode) return;
+        const tmp = prices.creators;
+        prices.creators = creatorsInactivePrices;
+        creatorsInactivePrices = tmp;
+        creatorsMode = m;
         renderInvestimento();
         schedulePreviewRebuild();
       });
@@ -24042,11 +24102,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
       // 3c. Pacotes Creators
       if (creatorsCards.length) {
+        const creatorsRecorrenteTag = creatorsMode === 'recorrente'
+          ? '<span class="pacotes-recorrente-tag">A partir de 4 entregas</span>' : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-creators">
           <div class="pacotes-slide">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Creators</span></h2>
             </div>
+            ${creatorsRecorrenteTag}
             <div class="pacotes-grid">${creatorsCards.join('')}</div>
           </div>
         </section>`);
@@ -25096,6 +25159,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
       @media (max-width: 900px) {
         .proposal-section--pacotes-crm .pacote-card { flex: 1 1 100%; max-width: none; }
+      }
+      /* Tag "A partir de 4 entregas" — Creators no modo Recorrente */
+      .proposal-section--pacotes-creators .pacotes-recorrente-tag {
+        align-self: center;
+        display: inline-flex; align-items: center;
+        background: linear-gradient(135deg, rgba(255,168,38,0.20), rgba(255,168,38,0.10));
+        border: 1px solid rgba(255,168,38,0.45);
+        color: #ffce8a;
+        font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;
+        padding: 8px 18px; border-radius: 99px;
+        margin: -8px 0 4px;
       }
 
       /* Pacotes Social tem no máximo 2 cards (Starter + Enterprise) — largura
