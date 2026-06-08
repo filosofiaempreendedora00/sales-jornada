@@ -22633,7 +22633,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       scale:   { label: 'Enterprise', value: 'R$ 4.497,00' }
     },
     comunidade: {
-      unico: { label: 'Único', value: 'R$ 10.000,00' }
+      unico: { label: 'Único', value: 'R$ 12.000,00' }
     },
     idvisual: {
       starter:    { label: 'Starter',    value: 'R$ 4.997,00' },
@@ -23825,7 +23825,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
-    // Pacotes Comunidade — tem só um tier (R$ 10.000/mês)
+    // Pacotes Comunidade — tem só um tier (R$ 12.000/mês)
     const comunidadeCards = [];
     if (hasComunidade) {
       if (isTierEnabled('comunidade', 'unico')) comunidadeCards.push(`
@@ -24129,7 +24129,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3e. Pacotes Comunidade — tier único de R$ 10.000/mês
+      // 3e. Pacotes Comunidade — tier único de R$ 12.000/mês
       if (comunidadeCards.length) {
         sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
           <div class="pacotes-slide">
