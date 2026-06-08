@@ -4675,7 +4675,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   min-width: 0;
 }
 .prop-sidebar { padding-top: 18px; }
-.prop-mode-btn {
+.prop-mode-btn,
+.prop-type-btn {
   appearance: none;
   background: transparent;
   border: 0;
@@ -4694,11 +4695,20 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-overflow: ellipsis;
   text-align: center;
 }
-.prop-mode-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-.prop-mode-btn.is-active {
+.prop-mode-btn:hover,
+.prop-type-btn:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+.prop-mode-btn.is-active,
+.prop-type-btn.is-active {
   background: linear-gradient(135deg, rgba(155,109,255,0.18), rgba(77,141,255,0.16));
   color: var(--text);
   box-shadow: inset 0 0 0 1px rgba(155,109,255,0.32);
+}
+/* Switcher de tipo da proposta (Lead externo / Crossell), abaixo do nome */
+.prop-type-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-top: 14px;
 }
 
 /* "Em construção" callout */
@@ -13867,6 +13877,27 @@ a.xpto-pricing-btn { text-decoration: none; }
           >
           <span class="prop-client-hint">Aparece grande na capa da proposta — obrigatório para baixar</span>
         </div>
+        <div class="prop-type-field">
+          <div class="prop-mode-switcher" role="tablist" aria-label="Tipo da proposta">
+            <button
+              type="button"
+              class="prop-type-btn is-active"
+              role="tab"
+              aria-selected="true"
+              data-prop-type="lead-externo"
+              title="Proposta completa, com a apresentação institucional da Turbo"
+            >Lead externo</button>
+            <button
+              type="button"
+              class="prop-type-btn"
+              role="tab"
+              aria-selected="false"
+              data-prop-type="crossell"
+              title="Pula a apresentação da Turbo — vai da capa direto pras soluções"
+            >Crossell</button>
+          </div>
+          <span class="prop-client-hint" id="prop-type-hint">Proposta completa — inclui a apresentação institucional da Turbo.</span>
+        </div>
       </div>
       <div class="prop-section">
         <p class="prop-section-label">Soluções com apresentação</p>
@@ -22547,6 +22578,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
   const selected = new Set(['performance', 'creators']);
   const externalCache = new Map();
+  // Tipo de proposta: 'lead-externo' (completa, padrão) | 'crossell' (pula a
+  // apresentação institucional da Turbo — vai da capa direto pras soluções).
+  let proposalType = 'lead-externo';
   let previewDirty = true;
   let closerId = localStorage.getItem('prop-closer') || DEFAULT_CLOSER_ID;
   if (!CLOSERS[closerId]) closerId = DEFAULT_CLOSER_ID;
@@ -22923,6 +22957,29 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       renderPreview();
     });
   }
+
+  // Tipo de proposta (Lead externo / Crossell) — Crossell pula a apresentação
+  // institucional da Turbo (mantém só a capa). Estado vive só na sessão.
+  const $typeHint = document.getElementById('prop-type-hint');
+  const TYPE_HINTS = {
+    'lead-externo': 'Proposta completa — inclui a apresentação institucional da Turbo.',
+    'crossell': 'Crossell — pula a apresentação da Turbo: vai da capa direto pras soluções.',
+  };
+  document.querySelectorAll('.prop-type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.propType;
+      if (!t || t === proposalType) return;
+      proposalType = t;
+      document.querySelectorAll('.prop-type-btn').forEach(b => {
+        const on = b.dataset.propType === proposalType;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      if ($typeHint) $typeHint.textContent = TYPE_HINTS[proposalType] || '';
+      previewDirty = true;
+      renderPreview();
+    });
+  });
 
   // Validade — input de data, dispara rebuild do preview pra refletir a
   // badge no slide de fechamento. Estado vive só na sessão.
@@ -23516,6 +23573,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       // da proposta (não há pra onde navegar), então removemos só aqui.
       const turboClone = turboNode.cloneNode(true);
       turboClone.querySelectorAll('.turbo-metodo-cta').forEach(el => el.remove());
+      // Crossell: pula a apresentação institucional da Turbo — mantém SÓ a capa
+      // (que segue personalizada com o nome do cliente) e vai direto pras
+      // soluções. Lead externo (padrão): apresentação completa.
+      if (proposalType === 'crossell') {
+        const cover = turboClone.querySelector('.turbo-slide--cover');
+        if (cover) {
+          turboClone.innerHTML = `<div class="turbo-slides" id="turbo-slides">${cover.outerHTML}</div>`;
+        }
+      }
       sections.push(`<section class="proposal-section proposal-section--turbo">
         <div class="apres-subview is-active">${turboClone.innerHTML}</div>
       </section>`);
