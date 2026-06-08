@@ -5386,6 +5386,19 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-family: inherit;
   outline: none;
 }
+/* Desconto inválido — preço abaixo do mínimo permitido */
+.prop-invest-input.is-below-min { color: #ff7373 !important; font-weight: 700; }
+.prop-invest-input-wrap:has(.prop-invest-input.is-below-min) {
+  border-color: rgba(255,90,90,0.65);
+  background: rgba(255,60,60,0.08);
+  box-shadow: 0 0 0 1px rgba(255,90,90,0.35);
+}
+.prop-invest-minwarn {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 10.5px; font-weight: 700; color: #ff8a8a;
+  letter-spacing: 0.2px; margin: 3px 2px 1px; line-height: 1.3;
+}
+.prop-invest-minwarn[hidden] { display: none; }
 /* Botão "+" pra abrir/fechar a linha de ancoragem (preço riscado) */
 /* Radio picker (exclusivo) usado pelo E-commerce na sidebar — escolhe
    entre subtipos DNVB / Moda / Personalizado. */
@@ -22928,6 +22941,60 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return prices[sol]?.[tier]?.value === DEFAULT_PRICES[sol]?.[tier]?.value;
   }
 
+  // ── Preços MÍNIMOS (proteção de margem / desconto) ──
+  // Se o closer digitar um preço ABAIXO do mínimo, o campo fica vermelho,
+  // mostra "Desconto inválido" e o botão de gerar/baixar é bloqueado.
+  // Onde não há mínimo definido, não há validação (qualquer preço vale).
+  // Obs: Creators usa o mesmo mínimo nos dois modos (Pontual/Recorrente).
+  const MIN_PRICES = {
+    performance: { starter: 3297, scale: 4997, enterprise: 7497 },
+    social:      { starter: 2997, scale: 3997 },
+    ecommerce:   { dnvb: 17500, moda: 15497, personalizado: 30000 },
+    creators:    { starter: 6497, scale: 7497, enterprise: 12997 },
+    crm:         { 'bc-starter': 1997, 'bc-scale': 2497, 'bc-enterprise': 3997 },
+  };
+  function priceToNumber(val) {
+    let s = String(val || '').replace(/R\$\s*/i, '').replace(/\s/g, '');
+    s = s.replace(/\./g, '').replace(',', '.'); // tira separador de milhar, vírgula→ponto
+    const n = parseFloat(s);
+    return isNaN(n) ? null : n;
+  }
+  function minForTier(sol, tier) {
+    return MIN_PRICES[sol]?.[tier] ?? null;
+  }
+  function fmtMinReais(min) {
+    const intStr = String(min).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    return 'R$ ' + intStr + ',00';
+  }
+  function isBelowMin(sol, tier) {
+    const min = minForTier(sol, tier);
+    if (min == null) return false;
+    const cur = priceToNumber(prices[sol]?.[tier]?.value);
+    return cur != null && cur < min;
+  }
+  // Há algum preço abaixo do mínimo entre as soluções SELECIONADAS?
+  function anyBelowMin() {
+    for (const s of SOLUTIONS) {
+      if (!selected.has(s.id)) continue;
+      if (s.id === 'ecommerce') {
+        const tier = [...(enabledTiers.ecommerce || [])][0];
+        if (tier && isBelowMin('ecommerce', tier)) return true;
+      } else if (s.id === 'crm') {
+        for (const m of CRM_MODULES) {
+          if (!isCrmModuleOn(m.id)) continue;
+          for (const tier of m.tiers) {
+            if (isTierEnabled('crm', tier) && isBelowMin('crm', tier)) return true;
+          }
+        }
+      } else if (prices[s.id]) {
+        for (const tier of Object.keys(prices[s.id])) {
+          if (isTierEnabled(s.id, tier) && isBelowMin(s.id, tier)) return true;
+        }
+      }
+    }
+    return false;
+  }
+
   // Nome do cliente — campo obrigatório para baixar. Persiste no localStorage
   // para sobreviver a reloads (UX: ninguém quer digitar de novo).
   let clientName = (localStorage.getItem('prop-client-name') || '').trim();
@@ -23078,13 +23145,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         ${enabled ? 'checked' : ''}
         aria-label="Incluir pacote ${td.label} na proposta"
         title="Incluir pacote ${td.label} na proposta">`;
+      const belowMin = isBelowMin(solId, tier);
+      const minVal = minForTier(solId, tier);
+      const minWarnHtml = minVal != null
+        ? `<div class="prop-invest-minwarn" data-sol="${solId}" data-tier="${tier}"${belowMin ? '' : ' hidden'}>⚠ Desconto inválido · mínimo ${fmtMinReais(minVal)}</div>`
+        : '';
       return `
         <div class="prop-invest-field${exclusive ? ' prop-invest-field--exclusive' : ''}${enabled || exclusive ? '' : ' is-disabled'}">
           <span class="prop-invest-tier">${td.label}</span>
           <div class="prop-invest-input-wrap">
             <span class="prop-invest-currency">R$</span>
             <input type="text"
-              class="prop-invest-input${isPriceDefault(solId, tier) ? '' : ' is-edited'}"
+              class="prop-invest-input${isPriceDefault(solId, tier) ? '' : ' is-edited'}${belowMin ? ' is-below-min' : ''}"
               data-sol="${solId}" data-tier="${tier}"
               value="${escapeAttr(stripCurrency(td.value))}"
               spellcheck="false" autocomplete="off"
@@ -23098,6 +23170,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           </div>
           ${checkHtml}
         </div>
+        ${minWarnHtml}
         ${anchored ? `
         <div class="prop-invest-anchor-row" data-sol="${solId}" data-tier="${tier}">
           <span class="prop-invest-anchor-hint">de</span>
@@ -23247,6 +23320,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           prices[sol][tier].value = buildPriceValue(input.value);
           savePriceOverrides();
           input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
+          // Validação de desconto mínimo — vermelho + aviso + bloqueio do download.
+          const below = isBelowMin(sol, tier);
+          input.classList.toggle('is-below-min', below);
+          const warn = $invest.querySelector(`.prop-invest-minwarn[data-sol="${sol}"][data-tier="${tier}"]`);
+          if (warn) warn.hidden = !below;
+          updateMeta();
           schedulePreviewRebuild();
         }
       });
@@ -23333,9 +23412,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         const priceInput = field?.querySelector('.prop-invest-input');
         if (field)      field.classList.toggle('is-disabled', !check.checked);
         if (priceInput) priceInput.disabled = !check.checked;
+        updateMeta();
         schedulePreviewRebuild();
       });
     });
+
+    // Atualiza o guard de desconto mínimo a cada (re)render do Investimento
+    // — cobre trocas de subtipo (e-commerce), modo (Creators) e módulos (CRM).
+    updateMeta();
   }
 
   // Escape para atributo HTML (aspas duplas viram &quot;).
@@ -23375,6 +23459,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const count = selected.size;
     if (!clientName) {
       $meta.textContent = '⚠ Digite o nome do cliente para gerar a proposta';
+      setDownloadDisabled(true);
+    } else if (anyBelowMin()) {
+      // Desconto inválido — algum preço está abaixo do mínimo permitido.
+      $meta.textContent = '⚠ Desconto inválido — há preço(s) abaixo do mínimo permitido';
       setDownloadDisabled(true);
     } else if (count === 0) {
       // Sem soluções selecionadas → proposta institucional (só Apresentação Turbo).
@@ -26519,6 +26607,12 @@ ${dnaAlignScript}
   async function downloadHTML() {
     // Validação obrigatória do nome do cliente — feedback visual no input.
     if (!clientName) { flagClientMissing(); return; }
+    // Proteção de margem: bloqueia gerar se algum preço está abaixo do mínimo.
+    if (anyBelowMin()) {
+      if ($meta) $meta.textContent = '⚠ Desconto inválido — ajuste os preços abaixo do mínimo antes de gerar';
+      updateMeta();
+      return;
+    }
     // Sem soluções: gera só com a Apresentação Turbo (proposta institucional).
     setBusy(true);
     const setMeta = txt => { if ($meta) $meta.textContent = txt; };
