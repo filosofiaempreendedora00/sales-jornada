@@ -16171,9 +16171,10 @@ a.xpto-pricing-btn { text-decoration: none; }
 <script>
   (function () {
     const FILES = {
-      dnvb:          { src: 'Slides Tech/apresentacao-dnvb.html',          name: 'E-commerce · DNVB' },
-      moda:          { src: 'Slides Tech/apresentacao-moda.html',          name: 'E-commerce · Moda' },
-      personalizado: { src: 'Slides Tech/apresentacao-personalizado.html', name: 'E-commerce · Personalizado' },
+      dnvb:          { src: 'Slides Tech/apresentacao-dnvb.html',          name: 'E-commerce · DNVB',          soon: true },
+      moda:          { src: 'Slides Tech/apresentacao-moda.html',          name: 'E-commerce · Moda',          soon: true },
+      personalizado: { src: 'Slides Tech/apresentacao-personalizado.html', name: 'E-commerce · Personalizado', soon: true },
+      'consultoria-ugc': { src: 'Consultoria UGC/consultoria-ugc.html',    name: 'Consultoria UGC · Cartilha', soon: false },
     };
     let _v = 0;
     window.openTechPres = function (model) {
@@ -16181,7 +16182,9 @@ a.xpto-pricing-btn { text-decoration: none; }
       const modal = document.getElementById('tech-modal');
       const frame = document.getElementById('tech-frame');
       const nameEl = document.getElementById('tech-modal-name');
+      const badge = modal && modal.querySelector('.tech-modal-badge');
       if (!f || !modal || !frame) return;
+      if (badge) badge.style.display = f.soon ? '' : 'none'; // badge "em construção" só p/ decks ainda em construção
       frame.src = f.src + '?v=' + (++_v) + '-' + Date.now(); // cache-bust
       if (nameEl) nameEl.textContent = f.name;
       modal.classList.add('is-open');
@@ -17289,6 +17292,17 @@ const STAGES = [
         mistake: 'Pixel mal instalado, público de remarketing muito amplo ou anúncio idêntico ao que a pessoa já viu e ignorou.',
         impact: 'Você paga para trazer pessoas, elas não compram — e somem para sempre. CAC explode sem necessidade.',
         deps: ['trafego', 'loja']
+      },
+      {
+        id: 'consultoria-ugc',
+        icon: '🎓',
+        name: 'Consultoria UGC',
+        objective: 'Extrair o máximo de retorno dos criativos UGC com método de teste e escala',
+        what: 'Consultoria pontual onde a Turbo entrega a metodologia completa de teste, leitura e escala de criativos UGC — da definição da métrica norte e do cardápio de ângulos à estrutura de campanha (ABO + Adv+) e ao ciclo semanal de decisão: testar → ler → decidir → escalar.',
+        why: 'Produzir UGC é só metade do jogo. Sem um método de teste e escala, bons criativos morrem na conta e a verba vira aposta. A consultoria transforma criativo em resultado previsível.',
+        mistake: 'Subir vários criativos sem estrutura de teste, olhar só métrica de marketing e escalar no achismo — queimando verba antes de achar o ângulo vencedor.',
+        impact: 'CPA alto e instável, criativos vencedores não identificados e escala que quebra a conta em vez de multiplicar o retorno.',
+        deps: ['criativos']
       }
     ]
   },
@@ -17954,6 +17968,7 @@ function openPanel(nodeId) {
   const isAutomacoes = nodeId === 'automacoes';
   const isCrm = nodeId === 'crm-estrategico';
   const isLoja = nodeId === 'loja';
+  const isConsultoriaUgc = nodeId === 'consultoria-ugc' || nodeId === 'lead-consultoria-ugc';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -18027,6 +18042,13 @@ function openPanel(nodeId) {
         <span class="pres-launch-arrow">→</span>
       </button>
     </div>
+    ` : ''}
+    ${isConsultoriaUgc ? `
+    <button class="pres-launch-btn" onclick="if(window.openTechPres) window.openTechPres('consultoria-ugc')">
+      <span class="pres-launch-icon">🎓</span>
+      <span class="pres-launch-title">Cartilha da Consultoria UGC</span>
+      <span class="pres-launch-arrow">→</span>
+    </button>
     ` : ''}
     ${buildLinksHTML(node.links, color, node.toolsLabel)}
     ${isAutomacoes ? `
@@ -22811,6 +22833,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   const SOLUTIONS = [
     { id: 'performance', icon: '📈', name: 'Performance',          color: '#0dcfe8', sourceId: 'pp-inner' },
     { id: 'creators',    icon: '🎬', name: 'Creators UGC',         color: '#ffa826', sourceId: 'cp-inner' },
+    { id: 'consultoria-ugc', icon: '🎓', name: 'Consultoria UGC',  color: '#ffa826', sourceId: null },
     { id: 'social',      icon: '📱', name: 'Social Media',         color: '#12d490', sourceId: 'sm-inner' },
     { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
     { id: 'idvisual',    icon: '🎨', name: 'ID Visual',             color: '#f9a8d4', sourceId: 'iv-inner' },
@@ -22890,6 +22913,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     },
     comunidade: {
       unico: { label: 'Único', value: 'R$ 12.000,00' }
+    },
+    'consultoria-ugc': {
+      unico: { label: 'Único', value: 'R$ 2.997,00' }
     },
     idvisual: {
       starter:    { label: 'Starter',    value: 'R$ 4.997,00' },
@@ -22981,6 +23007,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     creators:    ['starter', 'scale', 'enterprise'],
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
+    'consultoria-ugc': ['unico'],
     idvisual:    ['starter', 'enterprise'],
     crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
@@ -24178,6 +24205,25 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
+    // Consultoria UGC — pacote único (pontual, R$ 2.997)
+    const consultoriaUgcCards = [];
+    if (selected.has('consultoria-ugc') && isTierEnabled('consultoria-ugc', 'unico')) {
+      consultoriaUgcCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">CONSULTORIA UGC</h3>
+          ${priceWithAnchor('consultoria-ugc', 'unico')}
+          <span class="pacote-tag">Consultoria pontual · pagamento único</span>
+          <ul class="pacote-features">
+            <li>Metodologia completa de teste de criativos UGC</li>
+            <li>Definição da métrica norte + cardápio de ângulos</li>
+            <li>Estrutura de campanha <small>(ABO + Adv+)</small> e divisão de verba</li>
+            <li>Ciclo semanal: testar → ler → decidir → escalar</li>
+            <li>Árvore de decisão + diagnóstico de funil</li>
+          </ul>
+        </div>`);
+    }
+
     // Pacotes ID Visual — Starter (essencial) + Enterprise (completo com manual).
     const idvisualCards = [];
     if (hasIdVisual) {
@@ -24405,7 +24451,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || idvisualCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -24472,6 +24518,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <h2 class="pacotes-title">Pacotes Gestão de <span class="pacotes-title-accent">Comunidade</span></h2>
             </div>
             <div class="pacotes-grid">${comunidadeCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3e-bis. Consultoria UGC — pacote único pontual (R$ 2.997)
+      if (consultoriaUgcCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Consultoria <span class="pacotes-title-accent">UGC</span></h2>
+              <p class="pacotes-sub">Método de teste e escala dos seus criativos UGC</p>
+            </div>
+            <div class="pacotes-grid">${consultoriaUgcCards.join('')}</div>
           </div>
         </section>`);
       }
