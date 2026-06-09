@@ -7376,6 +7376,10 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   .turbo-fase {
     border-top: 1px solid rgba(255,255,255,0.07);
     border-left: 3px solid var(--fase-color, #0dcfe8);
+    /* Na coluna, 'flex:1 1 0' achatava cada card (só o número aparecia).
+       Aqui cada card cresce com o próprio conteúdo. */
+    flex: 0 0 auto;
+    overflow: visible;
   }
   .turbo-fase-desc { flex: none; }
   .turbo-fase-sep { transform: rotate(90deg); }
