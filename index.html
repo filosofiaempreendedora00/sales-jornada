@@ -7379,6 +7379,20 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   }
   .turbo-fase-desc { flex: none; }
   .turbo-fase-sep { transform: rotate(90deg); }
+
+  /* Com as 5 fases empilhadas o conteúdo fica alto. O height fixo de
+     100vh + overflow:hidden cortava o topo/rodapé no celular. Aqui o
+     slide cresce com o conteúdo e rola normalmente (sem corte). */
+  .turbo-slide--metodo {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+  .turbo-slide--metodo .turbo-slide-inner { justify-content: flex-start; }
+  /* snap suave pra conseguir rolar até o fim de slides mais altos */
+  .turbo-slides { scroll-snap-type: y proximity; }
+  .turbo-slide { scroll-snap-stop: normal; }
 }
 
 /* ── TURBO SLIDE: DEPOIMENTOS (opiniões de clientes) ─── */
