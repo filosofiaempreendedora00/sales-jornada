@@ -11573,6 +11573,7 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
 /* Slides */
 .xpto-slide {
   min-height: 100vh;
+  min-height: 100dvh; /* mobile: usa a altura visível real (descontando a barra do navegador) */
   scroll-snap-align: start;
   scroll-snap-stop: always;
   display: flex;
@@ -13131,6 +13132,35 @@ a.xpto-pricing-btn { text-decoration: none; }
   .xpto-stats { flex-wrap: wrap; }
   .xpto-stat { min-width: 50%; }
   .xpto-grid { grid-template-columns: 1fr; }
+}
+
+/* ── PROTOCOLO (xpto) — AJUSTES MOBILE ──────────────
+   O modal/export usa este mesmo CSS, então estes fixes
+   valem tanto pra ferramenta quanto pro HTML exportado. */
+@media (max-width: 600px) {
+  /* Snap mais suave: não prende o usuário em slides altos
+     (ex.: o slide de investimento), deixando rolar até o fim/CTA. */
+  .xpto-modal { scroll-snap-type: y proximity; }
+  .xpto-slide { scroll-snap-stop: normal; }
+  /* Slides com bastante conteúdo começam do topo e rolam normal */
+  .xpto-slide-pricing, .xpto-slide-methodology { justify-content: flex-start; }
+
+  /* Barra de "valor recebido": menor pra não encostar no ⬇/✕ do topo */
+  #xpto-value-bar { top: 14px; }
+  .xpto-vb-inner { padding: 7px 13px; gap: 5px; }
+  .xpto-vb-label { font-size: 8.5px; letter-spacing: 1px; }
+  .xpto-vb-sep { font-size: 11px; }
+  .xpto-vb-currency { font-size: 11px; }
+  .xpto-vb-amount { font-size: 15px; }
+
+  /* Cabeçalho do módulo: empilha o rótulo e o contador (não colidem) */
+  .xpto-mod-top-bar { flex-direction: column; align-items: flex-start; gap: 6px; margin-bottom: 20px; }
+
+  /* Investimento: número grande sem estourar nem encavalar o "12x de R$" */
+  .xpto-pricing-installments { flex-wrap: wrap; gap: 2px 6px; }
+  .xpto-pricing-label { font-size: 15px; padding-bottom: 0; }
+  .xpto-pricing-currency { font-size: 23px; padding-bottom: 4px; }
+  .xpto-pricing-amount { font-size: 54px; letter-spacing: -2px; }
 }
 
 /* ── PP SLIDES — RESPONSIVIDADE ─────────────────── */
