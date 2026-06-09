@@ -1286,47 +1286,6 @@
                 </div>
             </div>
 
-            <!-- SLIDE 11: Investimento (antigo slide 9) -->
-            <div class="slide">
-                <div class="slide-inner" style="align-items: center;">
-                    <div class="section-label">// INVESTIMENTO</div>
-                    <h1 class="slide-title" style="text-align: center;">E-commerce de <span>Roupas</span></h1>
-                    <div class="price-card">
-                        <div class="price-amount">R$15.997</div>
-                        <div class="price-installment">ou 3× R$5.332 no boleto</div>
-                        <div class="price-badges">
-                            <span class="price-badge">Template Turbo</span>
-                            <span class="price-badge">45 dias úteis</span>
-                        </div>
-                        <div class="features-list">
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Search inteligente com filtros</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Wishlist + alertas</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Separa e Agrega</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Add to Cart fixo + Carrinho lateral</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Judgme Reviews integrado</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sales Notification + Barra estoque</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Lookbooks + Guia de tamanhos</div>
-                            <div class="feature-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>ERP, gateway e treinamento</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SLIDE 12: CTA (antigo slide 10) -->
-            <div class="slide">
-                <div class="slide-inner cta-slide" style="align-items: center;">
-                    <div class="cta-glow"></div>
-                    <div class="cta-glow-2"></div>
-                    <h1 class="cta-title">Vamos transformar sua marca de <span>moda</span>?</h1>
-                    <p class="cta-sub">Agende uma conversa com nosso time comercial</p>
-                    <a href="#" class="cta-button" aria-label="Falar com a Turbo">
-                        Falar com a Turbo
-                        <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                    </a>
-                    <div class="cta-logo">TURBO.</div>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -1341,8 +1300,6 @@
         <button class="nav-dot" aria-label="Ir para slide 8"  title="O que entregamos 2"></button>
         <button class="nav-dot" aria-label="Ir para slide 9"  title="Processo"></button>
         <button class="nav-dot" aria-label="Ir para slide 10" title="Cases"></button>
-        <button class="nav-dot" aria-label="Ir para slide 11" title="Investimento"></button>
-        <button class="nav-dot" aria-label="Ir para slide 12" title="Próximos Passos"></button>
     </div>
 
     <div class="nav-arrows">
@@ -1375,7 +1332,7 @@
         var dots     = document.querySelectorAll('.nav-dot');
         var counter  = document.getElementById('slideCounter');
         var progress = document.getElementById('progressBar');
-        var total    = 12;
+        var total    = 10;
         var current  = 0;
         var busy     = false;
         var touchY   = 0;
@@ -1471,8 +1428,7 @@
         document.addEventListener('wheel', function(e) {
             if (document.getElementById('presVideoModal').classList.contains('active')) return;
             e.preventDefault();
-            if (wt) return;
-            wt = setTimeout(function() { wt = null; }, 860);
+            var wasLocked = !!wt; if (wt) clearTimeout(wt); wt = setTimeout(function(){ wt = null; }, 240); if (wasLocked) return;
             if (e.deltaY > 0) next(); else prev();
         }, { passive: false });
 
@@ -1490,5 +1446,24 @@
         updateUI();
     })();
     </script>
+<style id="octo-nav-fix">
+.nav-arrows{display:none!important}
+.deck-down-hint{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;cursor:pointer;z-index:60;transition:opacity .3s;background:none;border:0;padding:6px}
+.deck-down-hint .ddh-chevron{width:13px;height:13px;border-right:2px solid rgba(196,168,255,.75);border-bottom:2px solid rgba(196,168,255,.75);transform:rotate(45deg);margin-top:-5px;animation:ddhBounce 1.8s infinite}
+.deck-down-hint .ddh-chevron:nth-child(2){animation-delay:.18s}
+.deck-down-hint .ddh-chevron:nth-child(3){animation-delay:.36s}
+@keyframes ddhBounce{0%,100%{opacity:.25}50%{opacity:.95}}
+</style>
+<script>
+(function(){
+  var hint=document.createElement('button');
+  hint.type='button'; hint.className='deck-down-hint'; hint.setAttribute('aria-label','Próximo slide');
+  hint.innerHTML='<span class="ddh-chevron"></span><span class="ddh-chevron"></span><span class="ddh-chevron"></span>';
+  hint.addEventListener('click',function(){ var nb=document.getElementById('nextBtn'); if(nb){ nb.click(); } });
+  document.body.appendChild(hint);
+  function sync(){ try{ var c=document.getElementById('slideCounter'),last=false; if(c){var m=c.textContent.split('/'); last=(parseInt(m[0],10)>=parseInt(m[1],10));} hint.style.opacity=last?'0':''; hint.style.pointerEvents=last?'none':''; }catch(e){} }
+  setInterval(sync,350); sync();
+})();
+</script>
 </body>
 </html>

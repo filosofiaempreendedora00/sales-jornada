@@ -12211,6 +12211,38 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
 }
 .xpto-close:hover { background: rgba(255,255,255,0.1); color: var(--text); }
 
+/* Botão Exportar apresentação (espelha o close, no canto superior esquerdo) */
+.xpto-export-btn {
+  position: fixed;
+  top: 22px;
+  left: 26px;
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 10px;
+  background: rgba(155,109,255,0.14);
+  border: 1px solid rgba(155,109,255,0.42);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.18s ease;
+  z-index: 3002;
+}
+.xpto-export-btn:hover { background: rgba(155,109,255,0.24); border-color: rgba(155,109,255,0.7); }
+.xpto-export-btn:disabled { opacity: 0.6; cursor: progress; }
+.xpto-export-btn .xpto-export-ico { font-size: 15px; line-height: 1; }
+/* Só aparece quando o modal do protocolo está aberto */
+.xpto-modal.is-open ~ .xpto-export-btn { display: inline-flex; }
+@media (max-width: 600px) {
+  .xpto-export-btn { top: 14px; left: 14px; height: 34px; padding: 0 12px; font-size: 12px; }
+  .xpto-export-btn .xpto-export-txt { display: none; }
+  .xpto-export-btn .xpto-export-ico { font-size: 16px; }
+}
+
 /* Hero */
 .xpto-hero {
   text-align: center;
@@ -14409,6 +14441,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
 </div>
+<button class="xpto-export-btn" id="xpto-export" aria-label="Exportar apresentação"><span class="xpto-export-ico">⬇</span><span class="xpto-export-txt">Exportar</span></button>
 
 <!-- ══════════════════════════════════════════════ -->
 <!--  PERF PRESENTATION MODAL                       -->
@@ -16146,7 +16179,8 @@ a.xpto-pricing-btn { text-decoration: none; }
   .tech-modal-close:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.25); }
   #tech-frame { flex: 1; width: 100%; border: 0; background: #07070e; }
   /* Grupo de launch no painel da Loja virtual */
-  .pres-launch-group { margin: 6px 0 2px; }
+  .pres-launch-group { margin: 6px 0 2px; display: flex; flex-direction: column; gap: 10px; }
+  .pres-launch-group .pres-launch-group-label { margin: 0 0 2px; }
   .pres-launch-group-label {
     display: flex; align-items: center; gap: 9px; flex-wrap: wrap;
     font-size: 11px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
@@ -21212,6 +21246,217 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeXpto(); });
 
   window.openXpto = openXpto;
+})();
+
+// ─────────────────────────────────────────────────
+//  EXPORTAR APRESENTAÇÃO DO PROTOCOLO → HTML standalone (desktop + mobile)
+//  Captura o modal #xpto-* já renderizado (serve p/ e-commerce e lead),
+//  embute todo o CSS (.xpto-* + media queries) e as imagens locais como
+//  data URI, e injeta um script próprio que reativa barra de valor,
+//  contagem regressiva, scroll-hint e o risco de preço (strike).
+// ─────────────────────────────────────────────────
+(function () {
+
+  // Runtime independente que roda DENTRO do arquivo exportado.
+  // Lê os preços direto do DOM (tags .xpto-mod-price-tag / .xpto-bonus-mod-price-tag),
+  // então não depende dos arrays MODULES/BONUSES.
+  function xptoStandaloneRuntime() {
+    var modal = document.getElementById('xpto-modal');
+    if (!modal) return;
+    function parsePrice(s){ return parseInt(String(s).replace(/[R$.\s]/g, ''), 10) || 0; }
+
+    // Barra de valor acumulado
+    var vb = document.getElementById('xpto-value-bar');
+    if (vb) {
+      var amountEl = vb.querySelector('.xpto-vb-amount');
+      var valued = [];
+      [].slice.call(modal.querySelectorAll('.xpto-slide-module-single')).forEach(function(el){
+        var p = el.querySelector('.xpto-mod-price-tag');
+        valued.push({ top: el.offsetTop, value: parsePrice(p ? p.textContent : '') });
+      });
+      [].slice.call(modal.querySelectorAll('.xpto-slide-bonus-single')).forEach(function(el){
+        var p = el.querySelector('.xpto-bonus-mod-price-tag');
+        valued.push({ top: el.offsetTop, value: parsePrice(p ? p.textContent : '') });
+      });
+      var displayed = 0, target = 0, raf = null;
+      function countTo(t){
+        if (t === target) return; target = t; if (raf) cancelAnimationFrame(raf);
+        var from = displayed, diff = target - from, dur = Math.min(500, Math.abs(diff) * 0.06 + 180), t0 = performance.now();
+        function tick(now){
+          var p = Math.min((now - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
+          displayed = Math.round(from + diff * e);
+          if (amountEl) amountEl.textContent = displayed.toLocaleString('pt-BR');
+          if (p < 1) raf = requestAnimationFrame(tick); else { displayed = target; raf = null; }
+        }
+        raf = requestAnimationFrame(tick);
+      }
+      modal.addEventListener('scroll', function(){
+        var mid = modal.scrollTop + modal.clientHeight * 0.5, total = 0;
+        valued.forEach(function(v){ if (v.top <= mid) total += v.value; });
+        vb.classList.toggle('is-visible', !!(valued[0] && valued[0].top <= mid));
+        countTo(total);
+      }, { passive: true });
+    }
+
+    // Scroll-hint some no fim
+    var hint = document.getElementById('xpto-scroll-hint');
+    if (hint) {
+      modal.addEventListener('scroll', function(){
+        hint.classList.toggle('is-faded', modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 60);
+      }, { passive: true });
+    }
+
+    // Contagem regressiva (revela ao clicar "Preciso pensar melhor")
+    var DURATION = 48 * 60 * 60 * 1000, tid = null;
+    function pad(n){ return String(n).padStart(2, '0'); }
+    function startCountdown(){
+      if (tid) clearInterval(tid);
+      var deadline = Date.now() + DURATION;
+      function tick(){
+        var h = document.getElementById('xpto-cd-h'), m = document.getElementById('xpto-cd-m'),
+            s = document.getElementById('xpto-cd-s'), wrap = document.getElementById('xpto-countdown');
+        if (!wrap) { clearInterval(tid); return; }
+        var diff = deadline - Date.now();
+        if (diff <= 0) { wrap.innerHTML = '<span class="xpto-countdown-expired">⏰ Oferta encerrada</span>'; clearInterval(tid); tid = null; return; }
+        if (h && m && s) {
+          h.textContent = pad(Math.floor(diff / 3600000));
+          m.textContent = pad(Math.floor((diff % 3600000) / 60000));
+          s.textContent = pad(Math.floor((diff % 60000) / 1000));
+        }
+      }
+      tick(); tid = setInterval(tick, 1000);
+    }
+    var think = document.getElementById('xpto-think-btn');
+    if (think) {
+      think.addEventListener('click', function(){
+        var cd = document.getElementById('xpto-countdown'); if (cd) cd.classList.add('is-visible');
+        think.classList.add('is-hidden'); startCountdown();
+      });
+    }
+
+    // Risco de preço (strike) nas âncoras
+    [].slice.call(modal.querySelectorAll('.xpto-slide-anchor')).forEach(function(slide){
+      var io = new IntersectionObserver(function(entries){
+        if (!entries[0].isIntersecting) return; io.disconnect();
+        var wrap = slide.querySelector('.xpto-anchor-num-wrap'); if (!wrap) return;
+        var amount = wrap.querySelector('.xpto-anchor-amount'); if (!amount) return;
+        var w = wrap.offsetWidth, h = wrap.offsetHeight,
+            diag = Math.round(Math.sqrt(w * w + h * h)) + 20, ang = Math.atan2(h, w) * 180 / Math.PI,
+            midY = Math.round(amount.offsetTop + amount.offsetHeight / 2),
+            rotOffset = Math.round((diag / 2) * Math.sin(ang * Math.PI / 180));
+        function makeLine(dir, delay){
+          var ln = document.createElement('span'); ln.className = 'xpto-strike-line';
+          ln.style.cssText = 'width:' + diag + 'px;left:' + Math.round((w - diag) / 2) + 'px;top:' + (midY - rotOffset - 2) + 'px;transform-origin:' + (dir > 0 ? 'left' : 'right') + ' center;transform:rotate(' + (dir * ang) + 'deg) scaleX(0);';
+          wrap.appendChild(ln);
+          setTimeout(function(){ ln.style.transition = 'transform 0.58s cubic-bezier(0.4,0,0.2,1)'; ln.style.transform = 'rotate(' + (dir * ang) + 'deg) scaleX(1)'; }, delay);
+        }
+        setTimeout(function(){ makeLine(1, 0); makeLine(-1, 520); }, 120);
+      }, { root: modal, threshold: 0.5 });
+      io.observe(slide);
+    });
+
+    modal.scrollTop = 0;
+  }
+
+  // Inliner de imagens locais → data URI (arquivo 100% offline)
+  async function inlineImages(rootEl){
+    var isLocal = function(u){ return !!u && !/^(https?:|data:|blob:|#)/.test(u); };
+    var imgs = [].slice.call(rootEl.querySelectorAll('img'));
+    var cache = new Map();
+    for (var i = 0; i < imgs.length; i++) {
+      var im = imgs[i], src = im.getAttribute('src');
+      if (!isLocal(src)) continue;
+      if (!cache.has(src)) {
+        try {
+          var res = await fetch(src);
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          var blob = await res.blob();
+          var uri = await new Promise(function(resolve, reject){
+            var r = new FileReader(); r.onload = function(){ resolve(r.result); }; r.onerror = function(){ reject(r.error); }; r.readAsDataURL(blob);
+          });
+          cache.set(src, uri);
+        } catch (e) { console.warn('[protocolo export] falhou inline:', src, e.message); cache.set(src, null); }
+      }
+      var u = cache.get(src);
+      if (u) im.setAttribute('src', u);
+    }
+  }
+
+  async function exportXptoPresentation(){
+    var inner = document.getElementById('xpto-inner');
+    var modal = document.getElementById('xpto-modal');
+    var vb    = document.getElementById('xpto-value-bar');
+    var hint  = document.getElementById('xpto-scroll-hint');
+    if (!inner || !inner.innerHTML.trim()) { alert('Abra a apresentação do protocolo antes de exportar.'); return; }
+
+    var btn = document.getElementById('xpto-export');
+    var oldHTML = btn ? btn.innerHTML : '';
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="xpto-export-ico">⏳</span><span class="xpto-export-txt">Gerando…</span>'; }
+
+    try {
+      // 1) clona o modal renderizado + barras (sibling elements)
+      var modalClone = modal.cloneNode(true);
+      modalClone.classList.add('is-open');
+      // limpa estados transitórios
+      modalClone.querySelectorAll('.xpto-strike-line').forEach(function(el){ el.remove(); });
+      var cd = modalClone.querySelector('#xpto-countdown'); if (cd) cd.classList.remove('is-visible');
+      var tb = modalClone.querySelector('#xpto-think-btn'); if (tb) tb.classList.remove('is-hidden');
+      var cdh = modalClone.querySelector('#xpto-cd-h'); if (cdh) cdh.textContent = '48';
+      var cdm = modalClone.querySelector('#xpto-cd-m'); if (cdm) cdm.textContent = '00';
+      var cds = modalClone.querySelector('#xpto-cd-s'); if (cds) cds.textContent = '00';
+
+      var vbClone = vb ? vb.cloneNode(true) : null;
+      if (vbClone) { vbClone.classList.remove('is-visible'); var a0 = vbClone.querySelector('.xpto-vb-amount'); if (a0) a0.textContent = '0'; }
+      var hintClone = hint ? hint.cloneNode(true) : null;
+      if (hintClone) { hintClone.classList.add('is-visible'); hintClone.classList.remove('is-faded'); }
+
+      // 2) embute imagens locais no clone (logos do case Bready etc.)
+      await inlineImages(modalClone);
+
+      // 3) captura todo o CSS da página (traz .xpto-* + media queries → mesma responsividade)
+      var styles = [].slice.call(document.querySelectorAll('style')).map(function(s){ return s.outerHTML; }).join('\n');
+
+      // 4) override: exibe o modal em página cheia (sem overlay/trigger) e esconde botões da app
+      var override = '<style>'
+        + 'html,body{margin:0;height:100%;background:var(--bg);}'
+        + '#xpto-export,#xpto-close,.xpto-overlay{display:none !important;}'
+        + '.xpto-modal{opacity:1 !important;pointer-events:auto !important;}'
+        + '</style>';
+
+      var titleEl = inner.querySelector('.xpto-title');
+      var title = (titleEl ? titleEl.textContent : 'Protocolo Turbo').trim();
+
+      var html = '<!doctype html>\n'
+        + '<html lang="pt-BR">\n<head>\n'
+        + '<meta charset="utf-8">\n'
+        + '<meta name="viewport" content="width=device-width, initial-scale=1">\n'
+        + '<title>' + title + ' — Turbo Partners</title>\n'
+        + styles + '\n' + override + '\n'
+        + '</head>\n<body>\n'
+        + (vbClone ? vbClone.outerHTML + '\n' : '')
+        + modalClone.outerHTML + '\n'
+        + (hintClone ? hintClone.outerHTML + '\n' : '')
+        + '<scr' + 'ipt>(' + xptoStandaloneRuntime.toString() + ')();<\/scr' + 'ipt>\n'
+        + '</body>\n</html>';
+
+      var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      var safe = title.replace(/[\/\\:*?"<>|]/g, '').trim() || 'Protocolo';
+      a.href = url; a.download = safe + ' — Turbo Partners.html';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+    } catch (e) {
+      console.error('[protocolo export] erro:', e);
+      alert('Erro ao exportar a apresentação — veja o console.');
+    } finally {
+      if (btn) { btn.disabled = false; btn.innerHTML = oldHTML; }
+    }
+  }
+
+  window.exportXptoPresentation = exportXptoPresentation;
+  var _xbtn = document.getElementById('xpto-export');
+  if (_xbtn) _xbtn.addEventListener('click', exportXptoPresentation);
 })();
 
 // ─────────────────────────────────────────────────
