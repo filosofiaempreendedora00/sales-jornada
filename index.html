@@ -11355,6 +11355,17 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
   border-radius: 8px;
   box-shadow: 0 12px 36px rgba(0,0,0,0.45);
 }
+/* Slide único: SVG centralizado vertical e horizontalmente na apresentação */
+.iv-only-inner {
+  padding: 24px;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.iv-only-inner .iv-deck-wrap { max-width: 1040px; }
+/* Apresentação de 1 slide só: sem dica de rolagem */
+#iv-scroll-hint { display: none !important; }
 
 .iv-plans-grid {
   display: grid;
@@ -15919,85 +15930,11 @@ a.xpto-pricing-btn { text-decoration: none; }
 <div class="xpto-modal" id="iv-modal">
 <div class="xpto-inner" id="iv-inner">
 
-  <!-- SLIDE 01 — HERO -->
-  <section class="xpto-slide xpto-slide-hero">
-    <div class="xpto-slide-inner" style="text-align:center;">
-      <div class="xpto-eyebrow"><span></span>ID Visual</div>
-      <h1 class="xpto-title">Identidade visual<br>que <span class="iv-hero-accent">comunica antes da palavra.</span></h1>
-      <p class="xpto-subtitle">Da definição estratégica ao manual da marca aplicada — uma identidade construída para crescer com o negócio.</p>
-    </div>
-  </section>
-
-  <!-- SLIDE 02 — APRESENTAÇÃO COMPLETA (SVG do Roberto) -->
-  <section class="xpto-slide">
-    <div class="xpto-slide-inner" style="padding: 0;">
+  <!-- SLIDE ÚNICO — APRESENTAÇÃO ID VISUAL (SVG) -->
+  <section class="xpto-slide iv-only-slide">
+    <div class="xpto-slide-inner iv-only-inner">
       <div class="iv-deck-wrap">
-        <img src="fotos turbo/id-visual.svg" alt="Apresentação ID Visual — Turbo Partners" class="iv-deck-img" loading="lazy" />
-      </div>
-    </div>
-  </section>
-
-  <!-- SLIDE 03 — PLANOS -->
-  <section class="xpto-slide">
-    <div class="xpto-slide-inner">
-      <div class="iv-section-header">
-        <div class="xpto-eyebrow"><span></span>Planos</div>
-        <h2 class="iv-section-title">Dois caminhos<br>para construir sua marca.</h2>
-        <p class="iv-section-sub">Do essencial pra começar com consistência ao pacote completo de marca com manual aplicado.</p>
-      </div>
-
-      <div class="iv-plans-grid">
-        <!-- STARTER -->
-        <div class="iv-plan-card">
-          <div class="iv-plan-tag">✦ ID Visual Starter</div>
-          <h3 class="iv-plan-name">Starter</h3>
-          <p class="iv-plan-desc">O kit essencial pra marca nascer já com identidade própria — sem cara de Canva e sem inconsistência.</p>
-          <div class="iv-plan-divider"></div>
-          <ul class="iv-plan-features">
-            <li><span class="iv-feat-icon">✓</span><span>Logo principal + variações <small>(horizontal, vertical, símbolo, fundos claro/escuro)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Paleta de cores oficial <small>(primária + secundárias com códigos HEX/RGB/CMYK)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Tipografia da marca <small>(família principal + secundária + hierarquia)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Mini-manual de uso em PDF <small>(do-and-don't básico do logo)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Arquivos abertos <small>(AI, PNG, SVG)</small> entregues organizados</span></li>
-          </ul>
-        </div>
-
-        <!-- ENTERPRISE -->
-        <div class="iv-plan-card is-featured">
-          <div class="iv-plan-tag">🚀 ID Visual Enterprise</div>
-          <h3 class="iv-plan-name">Enterprise</h3>
-          <p class="iv-plan-desc">Identidade visual completa, com universo de marca aplicado, mock-ups e o manual oficial para escalar com consistência.</p>
-          <div class="iv-plan-divider"></div>
-          <ul class="iv-plan-features">
-            <li><span class="iv-feat-icon">✓</span><span><strong>Tudo do Starter</strong> + universo visual estendido</span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Sistema de elementos gráficos <small>(grafismos, padrões, ícones próprios)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Manual da Marca completo em PDF <small>(uso, restrições, exemplos)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Identidade aplicada em mock-ups <small>(embalagem, social, cartão, papelaria)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Kit Social Media <small>(templates de feed e stories prontos)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Sessão de apresentação da marca <small>(alinhamento com o time)</small></span></li>
-            <li><span class="iv-feat-icon">✓</span><span>Suporte de aplicação por 30 dias após entrega</span></li>
-          </ul>
-          <div class="iv-plan-highlight">
-            <div class="iv-plan-hi-icon">🎨</div>
-            <div class="iv-plan-hi-text">Marca pronta pra ser aplicada em qualquer ponto de contato sem precisar reinventar.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SLIDE 04 — DIFERENCIAIS -->
-  <section class="xpto-slide">
-    <div class="xpto-slide-inner">
-      <div class="iv-section-header">
-        <div class="xpto-eyebrow"><span></span>Diferenciais</div>
-        <h2 class="iv-section-title">Por que faz diferença<br>fazer com a Turbo.</h2>
-      </div>
-      <div class="iv-diff-grid">
-        <div class="iv-diff-card"><div class="iv-diff-num">01</div><div class="iv-diff-icon">🎯</div><h4 class="iv-diff-title">Estratégia antes do traço</h4><p class="iv-diff-text">Cada decisão visual nasce de uma decisão estratégica. Marca que vende é marca que comunica posicionamento.</p></div>
-        <div class="iv-diff-card"><div class="iv-diff-num">02</div><div class="iv-diff-icon iv-diff-icon--alt">🔗</div><h4 class="iv-diff-title">Identidade pronta pra crescer</h4><p class="iv-diff-text">Sistema de marca pensado pra escalar — funciona no Instagram, na embalagem, na loja online e no off-line.</p></div>
-        <div class="iv-diff-card"><div class="iv-diff-num">03</div><div class="iv-diff-icon iv-diff-icon--alt">📐</div><h4 class="iv-diff-title">Manual que evita retrabalho</h4><p class="iv-diff-text">Equipes internas e fornecedores aplicam a marca certo na primeira vez. Menos revisão, mais consistência.</p></div>
-        <div class="iv-diff-card"><div class="iv-diff-num">04</div><div class="iv-diff-icon">⚡</div><h4 class="iv-diff-title">Entrega organizada</h4><p class="iv-diff-text">Arquivos nomeados, pastas estruturadas, formatos exportados certos. Você acha tudo na hora que precisar.</p></div>
+        <img src="fotos turbo/id-visual.svg" alt="Apresentação ID Visual — Turbo Partners" class="iv-deck-img" decoding="async" />
       </div>
     </div>
   </section>
@@ -23211,8 +23148,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       unico: { label: 'Único', value: 'R$ 2.997,00' }
     },
     idvisual: {
-      starter:    { label: 'Starter',    value: 'R$ 4.997,00' },
-      enterprise: { label: 'Enterprise', value: 'R$ 9.997,00' }
+      enterprise: { label: 'ID Visual', value: 'R$ 9.997,00' }
     },
     crm: {
       'bc-starter':       { label: 'Broadcast · Starter',       value: 'R$ 1.997,00' },
@@ -23301,7 +23237,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     social:      ['starter', 'scale'],
     comunidade:  ['unico'],
     'consultoria-ugc': ['unico'],
-    idvisual:    ['starter', 'enterprise'],
+    idvisual:    ['enterprise'],
     crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
   };
@@ -24609,37 +24545,24 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
-    // Pacotes ID Visual — Starter (essencial) + Enterprise (completo com manual).
+    // Pacote ID Visual — plano único (identidade completa, do logo ao manual aplicado).
     const idvisualCards = [];
-    if (hasIdVisual) {
-      if (isTierEnabled('idvisual', 'starter')) idvisualCards.push(`
+    if (hasIdVisual && isTierEnabled('idvisual', 'enterprise')) {
+      idvisualCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
-          <h3 class="pacote-name">STARTER</h3>
-          ${priceWithAnchor('idvisual', 'starter')}
-          <span class="pacote-tag">Logo + paleta + tipografia</span>
+          <h3 class="pacote-name">ID VISUAL</h3>
+          ${priceWithAnchor('idvisual', 'enterprise')}
+          <span class="pacote-tag">Identidade completa — do logo ao manual aplicado</span>
           <ul class="pacote-features">
             <li>Logo principal + variações <small>(horizontal, vertical, símbolo)</small></li>
             <li>Paleta de cores oficial <small>(HEX/RGB/CMYK)</small></li>
             <li>Tipografia da marca <small>(principal + secundária)</small></li>
-            <li>Mini-manual de uso em PDF</li>
-            <li>Arquivos abertos organizados <small>(AI, PNG, SVG)</small></li>
-          </ul>
-        </div>`);
-      if (isTierEnabled('idvisual', 'enterprise')) idvisualCards.push(`
-        <div class="pacote-card pacote-card--featured">
-          ${pacoteIcon}
-          <h3 class="pacote-name">ENTERPRISE</h3>
-          ${priceWithAnchor('idvisual', 'enterprise')}
-          <span class="pacote-tag">Manual completo + identidade aplicada</span>
-          <ul class="pacote-features">
-            <li><strong>Tudo do Starter</strong> + universo visual estendido</li>
-            <li>Sistema de elementos gráficos <small>(grafismos, ícones)</small></li>
+            <li>Sistema de elementos gráficos <small>(grafismos, ícones próprios)</small></li>
             <li>Manual da Marca completo em PDF</li>
             <li>Identidade aplicada em mock-ups <small>(embalagem, social, papelaria)</small></li>
             <li>Kit Social Media <small>(templates de feed e stories)</small></li>
-            <li>Sessão de apresentação da marca</li>
-            <li>Suporte de aplicação por 30 dias</li>
+            <li>Sessão de apresentação da marca + suporte de 30 dias</li>
           </ul>
         </div>`);
     }
@@ -24916,15 +24839,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3f. Pacotes ID Visual — Starter + Enterprise (layout de 2 colunas)
+      // 3f. Pacote ID Visual — plano único (layout centralizado, mesmo esquema da Consultoria UGC)
       if (idvisualCards.length) {
-        sections.push(`<section class="proposal-section proposal-section--pacotes-idvisual">
-          <div class="pacotes-slide pacotes-slide--two">
+        sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
+          <div class="pacotes-slide">
             <div class="pacotes-header">
-              <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">ID Visual</span></h2>
+              <h2 class="pacotes-title">Pacote <span class="pacotes-title-accent">ID Visual</span></h2>
               <p class="pacotes-sub">Identidade visual estratégica — do logo ao manual aplicado</p>
             </div>
-            <div class="pacotes-grid pacotes-grid--two">${idvisualCards.join('')}</div>
+            <div class="pacotes-grid">${idvisualCards.join('')}</div>
           </div>
         </section>`);
       }
@@ -30099,7 +30022,7 @@ renderProgress();
     });
   }
   // Containers de apresentação (cliente-facing) — subviews e modais.
-  const PRES_SEL = '.apres-subview, #cp-modal, #pp-modal, #xpto-modal';
+  const PRES_SEL = '.apres-subview, #cp-modal, #pp-modal, #xpto-modal, #iv-modal';
   function eagerizeAll() { document.querySelectorAll(PRES_SEL).forEach(eagerize); }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', eagerizeAll);
@@ -30121,6 +30044,27 @@ renderProgress();
       obs.observe(el, { attributes: true, attributeFilter: ['class'] });
     });
   } catch (e) {}
+})();
+
+// ─────────────────────────────────────────────────
+//  GARANTIA: clicar num card da jornada SEMPRE abre o painel.
+//  Rede de segurança por delegação no document. Se o listener inline de
+//  algum .node não estiver ativo (re-render, carga interrompida quando o
+//  servidor cai, etc.) o card ainda responde por aqui. Em clique normal o
+//  listener inline chama stopPropagation e ESTE handler nem dispara — então
+//  não há clique duplo. Escopo: só nodes dentro do #flow (a jornada).
+// ─────────────────────────────────────────────────
+(function () {
+  document.addEventListener('click', function (e) {
+    try {
+      if (!e.target || !e.target.closest) return;
+      const node = e.target.closest('.node');
+      if (!node || !node.closest('#flow')) return;
+      const id = node.dataset && node.dataset.id;
+      if (!id) return;
+      if (typeof window.openPanel === 'function') window.openPanel(id);
+    } catch (err) {}
+  });
 })();
 
 </script>
