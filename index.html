@@ -23522,8 +23522,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Onde não há mínimo definido, não há validação (qualquer preço vale).
   // Obs: Creators usa o mesmo mínimo nos dois modos (Pontual/Recorrente).
   //
-  // Reativado. Pra desativar a regra inteira de novo, basta voltar pra false.
-  const MIN_PRICES_ENABLED = true;
+  // Desativado temporariamente (a pedido do Roberto). Pra reativar: true.
+  const MIN_PRICES_ENABLED = false;
   const MIN_PRICES = {
     performance: { starter: 3297, scale: 4997, enterprise: 7497 },
     social:      { starter: 2997, scale: 3997 },
@@ -30075,11 +30075,17 @@ renderProgress();
 (function () {
   function forceLoad(img) {
     try {
-      if (img.getAttribute('loading') === 'lazy') img.setAttribute('loading', 'eager');
-      // Se ainda não carregou (lazy "decidiu" não baixar), re-dispara o fetch.
-      if (!img.complete || img.naturalWidth === 0) {
-        const s = img.getAttribute('src');
-        if (s) { img.removeAttribute('src'); img.setAttribute('src', s); }
+      // Só mexe em imagem LAZY (que pode não ter começado a baixar). Converte
+      // pra eager e, se ainda não carregou, re-dispara o fetch.
+      // IMPORTANTE: NÃO tocar no src de imagem EAGER que está baixando — resetar
+      // o src interrompe/reinicia o load (era o que deixava o logo da Turbo
+      // piscando/bugado em conexão lenta).
+      if (img.getAttribute('loading') === 'lazy') {
+        img.setAttribute('loading', 'eager');
+        if (!img.complete || img.naturalWidth === 0) {
+          const s = img.getAttribute('src');
+          if (s) { img.removeAttribute('src'); img.setAttribute('src', s); }
+        }
       }
     } catch (e) {}
   }
