@@ -11356,16 +11356,27 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
   box-shadow: 0 12px 36px rgba(0,0,0,0.45);
 }
 /* Slide único: SVG centralizado vertical e horizontalmente na apresentação */
-.iv-only-inner {
-  padding: 24px;
-  min-height: 100%;
-  display: flex;
-  align-items: center;
+/* Pacote ID Visual (deck nativo) — card único centralizado, preço e checklist 2 colunas */
+.iv-plans-grid--single {
+  grid-template-columns: minmax(0, 780px);
   justify-content: center;
 }
-.iv-only-inner .iv-deck-wrap { max-width: 1040px; }
-/* Apresentação de 1 slide só: sem dica de rolagem */
-#iv-scroll-hint { display: none !important; }
+.iv-plan-price {
+  font-size: 40px;
+  font-weight: 900;
+  letter-spacing: -1px;
+  color: #fff;
+  margin: 2px 0 4px;
+}
+.iv-plan-price span { font-size: 22px; font-weight: 800; color: rgba(255,255,255,0.55); }
+.iv-plan-card .iv-plan-features--cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 26px;
+}
+@media (max-width: 640px) {
+  .iv-plan-card .iv-plan-features--cols { grid-template-columns: 1fr; }
+}
 
 .iv-plans-grid {
   display: grid;
@@ -15930,11 +15941,61 @@ a.xpto-pricing-btn { text-decoration: none; }
 <div class="xpto-modal" id="iv-modal">
 <div class="xpto-inner" id="iv-inner">
 
-  <!-- SLIDE ÚNICO — APRESENTAÇÃO ID VISUAL (SVG) -->
-  <section class="xpto-slide iv-only-slide">
-    <div class="xpto-slide-inner iv-only-inner">
-      <div class="iv-deck-wrap">
-        <img src="fotos turbo/id-visual.svg" alt="Apresentação ID Visual — Turbo Partners" class="iv-deck-img" decoding="async" />
+  <!-- SLIDE 01 — HERO -->
+  <section class="xpto-slide xpto-slide-hero">
+    <div class="xpto-slide-inner" style="text-align:center;">
+      <div class="xpto-eyebrow"><span></span>ID Visual</div>
+      <h1 class="xpto-title">Identidade visual<br>que <span class="iv-hero-accent">comunica antes da palavra.</span></h1>
+      <p class="xpto-subtitle">Da estratégia ao manual da marca aplicada — uma identidade construída para crescer com o negócio.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 02 — PACOTE IDENTIDADE VISUAL (conteúdo do material do Roberto, nativo na ID Octopus) -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="iv-section-header">
+        <div class="xpto-eyebrow"><span></span>Pacote</div>
+        <h2 class="iv-section-title">Pacote <span class="iv-hero-accent">Identidade Visual</span></h2>
+        <p class="iv-section-sub">Tudo que a marca precisa pra nascer (ou renascer) com consistência — do conceito ao manual aplicado.</p>
+      </div>
+
+      <div class="iv-plans-grid iv-plans-grid--single">
+        <div class="iv-plan-card is-featured">
+          <div class="iv-plan-tag">✦ Mais vendido</div>
+          <h3 class="iv-plan-name">Standard</h3>
+          <div class="iv-plan-price">R$ 9.997<span>,00</span></div>
+          <div class="iv-plan-divider"></div>
+          <ul class="iv-plan-features iv-plan-features--cols">
+            <li><span class="iv-feat-icon">✓</span><span>Manual de identidade visual</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Explicação e construção da logo</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Margem de segurança</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Redução mínima</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Tipografia</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Paleta de cores</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Tom de voz</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Moodboard</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Elementos visuais de suporte à marca</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>~10 aplicações da marca</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Estudo e análise de segmento</span></li>
+            <li><span class="iv-feat-icon">✓</span><span>Documento de boas práticas de uso da marca &amp; aplicações</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 03 — DIFERENCIAIS -->
+  <section class="xpto-slide">
+    <div class="xpto-slide-inner">
+      <div class="iv-section-header">
+        <div class="xpto-eyebrow"><span></span>Diferenciais</div>
+        <h2 class="iv-section-title">Por que faz diferença<br>fazer com a Turbo.</h2>
+      </div>
+      <div class="iv-diff-grid">
+        <div class="iv-diff-card"><div class="iv-diff-num">01</div><div class="iv-diff-icon">🎯</div><h4 class="iv-diff-title">Estratégia antes do traço</h4><p class="iv-diff-text">Cada decisão visual nasce de uma decisão estratégica. Marca que vende é marca que comunica posicionamento.</p></div>
+        <div class="iv-diff-card"><div class="iv-diff-num">02</div><div class="iv-diff-icon iv-diff-icon--alt">🔗</div><h4 class="iv-diff-title">Identidade pronta pra crescer</h4><p class="iv-diff-text">Sistema de marca pensado pra escalar — funciona no Instagram, na embalagem, na loja online e no off-line.</p></div>
+        <div class="iv-diff-card"><div class="iv-diff-num">03</div><div class="iv-diff-icon iv-diff-icon--alt">📐</div><h4 class="iv-diff-title">Manual que evita retrabalho</h4><p class="iv-diff-text">Equipes internas e fornecedores aplicam a marca certo na primeira vez. Menos revisão, mais consistência.</p></div>
+        <div class="iv-diff-card"><div class="iv-diff-num">04</div><div class="iv-diff-icon">⚡</div><h4 class="iv-diff-title">Entrega organizada</h4><p class="iv-diff-text">Arquivos nomeados, pastas estruturadas, formatos exportados certos. Você acha tudo na hora que precisar.</p></div>
       </div>
     </div>
   </section>
