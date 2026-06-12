@@ -930,6 +930,50 @@ body {
 .pres-launch-btn:active { transform: translateY(0); }
 /* Variante <a> (link externo) — mesmo visual de botão, sem sublinhado */
 a.pres-launch-btn--link { text-decoration: none; box-sizing: border-box; }
+
+/* Não esmagar os itens do painel: se o conteúdo passa da altura, ROLA — não comprime. */
+.panel-body > *,
+.pres-launch-group > * { flex-shrink: 0; }
+
+/* Painéis de controle — cards quadradinhos lado a lado (em vez de retângulo esticado) */
+.painel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 148px));
+  justify-content: center;
+  gap: 12px;
+}
+.painel-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  aspect-ratio: 1 / 1;
+  padding: 14px;
+  border-radius: 14px;
+  text-decoration: none;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(155,109,255,0.16), rgba(77,141,255,0.12) 55%, rgba(13,207,232,0.10));
+  border: 1px solid rgba(155,109,255,0.32);
+  box-shadow: 0 4px 20px rgba(155,109,255,0.10);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.painel-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(155,109,255,0.6);
+  box-shadow: 0 8px 30px rgba(155,109,255,0.22);
+}
+.painel-card-icon { font-size: 28px; line-height: 1; filter: drop-shadow(0 0 8px rgba(13,207,232,0.5)); }
+.painel-card-name {
+  font-size: 12.5px; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;
+  background: linear-gradient(90deg, #c49bff, #4d8dff, #0dcfe8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.painel-card-arrow {
+  position: absolute; top: 11px; right: 12px; font-size: 15px; line-height: 1;
+  background: linear-gradient(135deg, #9b6dff, #0dcfe8);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
 .pres-launch-icon {
   font-size: 26px; flex-shrink: 0;
   filter: drop-shadow(0 0 8px rgba(13,207,232,0.6));
@@ -18242,16 +18286,18 @@ function openPanel(nodeId) {
         <span class="pres-launch-arrow">↗</span>
       </a>
       <p class="pres-launch-group-label" style="margin-top:16px;">Painéis de controle</p>
-      <a class="pres-launch-btn pres-launch-btn--link" href="https://docs.google.com/spreadsheets/d/1UzTRno8zwtHEaGfUiwqft8Jfa-89jd1phqLHQenwg7o/edit?usp=sharing" target="_blank" rel="noopener">
-        <span class="pres-launch-icon">📈</span>
-        <span class="pres-launch-title">Gloryful</span>
-        <span class="pres-launch-arrow">↗</span>
-      </a>
-      <a class="pres-launch-btn pres-launch-btn--link" href="https://docs.google.com/spreadsheets/d/1K7dJJvSJsP8r1APcLa8XTB6B91S7_Stovjpn2cZ-3_U/edit?gid=247322862#gid=247322862" target="_blank" rel="noopener">
-        <span class="pres-launch-icon">📈</span>
-        <span class="pres-launch-title">BSCROSS</span>
-        <span class="pres-launch-arrow">↗</span>
-      </a>
+      <div class="painel-grid">
+        <a class="painel-card" href="https://docs.google.com/spreadsheets/d/1UzTRno8zwtHEaGfUiwqft8Jfa-89jd1phqLHQenwg7o/edit?usp=sharing" target="_blank" rel="noopener">
+          <span class="painel-card-arrow">↗</span>
+          <span class="painel-card-icon">📈</span>
+          <span class="painel-card-name">Gloryful</span>
+        </a>
+        <a class="painel-card" href="https://docs.google.com/spreadsheets/d/1K7dJJvSJsP8r1APcLa8XTB6B91S7_Stovjpn2cZ-3_U/edit?gid=247322862#gid=247322862" target="_blank" rel="noopener">
+          <span class="painel-card-arrow">↗</span>
+          <span class="painel-card-icon">📈</span>
+          <span class="painel-card-name">BSCROSS</span>
+        </a>
+      </div>
     </div>
     ` : ''}
     ${isCreators ? `
