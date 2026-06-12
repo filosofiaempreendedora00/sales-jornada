@@ -3428,6 +3428,85 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   line-height: 1.5;
   max-width: 600px;
 }
+
+/* ── VIEW: DEPOIMENTOS (em construção) ───────────── */
+.depo-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 48px) 80px;
+}
+.depo-construction {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  margin-bottom: 32px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(251,191,36,0.12), rgba(245,158,11,0.06));
+  border: 1px solid rgba(251,191,36,0.32);
+}
+.depo-construction-icon { font-size: 26px; line-height: 1; flex-shrink: 0; }
+.depo-construction-text { display: flex; flex-direction: column; gap: 3px; }
+.depo-construction-text strong {
+  font-size: 14px; font-weight: 800; letter-spacing: 0.2px;
+  text-transform: uppercase; color: #fcd34d;
+}
+.depo-construction-text span { font-size: 13.5px; color: var(--text-soft); line-height: 1.5; }
+
+.depo-header { margin-bottom: 30px; }
+.depo-title {
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 900;
+  letter-spacing: -1.4px;
+  line-height: 1.05;
+  margin: 0 0 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.depo-title-icon { font-size: 0.85em; line-height: 1; }
+.depo-subtitle {
+  font-size: 14px; font-weight: 500; color: var(--text-soft);
+  margin: 0; line-height: 1.5; max-width: 640px;
+}
+
+.depo-types {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.depo-type {
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 16px;
+  padding: 22px 22px 24px;
+}
+.depo-type-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.depo-type-icon {
+  font-size: 22px; line-height: 1; flex-shrink: 0;
+  width: 46px; height: 46px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(155,109,255,0.12);
+  border: 1px solid rgba(155,109,255,0.22);
+}
+.depo-type-title { font-size: 17px; font-weight: 800; color: #fff; margin: 0 0 2px; }
+.depo-type-sub { font-size: 12.5px; color: var(--text-soft); margin: 0; line-height: 1.45; }
+.depo-empty {
+  display: flex; align-items: center; gap: 10px;
+  padding: 26px 18px;
+  border: 1px dashed rgba(255,255,255,0.14);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.015);
+  color: rgba(255,255,255,0.45);
+  font-size: 13px;
+  justify-content: center;
+  text-align: center;
+}
+.depo-empty-icon {
+  font-size: 16px; font-weight: 700;
+  color: rgba(155,109,255,0.6);
+}
 .cases-header-stats {
   display: flex;
   gap: 12px;
@@ -13297,6 +13376,10 @@ a.xpto-pricing-btn { text-decoration: none; }
         <span class="nav-item-icon">🏆</span>
         <span class="nav-item-label">Cases</span>
       </div>
+      <div class="nav-item" data-view="depoimentos">
+        <span class="nav-item-icon">💬</span>
+        <span class="nav-item-label">Depoimentos</span>
+      </div>
       <div class="nav-item" data-view="calculadora">
         <span class="nav-item-icon">🧮</span>
         <span class="nav-item-label">Calculadora</span>
@@ -14212,6 +14295,75 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="cases-empty-icon">🔭</span>
       <p class="cases-empty-text">Nenhum nicho corresponde à busca.</p>
     </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  VIEW: DEPOIMENTOS (em construção)             -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="view" id="view-depoimentos">
+  <div class="depo-wrap">
+
+    <!-- Aviso EM CONSTRUÇÃO -->
+    <div class="depo-construction">
+      <span class="depo-construction-icon">🚧</span>
+      <div class="depo-construction-text">
+        <strong>Ambiente em construção</strong>
+        <span>Esse espaço de Depoimentos ainda está sendo montado. Aos poucos vamos lapidando e adicionando o que você quiser incluir — por enquanto é só a estrutura inicial.</span>
+      </div>
+    </div>
+
+    <header class="depo-header">
+      <div class="depo-header-left">
+        <h1 class="depo-title"><span class="depo-title-icon">💬</span> Depoimentos</h1>
+        <p class="depo-subtitle">A prova social da Turbo num só lugar — vídeos, prints de conversas e imagens de clientes, prontos pra usar em apresentações e propostas.</p>
+      </div>
+    </header>
+
+    <div class="depo-types">
+      <section class="depo-type">
+        <div class="depo-type-head">
+          <span class="depo-type-icon">🎬</span>
+          <div>
+            <h2 class="depo-type-title">Depoimentos em vídeo</h2>
+            <p class="depo-type-sub">Clientes falando sobre os resultados.</p>
+          </div>
+        </div>
+        <div class="depo-empty">
+          <span class="depo-empty-icon">＋</span>
+          Em breve — nenhum vídeo adicionado ainda.
+        </div>
+      </section>
+
+      <section class="depo-type">
+        <div class="depo-type-head">
+          <span class="depo-type-icon">💬</span>
+          <div>
+            <h2 class="depo-type-title">Prints de texto</h2>
+            <p class="depo-type-sub">Conversas e mensagens (WhatsApp, DM, e-mail).</p>
+          </div>
+        </div>
+        <div class="depo-empty">
+          <span class="depo-empty-icon">＋</span>
+          Em breve — nenhum print adicionado ainda.
+        </div>
+      </section>
+
+      <section class="depo-type">
+        <div class="depo-type-head">
+          <span class="depo-type-icon">🖼️</span>
+          <div>
+            <h2 class="depo-type-title">Imagens</h2>
+            <p class="depo-type-sub">Capturas de resultados, telas e fotos.</p>
+          </div>
+        </div>
+        <div class="depo-empty">
+          <span class="depo-empty-icon">＋</span>
+          Em breve — nenhuma imagem adicionada ainda.
+        </div>
+      </section>
+    </div>
+
   </div>
 </div>
 
@@ -16687,6 +16839,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     { name: 'prop.personalizada',        re: /^\/propostas\/personalizada\/?$/,             params: [] },
     { name: 'propostas',                 re: /^\/propostas\/?$/,                            params: [] },
     { name: 'cases',                     re: /^\/cases\/?$/,                                params: [] },
+    { name: 'depoimentos',               re: /^\/depoimentos\/?$/,                          params: [] },
     { name: 'config',                    re: /^\/configuracoes\/?$/,                        params: [] },
     { name: 'simulador',                 re: /^\/simulador\/(performance|lead-performance)\/?$/, params: ['sim'] },
     { name: 'apresentar',                re: /^\/apresentar\/(performance|creators|social|comunidade)\/?$/, params: ['what'] },
@@ -16931,6 +17084,11 @@ a.xpto-pricing-btn { text-decoration: none; }
           break;
         case 'cases': {
           const navItem = document.querySelector('.nav-item[data-view="cases"]');
+          if (navItem && !navItem.classList.contains('is-active')) navItem.click();
+          break;
+        }
+        case 'depoimentos': {
+          const navItem = document.querySelector('.nav-item[data-view="depoimentos"]');
           if (navItem && !navItem.classList.contains('is-active')) navItem.click();
           break;
         }
@@ -27636,6 +27794,7 @@ renderProgress();
         'calculadora':  `/calculadora/${currentJourney()}`,
         'propostas':    '/propostas/padrao',
         'cases':        '/cases',
+        'depoimentos':  '/depoimentos',
         'config':       '/configuracoes',
       };
       const p = map[view];
@@ -27788,6 +27947,42 @@ renderProgress();
 })();
 
 // ─────────────────────────────────────────────────
+//  apiFetch — fetch com retry + backoff.
+//  CAUSA RAIZ do "sem conexão com o servidor": Cases e Melhorias faziam
+//  UM único fetch no load/save; qualquer pisca-pisca do servidor (o preview
+//  local cai sozinho; o Render hiberna por inatividade e leva alguns
+//  segundos pra acordar, e fica indisponível por instantes durante deploy)
+//  caía direto no catch e mostrava o erro na cara do usuário. Aqui a gente
+//  tenta de novo algumas vezes com espera crescente — então um servidor que
+//  volta em poucos segundos é absorvido em silêncio, sem assustar ninguém.
+//  HTTP 4xx NÃO é retentado (é erro real, não instabilidade).
+// ─────────────────────────────────────────────────
+window.apiFetch = async function (url, opts, cfg) {
+  const tries = (cfg && cfg.tries) || 5;
+  const base  = (cfg && cfg.base)  || 1000;   // 1s, 2s, 3s, 4s → ~10s de tolerância
+  let lastErr;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const r = await fetch(url, opts);
+      // 5xx = servidor instável/subindo (DB acordando, deploy) → vale retry.
+      if (r.status >= 500 && i < tries - 1) {
+        await new Promise(s => setTimeout(s, base * (i + 1)));
+        continue;
+      }
+      return r;
+    } catch (e) {
+      // throw = inalcançável (caiu/reiniciando/sem rede) → vale retry.
+      lastErr = e;
+      if (i < tries - 1) {
+        await new Promise(s => setTimeout(s, base * (i + 1)));
+        continue;
+      }
+    }
+  }
+  throw lastErr || new Error('apiFetch: falhou após retries');
+};
+
+// ─────────────────────────────────────────────────
 //  CASES — biblioteca de referências por nicho
 //  v0: grade de nichos read-only + busca + filtro
 //  (CRUD vem em PR seguinte)
@@ -27920,7 +28115,7 @@ renderProgress();
     pushInFlight = true;
     pushDirty = false;
     try {
-      const r = await fetch('/api/cases/bulk-replace', {
+      const r = await window.apiFetch('/api/cases/bulk-replace', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cases: casesData }),
@@ -27972,7 +28167,7 @@ renderProgress();
   let casesReady = false;
   (async function pullCasesOnInit() {
     try {
-      const r = await fetch('/api/cases');
+      const r = await window.apiFetch('/api/cases');
       if (!r.ok) {
         showDbError(`Não foi possível carregar os cases (HTTP ${r.status}).`);
         return;
@@ -29167,7 +29362,7 @@ renderProgress();
     melhPushInFlight = true;
     melhPushDirty = false;
     try {
-      const r = await fetch('/api/melhorias/bulk-replace', {
+      const r = await window.apiFetch('/api/melhorias/bulk-replace', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ melhorias: data }),
@@ -29208,7 +29403,7 @@ renderProgress();
   // Migration única: localStorage legado → DB se DB estiver vazio
   (async function pullMelhoriasOnInit() {
     try {
-      const r = await fetch('/api/melhorias');
+      const r = await window.apiFetch('/api/melhorias');
       if (!r.ok) {
         showMelhError(`Não foi possível carregar (HTTP ${r.status}).`);
         return;
