@@ -928,6 +928,8 @@ body {
     0 -1px 0 rgba(0,0,0,0.25) inset;
 }
 .pres-launch-btn:active { transform: translateY(0); }
+/* Variante <a> (link externo) — mesmo visual de botão, sem sublinhado */
+a.pres-launch-btn--link { text-decoration: none; box-sizing: border-box; }
 .pres-launch-icon {
   font-size: 26px; flex-shrink: 0;
   filter: drop-shadow(0 0 8px rgba(13,207,232,0.6));
@@ -18232,6 +18234,25 @@ function openPanel(nodeId) {
       <span class="pres-launch-title">Apresentação de Performance</span>
       <span class="pres-launch-arrow">→</span>
     </button>
+    <div class="pres-launch-group">
+      <p class="pres-launch-group-label">📊 Resultados</p>
+      <a class="pres-launch-btn pres-launch-btn--link" href="https://drive.google.com/file/d/1BepYPkDgX0lyKmWVYjOmSq12Q7wOJTSV/view?usp=sharing" target="_blank" rel="noopener">
+        <span class="pres-launch-icon">🏆</span>
+        <span class="pres-launch-title">Resultados Squadra</span>
+        <span class="pres-launch-arrow">↗</span>
+      </a>
+      <p class="pres-launch-group-label" style="margin-top:16px;">Painéis de controle</p>
+      <a class="pres-launch-btn pres-launch-btn--link" href="https://docs.google.com/spreadsheets/d/1UzTRno8zwtHEaGfUiwqft8Jfa-89jd1phqLHQenwg7o/edit?usp=sharing" target="_blank" rel="noopener">
+        <span class="pres-launch-icon">📈</span>
+        <span class="pres-launch-title">Gloryful</span>
+        <span class="pres-launch-arrow">↗</span>
+      </a>
+      <a class="pres-launch-btn pres-launch-btn--link" href="https://docs.google.com/spreadsheets/d/1K7dJJvSJsP8r1APcLa8XTB6B91S7_Stovjpn2cZ-3_U/edit?gid=247322862#gid=247322862" target="_blank" rel="noopener">
+        <span class="pres-launch-icon">📈</span>
+        <span class="pres-launch-title">BSCROSS</span>
+        <span class="pres-launch-arrow">↗</span>
+      </a>
+    </div>
     ` : ''}
     ${isCreators ? `
     <button class="pres-launch-btn" onclick="if(window.openCreatorsPres) window.openCreatorsPres()">
