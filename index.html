@@ -23691,16 +23691,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }
   }
 
-  // Creators: 2 modelos de contratação com preços distintos.
-  //  - Pontual (default): prices.creators (= DEFAULT_PRICES.creators)
-  //  - Recorrente: preços abaixo + tag "A partir de 4 entregas" na proposta
+  // Creators: 2 modelos de contratação (Pontual / Recorrente).
+  //  - Valores-PADRÃO iguais nos dois modos (= DEFAULT_PRICES.creators / Pontual).
+  //  - O que muda é o DESCONTO MÁXIMO (preço mínimo) — ver MIN_PRICES.creators.
+  //  - Recorrente exibe a tag "A partir de 4 entregas" na proposta.
   // O switcher no card de Investimento alterna os dois fazendo swap dos stores
   // (preserva edições de cada modo na sessão).
   let creatorsMode = 'pontual';
   const CREATORS_RECORRENTE_DEFAULT = {
-    starter:    { label: 'Starter',    value: 'R$ 6.497,00' },
-    scale:      { label: 'Scale',      value: 'R$ 7.497,00' },
-    enterprise: { label: 'Enterprise', value: 'R$ 12.997,00' }
+    starter:    { label: 'Starter',    value: 'R$ 7.997,00' },
+    scale:      { label: 'Scale',      value: 'R$ 9.497,00' },
+    enterprise: { label: 'Enterprise', value: 'R$ 14.997,00' }
   };
   let creatorsInactivePrices = JSON.parse(JSON.stringify(CREATORS_RECORRENTE_DEFAULT));
   for (const tier in creatorsInactivePrices) {
@@ -23939,7 +23940,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Se o closer digitar um preço ABAIXO do mínimo, o campo fica vermelho,
   // mostra "Desconto inválido" e o botão de gerar/baixar é bloqueado.
   // Onde não há mínimo definido, não há validação (qualquer preço vale).
-  // Obs: Creators usa o mesmo mínimo nos dois modos (Pontual/Recorrente).
+  // Obs: Creators tem mínimo DISTINTO por modo (Pontual/Recorrente) — ver abaixo.
   //
   // Reativado (a pedido do Roberto). Pra desativar de novo: false.
   const MIN_PRICES_ENABLED = true;
@@ -23947,7 +23948,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     performance: { starter: 3297, scale: 4997, enterprise: 7497 },
     social:      { starter: 2997, scale: 3997 },
     ecommerce:   { dnvb: 17500, moda: 15497, personalizado: 30000 },
-    creators:    { starter: 6497, scale: 7497, enterprise: 12997 },
+    creators:    { pontual:    { starter: 7497, scale: 8497, enterprise: 13997 },
+                   recorrente: { starter: 6497, scale: 7497, enterprise: 12997 } },
+    comunidade:  { unico: 10000 },
     crm:         { 'bc-starter': 1997, 'bc-scale': 2497, 'bc-enterprise': 3997 },
   };
   function priceToNumber(val) {
@@ -23957,6 +23960,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return isNaN(n) ? null : n;
   }
   function minForTier(sol, tier) {
+    // Creators: mínimo depende do modo (Pontual/Recorrente).
+    if (sol === 'creators') return MIN_PRICES.creators?.[creatorsMode]?.[tier] ?? null;
     return MIN_PRICES[sol]?.[tier] ?? null;
   }
   function fmtMinReais(min) {
