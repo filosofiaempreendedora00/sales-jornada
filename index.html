@@ -24839,12 +24839,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-lead{font-size:clamp(14px,1.5vw,17px);line-height:1.6;color:rgba(255,255,255,0.62);max-width:760px;margin:14px 0 0;}
     .pdnvb-lead strong{color:rgba(255,255,255,0.9);font-weight:700;}
     /* COVER */
-    .pdnvb-cover{padding:clamp(60px,9vw,120px) clamp(24px,6vw,72px);}
-    .pdnvb-cover-bg{position:absolute;inset:0;background:radial-gradient(ellipse 44% 56% at 12% 14%,rgba(77,141,255,0.30),transparent 60%),radial-gradient(ellipse 40% 50% at 88% 80%,rgba(196,168,255,0.20),transparent 65%);pointer-events:none;}
-    .pdnvb-chip{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#cfe0ff;background:rgba(77,141,255,0.12);border:1px solid rgba(77,141,255,0.4);padding:5px 13px;border-radius:99px;margin:0 0 22px;}
-    .pdnvb-cover-h{font-size:clamp(34px,6vw,72px);font-weight:900;letter-spacing:-2px;line-height:1.02;margin:0;max-width:18ch;}
+    .pdnvb-cover{min-height:min(82vh,680px);display:flex;align-items:center;justify-content:center;padding:clamp(48px,7vw,90px) clamp(24px,6vw,72px);}
+    .pdnvb-cover-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 6%,rgba(77,141,255,0.30),transparent 60%),radial-gradient(ellipse 52% 50% at 50% 100%,rgba(196,168,255,0.18),transparent 65%);pointer-events:none;}
+    .pdnvb-cover-center{max-width:780px;margin:0 auto;text-align:center;}
+    .pdnvb-cover-center .pdnvb-badges{justify-content:center;}
+    .pdnvb-cover-h{font-size:clamp(34px,5.2vw,62px);font-weight:900;letter-spacing:-1.8px;line-height:1.05;margin:0;}
     .pdnvb-cover-h .nw{white-space:nowrap;}
-    .pdnvb-cover-sub{font-size:clamp(15px,1.8vw,20px);line-height:1.55;color:rgba(255,255,255,0.66);max-width:620px;margin:24px 0 0;}
+    .pdnvb-cover-sub{font-size:clamp(15px,1.7vw,20px);line-height:1.55;color:rgba(255,255,255,0.66);max-width:600px;margin:22px auto 0;}
     .pdnvb-badges{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0;}
     .pdnvb-badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.04);border:1px solid var(--cb);border-radius:99px;padding:8px 16px;}
     .pdnvb-badge i{width:7px;height:7px;border-radius:50%;background:var(--gr);box-shadow:0 0 10px var(--gr);}
@@ -24911,7 +24912,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .pdnvb-cred{grid-template-columns:1fr;gap:22px;}
       .pdnvb-deliver{grid-template-columns:1fr;gap:24px;}
       .pdnvb-feats{grid-template-columns:repeat(2,1fr);gap:10px;}
-      .pdnvb-cover-h{font-size:clamp(30px,8vw,40px);}
+      .pdnvb-cover{min-height:auto;}
+      .pdnvb-cover-h{font-size:clamp(30px,8vw,42px);}
       .pdnvb-lb-box{height:auto;width:94vw;max-height:86vh;}
     }`;
 
@@ -24938,10 +24940,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       <!-- CAPA -->
       <div class="pdnvb-slide pdnvb-cover">
         <div class="pdnvb-cover-bg"></div>
-        <div class="pdnvb-in">
-          <span class="pdnvb-chip">E-commerce na Shopify · DTC / DNVB</span>
-          <h1 class="pdnvb-cover-h">A metodologia <span class="ac">Turbo</span> de fazer&nbsp;<span class="nw">e-commerce</span></h1>
-          <p class="pdnvb-cover-sub">Construímos lojas DTC na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.</p>
+        <div class="pdnvb-in pdnvb-cover-center">
+          <div class="xpto-eyebrow"><span></span>E-commerce · Shopify · DTC / DNVB</div>
+          <h1 class="pdnvb-cover-h">O <span class="nw">E-commerce</span> DNVB&nbsp;<span class="ac">Turbo</span></h1>
+          <p class="pdnvb-cover-sub">Lojas DTC na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.</p>
           <div class="pdnvb-badges">
             <span class="pdnvb-badge"><i></i>Shopify Partners</span>
             <span class="pdnvb-badge"><i></i>Shopify Expert</span>
