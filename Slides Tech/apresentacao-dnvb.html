@@ -1066,16 +1066,16 @@
         .checklist-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 15px; color: rgba(255,255,255,0.67); line-height: 1.45; }
         .checklist-item:last-child { border-bottom: none; }
         .checklist-item svg { width: 13px; height: 13px; flex-shrink: 0; stroke: var(--check); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
-        .pres-features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+        .pres-features-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
         .pres-features-grid-full { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-        .pres-feature-tag { display: flex; align-items: stretch; background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 11px; overflow: hidden; cursor: pointer; height: 50px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-        .pres-feature-tag:hover { border-color: rgba(77,141,255,0.5); box-shadow: 0 4px 14px rgba(77,141,255,0.13); }
-        .pres-feature-label { flex: 1; display: flex; align-items: center; padding: 0 13px; font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.72); }
-        .pres-feature-preview { position: relative; width: 68px; flex-shrink: 0; overflow: hidden; background: rgba(0,0,0,0.3); }
-        .pres-feature-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .pres-feature-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.42); opacity: 0; transition: opacity 0.2s ease; }
+        .pres-feature-tag { position: relative; display: block; aspect-ratio: 3 / 4; background: #0b0a16; border: 1px solid var(--card-border); border-radius: 13px; overflow: hidden; cursor: pointer; transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+        .pres-feature-tag:hover { border-color: rgba(77,141,255,0.55); box-shadow: 0 8px 22px rgba(77,141,255,0.2); transform: translateY(-2px); }
+        .pres-feature-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; pointer-events: none; background: #000; }
+        .pres-feature-label { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 22px 11px 9px; font-size: 13px; font-weight: 600; color: #fff; line-height: 1.18; background: linear-gradient(to top, rgba(5,4,12,0.92) 6%, rgba(5,4,12,0.5) 52%, rgba(5,4,12,0) 100%); text-shadow: 0 1px 4px rgba(0,0,0,0.6); pointer-events: none; }
+        .pres-feature-play { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center; background: rgba(8,5,16,0.3); opacity: 0; transition: opacity 0.2s ease; pointer-events: none; }
         .pres-feature-tag:hover .pres-feature-play { opacity: 1; }
-        .pres-feature-play svg { width: 17px; height: 17px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+        .pres-feature-play span { width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.16); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); border: 1.5px solid rgba(255,255,255,0.55); display: flex; align-items: center; justify-content: center; }
+        .pres-feature-play svg { width: 18px; height: 18px; margin-left: 3px; fill: #fff; }
         .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
         .process-step { background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 13px; padding: 18px; display: flex; flex-direction: column; gap: 7px; transition: border-color 0.25s ease; }
         .process-step:hover { border-color: rgba(77,141,255,0.45); }
@@ -1090,7 +1090,7 @@
         .pres-video-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.78); }
         .pres-video-close { width: 27px; height: 27px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease; font-family: inherit; }
         .pres-video-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
-        .pres-video-box video { display: block; width: 640px; max-width: 85vw; max-height: 65vh; background: #000; }
+        .pres-video-box video { display: block; width: auto; height: min(78vh, 780px); max-width: 90vw; background: #000; }
     </style>
 <style id="octopus-id-override">
 .slide-title span,.slide-title .accent,.gradient-text{background:linear-gradient(90deg,#c49bff 0%,#4d8dff 50%,#0dcfe8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent !important}
@@ -1390,29 +1390,45 @@
                         <div>
                             <div class="feat-col-title">Funcionalidades em destaque</div>
                             <div class="pres-features-grid">
-                                <div class="pres-feature-tag" data-video="../assets/videos/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/carrinho-lateral-frete.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Carrinho Lateral</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/barra-frete-gratis.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Barra de Frete Grátis</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/orderbump.mp4" data-title="Orderbump">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/orderbump.mp4" data-title="Orderbump">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/orderbump.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Orderbump</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/reviews-judgme.mp4" data-title="Reviews de Clientes">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/reviews-judgme.mp4" data-title="Reviews de Clientes">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/reviews-judgme.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Reviews de Clientes</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/secao-ugcs.mp4" data-title="Seção de UGC's">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/secao-ugcs.mp4" data-title="Seção de UGC's">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/secao-ugcs.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Seção de UGC's</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/bundle-progressivo.mp4" data-title="Bundle Progressivo">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/bundle-progressivo.mp4" data-title="Bundle Progressivo">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/bundle-progressivo.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Bundle Progressivo</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/menu-mobile-custom.mp4" data-title="Menu Mobile Custom">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/menu-mobile-custom.mp4" data-title="Menu Mobile Custom">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/menu-mobile-custom.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Menu Mobile Custom</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/popup-personalizado.mp4" data-title="Popup Personalizado">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/popup-personalizado.mp4" data-title="Popup Personalizado">
+                                    <video class="pres-feature-vid" src="Ativos%20tech/DNVB/popup-personalizado.mp4" muted loop playsinline preload="auto"></video>
                                     <span class="pres-feature-label">Popup Personalizado</span>
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                 </div>
                             </div>
                         </div>
@@ -1515,6 +1531,14 @@
             dots.forEach(function(d, i) { d.classList.toggle('active', i === current); });
             counter.textContent = pad(current + 1) + ' / ' + pad(total);
             progress.style.width = ((current + 1) / total * 100) + '%';
+            // Gifs de features tocam só no slide ativo
+            slides.forEach(function(s, i) {
+                var vids = s.querySelectorAll('.pres-feature-vid');
+                for (var k = 0; k < vids.length; k++) {
+                    if (i === current) { var p = vids[k].play(); if (p && p.catch) p.catch(function(){}); }
+                    else { vids[k].pause(); }
+                }
+            });
         }
 
         function pad(n) { return String(n).padStart(2, '0'); }
