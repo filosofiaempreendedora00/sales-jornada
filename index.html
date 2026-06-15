@@ -24752,17 +24752,32 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       if (isLocal(xhref)) refs.push({ el, attr: 'xlink:href', url: xhref });
     });
     const uniqueUrls = [...new Set(refs.map(r => r.url))];
-    let done = 0;
+    let done = 0, failed = 0;
     const total = uniqueUrls.length;
-    const CONCURRENCY = 8;
+    const CONCURRENCY = 6;
     const queue = [...uniqueUrls];
+    // Render hiberna no plano free: na 1ª request o servidor pode estar
+    // acordando e devolver erro/timeout. 'force-cache' reusa a imagem que o
+    // preview JÁ baixou (sem bater no servidor); retry+backoff cobre o wake-up.
+    async function fetchImg(url) {
+      let res;
+      for (let i = 0; i < 5; i++) {
+        try {
+          res = await fetch(url, { cache: 'force-cache' });
+          if (res.ok) return res;
+          if (res.status >= 400 && res.status < 500) return res; // 4xx: falha real, não adianta repetir
+        } catch (e) { /* rede / servidor acordando — repete */ }
+        if (i < 4) await new Promise(r => setTimeout(r, 700 * (i + 1)));
+      }
+      return res;
+    }
     async function worker() {
       while (queue.length) {
         const url = queue.shift();
         if (!_imgDataUriCache.has(url)) {
           try {
-            const res = await fetch(url);
-            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const res = await fetchImg(url);
+            if (!res || !res.ok) throw new Error('HTTP ' + (res ? res.status : 'sem resposta'));
             const blob = await res.blob();
             const dataUri = await new Promise((resolve, reject) => {
               const reader = new FileReader();
@@ -24770,10 +24785,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               reader.onerror = () => reject(reader.error);
               reader.readAsDataURL(blob);
             });
-            _imgDataUriCache.set(url, dataUri);
+            _imgDataUriCache.set(url, dataUri); // só cacheia SUCESSO (falha re-tenta no próximo download)
           } catch (e) {
             console.warn('[proposta] Falhou inline:', url, e.message);
-            _imgDataUriCache.set(url, null);
+            failed++;
           }
         }
         done++;
@@ -24781,6 +24796,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
     }
     await Promise.all(Array(CONCURRENCY).fill(0).map(worker));
+    // Nunca gerar um .html com imagens faltando (iria pro cliente quebrado).
+    // Melhor barrar e pedir pra tentar de novo (servidor já estará acordado).
+    if (failed > 0) {
+      throw new Error(failed + ' de ' + total + ' imagens não carregaram — o servidor pode estar reiniciando. Aguarde uns segundos e baixe de novo.');
+    }
     for (const ref of refs) {
       const dataUri = _imgDataUriCache.get(ref.url);
       if (dataUri) ref.el.setAttribute(ref.attr, dataUri);
@@ -24809,11 +24829,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       { f: 'menu-mobile-custom',     t: 'Menu Mobile Custom',       driveId: '1sjKmQTdqNGwqipYwoxV6q5BIqEuYHTrn' },
     ];
     const playSvg = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    const chkSvg = '<svg class="pdnvb-feat-chk" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    // Poster = imagem local (mesmo domínio, deployada) — confiável no celular.
+    // O Drive entra só no clique (lightbox), via data-drive-id.
     const featCards = feats.map(v => `
       <button type="button" class="pdnvb-feat" data-drive-id="${v.driveId}" data-title="${v.t}" aria-label="Ver vídeo: ${v.t}">
-        <img class="pdnvb-feat-img" src="https://drive.google.com/thumbnail?id=${v.driveId}&sz=w640" alt="" loading="eager" onerror="this.onerror=null;this.src='${POSTER}${v.f}.jpg'">
+        <img class="pdnvb-feat-img" src="${POSTER}${v.f}.jpg" alt="" loading="eager">
         <span class="pdnvb-feat-play"><span>${playSvg}</span></span>
-        <span class="pdnvb-feat-label">${v.t}</span>
+        <span class="pdnvb-feat-label">${chkSvg}${v.t}</span>
       </button>`).join('');
 
     const checklist = [
@@ -24875,7 +24898,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-shopcard{border:1px solid var(--cb);border-radius:18px;background:radial-gradient(ellipse at 50% 30%,rgba(110,231,183,0.10),transparent 70%),#0b0a16;min-height:200px;display:flex;align-items:center;justify-content:center;padding:38px;}
     .pdnvb-shoplogo{width:66%;max-width:300px;height:auto;object-fit:contain;display:block;}
     /* TABELA comparação */
-    .pdnvb-tablewrap{margin:26px 0 0;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--cb);border-radius:14px;}
+    .pdnvb-tablebox{position:relative;margin:26px 0 0;}
+    .pdnvb-tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--cb);border-radius:14px;}
+    .pdnvb-tablebox::after{content:"";position:absolute;top:1px;right:1px;bottom:1px;width:44px;border-radius:0 13px 13px 0;background:linear-gradient(to right,rgba(8,5,16,0),#080510 86%);pointer-events:none;opacity:0;transition:opacity .25s;}
+    .pdnvb-swipe{display:none;}
     .pdnvb-table{width:100%;border-collapse:collapse;min-width:520px;}
     .pdnvb-table th,.pdnvb-table td{padding:13px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,0.06);}
     .pdnvb-table thead th{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);font-weight:800;}
@@ -24897,6 +24923,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-feat:hover .pdnvb-feat-play>span{transform:scale(1.08);}
     .pdnvb-feat-play svg{width:16px;height:16px;margin-left:2px;fill:#fff;}
     .pdnvb-feat-label{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:20px 10px 8px;font-size:12px;font-weight:600;color:#fff;line-height:1.18;text-align:left;background:linear-gradient(to top,rgba(5,4,12,0.92) 6%,rgba(5,4,12,0.45) 55%,transparent);text-shadow:0 1px 4px rgba(0,0,0,0.6);}
+    .pdnvb-feat-chk{width:12px;height:12px;display:inline-block;vertical-align:-1px;margin-right:5px;fill:none;stroke:#6ee7b7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
     .pdnvb-feats-note{grid-column:1/-1;font-size:12px;color:rgba(255,255,255,0.4);margin:4px 0 0;text-align:center;}
     /* LIGHTBOX */
     .pdnvb-lb{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;}
@@ -24914,6 +24941,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .pdnvb-feats{grid-template-columns:repeat(2,1fr);gap:10px;}
       .pdnvb-cover{min-height:auto;}
       .pdnvb-cover-h{font-size:clamp(30px,8vw,42px);}
+      .pdnvb-table{min-width:466px;}
+      .pdnvb-table th,.pdnvb-table td{padding:11px 12px;font-size:13px;}
+      .pdnvb-tablebox::after{opacity:1;}
+      .pdnvb-tablebox.at-end::after{opacity:0;}
+      .pdnvb-swipe{display:inline-flex;align-items:center;gap:6px;margin-top:11px;font-size:12.5px;font-weight:600;color:var(--s);transition:opacity .25s;}
+      .pdnvb-swipe svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+      .pdnvb-tablebox.at-end .pdnvb-swipe{opacity:.3;}
       .pdnvb-lb-box{height:auto;width:94vw;max-height:86vh;}
     }`;
 
@@ -25045,6 +25079,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="pdnvb-in">
           <p class="pdnvb-eyebrow">// Mercado</p>
           <h2 class="pdnvb-h">Shopify <span class="ac">x</span> VTEX <span class="ac">x</span> Nuvem Shop</h2>
+          <div class="pdnvb-tablebox">
           <div class="pdnvb-tablewrap">
             <table class="pdnvb-table">
               <thead><tr><th></th><th class="shop">Shopify</th><th>VTEX</th><th>Nuvem Shop</th></tr></thead>
@@ -25058,6 +25093,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                 <tr><td>Custo mensal</td><td class="shop pdnvb-yes">A partir de $39</td><td class="pdnvb-no">A partir de $2.500</td><td class="pdnvb-yes">A partir de R$119</td></tr>
               </tbody>
             </table>
+          </div>
+          <span class="pdnvb-swipe"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg> deslize para ver tudo</span>
           </div>
         </div>
       </div>
@@ -25103,6 +25140,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         if(e.target.closest('[data-close]')) close();
       });
       document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&lb.classList.contains('on')) close(); });
+      var tbox=root.querySelector('.pdnvb-tablebox'), tw=root.querySelector('.pdnvb-tablewrap');
+      if(tbox&&tw){ var upd=function(){ if(tw.scrollLeft+tw.clientWidth>=tw.scrollWidth-4) tbox.classList.add('at-end'); else tbox.classList.remove('at-end'); }; tw.addEventListener('scroll',upd,{passive:true}); }
     })();<\/script>
     </section>`;
   }
@@ -28078,7 +28117,7 @@ ${dnaAlignScript}
       setTimeout(() => URL.revokeObjectURL(url), 1000);
     } catch (e) {
       console.error('[proposta] Erro no download:', e);
-      setMeta('Erro ao gerar proposta — veja o console.');
+      setMeta(e && e.message ? '⚠ ' + e.message : 'Erro ao gerar proposta — veja o console.');
     } finally {
       setBusy(false);
     }
