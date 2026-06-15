@@ -24788,6 +24788,323 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return '<!doctype html>\n' + doc.documentElement.outerHTML;
   }
 
+  // ── Apresentação E-commerce DNVB dentro da PROPOSTA ───────────────
+  // Porta o conteúdo do deck `Slides Tech/apresentacao-dnvb.html` como
+  // seções de proposta NATIVAS e responsivas (desktop + mobile), com capa.
+  // Self-contained: CSS escopado em .pdnvb-* + lightbox próprio (script
+  // roda porque o srcdoc da proposta não é sandbox). Os 8 vídeos de feature
+  // entram como cards (poster + play) prontos pra receber o ID do Drive em
+  // data-drive-id — aí o clique abre o player do Drive no lightbox.
+  function buildDnvbPresHTML() {
+    const POSTER = 'Slides Tech/Ativos tech/DNVB/posters/';
+    // ordem = highlights do subtipo; driveId entra depois (Roberto envia)
+    const feats = [
+      { f: 'carrinho-lateral-frete', t: 'Carrinho Lateral + Frete', driveId: '1kp3PvyuRaGT4I0xafZ1j36WMzErYjWmr' },
+      { f: 'barra-frete-gratis',     t: 'Barra de Frete Grátis',    driveId: '1Pc-VrMoJ7EcVMQ_5h0xeviPa9URjkpYS' },
+      { f: 'orderbump',              t: 'Orderbump',                driveId: '1W6WKiZJn5PoanLg6TjcYuUv3frkBXMU4' },
+      { f: 'reviews-judgme',         t: 'Reviews de Clientes',      driveId: '17f0odnV_lW5B8-bqZxwF9NER28zer-Tm' },
+      { f: 'popup-personalizado',    t: 'Popup Personalizado',      driveId: '1Bv8z3JvOB2SLwCjDrzelZwWZa-CGB7_o' },
+      { f: 'secao-ugcs',             t: "Seção de UGC's",           driveId: '1HFHnf3tvDMFbhCTUNpAIpoOMO8VX79RH' },
+      { f: 'bundle-progressivo',     t: 'Bundle Progressivo',       driveId: '17u7DUTBjt-3UFAom01Vy-IsAPCYSjCqc' },
+      { f: 'menu-mobile-custom',     t: 'Menu Mobile Custom',       driveId: '1sjKmQTdqNGwqipYwoxV6q5BIqEuYHTrn' },
+    ];
+    const playSvg = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
+    const featCards = feats.map(v => `
+      <button type="button" class="pdnvb-feat" data-drive-id="${v.driveId}" data-title="${v.t}" aria-label="Ver vídeo: ${v.t}">
+        <img class="pdnvb-feat-img" src="https://drive.google.com/thumbnail?id=${v.driveId}&sz=w640" alt="" loading="eager" onerror="this.onerror=null;this.src='${POSTER}${v.f}.jpg'">
+        <span class="pdnvb-feat-play"><span>${playSvg}</span></span>
+        <span class="pdnvb-feat-label">${v.t}</span>
+      </button>`).join('');
+
+    const checklist = [
+      'Página Home', 'PDP com até 7 seções', 'Página de Todos os Produtos + Filtros',
+      'Cadastro de 1 produto como playbook para os outros', 'Página Quem Somos', 'Páginas de Políticas',
+      'Notificações de E-mails padrões (Compra Confirmada, Checkout Abandonado etc.)',
+      'Treinamentos personalizados', 'Treinamento em vídeo (Como operar o e-commerce)',
+      'Instalação do ERP, Gateway e Logística + Treinamento',
+      'Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp'
+    ];
+    const check = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+    const checkItems = checklist.map(c => `<div class="pdnvb-check"><span>${check}</span>${c}</div>`).join('');
+
+    const css = `
+    .pdnvb{--p:#4d8dff;--s:#c4a8ff;--gr:#6ee7b7;--cb:rgba(196,168,255,0.13);--bd:rgba(255,255,255,0.55);background:#080510;color:#fff;font-family:inherit;-webkit-font-smoothing:antialiased;}
+    .pdnvb *{box-sizing:border-box;}
+    .pdnvb-slide{position:relative;padding:clamp(44px,6vw,76px) clamp(22px,5vw,64px);overflow:hidden;}
+    .pdnvb-slide+.pdnvb-slide{border-top:1px solid rgba(255,255,255,0.07);}
+    .pdnvb-in{max-width:1160px;margin:0 auto;position:relative;z-index:1;}
+    .pdnvb-eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--s);opacity:.8;margin:0 0 14px;}
+    .pdnvb-h{font-size:clamp(28px,4.4vw,52px);font-weight:800;letter-spacing:-1.4px;line-height:1.08;margin:0 0 8px;}
+    .pdnvb-h .ac{background:linear-gradient(120deg,var(--p),var(--s));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .pdnvb-lead{font-size:clamp(14px,1.5vw,17px);line-height:1.6;color:rgba(255,255,255,0.62);max-width:760px;margin:14px 0 0;}
+    .pdnvb-lead strong{color:rgba(255,255,255,0.9);font-weight:700;}
+    /* COVER */
+    .pdnvb-cover{padding:clamp(60px,9vw,120px) clamp(24px,6vw,72px);}
+    .pdnvb-cover-bg{position:absolute;inset:0;background:radial-gradient(ellipse 44% 56% at 12% 14%,rgba(77,141,255,0.30),transparent 60%),radial-gradient(ellipse 40% 50% at 88% 80%,rgba(196,168,255,0.20),transparent 65%);pointer-events:none;}
+    .pdnvb-chip{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#cfe0ff;background:rgba(77,141,255,0.12);border:1px solid rgba(77,141,255,0.4);padding:5px 13px;border-radius:99px;margin:0 0 22px;}
+    .pdnvb-cover-h{font-size:clamp(34px,6vw,72px);font-weight:900;letter-spacing:-2px;line-height:1.02;margin:0;max-width:18ch;}
+    .pdnvb-cover-h .nw{white-space:nowrap;}
+    .pdnvb-cover-sub{font-size:clamp(15px,1.8vw,20px);line-height:1.55;color:rgba(255,255,255,0.66);max-width:620px;margin:24px 0 0;}
+    .pdnvb-badges{display:flex;flex-wrap:wrap;gap:10px;margin:30px 0 0;}
+    .pdnvb-badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.04);border:1px solid var(--cb);border-radius:99px;padding:8px 16px;}
+    .pdnvb-badge i{width:7px;height:7px;border-radius:50%;background:var(--gr);box-shadow:0 0 10px var(--gr);}
+    /* GRIDS de cards */
+    .pdnvb-grid{display:grid;gap:14px;margin:30px 0 0;}
+    .pdnvb-grid.c3{grid-template-columns:repeat(3,1fr);}
+    .pdnvb-grid.c4{grid-template-columns:repeat(2,1fr);}
+    .pdnvb-card{background:linear-gradient(150deg,rgba(77,141,255,0.07),rgba(77,141,255,0.01));border:1px solid var(--cb);border-radius:14px;padding:22px;}
+    .pdnvb-card-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(77,141,255,0.12);border:1px solid rgba(77,141,255,0.25);margin:0 0 14px;}
+    .pdnvb-card-ico svg{width:19px;height:19px;fill:none;stroke:var(--p);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    .pdnvb-card h3{font-size:16px;font-weight:700;margin:0 0 7px;color:#fff;}
+    .pdnvb-card p{font-size:13.5px;line-height:1.5;color:var(--bd);margin:0;}
+    .pdnvb-num{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0 0;}
+    .pdnvb-num-card{background:linear-gradient(150deg,rgba(196,168,255,0.07),transparent);border:1px solid var(--cb);border-radius:14px;padding:18px;text-align:center;}
+    .pdnvb-bignum{font-size:clamp(26px,4vw,40px);font-weight:900;letter-spacing:-1px;background:linear-gradient(120deg,#fff,var(--s));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+    .pdnvb-num-lab{font-size:12px;color:var(--bd);margin-top:5px;line-height:1.35;}
+    .pdnvb-brands{margin:24px 0 0;}
+    .pdnvb-brands-lab{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(196,168,255,0.5);margin:0 0 10px;}
+    .pdnvb-tags{display:flex;flex-wrap:wrap;gap:8px;}
+    .pdnvb-tag{font-size:13px;font-weight:600;color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.04);border:1px solid var(--cb);border-radius:8px;padding:7px 13px;}
+    .pdnvb-tag.hl{color:#cfe0ff;border-color:rgba(77,141,255,0.4);background:rgba(77,141,255,0.08);}
+    /* CREDENCIAIS */
+    .pdnvb-cred{display:grid;grid-template-columns:1.1fr 0.9fr;gap:36px;align-items:center;}
+    .pdnvb-cred-big{font-size:clamp(24px,3.2vw,38px);font-weight:800;letter-spacing:-1px;line-height:1.12;}
+    .pdnvb-cred-sub{font-size:15px;color:var(--s);margin:14px 0 0;font-weight:600;}
+    .pdnvb-cred-body{font-size:14px;line-height:1.6;color:var(--bd);margin:14px 0 0;}
+    .pdnvb-shopcard{border:1px solid var(--cb);border-radius:18px;background:radial-gradient(ellipse at 50% 30%,rgba(110,231,183,0.10),transparent 70%),#0b0a16;min-height:200px;display:flex;align-items:center;justify-content:center;padding:38px;}
+    .pdnvb-shoplogo{width:66%;max-width:300px;height:auto;object-fit:contain;display:block;}
+    /* TABELA comparação */
+    .pdnvb-tablewrap{margin:26px 0 0;overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--cb);border-radius:14px;}
+    .pdnvb-table{width:100%;border-collapse:collapse;min-width:520px;}
+    .pdnvb-table th,.pdnvb-table td{padding:13px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,0.06);}
+    .pdnvb-table thead th{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);font-weight:800;}
+    .pdnvb-table .shop{background:rgba(77,141,255,0.08);color:#cfe0ff;font-weight:700;}
+    .pdnvb-table tbody td:first-child,.pdnvb-table td:first-child{color:rgba(255,255,255,0.85);font-weight:600;}
+    .pdnvb-yes{color:var(--gr);font-weight:700;}.pdnvb-no{color:#ef4444;}.pdnvb-part{color:#fbbf24;}
+    /* ENTREGÁVEIS */
+    .pdnvb-deliver{display:grid;grid-template-columns:0.9fr 1.1fr;gap:34px;align-items:start;margin:28px 0 0;}
+    .pdnvb-col-lab{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(196,168,255,0.5);margin:0 0 12px;}
+    .pdnvb-check{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:14px;color:rgba(255,255,255,0.72);line-height:1.45;}
+    .pdnvb-check span{flex-shrink:0;margin-top:2px;}.pdnvb-check svg{width:13px;height:13px;fill:none;stroke:var(--gr);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+    .pdnvb-feats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+    .pdnvb-feat{position:relative;aspect-ratio:3/4;border:1px solid var(--cb);border-radius:13px;overflow:hidden;cursor:pointer;background:#0b0a16;padding:0;font-family:inherit;display:block;transition:border-color .2s,transform .2s,box-shadow .2s;}
+    .pdnvb-feat:hover{border-color:rgba(77,141,255,0.55);transform:translateY(-2px);box-shadow:0 8px 22px rgba(77,141,255,0.2);}
+    .pdnvb-feat-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
+    .pdnvb-feat-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(8,5,16,0);transition:background .2s;}
+    .pdnvb-feat:hover .pdnvb-feat-play{background:rgba(8,5,16,0.34);}
+    .pdnvb-feat-play>span{width:42px;height:42px;border-radius:50%;background:rgba(8,5,16,0.45);border:1.5px solid rgba(255,255,255,0.7);display:flex;align-items:center;justify-content:center;transition:transform .2s;}
+    .pdnvb-feat:hover .pdnvb-feat-play>span{transform:scale(1.08);}
+    .pdnvb-feat-play svg{width:16px;height:16px;margin-left:2px;fill:#fff;}
+    .pdnvb-feat-label{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:20px 10px 8px;font-size:12px;font-weight:600;color:#fff;line-height:1.18;text-align:left;background:linear-gradient(to top,rgba(5,4,12,0.92) 6%,rgba(5,4,12,0.45) 55%,transparent);text-shadow:0 1px 4px rgba(0,0,0,0.6);}
+    .pdnvb-feats-note{grid-column:1/-1;font-size:12px;color:rgba(255,255,255,0.4);margin:4px 0 0;text-align:center;}
+    /* LIGHTBOX */
+    .pdnvb-lb{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;}
+    .pdnvb-lb.on{display:flex;}
+    .pdnvb-lb-bd{position:absolute;inset:0;background:rgba(6,4,12,0.9);backdrop-filter:blur(6px);}
+    .pdnvb-lb-box{position:relative;z-index:1;width:auto;height:min(82vh,820px);aspect-ratio:9/16;max-width:94vw;background:#000;border:1px solid rgba(196,168,255,0.18);border-radius:16px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,0.6);}
+    .pdnvb-lb-box iframe{width:100%;height:100%;border:0;display:block;}
+    .pdnvb-lb-x{position:absolute;top:8px;right:8px;z-index:5;width:38px;height:38px;border-radius:50%;background:rgba(10,8,16,0.82);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+    /* ── MOBILE ── */
+    @media (max-width:640px){
+      .pdnvb-grid.c3,.pdnvb-grid.c4{grid-template-columns:1fr;}
+      .pdnvb-num{grid-template-columns:repeat(2,1fr);}
+      .pdnvb-cred{grid-template-columns:1fr;gap:22px;}
+      .pdnvb-deliver{grid-template-columns:1fr;gap:24px;}
+      .pdnvb-feats{grid-template-columns:repeat(2,1fr);gap:10px;}
+      .pdnvb-cover-h{font-size:clamp(30px,8vw,40px);}
+      .pdnvb-lb-box{height:auto;width:94vw;max-height:86vh;}
+    }`;
+
+    const ico = {
+      eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+      flag:'<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>',
+      bolt:'<path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>',
+      grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+      book:'<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+      wrench:'<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+      target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+      shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+      drop:'<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
+      apps:'<path d="M16 18a4 4 0 0 0-8 0"/><circle cx="12" cy="11" r="3"/><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 8h18"/>',
+      bars:'<path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>',
+      ai:'<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>'
+    };
+    const card = (i,t,p)=>`<div class="pdnvb-card"><div class="pdnvb-card-ico"><svg viewBox="0 0 24 24">${i}</svg></div><h3>${t}</h3><p>${p}</p></div>`;
+
+    return `<section class="proposal-section proposal-section--dnvb">
+    <style>${css}</style>
+    <div class="pdnvb">
+
+      <!-- CAPA -->
+      <div class="pdnvb-slide pdnvb-cover">
+        <div class="pdnvb-cover-bg"></div>
+        <div class="pdnvb-in">
+          <span class="pdnvb-chip">E-commerce na Shopify · DTC / DNVB</span>
+          <h1 class="pdnvb-cover-h">A metodologia <span class="ac">Turbo</span> de fazer&nbsp;<span class="nw">e-commerce</span></h1>
+          <p class="pdnvb-cover-sub">Construímos lojas DTC na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.</p>
+          <div class="pdnvb-badges">
+            <span class="pdnvb-badge"><i></i>Shopify Partners</span>
+            <span class="pdnvb-badge"><i></i>Shopify Expert</span>
+            <span class="pdnvb-badge"><i></i>+100 e-commerces em 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- PILARES -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// O que fazemos</p>
+          <h2 class="pdnvb-h">Três <span class="ac">pilares</span> em cada projeto</h2>
+          <p class="pdnvb-lead">A diferença entre uma loja que vende e uma loja que só existe está em três pilares. É neles que a Turbo trabalha em cada projeto.</p>
+          <div class="pdnvb-grid c3">
+            ${card(ico.eye,'Clareza na Oferta','O cliente precisa entender em segundos o que você vende e por que comprar agora. Sem isso, nenhum tráfego converte.')}
+            ${card(ico.flag,'Clareza nos Benefícios','Cada seção responde uma objeção ou reforça um benefício. Layout, copy e hierarquia guiando a compra.')}
+            ${card(ico.bolt,'Performance','Velocidade, estabilidade e conversão são inseparáveis. A estrutura Turbo é otimizada para cada milissegundo trabalhar a seu favor.')}
+          </div>
+        </div>
+      </div>
+
+      <!-- METODOLOGIA -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// Nossa metodologia</p>
+          <h2 class="pdnvb-h">E-commerces prontos para <span class="ac">evoluir</span></h2>
+          <div class="pdnvb-grid c4">
+            ${card(ico.grid,'Seções Modulares','Blocos reutilizáveis que permitem reorganizar, expandir e escalar a loja sem retrabalho de desenvolvimento.')}
+            ${card(ico.book,'Biblioteca de Seções Turbo','Acervo de seções prontas e validadas. Você testa novos formatos e experiências sem criar do zero.')}
+            ${card(ico.wrench,'Manutenção Simplificada','Qualquer pessoa da equipe mexe sem programador: texto, imagem ou seções direto no painel da Shopify.')}
+            ${card(ico.target,'Pensando no CRO','Cada decisão de layout é baseada em dados de conversão: hierarquia visual, CTAs e fluxos para vender mais.')}
+          </div>
+        </div>
+      </div>
+
+      <!-- CREDENCIAIS -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// Quem somos</p>
+          <div class="pdnvb-cred">
+            <div>
+              <div class="pdnvb-cred-big">Mais de 100 e-commerces entregues na Shopify somente em 2025.</div>
+              <div class="pdnvb-cred-sub">Mais de 4 anos trabalhando somente com a Shopify.</div>
+              <p class="pdnvb-cred-body">Parceiros oficiais da Shopify com os três maiores selos do ecossistema: recursos exclusivos, suporte prioritário e os melhores parceiros do mercado.</p>
+              <div class="pdnvb-badges">
+                <span class="pdnvb-badge"><i></i>Shopify Partners</span>
+                <span class="pdnvb-badge"><i></i>Shopify Expert</span>
+              </div>
+            </div>
+            <div class="pdnvb-shopcard">
+              <img class="pdnvb-shoplogo" src="Slides Tech/Ativos tech/shopify-white.png" alt="Shopify">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOPIFY NÚMEROS -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// A plataforma</p>
+          <h2 class="pdnvb-h">A Shopify é uma das melhores <span class="ac">opções do mercado</span></h2>
+          <p class="pdnvb-lead">Empresa pública na <strong>NYSE (SHOP)</strong> desde 2015, valor de mercado acima de <strong>US$ 100 bilhões</strong> e crescimento médio de receita acima de <strong>25% ao ano</strong> na última década.</p>
+          <div class="pdnvb-num">
+            <div class="pdnvb-num-card"><div class="pdnvb-bignum">4.8M+</div><div class="pdnvb-num-lab">Lojas ativas no mundo</div></div>
+            <div class="pdnvb-num-card"><div class="pdnvb-bignum">US$1T+</div><div class="pdnvb-num-lab">GMV total processado</div></div>
+            <div class="pdnvb-num-card"><div class="pdnvb-bignum">99.99%</div><div class="pdnvb-num-lab">Uptime garantido</div></div>
+            <div class="pdnvb-num-card"><div class="pdnvb-bignum">10%</div><div class="pdnvb-num-lab">Do e-commerce nos EUA</div></div>
+          </div>
+          <div class="pdnvb-brands">
+            <div class="pdnvb-brands-lab">Marcas globais</div>
+            <div class="pdnvb-tags"><span class="pdnvb-tag">Gymshark</span><span class="pdnvb-tag">Allbirds</span><span class="pdnvb-tag">Heinz</span><span class="pdnvb-tag">Red Bull</span><span class="pdnvb-tag">Supreme</span></div>
+          </div>
+          <div class="pdnvb-brands">
+            <div class="pdnvb-brands-lab">Marcas nacionais</div>
+            <div class="pdnvb-tags"><span class="pdnvb-tag hl">Reserva</span><span class="pdnvb-tag hl">Bold Snacks</span><span class="pdnvb-tag hl">Insider</span><span class="pdnvb-tag hl">Sallve</span><span class="pdnvb-tag hl">Schutz</span><span class="pdnvb-tag hl">Vivara</span><span class="pdnvb-tag hl">Granado</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- POR QUE SHOPIFY -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// Por que Shopify?</p>
+          <h2 class="pdnvb-h">A plataforma que escala com <span class="ac">você</span></h2>
+          <div class="pdnvb-grid c3">
+            ${card(ico.bolt,'Performance extrema','CDN global, checkout otimizado e infraestrutura que aguenta Black Friday sem travar.')}
+            ${card(ico.shield,'Segurança enterprise','PCI DSS Level 1, SSL incluso e atualizações automáticas de segurança.')}
+            ${card(ico.drop,'Design sem limites','Liquid + seções modulares = liberdade total para criar experiências únicas de marca.')}
+            ${card(ico.apps,'Ecossistema robusto','10.000+ apps, integrações nativas com Meta, Google, TikTok e ERPs brasileiros.')}
+            ${card(ico.bars,'Analytics completo','Dashboards nativos, eventos de checkout e integração fácil com GA4 e pixels.')}
+            ${card(ico.ai,'IA e automação','Shopify Magic, Sidekick e Shopify Flow para automatizar a operação do dia a dia.')}
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPARAÇÃO -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// Mercado</p>
+          <h2 class="pdnvb-h">Shopify <span class="ac">x</span> VTEX <span class="ac">x</span> Nuvem Shop</h2>
+          <div class="pdnvb-tablewrap">
+            <table class="pdnvb-table">
+              <thead><tr><th></th><th class="shop">Shopify</th><th>VTEX</th><th>Nuvem Shop</th></tr></thead>
+              <tbody>
+                <tr><td>Setup rápido</td><td class="shop pdnvb-yes">Sim</td><td class="pdnvb-no">Não</td><td class="pdnvb-yes">Sim</td></tr>
+                <tr><td>Vendas internacionais</td><td class="shop pdnvb-yes">Sim</td><td class="pdnvb-yes">Sim</td><td class="pdnvb-part">Parcial</td></tr>
+                <tr><td>Checkout customizável</td><td class="shop pdnvb-yes">Sim</td><td class="pdnvb-yes">Sim</td><td class="pdnvb-no">Não</td></tr>
+                <tr><td>Segurança PCI</td><td class="shop pdnvb-yes">Sim</td><td class="pdnvb-yes">Sim</td><td class="pdnvb-part">Parcial</td></tr>
+                <tr><td>Sem equipe de TI</td><td class="shop pdnvb-yes">Sim</td><td class="pdnvb-no">Não</td><td class="pdnvb-yes">Sim</td></tr>
+                <tr><td>Apps &amp; integrações</td><td class="shop pdnvb-yes">10.000+</td><td class="pdnvb-part">Limitado</td><td class="pdnvb-part">Básico</td></tr>
+                <tr><td>Custo mensal</td><td class="shop pdnvb-yes">A partir de $39</td><td class="pdnvb-no">A partir de $2.500</td><td class="pdnvb-yes">A partir de R$119</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ENTREGÁVEIS + FEATURES -->
+      <div class="pdnvb-slide">
+        <div class="pdnvb-in">
+          <p class="pdnvb-eyebrow">// O que entregamos</p>
+          <h2 class="pdnvb-h">Tudo que sua marca DTC precisa para <span class="ac">vender</span></h2>
+          <div class="pdnvb-deliver">
+            <div>
+              <div class="pdnvb-col-lab">Páginas e funcionalidades</div>
+              ${checkItems}
+            </div>
+            <div>
+              <div class="pdnvb-col-lab">Funcionalidades em destaque</div>
+              <div class="pdnvb-feats">
+                ${featCards}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pdnvb-lb" id="pdnvb-lb" aria-hidden="true">
+      <div class="pdnvb-lb-bd" data-close></div>
+      <div class="pdnvb-lb-box">
+        <button type="button" class="pdnvb-lb-x" data-close aria-label="Fechar">✕</button>
+        <iframe id="pdnvb-lb-frame" allow="autoplay" title="Vídeo da feature"></iframe>
+      </div>
+    </div>
+
+    <script>(function(){
+      var root=document.currentScript&&document.currentScript.parentNode; if(!root)root=document;
+      var lb=root.querySelector('#pdnvb-lb'); var fr=root.querySelector('#pdnvb-lb-frame');
+      if(!lb||!fr) return;
+      function open(id){ fr.src='https://drive.google.com/file/d/'+id+'/preview'; lb.classList.add('on'); lb.setAttribute('aria-hidden','false'); }
+      function close(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); fr.src=''; }
+      root.addEventListener('click',function(e){
+        var c=e.target.closest('.pdnvb-feat'); if(c){ var id=c.getAttribute('data-drive-id'); if(id){ e.preventDefault(); open(id);} return; }
+        if(e.target.closest('[data-close]')) close();
+      });
+      document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&lb.classList.contains('on')) close(); });
+    })();<\/script>
+    </section>`;
+  }
+
   async function buildProposalHTML(opts = {}) {
     // Capture all <style> tags from the host page so the standalone HTML looks identical.
     const styles = Array.from(document.querySelectorAll('style'))
@@ -24847,6 +25164,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <div style="padding:48px;color:#f55;text-align:center">Erro ao carregar ${s.name}: ${e.message}</div>
           </section>`);
         }
+      } else if (s.id === 'ecommerce') {
+        // E-commerce não tem sourceId: a apresentação rica entra aqui.
+        // Hoje só o DNVB tem deck portado pra proposta (responsivo + capa).
+        const sub = [...(enabledTiers.ecommerce || [])][0] || 'dnvb';
+        if (sub === 'dnvb') sections.push(buildDnvbPresHTML());
       }
     }
 
