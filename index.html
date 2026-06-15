@@ -3519,9 +3519,12 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 .depo-types {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
+/* Seção que ocupa a largura toda (ex.: Imagens com o print da Noway) */
+.depo-type--full { grid-column: 1 / -1; }
+@media (max-width: 760px) { .depo-types { grid-template-columns: 1fr; } }
 .depo-type {
   background: rgba(255,255,255,0.025);
   border: 1px solid rgba(255,255,255,0.10);
@@ -3631,6 +3634,73 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   transition: background 0.15s ease;
 }
 .depo-vlb-close:hover { background: rgba(255,255,255,0.2); }
+
+/* Card do print (Prints de texto) */
+.depo-print-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+.depo-print-card {
+  position: relative; display: block; width: 100%; padding: 0;
+  border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden;
+  background: #0b141a; cursor: pointer;
+  height: clamp(220px, 26vw, 340px);
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.depo-print-card:hover { transform: translateY(-2px); border-color: rgba(37,211,102,0.55); box-shadow: 0 8px 30px rgba(0,0,0,0.4); }
+.depo-print-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: left center; }
+.depo-print-badge {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+  display: flex; align-items: center; gap: 7px; justify-content: center;
+  padding: 9px 10px; font-size: 12px; font-weight: 800; color: #fff;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,0.85));
+}
+.depo-print-badge-play {
+  width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #25d366; color: #0b141a; font-size: 9px; padding-left: 1px;
+}
+
+/* Lightbox do print + hotspots de áudio */
+.depo-plb { position: fixed; inset: 0; z-index: 4000; display: none; align-items: center; justify-content: center; }
+.depo-plb.is-open { display: flex; }
+.depo-plb-overlay { position: absolute; inset: 0; background: rgba(5,5,10,0.93); backdrop-filter: blur(6px); cursor: zoom-out; }
+.depo-plb-stage {
+  position: relative; z-index: 1;
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 24px 90px rgba(0,0,0,0.65);
+  line-height: 0;
+}
+.depo-plb-img { display: block; max-height: 90vh; max-width: 94vw; width: auto; height: auto; }
+.depo-plb-close {
+  position: absolute; top: 18px; right: 20px; z-index: 4001;
+  width: 42px; height: 42px; border-radius: 11px;
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.28);
+  color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.depo-plb-close:hover { background: rgba(255,255,255,0.22); }
+.depo-audio-hot {
+  position: absolute; z-index: 2; padding: 0; cursor: pointer;
+  border: 1.5px solid rgba(37,211,102,0.42); border-radius: 11px;
+  background: rgba(37,211,102,0.05);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+}
+.depo-audio-hot:hover { background: rgba(37,211,102,0.16); border-color: rgba(37,211,102,0.72); }
+.depo-audio-hot.is-playing { background: rgba(37,211,102,0.13); border-color: #25d366; box-shadow: 0 0 0 3px rgba(37,211,102,0.28), 0 0 20px rgba(37,211,102,0.35); }
+/* Barra de progresso — SEM transition (a animação é por requestAnimationFrame, contínua) */
+.depo-audio-hot-fill {
+  position: absolute; left: 0; top: 0; height: 100%; width: 0%;
+  background: rgba(37,211,102,0.20); border-right: 2px solid #25d366;
+  pointer-events: none; opacity: 0;
+}
+.depo-audio-hot.is-playing .depo-audio-hot-fill { opacity: 1; }
+/* Switcher de velocidade (1x / 1.5x) */
+.depo-plb-speed {
+  position: absolute; top: 18px; left: 20px; z-index: 4001;
+  min-width: 52px; height: 42px; padding: 0 12px; border-radius: 11px;
+  background: rgba(37,211,102,0.16); border: 1px solid rgba(37,211,102,0.5);
+  color: #d8ffe9; font-size: 14px; font-weight: 800; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.depo-plb-speed:hover { background: rgba(37,211,102,0.28); }
 .cases-header-stats {
   display: flex;
   gap: 12px;
@@ -14493,7 +14563,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </section>
 
-      <section class="depo-type">
+      <section class="depo-type depo-type--full">
         <div class="depo-type-head">
           <span class="depo-type-icon">🖼️</span>
           <div>
@@ -14501,9 +14571,11 @@ a.xpto-pricing-btn { text-decoration: none; }
             <p class="depo-type-sub">Capturas de resultados, telas e fotos.</p>
           </div>
         </div>
-        <div class="depo-empty">
-          <span class="depo-empty-icon">＋</span>
-          Em breve — nenhuma imagem adicionada ainda.
+        <div class="depo-print-grid">
+          <button type="button" class="depo-print-card" data-print="noway" aria-label="Print do WhatsApp da Noway com 3 áudios que tocam">
+            <img class="depo-print-thumb" src="/depoimentos/noway/print.png" alt="" loading="lazy">
+            <span class="depo-print-badge"><span class="depo-print-badge-play">▶</span> Noway · 3 áudios reais</span>
+          </button>
         </div>
       </section>
     </div>
@@ -14516,6 +14588,26 @@ a.xpto-pricing-btn { text-decoration: none; }
   <div class="depo-vlb-overlay" data-depo-vlb-close></div>
   <button class="depo-vlb-close" type="button" data-depo-vlb-close aria-label="Fechar">✕</button>
   <div class="depo-vlb-frame" id="depo-vlb-frame"></div>
+</div>
+
+<!-- Lightbox do PRINT (WhatsApp) com áudios reais tocando sobre as bolhas -->
+<div class="depo-plb" id="depo-plb" aria-hidden="true">
+  <div class="depo-plb-overlay" data-depo-plb-close></div>
+  <button class="depo-plb-close" type="button" data-depo-plb-close aria-label="Fechar">✕</button>
+  <button class="depo-plb-speed" id="depo-plb-speed" type="button" aria-label="Velocidade do áudio">1x</button>
+  <div class="depo-plb-stage" id="depo-plb-stage">
+    <img class="depo-plb-img" src="/depoimentos/noway/print.png" alt="Print do WhatsApp — Noway">
+    <button type="button" class="depo-audio-hot" data-src="/depoimentos/noway/a1.ogg" style="left:5.5%;top:34.6%;width:21%;height:6%" aria-label="Tocar áudio 1">
+      <span class="depo-audio-hot-fill"></span>
+    </button>
+    <button type="button" class="depo-audio-hot" data-src="/depoimentos/noway/a2.ogg" style="left:5.5%;top:48.4%;width:21%;height:6.2%" aria-label="Tocar áudio 2 (0:04)">
+      <span class="depo-audio-hot-fill"></span>
+    </button>
+    <button type="button" class="depo-audio-hot" data-src="/depoimentos/noway/a3.ogg" style="left:5.5%;top:61.3%;width:21%;height:6.2%" aria-label="Tocar áudio 3 (0:16)">
+      <span class="depo-audio-hot-fill"></span>
+    </button>
+    <audio id="depo-plb-audio" preload="none"></audio>
+  </div>
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
@@ -30330,6 +30422,87 @@ window.apiFetch = async function (url, opts, cfg) {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && lb.classList.contains('is-open')) close();
   });
+})();
+
+// ══════════════════════════════════════════════════════════
+// Simulador do print de WhatsApp (Noway) — os hotspots sobre as
+// bolhas de áudio tocam o áudio REAL (.ogg), com barra de progresso,
+// como se clicasse no áudio nativo do WhatsApp.
+// ══════════════════════════════════════════════════════════
+(function depoPrintLightbox() {
+  const lb = document.getElementById('depo-plb');
+  const audio = document.getElementById('depo-plb-audio');
+  const speedBtn = document.getElementById('depo-plb-speed');
+  if (!lb || !audio) return;
+  let activeHot = null, speed = 1;
+  function fillEl() { return activeHot ? activeHot.querySelector('.depo-audio-hot-fill') : null; }
+  // Barra CONTÍNUA via TRANSIÇÃO de CSS (animada no compositor, suave, sem lag):
+  // posiciona no ponto atual e deixa o CSS animar até 100% no tempo restante.
+  function animFill() {
+    const f = fillEl();
+    if (!f || !audio.duration || !isFinite(audio.duration)) return;
+    const pct = Math.min(100, (audio.currentTime / audio.duration) * 100);
+    const remaining = Math.max(0, (audio.duration - audio.currentTime) / (audio.playbackRate || 1));
+    f.style.transition = 'none';
+    f.style.width = pct + '%';
+    void f.offsetWidth;                       // reflow p/ a transição partir do ponto certo
+    f.style.transition = 'width ' + remaining + 's linear';
+    f.style.width = '100%';
+  }
+  function freezeFill() {                      // congela a barra onde está (ao pausar)
+    const f = fillEl();
+    if (!f) return;
+    const cur = getComputedStyle(f).width;
+    f.style.transition = 'none';
+    f.style.width = cur;
+  }
+  function clearActive() {
+    const f = fillEl();
+    if (f) { f.style.transition = 'none'; f.style.width = '0%'; }
+    if (activeHot) { activeHot.classList.remove('is-playing'); activeHot = null; }
+  }
+  function openLb() { lb.classList.add('is-open'); lb.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
+  function closeLb() { try { audio.pause(); } catch (e) {} clearActive(); lb.classList.remove('is-open'); lb.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; }
+  // Abre pelo card
+  document.addEventListener('click', function (e) {
+    if (!e.target || !e.target.closest) return;
+    const card = e.target.closest('.depo-print-card[data-print]');
+    if (!card) return;
+    e.preventDefault();
+    openLb();
+  });
+  // Hotspot: toca/pausa o áudio real
+  lb.addEventListener('click', function (e) {
+    const hot = e.target.closest('.depo-audio-hot[data-src]');
+    if (!hot) return;
+    e.preventDefault();
+    if (activeHot === hot) {            // mesmo áudio: alterna play/pause
+      if (audio.paused) audio.play().catch(() => {}); else audio.pause();
+      return;
+    }
+    clearActive();                      // outro áudio: troca
+    activeHot = hot;
+    hot.classList.add('is-playing');
+    audio.src = hot.dataset.src;
+    audio.currentTime = 0;
+    audio.playbackRate = speed;         // mantém a velocidade escolhida
+    audio.play().catch(() => {});
+  });
+  audio.addEventListener('playing', animFill);
+  audio.addEventListener('durationchange', function () { if (!audio.paused) animFill(); });
+  audio.addEventListener('pause', freezeFill);
+  audio.addEventListener('ended', clearActive);
+  // Switcher de velocidade 1x / 1.5x (um só, vale pros 3 áudios)
+  if (speedBtn) {
+    speedBtn.addEventListener('click', function () {
+      speed = (speed === 1) ? 1.5 : 1;
+      audio.playbackRate = speed;
+      speedBtn.textContent = (speed === 1 ? '1x' : '1.5x');
+      if (!audio.paused) animFill();          // recalcula a animação com a nova velocidade
+    });
+  }
+  lb.querySelectorAll('[data-depo-plb-close]').forEach(el => el.addEventListener('click', closeLb));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLb(); });
 })();
 
 // ══════════════════════════════════════════════════════════
