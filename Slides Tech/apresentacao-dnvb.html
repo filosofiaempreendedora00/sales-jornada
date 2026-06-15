@@ -1590,11 +1590,27 @@
             if (e.key === 'End')  { e.preventDefault(); goTo(total - 1); }
         });
 
-        var wt = null;
+        // Scroll robusto: 1 slide por gesto. Dispara no "empurrão" (deltaY subindo =
+        // novo gesto) e IGNORA a cauda de inércia do trackpad (deltaY decaindo), que
+        // era o que travava o avanço ("só às vezes vai"). 'sustained' cobre o scroll
+        // contínuo de mouse de roda.
+        var wheelLock = false, prevAbs = 0, lastFire = 0, wheelIdle = null;
         document.addEventListener('wheel', function(e) {
             if (isModalOpen()) return;
             e.preventDefault();
-            var wasLocked = !!wt; if (wt) clearTimeout(wt); wt = setTimeout(function(){ wt = null; }, 240); if (wasLocked) return;
+            var ad = Math.abs(e.deltaY);
+            if (ad < 6) return;
+            var t = e.timeStamp || 0;
+            if (wheelIdle) clearTimeout(wheelIdle);
+            wheelIdle = setTimeout(function(){ prevAbs = 0; }, 140);
+            var rising    = ad > prevAbs + 6;             // empurrão novo > inércia que decai
+            var sustained = ad >= 50 && (t - lastFire) > 650;
+            prevAbs = ad;
+            if (busy) return;
+            if (!rising && !sustained) return;            // cauda de inércia → ignora
+            if (wheelLock && !sustained) return;          // anti-duplo-disparo do mesmo empurrão
+            wheelLock = true; lastFire = t;
+            setTimeout(function(){ wheelLock = false; }, 360);
             if (e.deltaY > 0) next(); else prev();
         }, { passive: false });
 
