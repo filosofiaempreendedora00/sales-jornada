@@ -3553,23 +3553,19 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-size: 16px; font-weight: 700;
   color: rgba(155,109,255,0.6);
 }
-/* Grade de depoimentos em vídeo (player inline do Drive ao clicar) */
+/* Grade de depoimentos em vídeo — cards VERTICAIS (9:16) com thumbnail do rosto */
 .depo-video-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+  gap: 12px;
 }
 .depo-video-card {
   position: relative;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 9 / 16;
   border-radius: 14px;
   overflow: hidden;
   text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+  display: block;
   background: linear-gradient(135deg, rgba(155,109,255,0.20), rgba(77,141,255,0.14) 55%, rgba(13,207,232,0.12));
   border: 1px solid rgba(155,109,255,0.32);
   cursor: pointer;
@@ -3580,23 +3576,61 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   border-color: rgba(155,109,255,0.6);
   box-shadow: 0 8px 30px rgba(155,109,255,0.22);
 }
+.depo-video-thumb {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+/* Escurece topo/pé pro play e o nome ficarem legíveis sobre a foto */
+.depo-video-card::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0,0,0,0.10) 0%, transparent 26%, transparent 50%, rgba(0,0,0,0.62) 100%);
+}
 .depo-video-play {
-  width: 54px; height: 54px; border-radius: 50%;
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 2;
+  width: 48px; height: 48px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 19px; color: #fff; padding-left: 3px;
-  background: rgba(255,255,255,0.14);
-  border: 1.5px solid rgba(255,255,255,0.55);
-  box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+  font-size: 16px; color: #fff; padding-left: 3px;
+  background: rgba(0,0,0,0.42); border: 1.5px solid rgba(255,255,255,0.78);
+  box-shadow: 0 4px 18px rgba(0,0,0,0.35);
 }
 .depo-video-name {
-  font-size: 14px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #fff;
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
+  padding: 10px 10px 12px;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; color: #fff;
+  text-align: center; line-height: 1.2;
 }
 .depo-video-card[data-drive-active="1"] { background: #000; cursor: default; transform: none; }
+.depo-video-card[data-drive-active="1"] .depo-video-thumb,
 .depo-video-card[data-drive-active="1"] .depo-video-play,
 .depo-video-card[data-drive-active="1"] .depo-video-name { display: none; }
+.depo-video-card[data-drive-active="1"]::after { display: none; }
 .depo-video-card .cp-drive-iframe {
-  position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block;
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; z-index: 3;
 }
+/* Lightbox de depoimento em vídeo — player grande e centralizado */
+.depo-vlb { position: fixed; inset: 0; z-index: 4000; display: none; align-items: center; justify-content: center; }
+.depo-vlb.is-open { display: flex; }
+.depo-vlb-overlay { position: absolute; inset: 0; background: rgba(5,5,10,0.93); backdrop-filter: blur(6px); cursor: zoom-out; }
+.depo-vlb-frame {
+  position: relative; z-index: 1;
+  height: min(86vh, 840px);
+  aspect-ratio: 9 / 16;
+  max-width: 94vw;
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 90px rgba(0,0,0,0.65);
+}
+.depo-vlb-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.depo-vlb-close {
+  position: absolute; top: 18px; right: 20px; z-index: 2;
+  width: 42px; height: 42px; border-radius: 11px;
+  background: rgba(255,255,255,0.10); border: 1px solid rgba(255,255,255,0.25);
+  color: #fff; font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s ease;
+}
+.depo-vlb-close:hover { background: rgba(255,255,255,0.2); }
 .cases-header-stats {
   display: flex;
   gap: 12px;
@@ -14420,10 +14454,27 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
         </div>
         <div class="depo-video-grid">
-          <!-- Jui — arquivo de vídeo do Drive: toca inline ao clicar (data-drive-id) -->
+          <!-- Vídeos do Drive: tocam inline ao clicar (data-drive-id). PRECISAM
+               estar compartilhados como "qualquer pessoa com o link" pra tocar. -->
+          <a class="depo-video-card" data-drive-id="1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw" href="https://drive.google.com/file/d/1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Noway">
+            <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
+            <span class="depo-video-play">▶</span>
+            <span class="depo-video-name">Noway</span>
+          </a>
           <a class="depo-video-card" data-drive-id="1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36" href="https://drive.google.com/file/d/1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Jui">
+            <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
             <span class="depo-video-play">▶</span>
             <span class="depo-video-name">Jui</span>
+          </a>
+          <a class="depo-video-card" data-drive-id="1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ" href="https://drive.google.com/file/d/1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Pedra Azul Editora">
+            <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
+            <span class="depo-video-play">▶</span>
+            <span class="depo-video-name">Pedra Azul Editora</span>
+          </a>
+          <a class="depo-video-card" data-drive-id="15klH-923w7GS2lhfz7Le1KZcvrvyhMb9" href="https://drive.google.com/file/d/15klH-923w7GS2lhfz7Le1KZcvrvyhMb9/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Grano Square">
+            <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=15klH-923w7GS2lhfz7Le1KZcvrvyhMb9&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
+            <span class="depo-video-play">▶</span>
+            <span class="depo-video-name">Grano Square</span>
           </a>
         </div>
       </section>
@@ -14458,6 +14509,13 @@ a.xpto-pricing-btn { text-decoration: none; }
     </div>
 
   </div>
+</div>
+
+<!-- Lightbox de depoimento em vídeo (player grande e centralizado) -->
+<div class="depo-vlb" id="depo-vlb" aria-hidden="true">
+  <div class="depo-vlb-overlay" data-depo-vlb-close></div>
+  <button class="depo-vlb-close" type="button" data-depo-vlb-close aria-label="Fechar">✕</button>
+  <div class="depo-vlb-frame" id="depo-vlb-frame"></div>
 </div>
 
 <!-- ══════════════════════════════════════════════ -->
@@ -30229,6 +30287,48 @@ window.apiFetch = async function (url, opts, cfg) {
       const targetFrame = document.getElementById(btn.dataset.driveTarget);
       activate(targetFrame);
     }
+  });
+})();
+
+// ══════════════════════════════════════════════════════════
+// Lightbox dos depoimentos em vídeo — clicar no card abre o
+// vídeo grande e centralizado (em vez de tocar cramped no card).
+// Intercepta no CAPTURE pra rodar antes do driveInline (que
+// injetaria o iframe no próprio card) e cancela esse caminho.
+// ══════════════════════════════════════════════════════════
+(function depoVideoLightbox() {
+  const lb = document.getElementById('depo-vlb');
+  const frame = document.getElementById('depo-vlb-frame');
+  if (!lb || !frame) return;
+  function open(id) {
+    if (!id) return;
+    frame.innerHTML = '';
+    const ifr = document.createElement('iframe');
+    ifr.src = `https://drive.google.com/file/d/${id}/preview`;
+    ifr.allow = 'autoplay; encrypted-media; fullscreen';
+    ifr.allowFullscreen = true;
+    frame.appendChild(ifr);
+    lb.classList.add('is-open');
+    lb.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    lb.classList.remove('is-open');
+    lb.setAttribute('aria-hidden', 'true');
+    frame.innerHTML = '';                 // descarrega o vídeo (para o áudio)
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('click', function (e) {
+    if (!e.target || !e.target.closest) return;
+    const card = e.target.closest('.depo-video-card[data-drive-id]');
+    if (!card) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();         // impede o driveInline de injetar no card
+    open(card.dataset.driveId);
+  }, true);
+  lb.querySelectorAll('[data-depo-vlb-close]').forEach(el => el.addEventListener('click', close));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lb.classList.contains('is-open')) close();
   });
 })();
 
