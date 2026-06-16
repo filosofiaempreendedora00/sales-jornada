@@ -25146,6 +25146,62 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     </section>`;
   }
 
+  // ── Ocultar slides específicos no download ────────────────────────
+  // No PREVIEW, cada slide ganha um "olho" no canto sup. direito (aparece no
+  // hover). Clicar marca o slide como oculto (fica esmaecido + tag "OCULTO").
+  // No DOWNLOAD, os slides marcados são REMOVIDOS do .html. A chave é estável
+  // por (seção + ocorrência + índice do slide), então sobrevive a re-render.
+  // Estado GLOBAL (não closure) — garante uma única fonte mesmo se o módulo
+  // rodar mais de uma vez (senão __propHide escreve num Set e applySlideEyes lê outro).
+  const hiddenSlideKeys = (window.__hiddenSlideKeys = window.__hiddenSlideKeys || new Set());
+  window.__propHide = function (key, off) {
+    if (off) hiddenSlideKeys.add(key); else hiddenSlideKeys.delete(key);
+  };
+  const PROP_SLIDE_SEL = '.turbo-slide, .xpto-slide, .crm-slideo, .pdnvb-slide, .pacotes-slide, .invest-slide, .closing-slide';
+  const PROP_EYE_CSS = `
+    .prop-has-eye{position:relative;}
+    .prop-eye{position:absolute;top:14px;right:14px;z-index:9000;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,0.25);background:rgba(10,8,18,0.55);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .18s,background .18s,border-color .18s;padding:0;}
+    .prop-has-eye:hover>.prop-eye{opacity:1;}
+    .prop-eye:hover{background:rgba(77,141,255,0.55);border-color:rgba(77,141,255,0.85);}
+    .prop-eye svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;display:block;}
+    .prop-eye .eye-off{display:none;}
+    .prop-slide-off>*:not(.prop-eye){opacity:.3;filter:grayscale(.7);transition:opacity .2s;}
+    .prop-slide-off>.prop-eye{opacity:1;background:rgba(239,68,68,0.3);border-color:rgba(239,68,68,0.72);}
+    .prop-slide-off>.prop-eye .eye-open{display:none;}
+    .prop-slide-off>.prop-eye .eye-off{display:block;}
+    .prop-slide-off::after{content:"OCULTO — fora do download";position:absolute;top:18px;right:56px;z-index:9000;background:rgba(239,68,68,0.92);color:#fff;font:700 10.5px/1 ui-sans-serif,system-ui,sans-serif;letter-spacing:.5px;padding:7px 10px;border-radius:7px;white-space:nowrap;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.35);}`;
+  const PROP_EYE_JS = `(function(){document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.prop-eye');if(!b)return;e.preventDefault();e.stopPropagation();var s=b.closest('.prop-has-eye');if(!s)return;var off=s.classList.toggle('prop-slide-off');try{if(window.parent&&window.parent.__propHide)window.parent.__propHide(b.getAttribute('data-key'),off);}catch(err){}},true);})();`;
+  const PROP_EYE_SVGS = '<svg class="eye-open" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><svg class="eye-off" viewBox="0 0 24 24"><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M6.06 6.06A18.46 18.46 0 0 0 1 12s4 8 11 8a9.12 9.12 0 0 0 5.94-2.06"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M1 1l22 22"/></svg>';
+  function applySlideEyes(html, cfg) {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const occ = {};
+    doc.querySelectorAll('.proposal-section').forEach(sec => {
+      const cls = ((sec.className.match(/proposal-section--([\w-]+)/) || [])[1]) || 'sec';
+      occ[cls] = (occ[cls] || 0) + 1;
+      const secKey = cls + (occ[cls] > 1 ? '#' + occ[cls] : '');
+      sec.querySelectorAll(PROP_SLIDE_SEL).forEach((slide, i) => {
+        const key = secKey + ':' + i;
+        const isHidden = hiddenSlideKeys.has(key);
+        if (cfg.forDownload) { if (isHidden) slide.remove(); return; }
+        slide.classList.add('prop-has-eye');
+        if (isHidden) slide.classList.add('prop-slide-off');
+        slide.setAttribute('data-slide-key', key);
+        const eye = doc.createElement('button');
+        eye.className = 'prop-eye';
+        eye.type = 'button';
+        eye.setAttribute('data-key', key);
+        eye.title = 'Ocultar / mostrar este slide no download';
+        eye.innerHTML = PROP_EYE_SVGS;
+        slide.insertBefore(eye, slide.firstChild);
+      });
+    });
+    if (!cfg.forDownload) {
+      const st = doc.createElement('style'); st.textContent = PROP_EYE_CSS; doc.head.appendChild(st);
+      const sc = doc.createElement('script'); sc.textContent = PROP_EYE_JS; doc.body.appendChild(sc);
+    }
+    return '<!doctype html>\n' + doc.documentElement.outerHTML;
+  }
+
   async function buildProposalHTML(opts = {}) {
     // Capture all <style> tags from the host page so the standalone HTML looks identical.
     const styles = Array.from(document.querySelectorAll('style'))
@@ -28049,10 +28105,14 @@ ${dnaAlignScript}
     // mostra "cliente" como placeholder no preview — download é bloqueado.
     html = replaceTurboCoverInProposal(html, opts.clientName);
 
-    // Opcional: embute imagens como data URI (somente no download standalone,
-    // não no preview — o iframe do preview carrega imagens via http-server).
     if (opts.inline) {
+      // DOWNLOAD: remove os slides marcados como ocultos (não vão no arquivo)
+      // ANTES de embutir imagens, pra não baixar imagem de slide removido.
+      html = applySlideEyes(html, { forDownload: true });
       html = await inlineLocalImages(html, opts.onProgress);
+    } else {
+      // PREVIEW: adiciona o "olho" em cada slide pra ocultar/mostrar.
+      html = applySlideEyes(html, { forDownload: false });
     }
 
     // GARANTIA (causa do "2º slide sumiu"): a proposta NUNCA pode ter imagem
