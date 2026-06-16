@@ -24815,10 +24815,25 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // roda porque o srcdoc da proposta não é sandbox). Os 8 vídeos de feature
   // entram como cards (poster + play) prontos pra receber o ID do Drive em
   // data-drive-id — aí o clique abre o player do Drive no lightbox.
-  function buildDnvbPresHTML() {
-    const POSTER = 'Slides Tech/Ativos tech/DNVB/posters/';
-    // ordem = highlights do subtipo; driveId entra depois (Roberto envia)
-    const feats = [
+  // Configs por subtipo de e-commerce — só o que DIFERE entre DNVB e Moda
+  // (capa, entregáveis). Pilares/metodologia/credenciais/números/por que/
+  // comparação são idênticos e ficam no template compartilhado abaixo.
+  const ECOM_DNVB_CFG = {
+    id: 'dnvb',
+    coverChip: 'E-commerce · Shopify · DTC / DNVB',
+    coverTitle: 'O <span class="nw">E-commerce</span> DNVB&nbsp;<span class="ac">Turbo</span>',
+    coverSub: 'Lojas DTC na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.',
+    entregaTitle: 'Tudo que sua marca DTC precisa para <span class="ac">vender</span>',
+    featsCols: 4,
+    checklist: [
+      'Página Home', 'PDP com até 7 seções', 'Página de Todos os Produtos + Filtros',
+      'Cadastro de 1 produto como playbook para os outros', 'Página Quem Somos', 'Páginas de Políticas',
+      'Notificações de E-mails padrões (Compra Confirmada, Checkout Abandonado etc.)',
+      'Treinamentos personalizados', 'Treinamento em vídeo (Como operar o e-commerce)',
+      'Instalação do ERP, Gateway e Logística + Treinamento',
+      'Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp'
+    ],
+    feats: [
       { f: 'carrinho-lateral-frete', t: 'Carrinho Lateral + Frete', driveId: '1kp3PvyuRaGT4I0xafZ1j36WMzErYjWmr' },
       { f: 'barra-frete-gratis',     t: 'Barra de Frete Grátis',    driveId: '1Pc-VrMoJ7EcVMQ_5h0xeviPa9URjkpYS' },
       { f: 'orderbump',              t: 'Orderbump',                driveId: '1W6WKiZJn5PoanLg6TjcYuUv3frkBXMU4' },
@@ -24827,7 +24842,36 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       { f: 'secao-ugcs',             t: "Seção de UGC's",           driveId: '1HFHnf3tvDMFbhCTUNpAIpoOMO8VX79RH' },
       { f: 'bundle-progressivo',     t: 'Bundle Progressivo',       driveId: '17u7DUTBjt-3UFAom01Vy-IsAPCYSjCqc' },
       { f: 'menu-mobile-custom',     t: 'Menu Mobile Custom',       driveId: '1sjKmQTdqNGwqipYwoxV6q5BIqEuYHTrn' },
-    ];
+    ],
+    extras: []
+  };
+  const ECOM_MODA_CFG = {
+    id: 'moda',
+    coverChip: 'E-commerce · Shopify · Moda',
+    coverTitle: 'O <span class="nw">E-commerce</span> de Moda&nbsp;<span class="ac">Turbo</span>',
+    coverSub: 'Lojas de moda na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.',
+    entregaTitle: 'Tudo que sua loja de moda precisa para <span class="ac">vender</span>',
+    featsCols: 5,
+    checklist: [
+      'Página Home', 'PDP com até 5 seções', 'Página de Todos os Produtos + Filtros',
+      'Página Quem Somos', 'Páginas de Políticas', 'Notificações de E-mail',
+      'Treinamentos personalizados', 'Instalação do ERP, Gateway e Logística',
+      'Automação de checkout abandonado', 'Acesso à comunidade Turbo'
+    ],
+    // Features comuns ao DNVB (com preview) — reusam os assets/vídeos do DNVB.
+    feats: [
+      { f: 'carrinho-lateral-frete', t: 'Carrinho Lateral + Frete', driveId: '1kp3PvyuRaGT4I0xafZ1j36WMzErYjWmr' },
+      { f: 'barra-frete-gratis',     t: 'Barra de Frete Grátis',    driveId: '1Pc-VrMoJ7EcVMQ_5h0xeviPa9URjkpYS' },
+      { f: 'orderbump',              t: 'Orderbump',                driveId: '1W6WKiZJn5PoanLg6TjcYuUv3frkBXMU4' },
+      { f: 'reviews-judgme',         t: 'Reviews de Clientes',      driveId: '17f0odnV_lW5B8-bqZxwF9NER28zer-Tm' },
+      { f: 'popup-personalizado',    t: 'Popup Personalizado',      driveId: '1Bv8z3JvOB2SLwCjDrzelZwWZa-CGB7_o' },
+    ],
+    // Extras "a mais" — sem preview (chips).
+    extras: ['Search Inteligente', 'Separa e Agrega', 'Add to Cart Fixo', 'Wishlist', 'Sales Notification', 'Compre Com', 'Barra de Estoque']
+  };
+  function buildEcomPresHTML(cfg) {
+    const POSTER = 'Slides Tech/Ativos tech/DNVB/posters/';
+    const feats = cfg.feats;
     const playSvg = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
     const chkSvg = '<svg class="pdnvb-feat-chk" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
     // Poster = imagem local (mesmo domínio, deployada) — confiável no celular.
@@ -24839,21 +24883,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <span class="pdnvb-feat-label">${chkSvg}${v.t}</span>
       </button>`).join('');
 
-    const checklist = [
-      'Página Home', 'PDP com até 7 seções', 'Página de Todos os Produtos + Filtros',
-      'Cadastro de 1 produto como playbook para os outros', 'Página Quem Somos', 'Páginas de Políticas',
-      'Notificações de E-mails padrões (Compra Confirmada, Checkout Abandonado etc.)',
-      'Treinamentos personalizados', 'Treinamento em vídeo (Como operar o e-commerce)',
-      'Instalação do ERP, Gateway e Logística + Treinamento',
-      'Implantação do Flash CRM com Automação de Checkout Abandonado no WhatsApp'
-    ];
     const check = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
-    const checkItems = checklist.map(c => `<div class="pdnvb-check"><span>${check}</span>${c}</div>`).join('');
+    const checkItems = cfg.checklist.map(c => `<div class="pdnvb-check"><span>${check}</span>${c}</div>`).join('');
+    // Extras "a mais" (só Moda hoje): chips sem preview, abaixo dos cards.
+    const extrasHtml = (cfg.extras && cfg.extras.length)
+      ? `<div class="pdnvb-chip-lab">Também incluídas</div><div class="pdnvb-chips">${cfg.extras.map(e => `<span class="pdnvb-chip">${check}${e}</span>`).join('')}</div>`
+      : '';
 
     const css = `
     .pdnvb{--p:#4d8dff;--s:#c4a8ff;--gr:#6ee7b7;--cb:rgba(196,168,255,0.13);--bd:rgba(255,255,255,0.55);background:#080510;color:#fff;font-family:inherit;-webkit-font-smoothing:antialiased;}
     .pdnvb *{box-sizing:border-box;}
-    .pdnvb-slide{position:relative;padding:clamp(44px,6vw,76px) clamp(22px,5vw,64px);overflow:hidden;}
+    .pdnvb-slide{position:relative;min-height:720px;display:flex;flex-direction:column;justify-content:center;padding:clamp(44px,6vw,76px) clamp(22px,5vw,64px);overflow:hidden;}
     .pdnvb-slide+.pdnvb-slide{border-top:1px solid rgba(255,255,255,0.07);}
     .pdnvb-in{max-width:1160px;margin:0 auto;position:relative;z-index:1;}
     .pdnvb-eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--s);opacity:.8;margin:0 0 14px;}
@@ -24909,11 +24949,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-table tbody td:first-child,.pdnvb-table td:first-child{color:rgba(255,255,255,0.85);font-weight:600;}
     .pdnvb-yes{color:var(--gr);font-weight:700;}.pdnvb-no{color:#ef4444;}.pdnvb-part{color:#fbbf24;}
     /* ENTREGÁVEIS */
-    .pdnvb-deliver{display:grid;grid-template-columns:0.9fr 1.1fr;gap:34px;align-items:start;margin:28px 0 0;}
-    .pdnvb-col-lab{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(196,168,255,0.5);margin:0 0 12px;}
-    .pdnvb-check{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:14px;color:rgba(255,255,255,0.72);line-height:1.45;}
+    .pdnvb-deliver{display:flex;flex-direction:column;gap:34px;margin:30px 0 0;}
+    .pdnvb-col-lab{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(196,168,255,0.55);margin:0 0 16px;}
+    .pdnvb-checklist{display:grid;grid-template-columns:repeat(2,1fr);gap:0 48px;}
+    .pdnvb-check{display:flex;align-items:flex-start;gap:9px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:14px;color:rgba(255,255,255,0.72);line-height:1.45;}
     .pdnvb-check span{flex-shrink:0;margin-top:2px;}.pdnvb-check svg{width:13px;height:13px;fill:none;stroke:var(--gr);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-    .pdnvb-feats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+    .pdnvb-feats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
     .pdnvb-feat{position:relative;aspect-ratio:3/4;border:1px solid var(--cb);border-radius:13px;overflow:hidden;cursor:pointer;background:#0b0a16;padding:0;font-family:inherit;display:block;transition:border-color .2s,transform .2s,box-shadow .2s;}
     .pdnvb-feat:hover{border-color:rgba(77,141,255,0.55);transform:translateY(-2px);box-shadow:0 8px 22px rgba(77,141,255,0.2);}
     .pdnvb-feat-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;display:block;}
@@ -24925,6 +24966,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-feat-label{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:20px 10px 8px;font-size:12px;font-weight:600;color:#fff;line-height:1.18;text-align:left;background:linear-gradient(to top,rgba(5,4,12,0.92) 6%,rgba(5,4,12,0.45) 55%,transparent);text-shadow:0 1px 4px rgba(0,0,0,0.6);}
     .pdnvb-feat-chk{width:12px;height:12px;display:inline-block;vertical-align:-1px;margin-right:5px;fill:none;stroke:#6ee7b7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
     .pdnvb-feats-note{grid-column:1/-1;font-size:12px;color:rgba(255,255,255,0.4);margin:4px 0 0;text-align:center;}
+    .pdnvb-feats.cols5{grid-template-columns:repeat(5,1fr);}
+    .pdnvb-chip-lab{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(196,168,255,0.5);margin:22px 0 11px;}
+    .pdnvb-chips{display:flex;flex-wrap:wrap;gap:9px;}
+    .pdnvb-chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.82);background:rgba(77,141,255,0.06);border:1px solid var(--cb);border-radius:9px;padding:8px 13px;}
+    .pdnvb-chip svg{width:13px;height:13px;fill:none;stroke:var(--gr);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
     /* LIGHTBOX */
     .pdnvb-lb{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;}
     .pdnvb-lb.on{display:flex;}
@@ -24934,11 +24980,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-lb-x{position:absolute;top:8px;right:8px;z-index:5;width:38px;height:38px;border-radius:50%;background:rgba(10,8,16,0.82);border:1px solid rgba(255,255,255,0.25);color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
     /* ── MOBILE ── */
     @media (max-width:640px){
+      .pdnvb-slide{min-height:auto;}
       .pdnvb-grid.c3,.pdnvb-grid.c4{grid-template-columns:1fr;}
       .pdnvb-num{grid-template-columns:repeat(2,1fr);}
       .pdnvb-cred{grid-template-columns:1fr;gap:22px;}
-      .pdnvb-deliver{grid-template-columns:1fr;gap:24px;}
-      .pdnvb-feats{grid-template-columns:repeat(2,1fr);gap:10px;}
+      .pdnvb-deliver{gap:24px;}
+      .pdnvb-checklist{grid-template-columns:1fr;}
+      .pdnvb-feats,.pdnvb-feats.cols5{grid-template-columns:repeat(2,1fr);gap:10px;}
       .pdnvb-cover{min-height:auto;}
       .pdnvb-cover-h{font-size:clamp(30px,8vw,42px);}
       .pdnvb-table{min-width:466px;}
@@ -24967,7 +25015,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     };
     const card = (i,t,p)=>`<div class="pdnvb-card"><div class="pdnvb-card-ico"><svg viewBox="0 0 24 24">${i}</svg></div><h3>${t}</h3><p>${p}</p></div>`;
 
-    return `<section class="proposal-section proposal-section--dnvb">
+    return `<section class="proposal-section proposal-section--${cfg.id}">
     <style>${css}</style>
     <div class="pdnvb">
 
@@ -24975,9 +25023,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       <div class="pdnvb-slide pdnvb-cover">
         <div class="pdnvb-cover-bg"></div>
         <div class="pdnvb-in pdnvb-cover-center">
-          <div class="xpto-eyebrow"><span></span>E-commerce · Shopify · DTC / DNVB</div>
-          <h1 class="pdnvb-cover-h">O <span class="nw">E-commerce</span> DNVB&nbsp;<span class="ac">Turbo</span></h1>
-          <p class="pdnvb-cover-sub">Lojas DTC na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.</p>
+          <div class="xpto-eyebrow"><span></span>${cfg.coverChip}</div>
+          <h1 class="pdnvb-cover-h">${cfg.coverTitle}</h1>
+          <p class="pdnvb-cover-sub">${cfg.coverSub}</p>
           <div class="pdnvb-badges">
             <span class="pdnvb-badge"><i></i>Shopify Partners</span>
             <span class="pdnvb-badge"><i></i>Shopify Expert</span>
@@ -25103,16 +25151,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       <div class="pdnvb-slide">
         <div class="pdnvb-in">
           <p class="pdnvb-eyebrow">// O que entregamos</p>
-          <h2 class="pdnvb-h">Tudo que sua marca DTC precisa para <span class="ac">vender</span></h2>
+          <h2 class="pdnvb-h">${cfg.entregaTitle}</h2>
           <div class="pdnvb-deliver">
             <div>
-              <div class="pdnvb-col-lab">Páginas e funcionalidades</div>
-              ${checkItems}
+              <div class="pdnvb-col-lab">Funcionalidades em destaque</div>
+              <div class="pdnvb-feats${cfg.featsCols === 5 ? ' cols5' : ''}">
+                ${featCards}
+              </div>
+              ${extrasHtml}
             </div>
             <div>
-              <div class="pdnvb-col-lab">Funcionalidades em destaque</div>
-              <div class="pdnvb-feats">
-                ${featCards}
+              <div class="pdnvb-col-lab">Páginas e funcionalidades</div>
+              <div class="pdnvb-checklist">
+                ${checkItems}
               </div>
             </div>
           </div>
@@ -25262,10 +25313,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           </section>`);
         }
       } else if (s.id === 'ecommerce') {
-        // E-commerce não tem sourceId: a apresentação rica entra aqui.
-        // Hoje só o DNVB tem deck portado pra proposta (responsivo + capa).
+        // E-commerce não tem sourceId: a apresentação rica entra aqui,
+        // portada do deck pra seções responsivas (DNVB e Moda).
         const sub = [...(enabledTiers.ecommerce || [])][0] || 'dnvb';
-        if (sub === 'dnvb') sections.push(buildDnvbPresHTML());
+        if (sub === 'dnvb')      sections.push(buildEcomPresHTML(ECOM_DNVB_CFG));
+        else if (sub === 'moda') sections.push(buildEcomPresHTML(ECOM_MODA_CFG));
       }
     }
 
@@ -26822,6 +26874,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         grid-template-columns: 1.35fr 1fr;
         gap: clamp(24px, 3vw, 44px);
         align-items: start;
+        max-width: 1080px;
+        margin: 0 auto;
       }
       .proposal-section--pacotes-dnvb .dnvb-features-col {
         display: flex;

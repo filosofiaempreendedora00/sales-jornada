@@ -883,15 +883,23 @@
         .checklist-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 15px; color: rgba(255,255,255,0.67); line-height: 1.45; }
         .checklist-item:last-child { border-bottom: none; }
         .checklist-item svg { width: 13px; height: 13px; flex-shrink: 0; stroke: var(--check); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
-        .pres-features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
-        .pres-features-grid-full { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .pres-feature-tag { display: flex; align-items: stretch; background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 11px; overflow: hidden; cursor: pointer; height: 50px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
-        .pres-feature-tag:hover { border-color: rgba(77,141,255,0.5); box-shadow: 0 4px 14px rgba(77,141,255,0.13); }
-        .pres-feature-label { flex: 1; display: flex; align-items: center; padding: 0 13px; font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.72); }
-        .pres-feature-preview { position: relative; width: 68px; flex-shrink: 0; overflow: hidden; background: rgba(0,0,0,0.3); }
-        .pres-feature-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .pres-feature-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); }
-        .pres-feature-play svg { width: 17px; height: 17px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+        .pres-features-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+        .pres-features-grid-full { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        /* Card de feature em destaque (com preview) — igual ao DNVB */
+        .pres-feature-tag { position: relative; display: block; aspect-ratio: 3 / 4; background: #0b0a16; border: 1px solid var(--card-border); border-radius: 13px; overflow: hidden; cursor: pointer; transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease; }
+        .pres-feature-tag:hover { border-color: rgba(77,141,255,0.55); box-shadow: 0 8px 22px rgba(77,141,255,0.2); transform: translateY(-2px); }
+        .pres-feature-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; pointer-events: none; background: #000; }
+        .pres-feature-label { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; padding: 22px 10px 9px; font-size: 12.5px; font-weight: 600; color: #fff; line-height: 1.18; background: linear-gradient(to top, rgba(5,4,12,0.92) 6%, rgba(5,4,12,0.5) 52%, rgba(5,4,12,0) 100%); text-shadow: 0 1px 4px rgba(0,0,0,0.6); pointer-events: none; }
+        .pres-feature-play { position: absolute; inset: 0; z-index: 3; display: flex; align-items: center; justify-content: center; background: rgba(8,5,16,0); transition: background 0.2s ease; pointer-events: none; }
+        .pres-feature-tag:hover .pres-feature-play { background: rgba(8,5,16,0.34); }
+        .pres-feature-play span { width: 44px; height: 44px; border-radius: 50%; background: rgba(8,5,16,0.42); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); border: 1.5px solid rgba(255,255,255,0.7); display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease, background 0.2s ease; }
+        .pres-feature-tag:hover .pres-feature-play span { transform: scale(1.08); background: rgba(8,5,16,0.55); }
+        .pres-feature-play svg { width: 17px; height: 17px; margin-left: 3px; fill: #fff; }
+        /* Extras (sem preview) — chips simples */
+        .feat-extra-title { font-size: 10.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(196,168,255,0.5); margin: 22px 0 11px; }
+        .feat-chips { display: flex; flex-wrap: wrap; gap: 9px; }
+        .feat-chip { display: inline-flex; align-items: center; gap: 7px; font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.82); background: rgba(77,141,255,0.06); border: 1px solid var(--card-border); border-radius: 9px; padding: 8px 13px; }
+        .feat-chip svg { width: 13px; height: 13px; fill: none; stroke: #6ee7b7; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
 
         /* ── Process grid ── */
         .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
@@ -910,7 +918,7 @@
         .pres-video-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.78); }
         .pres-video-close { width: 27px; height: 27px; border-radius: 50%; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease; font-family: inherit; }
         .pres-video-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
-        .pres-video-box video { display: block; width: 640px; max-width: 85vw; max-height: 65vh; background: #000; }
+        .pres-video-box video { display: block; width: auto; height: min(78vh, 780px); max-width: 90vw; background: #000; }
     </style>
 <style id="octopus-id-override">
 .slide-title span,.slide-title .accent,.gradient-text{background:linear-gradient(90deg,#c49bff 0%,#4d8dff 50%,#0dcfe8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent !important}
@@ -1161,41 +1169,50 @@
                             </div>
                         </div>
                         <div>
-                            <div class="feat-col-title">// Funcionalidades Destaque — clique para ver</div>
+                            <div class="feat-col-title">// Funcionalidades em destaque — clique para ver</div>
                             <div class="pres-features-grid">
-                                <span class="pres-feature-tag" data-video="../assets/videos/search-inteligente.mp4" data-title="Search Inteligente">Search Inteligente</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral + Frete">Carrinho Lateral + Frete</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">Barra de Frete Grátis</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/orderbump.mp4" data-title="Orderbump">Orderbump</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/separa-agrega.mp4" data-title="Separa e Agrega">Separa e Agrega</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/reviews-judgme.mp4" data-title="Reviews de Clientes">Reviews de Clientes</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/add-to-cart-fixo.mp4" data-title="Add to Cart Fixo">Add to Cart Fixo</span>
-                                <span class="pres-feature-tag" data-video="../assets/videos/wishlist.mp4" data-title="Wishlist">Wishlist</span>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral + Frete">
+                                    <img class="pres-feature-vid" src="Ativos%20tech/DNVB/posters/carrinho-lateral-frete.jpg" alt="">
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Carrinho Lateral + Frete</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">
+                                    <img class="pres-feature-vid" src="Ativos%20tech/DNVB/posters/barra-frete-gratis.jpg" alt="">
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Barra de Frete Grátis</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/orderbump.mp4" data-title="Orderbump">
+                                    <img class="pres-feature-vid" src="Ativos%20tech/DNVB/posters/orderbump.jpg" alt="">
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Orderbump</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/reviews-judgme.mp4" data-title="Reviews de Clientes">
+                                    <img class="pres-feature-vid" src="Ativos%20tech/DNVB/posters/reviews-judgme.jpg" alt="">
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Reviews de Clientes</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/popup-personalizado.mp4" data-title="Popup Personalizado">
+                                    <img class="pres-feature-vid" src="Ativos%20tech/DNVB/posters/popup-personalizado.jpg" alt="">
+                                    <span class="pres-feature-play"><span><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Popup Personalizado</span>
+                                </div>
+                            </div>
+                            <div class="feat-extra-title">// Também incluídas — sob medida pra moda</div>
+                            <div class="feat-chips">
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Search Inteligente</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Separa e Agrega</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Add to Cart Fixo</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Wishlist</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sales Notification</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compre Com</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Barra de Estoque</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SLIDE 8: O que entregamos pt2 (ESPECÍFICO ROUPAS) -->
-            <div class="slide">
-                <div class="slide-inner">
-                    <div class="section-label">// FUNCIONALIDADES EM DESTAQUE</div>
-                    <h1 class="slide-title">Cada detalhe pensado para <span>conversão</span></h1>
-                    <div>
-                        <div class="feat-col-title" style="margin-bottom:14px;">// Clique em qualquer funcionalidade para ver em ação</div>
-                        <div class="pres-features-grid-full">
-                            <span class="pres-feature-tag" data-video="../assets/videos/visualizacoes-personalizadas.mp4" data-title="Visualizações Personalizadas">Visualizações Personalizadas</span>
-                            <span class="pres-feature-tag" data-video="../assets/videos/popup-personalizado.mp4" data-title="Popup Personalizado">Popup Personalizado</span>
-                            <span class="pres-feature-tag" data-video="../assets/videos/sales-notification.mp4" data-title="Sales Notification">Sales Notification</span>
-                            <span class="pres-feature-tag" data-video="../assets/videos/barra-estoque.mp4" data-title="Barra de Estoque">Barra de Estoque</span>
-                            <span class="pres-feature-tag" data-video="../assets/videos/compre-com.mp4" data-title="Compre Com">Compre Com</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SLIDE 9: Processo -->
+            <!-- SLIDE 8: Processo -->
             <div class="slide">
                 <div class="slide-inner">
                     <div class="section-label">// PROCESSO</div>
@@ -1213,80 +1230,6 @@
                 </div>
             </div>
 
-            <!-- SLIDE 10: Cases (antigo slide 8) -->
-            <div class="slide">
-                <div class="slide-inner">
-                    <div class="section-label">// CASES</div>
-                    <h1 class="slide-title">Quem já <span>transformou</span> com a Turbo</h1>
-                    <div class="cards-grid-3">
-
-                        <!-- CASE 1 — edite com dados reais do cliente -->
-                        <div class="card case-card">
-                            <div class="case-brand">Marca Cliente A</div>
-                            <div class="case-niche">Moda Feminina · Roupas</div>
-                            <div class="case-metrics">
-                                <div class="case-metric">
-                                    <div class="case-metric-value">+210%</div>
-                                    <div class="case-metric-label">conversão</div>
-                                </div>
-                                <div class="case-metric">
-                                    <div class="case-metric-value">42d</div>
-                                    <div class="case-metric-label">até o ar</div>
-                                </div>
-                            </div>
-                            <p class="case-excerpt">Loja de moda feminina com Separa e Agrega, lookbooks, guia de tamanhos e wishlist integrada.</p>
-                            <a href="cases/case-template.html" target="_blank" class="case-link">
-                                Ver case completo
-                                <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                            </a>
-                        </div>
-
-                        <!-- CASE 2 — edite com dados reais do cliente -->
-                        <div class="card case-card">
-                            <div class="case-brand">Marca Cliente B</div>
-                            <div class="case-niche">Streetwear · DTC</div>
-                            <div class="case-metrics">
-                                <div class="case-metric">
-                                    <div class="case-metric-value">R$1.8M</div>
-                                    <div class="case-metric-label">em 60 dias</div>
-                                </div>
-                                <div class="case-metric">
-                                    <div class="case-metric-value">4.8★</div>
-                                    <div class="case-metric-label">reviews</div>
-                                </div>
-                            </div>
-                            <p class="case-excerpt">E-commerce de streetwear com Sales Notification, barra de estoque e carrinho lateral com upsell.</p>
-                            <a href="cases/case-template.html" target="_blank" class="case-link">
-                                Ver case completo
-                                <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                            </a>
-                        </div>
-
-                        <!-- CASE 3 — edite com dados reais do cliente -->
-                        <div class="card case-card">
-                            <div class="case-brand">Marca Cliente C</div>
-                            <div class="case-niche">Acessórios · Fashion</div>
-                            <div class="case-metrics">
-                                <div class="case-metric">
-                                    <div class="case-metric-value">+155%</div>
-                                    <div class="case-metric-label">ticket médio</div>
-                                </div>
-                                <div class="case-metric">
-                                    <div class="case-metric-value">2.9x</div>
-                                    <div class="case-metric-label">ROI</div>
-                                </div>
-                            </div>
-                            <p class="case-excerpt">Migração para Shopify com foco em Compre Com, search inteligente e integração com ERP.</p>
-                            <a href="cases/case-template.html" target="_blank" class="case-link">
-                                Ver case completo
-                                <svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5l7 7-7 7"/></svg>
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 
@@ -1297,10 +1240,8 @@
         <button class="nav-dot" aria-label="Ir para slide 4"  title="A Shopify"></button>
         <button class="nav-dot" aria-label="Ir para slide 5"  title="Por que Shopify"></button>
         <button class="nav-dot" aria-label="Ir para slide 6"  title="Comparação"></button>
-        <button class="nav-dot" aria-label="Ir para slide 7"  title="O que entregamos 1"></button>
-        <button class="nav-dot" aria-label="Ir para slide 8"  title="O que entregamos 2"></button>
-        <button class="nav-dot" aria-label="Ir para slide 9"  title="Processo"></button>
-        <button class="nav-dot" aria-label="Ir para slide 10" title="Cases"></button>
+        <button class="nav-dot" aria-label="Ir para slide 7"  title="O que entregamos"></button>
+        <button class="nav-dot" aria-label="Ir para slide 8"  title="Processo"></button>
     </div>
 
     <div class="nav-arrows">
@@ -1312,7 +1253,7 @@
         </button>
     </div>
 
-    <div class="slide-counter" id="slideCounter">01 / 12</div>
+    <div class="slide-counter" id="slideCounter">01 / 08</div>
 
     <!-- Video Modal -->
     <div class="pres-video-modal" id="presVideoModal">
@@ -1333,7 +1274,7 @@
         var dots     = document.querySelectorAll('.nav-dot');
         var counter  = document.getElementById('slideCounter');
         var progress = document.getElementById('progressBar');
-        var total    = 10;
+        var total    = 8;
         var current  = 0;
         var busy     = false;
         var touchY   = 0;
@@ -1403,15 +1344,7 @@
             p.play().catch(function(){});
         }
         document.querySelectorAll('.pres-feature-tag[data-video]').forEach(function(tag) {
-            var src = tag.dataset.video, title = tag.dataset.title || '';
-            var labelEl = document.createElement('span'); labelEl.className = 'pres-feature-label'; labelEl.textContent = title;
-            var previewEl = document.createElement('span'); previewEl.className = 'pres-feature-preview';
-            var videoEl = document.createElement('video'); videoEl.src = src; videoEl.muted = true; videoEl.loop = true; videoEl.playsInline = true; videoEl.autoplay = true;
-            var playEl = document.createElement('span'); playEl.className = 'pres-feature-play';
-            playEl.innerHTML = '<svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="white" stroke="white" stroke-linejoin="round" stroke-width="1"/></svg>';
-            previewEl.appendChild(videoEl); previewEl.appendChild(playEl);
-            tag.innerHTML = ''; tag.appendChild(labelEl); tag.appendChild(previewEl);
-            tag.addEventListener('click', function(e) { e.stopPropagation(); openPresentationVideo(src, title); });
+            tag.addEventListener('click', function(e) { e.stopPropagation(); openPresentationVideo(tag.dataset.video, tag.dataset.title || ''); });
         });
         document.getElementById('presVideoBackdrop').addEventListener('click', closePresentationVideo);
         document.getElementById('presVideoClose').addEventListener('click', closePresentationVideo);
