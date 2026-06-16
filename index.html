@@ -25410,8 +25410,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Reunião estratégica mensal com time especializado</li>
             <li>Relatório analítico mensal — você vê o que funciona</li>
             <li><strong>Setup 360 incluso</strong> — estruturação estratégica completa</li>
-            <li><strong>Presença Autoral inclusa</strong> — até 2 criadores/mês, 4 vídeos</li>
+            <li><strong>Presença Autoral inclusa</strong><span class="pacote-aster">*</span> — até 2 criadores/mês, 4 vídeos</li>
           </ul>
+          <p class="pacote-note"><span class="pacote-aster">*</span> O pagamento aos criadores não está incluso no investimento do pacote.</p>
         </div>`);
     }
 
@@ -26517,6 +26518,16 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-comunidade .pacote-card--featured .pacote-features li ,
       .proposal-section--pacotes-dnvb .pacote-card--featured .pacote-features li {
         color: rgba(255,255,255,0.92);
+      }
+      .pacote-aster { color: #0dcfe8; font-weight: 800; }
+      .pacote-card .pacote-note {
+        margin: 13px 0 0;
+        padding-top: 11px;
+        border-top: 1px solid rgba(255,255,255,0.09);
+        font-size: 11px;
+        line-height: 1.4;
+        color: rgba(255,255,255,0.52);
+        font-style: italic;
       }
       .proposal-section--pacotes-perf .pacote-card--featured .pacote-features li::before,
       .proposal-section--pacotes-creators .pacote-card--featured .pacote-features li::before,
