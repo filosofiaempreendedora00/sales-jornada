@@ -3516,6 +3516,18 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-size: 14px; font-weight: 500; color: var(--text-soft);
   margin: 0; line-height: 1.5; max-width: 640px;
 }
+/* Busca por nome de cliente (filtra vídeo/texto/imagem) */
+.depo-search-wrap { position: relative; max-width: 520px; margin: 20px 0 4px; }
+.depo-search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; opacity: 0.55; pointer-events: none; }
+.depo-search-input {
+  width: 100%; padding: 11px 14px 12px 40px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.10); background: rgba(255,255,255,0.03);
+  color: var(--text); font-size: 14px; font-weight: 500; font-family: inherit;
+  outline: none; transition: border-color 0.18s, background 0.18s;
+}
+.depo-search-input:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.045); }
+.depo-search-input:focus { border-color: rgba(155,109,255,0.55); background: rgba(255,255,255,0.05); box-shadow: 0 0 0 3px rgba(155,109,255,0.15); }
+.depo-noresult { display: flex; align-items: center; gap: 9px; padding: 22px 18px; color: var(--text-soft); font-size: 14px; }
 
 .depo-types {
   display: grid;
@@ -14543,6 +14555,11 @@ a.xpto-pricing-btn { text-decoration: none; }
       </div>
     </header>
 
+    <div class="depo-search-wrap">
+      <span class="depo-search-icon">🔎</span>
+      <input type="search" id="depo-search" class="depo-search-input" placeholder="Filtrar por nome do cliente…" autocomplete="off" spellcheck="false">
+    </div>
+
     <div class="depo-types">
       <section class="depo-type">
         <div class="depo-type-head">
@@ -14555,22 +14572,22 @@ a.xpto-pricing-btn { text-decoration: none; }
         <div class="depo-video-grid">
           <!-- Vídeos do Drive: tocam inline ao clicar (data-drive-id). PRECISAM
                estar compartilhados como "qualquer pessoa com o link" pra tocar. -->
-          <a class="depo-video-card" data-drive-id="1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw" href="https://drive.google.com/file/d/1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Noway">
+          <a class="depo-video-card" data-depo-name="Noway" data-drive-id="1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw" href="https://drive.google.com/file/d/1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Noway">
             <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=1xmu6CvugRW_Qz57VR7-XHTQdeNcoj2qw&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
             <span class="depo-video-play">▶</span>
             <span class="depo-video-name">Noway</span>
           </a>
-          <a class="depo-video-card" data-drive-id="1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36" href="https://drive.google.com/file/d/1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Jui">
+          <a class="depo-video-card" data-depo-name="Jui" data-drive-id="1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36" href="https://drive.google.com/file/d/1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Jui">
             <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=1sUwaMjzUeKs-V_F4nsGSMuAT3IyDQc36&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
             <span class="depo-video-play">▶</span>
             <span class="depo-video-name">Jui</span>
           </a>
-          <a class="depo-video-card" data-drive-id="1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ" href="https://drive.google.com/file/d/1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Pedra Azul Editora">
+          <a class="depo-video-card" data-depo-name="Pedra Azul Editora" data-drive-id="1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ" href="https://drive.google.com/file/d/1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Pedra Azul Editora">
             <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=1BEOnSieJgozkNl6yPaq8HrtpdYLOwcHJ&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
             <span class="depo-video-play">▶</span>
             <span class="depo-video-name">Pedra Azul Editora</span>
           </a>
-          <a class="depo-video-card" data-drive-id="15klH-923w7GS2lhfz7Le1KZcvrvyhMb9" href="https://drive.google.com/file/d/15klH-923w7GS2lhfz7Le1KZcvrvyhMb9/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Grano Square">
+          <a class="depo-video-card" data-depo-name="Grano Square" data-drive-id="15klH-923w7GS2lhfz7Le1KZcvrvyhMb9" href="https://drive.google.com/file/d/15klH-923w7GS2lhfz7Le1KZcvrvyhMb9/view" target="_blank" rel="noopener" aria-label="Depoimento em vídeo — Grano Square">
             <img class="depo-video-thumb" src="https://drive.google.com/thumbnail?id=15klH-923w7GS2lhfz7Le1KZcvrvyhMb9&sz=w360" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">
             <span class="depo-video-play">▶</span>
             <span class="depo-video-name">Grano Square</span>
@@ -14586,31 +14603,33 @@ a.xpto-pricing-btn { text-decoration: none; }
             <p class="depo-type-sub">Conversas e mensagens (WhatsApp, DM, e-mail).</p>
           </div>
         </div>
-        <div class="depo-empty">
-          <span class="depo-empty-icon">＋</span>
-          Em breve — nenhum print adicionado ainda.
-        </div>
-      </section>
-
-      <section class="depo-type depo-type--full">
-        <div class="depo-type-head">
-          <span class="depo-type-icon">🖼️</span>
-          <div>
-            <h2 class="depo-type-title">Imagens</h2>
-            <p class="depo-type-sub">Capturas de resultados, telas e fotos.</p>
-          </div>
-        </div>
         <div class="depo-print-grid">
-          <button type="button" class="depo-print-card" data-print="noway" aria-label="Print do WhatsApp da Noway com 3 áudios que tocam">
-            <img class="depo-print-thumb" src="/depoimentos/noway/print.png" alt="" loading="lazy">
-            <span class="depo-print-badge"><span class="depo-print-badge-play">▶</span> Noway · 3 áudios reais</span>
-          </button>
-          <button type="button" class="depo-print-card" data-print-img="skyfit" aria-label="Print do WhatsApp — elogio da Skyfit (clique e veja o depoimento do cliente)">
+          <button type="button" class="depo-print-card" data-depo-name="Skyfit" data-print-img="skyfit" aria-label="Print do WhatsApp — elogio da Skyfit (clique e veja o depoimento do cliente)">
             <img class="depo-print-thumb" src="/depoimentos/skyfit/grupo.png" alt="" loading="lazy">
             <span class="depo-print-badge"><span class="depo-print-badge-play">💬</span> Skyfit · elogio do cliente</span>
           </button>
         </div>
       </section>
+
+      <section class="depo-type depo-type--full">
+        <div class="depo-type-head">
+          <span class="depo-type-icon">🎧</span>
+          <div>
+            <h2 class="depo-type-title">Áudios</h2>
+            <p class="depo-type-sub">Prints de WhatsApp com áudios reais dos clientes — clique e ouça.</p>
+          </div>
+        </div>
+        <div class="depo-print-grid">
+          <button type="button" class="depo-print-card" data-depo-name="Noway" data-print="noway" aria-label="Print do WhatsApp da Noway com 3 áudios que tocam">
+            <img class="depo-print-thumb" src="/depoimentos/noway/print.png" alt="" loading="lazy">
+            <span class="depo-print-badge"><span class="depo-print-badge-play">▶</span> Noway · 3 áudios reais</span>
+          </button>
+        </div>
+      </section>
+    </div>
+
+    <div class="depo-noresult" id="depo-noresult" hidden>
+      <span class="depo-empty-icon">🔭</span> Nenhum depoimento com esse nome.
     </div>
 
   </div>
@@ -23377,7 +23396,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       '02': 'reguas',
     };
     const safe = clientName
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'cliente';
     const tsuffix = TYPE_FILE_NAME[proposalType] || proposalType;
     const ts = new Date().toISOString().slice(0, 10);
@@ -29131,7 +29150,7 @@ window.apiFetch = async function (url, opts, cfg) {
   }
   function normalize(s) {
     return String(s || '').toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '');
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   }
   function matchesSearch(nicho) {
     if (!searchTerm) return true;
@@ -31165,6 +31184,36 @@ window.apiFetch = async function (url, opts, cfg) {
   back.addEventListener('click', function (e) { e.preventDefault(); showGrupo(); });
   lb.querySelectorAll('[data-skyfit-close]').forEach(el => el.addEventListener('click', closeLb));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLb(); });
+})();
+
+// ══════════════════════════════════════════════════════════
+// Busca de Depoimentos por nome de cliente — filtra os cards
+// (vídeo, texto e áudio) e esconde seções sem resultado.
+// ══════════════════════════════════════════════════════════
+(function depoSearch() {
+  const input = document.getElementById('depo-search');
+  if (!input) return;
+  const noResult = document.getElementById('depo-noresult');
+  const sections = [...document.querySelectorAll('#view-depoimentos .depo-type')];
+  const norm = s => (s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  function apply() {
+    const q = norm(input.value);
+    let anyVisible = false;
+    sections.forEach(sec => {
+      const cards = sec.querySelectorAll('[data-depo-name]');
+      if (!cards.length) return;
+      let secHas = false;
+      cards.forEach(c => {
+        const match = !q || norm(c.getAttribute('data-depo-name')).indexOf(q) !== -1;
+        c.style.display = match ? '' : 'none';
+        if (match) secHas = true;
+      });
+      sec.style.display = secHas ? '' : 'none';
+      if (secHas) anyVisible = true;
+    });
+    if (noResult) noResult.hidden = anyVisible || !q;
+  }
+  input.addEventListener('input', apply);
 })();
 
 // ══════════════════════════════════════════════════════════
