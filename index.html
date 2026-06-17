@@ -14374,6 +14374,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             <option value="7">João Guarçoni</option>
             <option value="8">Gustavo Dias</option>
             <option value="9">Rodrigo Pimenta</option>
+            <option value="11">Victor Peixoto</option>
           </select>
         </div>
         <span class="prop-client-hint">Aparece no slide de fechamento da proposta com o telefone</span>
@@ -23567,6 +23568,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     '8': { name: 'Gustavo Dias',     phone: '(27) 99977-5458' },
     '9': { name: 'Rodrigo Pimenta',  phone: '(27) 98873-0141' },
     '10': { name: 'Arthur Zon (comercial)', phone: '(27) 99277-8561' },
+    '11': { name: 'Victor Peixoto',  phone: '(28) 99982-8634' },
   };
   const DEFAULT_CLOSER_ID = '1'; // Roberto Fachetti (default antigo)
 
@@ -23942,8 +23944,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Onde não há mínimo definido, não há validação (qualquer preço vale).
   // Obs: Creators tem mínimo DISTINTO por modo (Pontual/Recorrente) — ver abaixo.
   //
-  // Reativado (a pedido do Roberto). Pra desativar de novo: false.
-  const MIN_PRICES_ENABLED = true;
+  // Desativado temporariamente (a pedido do Roberto, 2026-06). Pra reativar: true.
+  const MIN_PRICES_ENABLED = false;
   const MIN_PRICES = {
     performance: { starter: 3297, scale: 4997, enterprise: 7497 },
     social:      { starter: 2997, scale: 3997 },
