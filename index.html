@@ -3701,6 +3701,34 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: flex; align-items: center; justify-content: center;
 }
 .depo-plb-speed:hover { background: rgba(37,211,102,0.28); }
+/* Hotspot de IMAGEM (print de texto): clica na "foto dentro da foto" e abre o depoimento real */
+.depo-img-hot {
+  position: absolute; z-index: 2; padding: 0; cursor: pointer;
+  display: flex; align-items: flex-end; justify-content: center;
+  border: 1.5px solid rgba(77,141,255,0.65); border-radius: 10px;
+  background: rgba(77,141,255,0.10);
+  box-shadow: 0 0 0 3px rgba(77,141,255,0.16), 0 0 20px rgba(77,141,255,0.30);
+  transition: background 0.15s ease, border-color 0.15s ease;
+  animation: depoImgHotPulse 2.2s ease-in-out infinite;
+}
+.depo-img-hot:hover { background: rgba(77,141,255,0.20); border-color: #4d8dff; }
+.depo-img-hot-label {
+  margin-bottom: 7px; font-size: 11px; font-weight: 800; color: #fff;
+  background: rgba(77,141,255,0.94); padding: 5px 10px; border-radius: 8px;
+  white-space: nowrap; pointer-events: none; box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+}
+@keyframes depoImgHotPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(77,141,255,0.16), 0 0 16px rgba(77,141,255,0.22); }
+  50%      { box-shadow: 0 0 0 4px rgba(77,141,255,0.32), 0 0 26px rgba(77,141,255,0.45); }
+}
+.depo-skyfit-back {
+  position: absolute; top: 18px; left: 20px; z-index: 4001;
+  height: 42px; padding: 0 16px; border-radius: 11px;
+  background: rgba(77,141,255,0.18); border: 1px solid rgba(77,141,255,0.5);
+  color: #dce9ff; font-size: 14px; font-weight: 800; cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+}
+.depo-skyfit-back:hover { background: rgba(77,141,255,0.3); }
 .cases-header-stats {
   display: flex;
   gap: 12px;
@@ -14577,6 +14605,10 @@ a.xpto-pricing-btn { text-decoration: none; }
             <img class="depo-print-thumb" src="/depoimentos/noway/print.png" alt="" loading="lazy">
             <span class="depo-print-badge"><span class="depo-print-badge-play">▶</span> Noway · 3 áudios reais</span>
           </button>
+          <button type="button" class="depo-print-card" data-print-img="skyfit" aria-label="Print do WhatsApp — elogio da Skyfit (clique e veja o depoimento do cliente)">
+            <img class="depo-print-thumb" src="/depoimentos/skyfit/grupo.png" alt="" loading="lazy">
+            <span class="depo-print-badge"><span class="depo-print-badge-play">💬</span> Skyfit · elogio do cliente</span>
+          </button>
         </div>
       </section>
     </div>
@@ -14608,6 +14640,19 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="depo-audio-hot-fill"></span>
     </button>
     <audio id="depo-plb-audio" preload="none"></audio>
+  </div>
+</div>
+
+<!-- Lightbox do PRINT de TEXTO (Skyfit): grupo do WhatsApp → clica na foto embutida → depoimento real -->
+<div class="depo-plb" id="depo-skyfit-lb" aria-hidden="true">
+  <div class="depo-plb-overlay" data-skyfit-close></div>
+  <button class="depo-plb-close" type="button" data-skyfit-close aria-label="Fechar">✕</button>
+  <button class="depo-skyfit-back" type="button" id="depo-skyfit-back" style="display:none">← Voltar</button>
+  <div class="depo-plb-stage">
+    <img class="depo-plb-img" id="depo-skyfit-img" src="/depoimentos/skyfit/grupo.png" alt="WhatsApp — grupo Partners Turbo (elogio da Skyfit)">
+    <button type="button" class="depo-img-hot" id="depo-skyfit-hot" style="left:5.3%;top:50.2%;width:34%;height:15.6%" aria-label="Ver o depoimento real que o cliente escreveu">
+      <span class="depo-img-hot-label">ver depoimento ↗</span>
+    </button>
   </div>
 </div>
 
@@ -25055,6 +25100,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     /* ── MOBILE ── */
     @media (max-width:640px){
       .pdnvb-slide{min-height:auto;}
+      /* No mobile o slide é content-height; sair do flex-column evita o flex-item
+         (.pdnvb-in) inflar pela min-width da tabela e quebra o overflow-x:auto dela.
+         A capa fica de fora (mantém o flex de centralização). */
+      .pdnvb-slide:not(.pdnvb-cover){display:block;}
+      .pdnvb-in{min-width:0;}
+      .pdnvb-tablebox,.pdnvb-tablewrap{max-width:100%;}
       .pdnvb-grid.c3,.pdnvb-grid.c4{grid-template-columns:1fr;}
       .pdnvb-num{grid-template-columns:repeat(2,1fr);}
       .pdnvb-cred{grid-template-columns:1fr;gap:22px;}
@@ -31087,6 +31138,32 @@ window.apiFetch = async function (url, opts, cfg) {
     });
   }
   lb.querySelectorAll('[data-depo-plb-close]').forEach(el => el.addEventListener('click', closeLb));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLb(); });
+})();
+
+// ══════════════════════════════════════════════════════════
+// Depoimento em PRINT DE TEXTO (Skyfit): abre o print do grupo
+// e, clicando na "foto dentro da foto", troca pelo depoimento real.
+// ══════════════════════════════════════════════════════════
+(function depoSkyfitLightbox() {
+  const lb = document.getElementById('depo-skyfit-lb');
+  if (!lb) return;
+  const img = document.getElementById('depo-skyfit-img');
+  const hot = document.getElementById('depo-skyfit-hot');
+  const back = document.getElementById('depo-skyfit-back');
+  const GRUPO = '/depoimentos/skyfit/grupo.png';
+  const ELOGIO = '/depoimentos/skyfit/elogio.jpg';
+  function showGrupo() { img.src = GRUPO; img.alt = 'WhatsApp — grupo Partners Turbo (elogio da Skyfit)'; hot.style.display = 'flex'; back.style.display = 'none'; }
+  function showElogio() { img.src = ELOGIO; img.alt = 'Depoimento real do cliente — Skyfit'; hot.style.display = 'none'; back.style.display = 'flex'; }
+  function openLb() { showGrupo(); lb.classList.add('is-open'); lb.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
+  function closeLb() { lb.classList.remove('is-open'); lb.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; showGrupo(); }
+  document.addEventListener('click', function (e) {
+    if (!e.target || !e.target.closest) return;
+    if (e.target.closest('.depo-print-card[data-print-img="skyfit"]')) { e.preventDefault(); openLb(); }
+  });
+  hot.addEventListener('click', function (e) { e.preventDefault(); showElogio(); });
+  back.addEventListener('click', function (e) { e.preventDefault(); showGrupo(); });
+  lb.querySelectorAll('[data-skyfit-close]').forEach(el => el.addEventListener('click', closeLb));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLb(); });
 })();
 
