@@ -24869,6 +24869,40 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Extras "a mais" — sem preview (chips).
     extras: ['Search Inteligente', 'Separa e Agrega', 'Add to Cart Fixo', 'Wishlist', 'Sales Notification', 'Compre Com', 'Barra de Estoque']
   };
+  const ECOM_PERSO_CFG = {
+    id: 'personalizado',
+    coverChip: 'E-commerce · Shopify · Personalizado',
+    coverTitle: 'O <span class="nw">E-commerce</span> Personalizado&nbsp;<span class="ac">Turbo</span>',
+    coverSub: 'Um e-commerce construído do zero na Shopify: design 100% exclusivo, seções sob medida e funcionalidades criadas para a sua operação vender mais.',
+    entregaTitle: 'Projeto construído do zero, pensado para <span class="ac">converter</span>',
+    featsCols: 4,
+    checklist: [
+      'Prototipação completa no Figma', 'Design 100% exclusivo para a marca',
+      'Página Home personalizada', 'Modelos de PDP com design exclusivo',
+      'Página de Todos os Produtos + Filtros', 'Página de Quem Somos personalizada',
+      'Páginas de Políticas e Privacidade', 'Notificações de Email Padrão',
+      'Acesso à comunidade de e-commerce da Turbo', 'Treinamentos personalizados em vídeo',
+      'Instalação de ERP, Gateway de Pagamento e Logística',
+      'Automação de recuperação de checkout abandonado'
+    ],
+    // Todas as features com preview (comuns DNVB + Moda) — reusam assets/vídeos do DNVB.
+    feats: [
+      { f: 'carrinho-lateral-frete', t: 'Carrinho Lateral + Frete', driveId: '1kp3PvyuRaGT4I0xafZ1j36WMzErYjWmr' },
+      { f: 'barra-frete-gratis',     t: 'Barra de Frete Grátis',    driveId: '1Pc-VrMoJ7EcVMQ_5h0xeviPa9URjkpYS' },
+      { f: 'orderbump',              t: 'Orderbump',                driveId: '1W6WKiZJn5PoanLg6TjcYuUv3frkBXMU4' },
+      { f: 'reviews-judgme',         t: 'Reviews de Clientes',      driveId: '17f0odnV_lW5B8-bqZxwF9NER28zer-Tm' },
+      { f: 'popup-personalizado',    t: 'Popup Personalizado',      driveId: '1Bv8z3JvOB2SLwCjDrzelZwWZa-CGB7_o' },
+      { f: 'secao-ugcs',             t: "Seção de UGC's",           driveId: '1HFHnf3tvDMFbhCTUNpAIpoOMO8VX79RH' },
+      { f: 'bundle-progressivo',     t: 'Bundle Progressivo',       driveId: '17u7DUTBjt-3UFAom01Vy-IsAPCYSjCqc' },
+      { f: 'menu-mobile-custom',     t: 'Menu Mobile Custom',       driveId: '1sjKmQTdqNGwqipYwoxV6q5BIqEuYHTrn' },
+    ],
+    // Extras "a mais" — sem preview (chips).
+    extras: ['Search Inteligente', 'Separa e Agrega', 'Add to Cart Fixo', 'Wishlist', 'Sales Notification', 'Compre Com', 'Barra de Estoque'],
+    // Tags compactas (estilo do deck) — muitas features + chips + diferenciais juntos.
+    compactFeats: true,
+    // Diferenciais do projeto personalizado — bloco especial (estética destacada).
+    diferenciais: ['Protótipo 100% personalizado', 'Seções 100% customizadas', 'Escopo Aberto e Flexível', 'Criação de funcionalidades']
+  };
   function buildEcomPresHTML(cfg) {
     const POSTER = 'Slides Tech/Ativos tech/DNVB/posters/';
     const feats = cfg.feats;
@@ -24876,18 +24910,31 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const chkSvg = '<svg class="pdnvb-feat-chk" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
     // Poster = imagem local (mesmo domínio, deployada) — confiável no celular.
     // O Drive entra só no clique (lightbox), via data-drive-id.
-    const featCards = feats.map(v => `
+    const featCards = cfg.compactFeats
+      ? feats.map(v => `
+      <button type="button" class="pdnvb-cfeat" data-drive-id="${v.driveId}" data-title="${v.t}" aria-label="Ver vídeo: ${v.t}">
+        <span class="pdnvb-cfeat-thumb"><img src="${POSTER}${v.f}.jpg" alt="" loading="eager"><span class="pdnvb-cfeat-play">${playSvg}</span></span>
+        <span class="pdnvb-cfeat-label">${v.t}</span>
+      </button>`).join('')
+      : feats.map(v => `
       <button type="button" class="pdnvb-feat" data-drive-id="${v.driveId}" data-title="${v.t}" aria-label="Ver vídeo: ${v.t}">
         <img class="pdnvb-feat-img" src="${POSTER}${v.f}.jpg" alt="" loading="eager">
         <span class="pdnvb-feat-play"><span>${playSvg}</span></span>
         <span class="pdnvb-feat-label">${chkSvg}${v.t}</span>
       </button>`).join('');
+    const featsClass = 'pdnvb-feats' + (cfg.compactFeats ? ' pdnvb-feats--compact' : (cfg.featsCols === 5 ? ' cols5' : ''));
 
     const check = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
     const checkItems = cfg.checklist.map(c => `<div class="pdnvb-check"><span>${check}</span>${c}</div>`).join('');
     // Extras "a mais" (só Moda hoje): chips sem preview, abaixo dos cards.
     const extrasHtml = (cfg.extras && cfg.extras.length)
       ? `<div class="pdnvb-chip-lab">Também incluídas</div><div class="pdnvb-chips">${cfg.extras.map(e => `<span class="pdnvb-chip">${check}${e}</span>`).join('')}</div>`
+      : '';
+    // Diferenciais (só personalizado hoje): bloco especial após a entrega.
+    const starSvg = '<svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>';
+    const diamondSvg = '<svg viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12z"/></svg>';
+    const difHtml = (cfg.diferenciais && cfg.diferenciais.length)
+      ? `<div class="pdnvb-difblock"><div class="pdnvb-diftitle">${starSvg}Principais Diferenciais</div><div class="pdnvb-difgrid">${cfg.diferenciais.map(d => `<span class="pdnvb-difitem">${diamondSvg}${d}</span>`).join('')}</div></div>`
       : '';
 
     const css = `
@@ -24967,10 +25014,26 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-feat-chk{width:12px;height:12px;display:inline-block;vertical-align:-1px;margin-right:5px;fill:none;stroke:#6ee7b7;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
     .pdnvb-feats-note{grid-column:1/-1;font-size:12px;color:rgba(255,255,255,0.4);margin:4px 0 0;text-align:center;}
     .pdnvb-feats.cols5{grid-template-columns:repeat(5,1fr);}
+    /* COMPACT FEATS (tag horizontal — estilo do deck) */
+    .pdnvb-feats--compact{grid-template-columns:repeat(4,1fr);gap:10px;}
+    .pdnvb-cfeat{display:flex;align-items:stretch;height:50px;background:linear-gradient(145deg,rgba(77,141,255,0.08),rgba(77,141,255,0.015));border:1px solid var(--cb);border-radius:11px;overflow:hidden;cursor:pointer;padding:0;font-family:inherit;text-align:left;transition:border-color .2s,box-shadow .2s,transform .2s;}
+    .pdnvb-cfeat:hover{border-color:rgba(77,141,255,0.5);box-shadow:0 4px 14px rgba(77,141,255,0.14);transform:translateY(-1px);}
+    .pdnvb-cfeat-thumb{position:relative;width:54px;flex-shrink:0;overflow:hidden;background:rgba(0,0,0,0.3);}
+    .pdnvb-cfeat-thumb img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;}
+    .pdnvb-cfeat-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.22);}
+    .pdnvb-cfeat-play svg{width:15px;height:15px;fill:#fff;filter:drop-shadow(0 1px 3px rgba(0,0,0,0.6));}
+    .pdnvb-cfeat-label{flex:1;display:flex;align-items:center;padding:0 12px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,0.8);line-height:1.15;}
     .pdnvb-chip-lab{font-size:10.5px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(196,168,255,0.5);margin:22px 0 11px;}
     .pdnvb-chips{display:flex;flex-wrap:wrap;gap:9px;}
     .pdnvb-chip{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.82);background:rgba(77,141,255,0.06);border:1px solid var(--cb);border-radius:9px;padding:8px 13px;}
     .pdnvb-chip svg{width:13px;height:13px;fill:none;stroke:var(--gr);stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+    /* PRINCIPAIS DIFERENCIAIS — bloco especial */
+    .pdnvb-difblock{margin-top:30px;padding:22px 26px;border-radius:16px;background:linear-gradient(135deg,rgba(124,92,255,0.16) 0%,rgba(77,141,255,0.05) 100%);border:1px solid rgba(196,168,255,0.24);box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);}
+    .pdnvb-diftitle{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#d9c8ff;margin:0 0 16px;}
+    .pdnvb-diftitle svg{width:17px;height:17px;fill:var(--s);}
+    .pdnvb-difgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 26px;}
+    .pdnvb-difitem{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:rgba(255,255,255,0.92);}
+    .pdnvb-difitem svg{width:14px;height:14px;flex-shrink:0;fill:var(--s);}
     /* LIGHTBOX */
     .pdnvb-lb{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;}
     .pdnvb-lb.on{display:flex;}
@@ -24986,7 +25049,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .pdnvb-cred{grid-template-columns:1fr;gap:22px;}
       .pdnvb-deliver{gap:24px;}
       .pdnvb-checklist{grid-template-columns:1fr;}
+      .pdnvb-difgrid{grid-template-columns:repeat(2,1fr);}
       .pdnvb-feats,.pdnvb-feats.cols5{grid-template-columns:repeat(2,1fr);gap:10px;}
+      .pdnvb-feats--compact{grid-template-columns:1fr;}
       .pdnvb-cover{min-height:auto;}
       .pdnvb-cover-h{font-size:clamp(30px,8vw,42px);}
       .pdnvb-table{min-width:466px;}
@@ -25155,7 +25220,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <div class="pdnvb-deliver">
             <div>
               <div class="pdnvb-col-lab">Funcionalidades em destaque</div>
-              <div class="pdnvb-feats${cfg.featsCols === 5 ? ' cols5' : ''}">
+              <div class="${featsClass}">
                 ${featCards}
               </div>
               ${extrasHtml}
@@ -25167,6 +25232,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               </div>
             </div>
           </div>
+          ${difHtml}
         </div>
       </div>
 
@@ -25187,7 +25253,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       function open(id){ fr.src='https://drive.google.com/file/d/'+id+'/preview'; lb.classList.add('on'); lb.setAttribute('aria-hidden','false'); }
       function close(){ lb.classList.remove('on'); lb.setAttribute('aria-hidden','true'); fr.src=''; }
       root.addEventListener('click',function(e){
-        var c=e.target.closest('.pdnvb-feat'); if(c){ var id=c.getAttribute('data-drive-id'); if(id){ e.preventDefault(); open(id);} return; }
+        var c=e.target.closest('[data-drive-id]'); if(c){ var id=c.getAttribute('data-drive-id'); if(id){ e.preventDefault(); open(id);} return; }
         if(e.target.closest('[data-close]')) close();
       });
       document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&lb.classList.contains('on')) close(); });
@@ -25316,8 +25382,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         // E-commerce não tem sourceId: a apresentação rica entra aqui,
         // portada do deck pra seções responsivas (DNVB e Moda).
         const sub = [...(enabledTiers.ecommerce || [])][0] || 'dnvb';
-        if (sub === 'dnvb')      sections.push(buildEcomPresHTML(ECOM_DNVB_CFG));
-        else if (sub === 'moda') sections.push(buildEcomPresHTML(ECOM_MODA_CFG));
+        if (sub === 'dnvb')              sections.push(buildEcomPresHTML(ECOM_DNVB_CFG));
+        else if (sub === 'moda')         sections.push(buildEcomPresHTML(ECOM_MODA_CFG));
+        else if (sub === 'personalizado') sections.push(buildEcomPresHTML(ECOM_PERSO_CFG));
       }
     }
 
@@ -26873,7 +26940,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         display: grid;
         grid-template-columns: 1.35fr 1fr;
         gap: clamp(24px, 3vw, 44px);
-        align-items: start;
+        align-items: stretch;
         max-width: 1080px;
         margin: 0 auto;
       }
@@ -26963,6 +27030,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         border-radius: 18px;
         padding: 32px 26px;
         text-align: center;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         box-shadow:
           0 0 0 1px rgba(13,207,232,0.25),
           inset 0 1px 0 rgba(255,255,255,0.08),

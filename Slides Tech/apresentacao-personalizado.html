@@ -876,15 +876,29 @@
         .checklist-item { display: flex; align-items: flex-start; gap: 9px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 15px; color: rgba(255,255,255,0.67); line-height: 1.45; }
         .checklist-item:last-child { border-bottom: none; }
         .checklist-item svg { width: 13px; height: 13px; flex-shrink: 0; stroke: var(--check); fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; margin-top: 2px; }
-        .pres-features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; }
+        .pres-features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
         .pres-features-grid-full { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .pres-feature-tag { display: flex; align-items: stretch; background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 11px; overflow: hidden; cursor: pointer; height: 50px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .pres-feature-tag { display: flex; align-items: stretch; background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 11px; overflow: hidden; cursor: pointer; height: 46px; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
         .pres-feature-tag:hover { border-color: rgba(77,141,255,0.5); box-shadow: 0 4px 14px rgba(77,141,255,0.13); }
-        .pres-feature-label { flex: 1; display: flex; align-items: center; padding: 0 13px; font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.72); }
-        .pres-feature-preview { position: relative; width: 68px; flex-shrink: 0; overflow: hidden; background: rgba(0,0,0,0.3); }
-        .pres-feature-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pres-feature-label { flex: 1; display: flex; align-items: center; padding: 0 12px; font-size: 14px; font-weight: 500; color: rgba(255,255,255,0.75); line-height: 1.15; }
+        .pres-feature-preview { position: relative; width: 64px; flex-shrink: 0; overflow: hidden; background: rgba(0,0,0,0.3); }
+        .pres-feature-preview video, .pres-feature-preview img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
         .pres-feature-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.22); }
-        .pres-feature-play svg { width: 17px; height: 17px; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+        .pres-feature-play svg { width: 16px; height: 16px; fill: #fff; filter: drop-shadow(0 1px 3px rgba(0,0,0,0.6)); }
+
+        /* Extras sem preview — chips */
+        .feat-extra-title { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(196,168,255,0.5); margin: 13px 0 8px; }
+        .feat-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+        .feat-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 500; color: rgba(255,255,255,0.82); background: rgba(77,141,255,0.06); border: 1px solid var(--card-border); border-radius: 8px; padding: 6px 11px; }
+        .feat-chip svg { width: 12px; height: 12px; fill: none; stroke: var(--check); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+        /* Principais Diferenciais — bloco especial */
+        .diferenciais-block { margin-top: 13px; padding: 13px 16px; border-radius: 14px; background: linear-gradient(135deg, rgba(124,92,255,0.16) 0%, rgba(77,141,255,0.05) 100%); border: 1px solid rgba(196,168,255,0.24); box-shadow: inset 0 1px 0 rgba(255,255,255,0.04); }
+        .diferenciais-title { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; color: #d9c8ff; margin-bottom: 11px; }
+        .diferenciais-title svg { width: 16px; height: 16px; fill: var(--secondary); }
+        .diferenciais-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 9px 18px; }
+        .diferenciais-item { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: rgba(255,255,255,0.92); }
+        .diferenciais-item svg { width: 13px; height: 13px; flex-shrink: 0; fill: var(--secondary); }
         .process-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
         .process-step { background: linear-gradient(145deg, rgba(77,141,255,0.08) 0%, rgba(77,141,255,0.015) 100%); border: 1px solid var(--card-border); border-radius: 13px; padding: 18px; display: flex; flex-direction: column; gap: 7px; transition: border-color 0.25s ease; }
         .process-step:hover { border-color: rgba(77,141,255,0.45); }
@@ -1186,38 +1200,73 @@
                         <div>
                             <div class="feat-col-title">O que está incluído</div>
                             <div class="checklist-items">
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Design exclusivo no Figma</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Desenvolvimento 100% custom</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sem limitações de template</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Integrações sob medida</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Performance Lighthouse 90+</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>SEO avançado e estruturado</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Treinamento da equipe</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>ERP, Gateway e Logística</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Suporte pós-lançamento</div>
-                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Acesso à comunidade Turbo</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Prototipação completa no Figma</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Design 100% exclusivo para a marca</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Página Home personalizada</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Modelos de PDP com design exclusivo</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Página de Todos os Produtos + Filtros</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Página de Quem Somos personalizada</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Páginas de Políticas e Privacidade</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Notificações de Email Padrão</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Acesso à comunidade de e-commerce da Turbo</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Treinamentos personalizados em vídeo</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Instalação de ERP, Gateway de Pagamento e Logística</div>
+                                <div class="checklist-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Automação de recuperação de checkout abandonado</div>
                             </div>
                         </div>
                         <div>
-                            <div class="feat-col-title">Funcionalidades em destaque</div>
+                            <div class="feat-col-title">// Funcionalidades em destaque — clique para ver</div>
                             <div class="pres-features-grid">
-                                <div class="pres-feature-tag" data-video="../assets/videos/design-figma.mp4" data-title="Design Exclusivo no Figma">
-                                    <span class="pres-feature-label">Design Exclusivo no Figma</span>
-                                </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral + Frete">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/carrinho-lateral-frete.mp4" data-title="Carrinho Lateral + Frete">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/carrinho-lateral-frete.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                     <span class="pres-feature-label">Carrinho Lateral + Frete</span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/barra-frete-gratis.mp4" data-title="Barra de Frete Grátis">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/barra-frete-gratis.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                     <span class="pres-feature-label">Barra de Frete Grátis</span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/orderbump.mp4" data-title="Orderbump">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/orderbump.mp4" data-title="Orderbump">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/orderbump.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                     <span class="pres-feature-label">Orderbump</span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/reviews-judgme.mp4" data-title="Reviews de Clientes">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/reviews-judgme.mp4" data-title="Reviews de Clientes">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/reviews-judgme.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                     <span class="pres-feature-label">Reviews de Clientes</span>
                                 </div>
-                                <div class="pres-feature-tag" data-video="../assets/videos/popup-personalizado.mp4" data-title="Popup Personalizado">
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/popup-personalizado.mp4" data-title="Popup Personalizado">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/popup-personalizado.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
                                     <span class="pres-feature-label">Popup Personalizado</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/secao-ugcs.mp4" data-title="Seção de UGC's">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/secao-ugcs.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Seção de UGC's</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/bundle-progressivo.mp4" data-title="Bundle Progressivo">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/bundle-progressivo.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Bundle Progressivo</span>
+                                </div>
+                                <div class="pres-feature-tag" data-video="Ativos%20tech/DNVB/menu-mobile-custom.mp4" data-title="Menu Mobile Custom">
+                                    <span class="pres-feature-preview"><img src="Ativos%20tech/DNVB/posters/menu-mobile-custom.jpg" alt=""><span class="pres-feature-play"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></span>
+                                    <span class="pres-feature-label">Menu Mobile Custom</span>
+                                </div>
+                            </div>
+                            <div class="feat-extra-title">// Também incluídas</div>
+                            <div class="feat-chips">
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Search Inteligente</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Separa e Agrega</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Add to Cart Fixo</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Wishlist</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Sales Notification</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Compre Com</span>
+                                <span class="feat-chip"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Barra de Estoque</span>
+                            </div>
+                            <div class="diferenciais-block">
+                                <div class="diferenciais-title"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>Principais Diferenciais</div>
+                                <div class="diferenciais-grid">
+                                    <span class="diferenciais-item"><svg viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12z"/></svg>Protótipo 100% personalizado</span>
+                                    <span class="diferenciais-item"><svg viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12z"/></svg>Seções 100% customizadas</span>
+                                    <span class="diferenciais-item"><svg viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12z"/></svg>Escopo Aberto e Flexível</span>
+                                    <span class="diferenciais-item"><svg viewBox="0 0 24 24"><path d="M12 2l10 10-10 10L2 12z"/></svg>Criação de funcionalidades</span>
                                 </div>
                             </div>
                         </div>
@@ -1225,27 +1274,7 @@
                 </div>
             </div>
 
-            <!-- SLIDE 8: O que entregamos pt2 -->
-            <div class="slide">
-                <div class="slide-inner">
-                    <div class="section-label">// O QUE ENTREGAMOS</div>
-                    <h1 class="slide-title">Cada detalhe pensado para <span>conversão</span></h1>
-                    <div class="feat-col-title" style="margin-bottom: 14px;">Mais funcionalidades exclusivas do projeto personalizado</div>
-                    <div class="pres-features-grid-full">
-                        <div class="pres-feature-tag" data-video="../assets/videos/menu-mobile-custom.mp4" data-title="Menu Mobile Custom">
-                            <span class="pres-feature-label">Menu Mobile Custom</span>
-                        </div>
-                        <div class="pres-feature-tag" data-video="../assets/videos/secoes-customizadas.mp4" data-title="Seções 100% Customizadas">
-                            <span class="pres-feature-label">Seções 100% Customizadas</span>
-                        </div>
-                        <div class="pres-feature-tag" data-video="../assets/videos/escopo-aberto.mp4" data-title="Escopo Aberto e Flexível">
-                            <span class="pres-feature-label">Escopo Aberto e Flexível</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SLIDE 9: Processo -->
+            <!-- SLIDE 8: Processo -->
             <div class="slide">
                 <div class="slide-inner">
                     <div class="section-label">// PROCESSO</div>
@@ -1305,9 +1334,8 @@
         <button class="nav-dot" aria-label="Ir para slide 4"  title="Números Shopify"></button>
         <button class="nav-dot" aria-label="Ir para slide 5"  title="Por que Shopify"></button>
         <button class="nav-dot" aria-label="Ir para slide 6"  title="Comparação"></button>
-        <button class="nav-dot" aria-label="Ir para slide 7"  title="Entregáveis pt1"></button>
-        <button class="nav-dot" aria-label="Ir para slide 8"  title="Entregáveis pt2"></button>
-        <button class="nav-dot" aria-label="Ir para slide 9"  title="Processo"></button>
+        <button class="nav-dot" aria-label="Ir para slide 7"  title="Entregáveis"></button>
+        <button class="nav-dot" aria-label="Ir para slide 8"  title="Processo"></button>
     </div>
 
     <div class="nav-arrows">
@@ -1340,7 +1368,7 @@
         var dots     = document.querySelectorAll('.nav-dot');
         var counter  = document.getElementById('slideCounter');
         var progress = document.getElementById('progressBar');
-        var total    = 9;
+        var total    = 8;
         var current  = 0;
         var busy     = false;
         var touchY   = 0;
