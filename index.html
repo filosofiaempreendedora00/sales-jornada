@@ -24827,6 +24827,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     coverSub: 'Lojas DTC na Shopify pensadas para vender: clareza na oferta, experiência de compra e performance — tudo na biblioteca de seções da Turbo.',
     entregaTitle: 'Tudo que sua marca DTC precisa para <span class="ac">vender</span>',
     featsCols: 4,
+    compactFeats: true,
     checklist: [
       'Página Home', 'PDP com até 7 seções', 'Página de Todos os Produtos + Filtros',
       'Cadastro de 1 produto como playbook para os outros', 'Página Quem Somos', 'Páginas de Políticas',
@@ -24990,7 +24991,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     .pdnvb-tablebox{position:relative;margin:26px 0 0;}
     .pdnvb-tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--cb);border-radius:14px;}
     .pdnvb-tablebox::after{content:"";position:absolute;top:1px;right:1px;bottom:1px;width:44px;border-radius:0 13px 13px 0;background:linear-gradient(to right,rgba(8,5,16,0),#080510 86%);pointer-events:none;opacity:0;transition:opacity .25s;}
-    .pdnvb-swipe{display:none;}
+    .pdnvb-swipe{display:none;align-items:center;gap:6px;margin-top:11px;font-size:12.5px;font-weight:600;color:var(--s);transition:opacity .25s;}
+    .pdnvb-swipe svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+    /* Affordâncias de rolagem (fade + hint + cursor) — só quando a tabela realmente rola (classe .scrollable via JS) */
+    .pdnvb-tablebox.scrollable .pdnvb-tablewrap{cursor:grab;}
+    .pdnvb-tablebox.scrollable .pdnvb-tablewrap:active{cursor:grabbing;}
+    .pdnvb-tablebox.scrollable::after{opacity:1;}
+    .pdnvb-tablebox.scrollable.at-end::after{opacity:0;}
+    .pdnvb-tablebox.scrollable .pdnvb-swipe{display:inline-flex;}
+    .pdnvb-tablebox.scrollable.at-end .pdnvb-swipe{opacity:.3;}
     .pdnvb-table{width:100%;border-collapse:collapse;min-width:520px;}
     .pdnvb-table th,.pdnvb-table td{padding:13px 14px;text-align:left;font-size:13.5px;border-bottom:1px solid rgba(255,255,255,0.06);}
     .pdnvb-table thead th{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);font-weight:800;}
@@ -25058,11 +25067,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .pdnvb-cover-h{font-size:clamp(30px,8vw,42px);}
       .pdnvb-table{min-width:466px;}
       .pdnvb-table th,.pdnvb-table td{padding:11px 12px;font-size:13px;}
-      .pdnvb-tablebox::after{opacity:1;}
-      .pdnvb-tablebox.at-end::after{opacity:0;}
-      .pdnvb-swipe{display:inline-flex;align-items:center;gap:6px;margin-top:11px;font-size:12.5px;font-weight:600;color:var(--s);transition:opacity .25s;}
-      .pdnvb-swipe svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-      .pdnvb-tablebox.at-end .pdnvb-swipe{opacity:.3;}
+      /* fade/hint/cursor controlados pela classe .scrollable (JS), independente da largura */
       .pdnvb-lb-box{height:auto;width:94vw;max-height:86vh;}
     }`;
 
@@ -25260,7 +25265,21 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       });
       document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&lb.classList.contains('on')) close(); });
       var tbox=root.querySelector('.pdnvb-tablebox'), tw=root.querySelector('.pdnvb-tablewrap');
-      if(tbox&&tw){ var upd=function(){ if(tw.scrollLeft+tw.clientWidth>=tw.scrollWidth-4) tbox.classList.add('at-end'); else tbox.classList.remove('at-end'); }; tw.addEventListener('scroll',upd,{passive:true}); }
+      if(tbox&&tw){
+        var upd=function(){
+          tbox.classList.toggle('scrollable', tw.scrollWidth > tw.clientWidth + 4);
+          if(tw.scrollLeft+tw.clientWidth >= tw.scrollWidth-4) tbox.classList.add('at-end'); else tbox.classList.remove('at-end');
+        };
+        tw.addEventListener('scroll',upd,{passive:true});
+        upd(); window.addEventListener('resize',upd); setTimeout(upd,300);
+        // Arrastar pro lado com o mouse (touch usa scroll nativo)
+        var dn=false,sx=0,sl=0,mv=false;
+        tw.addEventListener('pointerdown',function(e){ if(e.pointerType&&e.pointerType!=='mouse') return; if(tw.scrollWidth<=tw.clientWidth+4) return; dn=true;mv=false;sx=e.clientX;sl=tw.scrollLeft; try{tw.setPointerCapture(e.pointerId);}catch(_){} });
+        tw.addEventListener('pointermove',function(e){ if(!dn) return; var dx=e.clientX-sx; if(Math.abs(dx)>3) mv=true; tw.scrollLeft=sl-dx; });
+        var endDrag=function(){ dn=false; };
+        tw.addEventListener('pointerup',endDrag); tw.addEventListener('pointercancel',endDrag);
+        tw.addEventListener('click',function(e){ if(mv){ e.preventDefault(); e.stopPropagation(); mv=false; } },true);
+      }
     })();<\/script>
     </section>`;
   }
