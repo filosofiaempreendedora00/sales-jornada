@@ -21,7 +21,7 @@
   }
   .ugc *{box-sizing:border-box;}
   /* ALTURA PADRÃO DOS SLIDES (igual ao padrão das outras soluções) */
-  .ugc-slide{position:relative;min-height:780px;display:flex;flex-direction:column;justify-content:center;padding:clamp(54px,6vw,86px) clamp(22px,5vw,64px);overflow:hidden;}
+  .ugc-slide{position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(54px,6vw,86px) clamp(22px,5vw,64px);overflow:hidden;}
   .ugc-slide + .ugc-slide{border-top:1px solid rgba(255,255,255,0.07);}
   .ugc-in{max-width:1120px;margin:0 auto;width:100%;position:relative;z-index:1;}
   .ugc-eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--s);opacity:.85;margin:0 0 14px;}
@@ -30,13 +30,14 @@
   .ugc-lead{font-size:clamp(14px,1.5vw,17px);line-height:1.6;color:rgba(255,255,255,0.64);max-width:720px;margin:0;}
 
   /* COVER */
-  .ugc-cover{align-items:center;justify-content:center;text-align:center;min-height:90vh;padding:clamp(54px,8vw,96px) clamp(24px,6vw,72px);}
+  .ugc-cover{align-items:center;justify-content:center;text-align:center;min-height:560px;padding:clamp(54px,8vw,96px) clamp(24px,6vw,72px);}
   .ugc-cover-bg{position:absolute;inset:0;background:
      radial-gradient(ellipse 58% 58% at 50% 2%,rgba(77,141,255,0.32),transparent 60%),
      radial-gradient(ellipse 50% 48% at 50% 100%,rgba(196,168,255,0.18),transparent 65%);pointer-events:none;}
   .ugc-cover-in{max-width:860px;}
   .ugc-chip{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;color:#d8c8ff;background:rgba(124,92,255,0.16);border:1px solid rgba(196,168,255,0.3);border-radius:99px;padding:8px 18px;margin:0 0 28px;}
-  .ugc-cover-h{font-size:clamp(34px,5.4vw,62px);font-weight:900;letter-spacing:-2px;line-height:1.06;margin:0;}
+  .ugc-cover-h{font-size:clamp(34px,5.2vw,60px);font-weight:900;letter-spacing:-2px;line-height:1.05;margin:0;text-wrap:balance;}
+  .ugc-cover-tag{font-size:clamp(20px,2.7vw,30px);font-weight:700;letter-spacing:-0.6px;line-height:1.2;color:rgba(255,255,255,0.92);margin:12px 0 0;text-wrap:balance;}
   .ugc-cover-sub{font-size:clamp(15px,1.7vw,19px);line-height:1.6;color:rgba(255,255,255,0.68);max-width:600px;margin:26px auto 0;}
   .ugc-badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:34px 0 0;}
   .ugc-badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:rgba(255,255,255,0.82);background:rgba(255,255,255,0.04);border:1px solid var(--cb);border-radius:99px;padding:8px 16px;}
@@ -126,24 +127,41 @@
   .ugc-pcard--premium .tag{color:#e6dbff;}
   .ugc-pcard--premium h3{background:linear-gradient(120deg,#fff,#d9c8ff);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
   .ugc-pcard--premium p{color:rgba(255,255,255,0.72);}
-  .ugc-brain{position:absolute;top:-14px;right:18px;font-size:40px;z-index:3;animation:ugcFloat 4.2s ease-in-out infinite;filter:drop-shadow(0 10px 22px rgba(124,92,255,0.6));}
-  @keyframes ugcFloat{0%,100%{transform:translateY(0) rotate(-5deg);}50%{transform:translateY(-13px) rotate(5deg);}}
+  .ugc-pcell{position:relative;display:flex;}
+  .ugc-pcell .ugc-pcard{flex:1;}
+  .ugc-brain{position:absolute;top:-34px;right:6px;font-size:clamp(50px,5vw,66px);z-index:5;animation:ugcFloat 4.2s ease-in-out infinite;filter:drop-shadow(0 12px 26px rgba(124,92,255,0.65));pointer-events:none;}
+  @keyframes ugcFloat{0%,100%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-15px) rotate(6deg);}}
 
   /* ENTREGÁVEIS (estética premium) */
   .ugc-deliver{display:flex;flex-direction:column;gap:11px;margin:26px 0 0;}
-  .ugc-drow{position:relative;display:grid;grid-template-columns:auto 0.4fr 1fr;align-items:center;gap:18px;
-    padding:18px 22px;border-radius:14px;background:linear-gradient(120deg,rgba(77,141,255,0.06),rgba(77,141,255,0.012));
+  .ugc-drow{position:relative;display:grid;grid-template-columns:60px 1fr;align-items:center;gap:18px;
+    padding:16px 20px;border-radius:14px;background:linear-gradient(120deg,rgba(77,141,255,0.06),rgba(77,141,255,0.012));
     border:1px solid var(--cb);transition:border-color .2s,transform .2s;}
   .ugc-drow:hover{border-color:rgba(77,141,255,0.4);transform:translateX(3px);}
-  .ugc-drow .mk{width:11px;height:11px;border-radius:50%;background:linear-gradient(135deg,#6ee7b7,#4d8dff);box-shadow:0 0 12px rgba(110,231,183,0.6);flex-shrink:0;}
-  .ugc-drow .when{font-size:13.5px;font-weight:800;color:#cfe0ff;}
-  .ugc-drow .what{font-size:13.5px;line-height:1.5;color:var(--bd);}
+  .ugc-day{display:flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:14px;font-size:19px;font-weight:900;letter-spacing:-0.5px;flex-shrink:0;background:rgba(255,255,255,0.05);border:1px solid var(--cb);color:#cfe0ff;}
+  .ugc-day--hot{background:linear-gradient(135deg,#6ee7b7,#4d8dff);color:#071018;border-color:transparent;box-shadow:0 0 22px rgba(77,141,255,0.55);}
+  .ugc-day--icon{font-size:27px;background:rgba(110,231,183,0.1);border-color:rgba(110,231,183,0.28);}
+  .ugc-dcell .when{display:block;font-size:14.5px;font-weight:800;color:#fff;margin:0 0 3px;}
+  .ugc-dcell .when em{font-style:normal;font-weight:700;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--gr);margin-left:7px;vertical-align:1px;}
+  .ugc-dcell .what{display:block;font-size:13px;line-height:1.5;color:var(--bd);}
+  .ugc-dcell .what b{color:#fff;font-weight:700;}
+  .ugc-drow--meet{background:linear-gradient(120deg,rgba(124,92,255,0.2),rgba(77,141,255,0.07));border:1px solid rgba(196,168,255,0.5);box-shadow:0 0 0 1px rgba(196,168,255,0.16),0 0 32px rgba(124,92,255,0.32);overflow:hidden;}
+  .ugc-drow--meet::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(196,168,255,0.18) 50%,transparent 65%);background-size:240% 100%;animation:ugcShine 4s linear infinite;pointer-events:none;mix-blend-mode:screen;}
 
   /* NOTE / destaque */
   .ugc-note{margin:28px 0 0;padding:19px 23px;border-radius:14px;background:linear-gradient(135deg,rgba(124,92,255,0.14),rgba(77,141,255,0.04));border:1px solid rgba(196,168,255,0.24);}
   .ugc-note .nt{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:#d9c8ff;margin:0 0 7px;}
   .ugc-note p{font-size:14px;line-height:1.6;color:rgba(255,255,255,0.82);margin:0;}
   .ugc-note p b{color:#fff;}
+
+  /* MODO DECK — 1 slide por vez (ativado só no viewer standalone via JS) */
+  .ugc.deck-mode{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+  .ugc.deck-mode .ugc-slide{min-height:100vh;scroll-snap-align:start;}
+  .ugc-nav{display:none;}
+  .ugc.deck-mode .ugc-nav{display:flex;position:fixed;right:20px;top:50%;transform:translateY(-50%);z-index:60;flex-direction:column;gap:11px;}
+  .ugc-nav button{width:10px;height:10px;border-radius:50%;border:1.5px solid rgba(255,255,255,0.38);background:transparent;cursor:pointer;padding:0;transition:transform .2s,background .2s,border-color .2s;}
+  .ugc-nav button:hover{border-color:rgba(255,255,255,0.7);}
+  .ugc-nav button.active{background:linear-gradient(135deg,#6ee7b7,#4d8dff);border-color:transparent;transform:scale(1.35);box-shadow:0 0 12px rgba(77,141,255,0.6);}
 
   @media (max-width:820px){
     .ugc-slide{min-height:auto;display:block;}
@@ -152,8 +170,7 @@
     .ugc-conn{flex:0 0 34px;height:34px;}
     .ugc-conn i{transform:rotate(135deg);} /* aponta pra baixo no mobile */
     @keyframes ugcArrow{0%,100%{opacity:.45;transform:rotate(135deg) translate(-2px,-2px);}50%{opacity:1;transform:rotate(135deg) translate(2px,2px);}}
-    .ugc-drow{grid-template-columns:auto 1fr;}
-    .ugc-drow .what{grid-column:1/-1;}
+    .ugc-day{width:52px;height:52px;font-size:17px;}
   }
 </style>
 </head>
@@ -165,7 +182,8 @@
     <div class="ugc-cover-bg"></div>
     <div class="ugc-cover-in">
       <span class="ugc-chip">Consultoria · Criativos UGC · Performance</span>
-      <h1 class="ugc-cover-h">Metodologia <span class="ac">UGCs&nbsp;Turbo</span>:<br>criativos que aceleram&nbsp;a&nbsp;escala</h1>
+      <h1 class="ugc-cover-h">Metodologia <span class="ac">UGCs&nbsp;Turbo</span>:</h1>
+      <p class="ugc-cover-tag">criativos que aceleram&nbsp;a&nbsp;escala</p>
       <p class="ugc-cover-sub">A Turbo produz seus criativos UGC e conduz o seu time de tráfego num processo de testes inteligente — cada decisão baseada nos dados reais da&nbsp;sua&nbsp;conta.</p>
       <div class="ugc-badges">
         <span class="ugc-badge"><i></i>Testes estruturados</span>
@@ -179,14 +197,14 @@
   <div class="ugc-slide">
     <div class="ugc-in">
       <p class="ugc-eyebrow">// Como funciona</p>
-      <h2 class="ugc-h">Da sua verba ao criativo que&nbsp;<span class="ac">escala</span></h2>
+      <h2 class="ugc-h">Da sua verba aos criativos que&nbsp;<span class="ac">escalam</span></h2>
       <p class="ugc-lead">Um processo claro: produzimos os criativos a partir de ângulos de venda mapeados e guiamos o seu time num ciclo de testes que separa o que funciona do que&nbsp;não&nbsp;funciona.</p>
       <div class="ugc-steps">
         <div class="ugc-step-card"><span class="n">1</span><h4>Diagnóstico e meta</h4><p>Definimos a meta do negócio e quanto cada venda pode custar — a sua Métrica Norte.</p></div>
         <div class="ugc-conn"><i></i></div>
-        <div class="ugc-step-card"><span class="n">2</span><h4>Produção orientada a dados</h4><p>Criamos os criativos UGC a partir de ângulos de venda mapeados, não de palpite.</p></div>
+        <div class="ugc-step-card"><span class="n">2</span><h4>Produção orientada a dados</h4><p>Criamos os criativos UGC a partir de ângulos de venda mapeados, não de "achismo".</p></div>
         <div class="ugc-conn"><i></i></div>
-        <div class="ugc-step-card"><span class="n">3</span><h4>Encontros semanais</h4><p>Toda semana revisamos os números com o seu time e decidimos o que cortar, manter ou escalar.</p></div>
+        <div class="ugc-step-card"><span class="n">3</span><h4>Otimizações semanais</h4><p>Seu time roda o ciclo toda semana — testar, ler, decidir, escalar — com a metodologia que a Turbo deixou pronta.</p></div>
         <div class="ugc-conn"><i></i></div>
         <div class="ugc-step-card"><span class="n">4</span><h4>Reabastecimento contínuo</h4><p>Os criativos vencedores viram o briefing da próxima leva. A máquina nunca para.</p></div>
       </div>
@@ -201,11 +219,11 @@
       <p class="ugc-lead">Antes de subir qualquer anúncio, definimos qual número conta como resultado pro seu negócio. Medimos sempre o evento mais próximo do dinheiro — e é ele que decide se um criativo fica&nbsp;ou&nbsp;sai.</p>
       <div class="ugc-metrics">
         <div class="ugc-metric"><div class="ab">ROAS</div><div class="mn">Retorno sobre o investido</div><p>Quanto retorna pra cada R$ 1 em anúncio. <b style="color:#cfe0ff">E-commerce · Infoproduto.</b></p></div>
-        <div class="ugc-metric"><div class="ab">CPA</div><div class="mn">Custo por aquisição</div><p>Quanto custa cada compra finalizada. <b style="color:#cfe0ff">E-commerce.</b></p></div>
+        <div class="ugc-metric"><div class="ab">CPA</div><div class="mn">Custo por aquisição</div><p>Quanto custa cada compra ou ativação. <b style="color:#cfe0ff">E-commerce · SaaS.</b></p></div>
         <div class="ugc-metric"><div class="ab">CPL</div><div class="mn">Custo por lead</div><p>Quanto custa cada lead gerado. <b style="color:#cfe0ff">Serviço · Geração de leads.</b></p></div>
         <div class="ugc-metric"><div class="ab">CPMQL</div><div class="mn">Custo por lead qualificado</div><p>Quanto custa cada lead realmente quente. <b style="color:#cfe0ff">Vendas consultivas.</b></p></div>
       </div>
-      <div class="ugc-note"><div class="nt">Da margem ao alvo</div><p>O custo-alvo por venda não sai de palpite: sai da sua <b>margem</b>. Ticket de R$ 200 com 25% de margem comporta até R$ 50 de anúncio por venda — miramos perto de R$ 40 (um <b>ROAS-alvo de ~5x</b>).</p></div>
+      <div class="ugc-note"><div class="nt">Da margem ao alvo</div><p>O custo-alvo por venda não vem de palpite: vem da sua <b>margem</b>. Ticket de R$ 200 com 25% de margem comporta até R$ 50 de anúncio por venda — miramos perto de R$ 40 (um <b>ROAS-alvo de ~5x</b>).</p></div>
     </div>
   </div>
 
@@ -219,7 +237,7 @@
         <div class="ugc-card"><span class="tag">Sinal limpo</span><h3>Testes isolados e intencionais</h3><p>Isolamos um ângulo de venda por vez para ler um sinal limpo, sem misturar fatores que confundem o resultado.</p></div>
         <div class="ugc-card"><span class="tag">Critério técnico</span><h3>Critério de decisão definido</h3><p>Cada criativo só é julgado depois de um gasto mínimo de teste. Nada é cortado cedo demais nem mantido por teimosia.</p></div>
         <div class="ugc-card"><span class="tag">Regra clara</span><h3>Árvore de decisão</h3><p>Para cada cenário existe uma regra: matar, manter, escalar ou melhorar. O time sempre sabe o próximo passo.</p></div>
-        <div class="ugc-card"><span class="tag">Time técnico</span><h3>Especialistas no comando</h3><p>É um trabalho técnico de verdade. A Turbo sabe exatamente o que está fazendo a cada passo da operação.</p></div>
+        <div class="ugc-card"><span class="tag">Repertório que fica</span><h3>Especialistas no comando</h3><p>As metas, a leitura dos dados e as decisões difíceis passam por quem vive performance no dia a dia — e esse repertório fica com o seu time.</p></div>
       </div>
     </div>
   </div>
@@ -303,19 +321,71 @@
       <h2 class="ugc-h">Seu time executa, a Turbo conduz a&nbsp;<span class="ac">inteligência</span></h2>
       <div class="ugc-partner">
         <div class="ugc-pcard"><span class="tag">Seu time</span><h3>Executa o dia a dia</h3><p>Sobe os testes, acompanha os números e aplica a árvore de decisão. A metodologia deixa isso simples de seguir.</p></div>
-        <div class="ugc-pcard ugc-pcard--premium"><span class="ugc-brain">🧠</span><span class="tag">Turbo</span><h3>Conduz a inteligência</h3><p>Calibra as metas, valida a leitura dos dados, orienta as decisões difíceis e transforma cada aprendizado em briefing da próxima leva de criativos.</p></div>
+        <div class="ugc-pcell"><span class="ugc-brain">🧠</span><div class="ugc-pcard ugc-pcard--premium"><span class="tag">Turbo</span><h3>Conduz a inteligência</h3><p>Calibra as metas, monta a estrutura de testes e treina o seu time na metodologia e na árvore de decisão — pra rodar com autonomia.</p></div></div>
       </div>
 
       <div class="ugc-lab">O que entregamos, e quando</div>
       <div class="ugc-deliver">
-        <div class="ugc-drow"><span class="mk"></span><span class="when">Montagem inicial</span><span class="what">Briefing de performance, plano de testes calibrado à sua verba e estrutura de conta organizada.</span></div>
-        <div class="ugc-drow"><span class="mk"></span><span class="when">Encontro semanal</span><span class="what">Revisão das decisões, leitura conjunta dos resultados e definição da próxima leva de ângulos.</span></div>
-        <div class="ugc-drow"><span class="mk"></span><span class="when">A cada 15 a 30 dias</span><span class="what">Análise de desgaste dos criativos e briefing da próxima produção, guiado pelos vencedores.</span></div>
-        <div class="ugc-drow"><span class="mk"></span><span class="when">Contínuo</span><span class="what">Leitura de dados, briefing criativo e nova munição para o funil.</span></div>
+        <div class="ugc-drow ugc-drow--meet">
+          <span class="ugc-day ugc-day--hot">D15</span>
+          <div class="ugc-dcell"><span class="when">Encontro 1 · Implementação &amp; metodologia <em>gravado</em></span><span class="what">Definimos a Métrica Norte e o custo-alvo (a partir da sua margem), montamos e organizamos a conta (Teste ABO + Escala Adv+ + Remarketing) e calibramos o plano de testes à sua verba, com os ângulos de venda mapeados.</span></div>
+        </div>
+        <div class="ugc-drow">
+          <span class="ugc-day">D30</span>
+          <div class="ugc-dcell"><span class="when">Entrega dos Criativos UGC</span><span class="what">A leva de criativos do pacote escolhido — <b>ângulos + ganchos</b> — pronta no formato que o Meta precisa pra ler um sinal limpo.</span></div>
+        </div>
+        <div class="ugc-drow ugc-drow--meet">
+          <span class="ugc-day ugc-day--hot">D35</span>
+          <div class="ugc-dcell"><span class="when">Encontro 2 · Resultados &amp; treinamento <em>gravado</em></span><span class="what">Leitura conjunta dos números e capacitação do time na <b>árvore de decisão</b> e no diagnóstico de funil, pra andar com as próprias pernas com segurança.</span></div>
+        </div>
+        <div class="ugc-drow">
+          <span class="ugc-day ugc-day--icon">🔄</span>
+          <div class="ugc-dcell"><span class="when">Operação semanal</span><span class="what">Seu time roda o ciclo toda semana (testar → ler → decidir → escalar) com a árvore de decisão e o diagnóstico de funil em mãos — sem depender da gente pra cada passo.</span></div>
+        </div>
+        <div class="ugc-drow">
+          <span class="ugc-day ugc-day--icon">📦</span>
+          <div class="ugc-dcell"><span class="when">Fica com você</span><span class="what">A metodologia documentada, o briefing de performance, os checklists de cada ciclo e <b>as duas reuniões gravadas</b> — um treinamento permanente pro time.</span></div>
+        </div>
       </div>
     </div>
   </div>
 
 </div>
+<script>
+(function(){
+  // Modo deck (1 slide por vez) só quando aberto como página (viewer/openTechPres).
+  // Na proposta o arquivo entra via srcdoc (location 'about:srcdoc') -> flui normal.
+  var isViewer = location.href.indexOf('consultoria-ugc') !== -1;
+  if(!isViewer) return;
+  var root = document.querySelector('.ugc');
+  if(!root) return;
+  root.classList.add('deck-mode');
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  var slides = [].slice.call(root.querySelectorAll('.ugc-slide'));
+  var nav = document.createElement('div'); nav.className = 'ugc-nav';
+  slides.forEach(function(s, i){
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Ir ao slide ' + (i+1));
+    b.addEventListener('click', function(){ s.scrollIntoView({behavior:'smooth'}); });
+    nav.appendChild(b);
+  });
+  root.appendChild(nav);
+  var dots = [].slice.call(nav.children);
+  var cur = 0;
+  function setActive(i){ cur = i; dots.forEach(function(d, j){ d.classList.toggle('active', j === i); }); }
+  setActive(0);
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ setActive(slides.indexOf(e.target)); } });
+    }, { root: root, threshold: 0.55 });
+    slides.forEach(function(s){ io.observe(s); });
+  }
+  function go(i){ i = Math.max(0, Math.min(slides.length-1, i)); slides[i].scrollIntoView({behavior:'smooth'}); }
+  document.addEventListener('keydown', function(e){
+    if(['ArrowDown','ArrowRight','PageDown',' '].indexOf(e.key) > -1){ e.preventDefault(); go(cur+1); }
+    else if(['ArrowUp','ArrowLeft','PageUp'].indexOf(e.key) > -1){ e.preventDefault(); go(cur-1); }
+  });
+})();
+</script>
 </body>
 </html>

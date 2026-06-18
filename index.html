@@ -16714,7 +16714,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       dnvb:          { src: 'Slides Tech/apresentacao-dnvb.html',          name: 'E-commerce · DNVB',          soon: true },
       moda:          { src: 'Slides Tech/apresentacao-moda.html',          name: 'E-commerce · Moda',          soon: true },
       personalizado: { src: 'Slides Tech/apresentacao-personalizado.html', name: 'E-commerce · Personalizado', soon: true },
-      'consultoria-ugc': { src: 'Consultoria UGC/consultoria-ugc.html',    name: 'Consultoria UGC · Cartilha', soon: false },
+      'consultoria-ugc': { src: 'Consultoria UGC/consultoria-ugc.html',    name: 'Consultoria UGC · Apresentação', soon: false },
     };
     let _v = 0;
     window.openTechPres = function (model) {
@@ -18613,7 +18613,7 @@ function openPanel(nodeId) {
     ${isConsultoriaUgc ? `
     <button class="pres-launch-btn" onclick="if(window.openTechPres) window.openTechPres('consultoria-ugc')">
       <span class="pres-launch-icon">🎓</span>
-      <span class="pres-launch-title">Cartilha da Consultoria UGC</span>
+      <span class="pres-launch-title">Apresentação Consultoria UGC</span>
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
@@ -25654,6 +25654,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           ${priceWithAnchor('consultoria-ugc', 'unico')}
           <span class="pacote-tag">Consultoria pontual · pagamento único</span>
           <ul class="pacote-features">
+            <li>2 encontros com seu time <small>(implementação + resultados e treinamento — gravados)</small></li>
             <li>Metodologia completa de teste de criativos UGC</li>
             <li>Definição da métrica norte + cardápio de ângulos</li>
             <li>Estrutura de campanha <small>(ABO + Adv+)</small> e divisão de verba</li>
