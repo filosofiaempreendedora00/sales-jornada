@@ -23682,9 +23682,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       enterprise: { label: 'Enterprise', value: 'R$ 8.497,00' }
     },
     creators: {
-      starter:    { label: 'Starter',    value: 'R$ 7.997,00' },
-      scale:      { label: 'Scale',      value: 'R$ 9.497,00' },
-      enterprise: { label: 'Enterprise', value: 'R$ 14.997,00' }
+      starter:      { label: 'Starter',      value: 'R$ 7.997,00' },
+      scale:        { label: 'Scale',        value: 'R$ 9.497,00' },
+      enterprise:   { label: 'Enterprise',   value: 'R$ 14.997,00' },
+      personalizado:{ label: 'Personalizado', value: 'R$ 0,00' }
     },
     social: {
       starter: { label: 'Starter',    value: 'R$ 3.397,00' },
@@ -23765,10 +23766,28 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // (preserva edições de cada modo na sessão).
   let creatorsMode = 'pontual';
   const CREATORS_RECORRENTE_DEFAULT = {
-    starter:    { label: 'Starter',    value: 'R$ 7.997,00' },
-    scale:      { label: 'Scale',      value: 'R$ 9.497,00' },
-    enterprise: { label: 'Enterprise', value: 'R$ 14.997,00' }
+    starter:      { label: 'Starter',      value: 'R$ 7.997,00' },
+    scale:        { label: 'Scale',        value: 'R$ 9.497,00' },
+    enterprise:   { label: 'Enterprise',   value: 'R$ 14.997,00' },
+    personalizado:{ label: 'Personalizado', value: 'R$ 0,00' }
   };
+
+  // Pacote PERSONALIZADO de Creators — escopo editável direto no preview da
+  // proposta (contenteditable). Estado só na sessão (como preços/ancoragem).
+  // O preço vem do formulário (prices.creators.personalizado); aqui ficam o
+  // selo (tag) e os bullets (entregáveis) que o usuário edita no preview.
+  const CREATORS_CUSTOM_DEFAULT = {
+    tag: 'Escopo sob medida',
+    bullets: [
+      'Nº de criadores sob medida',
+      'Anúncios em vídeo conforme a estratégia',
+      'Pesquisa dos melhores creators & estratégia',
+      'Copywriting otimizado para venda direta'
+    ]
+  };
+  let creatorsCustom = JSON.parse(JSON.stringify(CREATORS_CUSTOM_DEFAULT));
+  // Foco a restaurar após re-render do preview (add/remover bullet).
+  let ccPendingFocus = null;
   let creatorsInactivePrices = JSON.parse(JSON.stringify(CREATORS_RECORRENTE_DEFAULT));
   for (const tier in creatorsInactivePrices) {
     creatorsInactivePrices[tier].value = buildPriceValue(stripCurrency(creatorsInactivePrices[tier].value));
@@ -25439,6 +25458,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   }
 
   async function buildProposalHTML(opts = {}) {
+    // editable: true só no PREVIEW (renderPreview) — liga contenteditable + os
+    // controles de adicionar/remover bullet no card Personalizado de Creators.
+    // No download (inline:true) fica false → HTML limpo, sem UI de edição.
+    const editable = !!opts.editable;
     // Capture all <style> tags from the host page so the standalone HTML looks identical.
     const styles = Array.from(document.querySelectorAll('style'))
       .map(s => s.outerHTML)
@@ -25625,6 +25648,32 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Copywriting otimizado para venda direta</li>
           </ul>
         </div>`);
+      // 4º tier — PERSONALIZADO: escopo (selo + bullets) editável direto no
+      // preview quando editable=true. No download sai limpo (sem contenteditable
+      // nem botões). Conteúdo vem do estado creatorsCustom.
+      if (isTierEnabled('creators', 'personalizado')) {
+        const ed  = editable ? ' contenteditable="true"' : '';
+        // No preview mostra todos os bullets (pra editar); no download filtra os
+        // vazios pra o cliente não ver um checkmark solto. Os data-cc-i no modo
+        // editável batem com os índices reais de creatorsCustom.bullets.
+        const list = editable ? creatorsCustom.bullets : creatorsCustom.bullets.filter(b => b.trim() !== '');
+        const bullets = list.map((b, i) => `
+            <li class="pacote-cc-li">
+              <span class="pacote-cc-text"${editable ? ` data-cc="bullet" data-cc-i="${i}"${ed}` : ''}>${escapeHtml(b)}</span>
+              ${editable ? `<button type="button" class="pacote-cc-del" data-cc-del="${i}" aria-label="Remover item" title="Remover item">×</button>` : ''}
+            </li>`).join('');
+        const addBtn = editable
+          ? `<button type="button" class="pacote-cc-add" data-cc-add aria-label="Adicionar item">+ adicionar item</button>` : '';
+        creatorsCards.push(`
+        <div class="pacote-card pacote-card--custom">
+          ${pacoteIcon}
+          <h3 class="pacote-name">PERSONALIZADO</h3>
+          ${priceWithAnchor('creators', 'personalizado')}
+          <span class="pacote-tag pacote-cc-tag"${editable ? ` data-cc="tag"${ed}` : ''}>${escapeHtml(creatorsCustom.tag)}</span>
+          <ul class="pacote-features pacote-features--cc">${bullets}</ul>
+          ${addBtn}
+        </div>`);
+      }
     }
 
     const socialCards = [];
@@ -26765,6 +26814,73 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       .proposal-section--pacotes-dnvb .pacote-card--featured .pacote-features li {
         color: rgba(255,255,255,0.92);
       }
+      /* ── Pacote PERSONALIZADO de Creators — escopo editável no preview ── */
+      .proposal-section--pacotes-creators .pacote-card--custom {
+        border-color: rgba(13,207,232,0.30);
+      }
+      /* bullets editáveis: texto flui + botão de remover à direita */
+      .proposal-section--pacotes-creators .pacote-features--cc li.pacote-cc-li {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .proposal-section--pacotes-creators .pacote-cc-text {
+        flex: 1 1 auto;
+        min-width: 0;
+      }
+      /* affordance de edição — só existe no PREVIEW (contenteditable some no download) */
+      .proposal-section--pacotes-creators [contenteditable] {
+        outline: none;
+        border-radius: 6px;
+        cursor: text;
+        transition: background .15s, box-shadow .15s;
+      }
+      .proposal-section--pacotes-creators [contenteditable]:hover {
+        background: rgba(255,255,255,0.06);
+        box-shadow: 0 0 0 1px rgba(255,255,255,0.14);
+      }
+      .proposal-section--pacotes-creators [contenteditable]:focus {
+        background: rgba(13,207,232,0.12);
+        box-shadow: 0 0 0 1px rgba(13,207,232,0.55);
+      }
+      .proposal-section--pacotes-creators .pacote-cc-text:empty:not(:focus)::after {
+        content: 'Escreva o item…';
+        color: rgba(255,255,255,0.30);
+      }
+      .proposal-section--pacotes-creators .pacote-cc-del {
+        flex: 0 0 auto;
+        width: 24px; height: 24px;
+        margin-top: -1px;
+        padding: 0;
+        border-radius: 6px;
+        border: 1px solid rgba(255,90,90,0.32);
+        background: rgba(255,90,90,0.10);
+        color: #ff8a8a;
+        font-size: 16px; line-height: 1;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        opacity: .7;
+        transition: background .15s, opacity .15s;
+      }
+      .proposal-section--pacotes-creators .pacote-cc-del:hover {
+        background: rgba(255,90,90,0.24);
+        opacity: 1;
+      }
+      .proposal-section--pacotes-creators .pacote-cc-add {
+        margin-top: 14px;
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 9px;
+        border: 1px dashed rgba(13,207,232,0.42);
+        background: rgba(13,207,232,0.07);
+        color: #0dcfe8;
+        font-size: 12.5px; font-weight: 700;
+        cursor: pointer;
+        transition: background .15s;
+      }
+      .proposal-section--pacotes-creators .pacote-cc-add:hover {
+        background: rgba(13,207,232,0.16);
+      }
       .pacote-aster { color: #0dcfe8; font-weight: 800; }
       .pacote-card .pacote-note {
         margin: 13px 0 0;
@@ -27531,6 +27647,34 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .proposal-section .xpto-slide,
         .proposal-section .turbo-slide {
           padding: 36px 18px !important;
+        }
+
+        /* Pacote Personalizado de Creators — tap targets maiores no touch */
+        .proposal-section--pacotes-creators .pacote-cc-del {
+          width: 30px; height: 30px; font-size: 18px;
+        }
+        .proposal-section--pacotes-creators .pacote-cc-add {
+          padding: 11px 12px; font-size: 13.5px;
+          margin-top: 10px;
+        }
+        /* Mobile: card Personalizado costuma ter bullets curtos → no full-width
+           ele fica esparso (muito branco à direita). Limita a largura e centra,
+           e aperta o ritmo vertical pra não ficar airy. */
+        .proposal-section--pacotes-creators .pacote-card--custom {
+          max-width: 380px;
+          margin: 0 auto;
+          padding: 18px 18px 20px;
+          gap: 10px;
+        }
+        .proposal-section--pacotes-creators .pacote-card--custom .pacote-icon {
+          width: 30px; height: 30px;
+        }
+        .proposal-section--pacotes-creators .pacote-card--custom .pacote-features--cc {
+          gap: 9px;
+          margin-top: 4px;
+        }
+        .proposal-section--pacotes-creators .pacote-card--custom .pacote-features--cc li {
+          font-size: 13px;
         }
 
         /* ════ TURBO ════ */
@@ -28388,6 +28532,74 @@ ${dnaAlignScript}
     return html;
   }
 
+  // ── Edição inline do card PERSONALIZADO de Creators (direto no preview) ──
+  // O preview é um iframe srcdoc same-origin → o parent acessa o DOM direto.
+  // Re-liga a cada render (o preview é reconstruído a cada mudança). Edições de
+  // texto atualizam creatorsCustom SEM re-render (mantém o foco/cursor);
+  // adicionar/remover bullet re-renderiza (foco restaurado via ccPendingFocus).
+  function ccPlaceCaretEnd(el) {
+    try {
+      const d = el.ownerDocument;
+      const r = d.createRange();
+      r.selectNodeContents(el);
+      r.collapse(false);
+      const sel = d.defaultView.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(r);
+    } catch (e) {}
+  }
+  function wireCreatorsCustomEditing() {
+    const doc = $frame && $frame.contentDocument;
+    if (!doc) return;
+    const card = doc.querySelector('.pacote-card--custom');
+    if (!card) return; // proposta sem o tier Personalizado (ou flow da IA)
+    card.querySelectorAll('[data-cc]').forEach(el => {
+      el.addEventListener('input', () => {
+        const kind = el.getAttribute('data-cc');
+        if (kind === 'tag') {
+          creatorsCustom.tag = el.textContent;
+        } else if (kind === 'bullet') {
+          const i = +el.getAttribute('data-cc-i');
+          if (i >= 0 && i < creatorsCustom.bullets.length) creatorsCustom.bullets[i] = el.textContent;
+        }
+      });
+      // Enter num bullet = cria o próximo item (em vez de quebrar linha).
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          if (el.getAttribute('data-cc') === 'bullet') {
+            const i = +el.getAttribute('data-cc-i');
+            creatorsCustom.bullets[i] = el.textContent;
+            creatorsCustom.bullets.splice(i + 1, 0, '');
+            ccPendingFocus = i + 1;
+            renderPreview();
+          }
+        }
+      });
+    });
+    card.querySelectorAll('[data-cc-del]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const i = +btn.getAttribute('data-cc-del');
+        creatorsCustom.bullets.splice(i, 1);
+        if (!creatorsCustom.bullets.length) creatorsCustom.bullets.push('');
+        ccPendingFocus = Math.max(0, i - 1);
+        renderPreview();
+      });
+    });
+    const addBtn = card.querySelector('[data-cc-add]');
+    if (addBtn) addBtn.addEventListener('click', () => {
+      creatorsCustom.bullets.push('');
+      ccPendingFocus = creatorsCustom.bullets.length - 1;
+      renderPreview();
+    });
+    // Restaura o foco no bullet recém-criado/vizinho após o re-render.
+    if (ccPendingFocus != null) {
+      const t = card.querySelector(`[data-cc="bullet"][data-cc-i="${ccPendingFocus}"]`);
+      ccPendingFocus = null;
+      if (t) { t.focus(); ccPlaceCaretEnd(t); }
+    }
+  }
+
   async function renderPreview() {
     if (!$frame) return;
     // Sem soluções → renderiza só a Apresentação Turbo (proposta institucional).
@@ -28398,7 +28610,10 @@ ${dnaAlignScript}
     try {
       // Preview pode rodar com nome vazio (mostra "cliente" como placeholder
       // na capa); o bloqueio acontece só no download.
-      $frame.srcdoc = await buildProposalHTML({ clientName });
+      // editable:true → liga a edição inline do card Personalizado de Creators.
+      const html = await buildProposalHTML({ clientName, editable: true });
+      $frame.addEventListener('load', wireCreatorsCustomEditing, { once: true });
+      $frame.srcdoc = html;
     } finally {
       setBusy(false);
     }
