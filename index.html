@@ -24635,6 +24635,34 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return p;
   }
 
+  // Inline de uma apresentação externa (ex.: Consultoria UGC) direto na proposta,
+  // SEM iframe. Motivo: o Safari do iOS renderiza iframe srcdoc alto + loading=lazy
+  // como uma área totalmente PRETA na proposta baixada. As apresentações de
+  // e-commerce (buildEcomPresHTML) já entram inline e funcionam no celular — este
+  // helper traz a Consultoria UGC pro mesmo padrão.
+  // Requisito do doc externo: CSS toda escopada num container raiz (.ugc). As únicas
+  // regras globais (html,body) são removidas aqui pra não vazar pro doc da proposta.
+  // Retorna a <section> pronta, ou null se o doc não tiver o container esperado
+  // (aí o chamador faz fallback pro iframe).
+  function inlineExternalPres(html, id) {
+    try {
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const root = doc.querySelector('.ugc');
+      if (!root) return null;
+      let css = '';
+      doc.querySelectorAll('style').forEach(st => { css += st.textContent + '\n'; });
+      // Remove só a regra global html,body (única que vazaria pro doc da proposta).
+      // box-sizing já é escopado em `.ugc,.ugc *` na fonte — preservado intacto.
+      css = css.replace(/html\s*,\s*body\s*\{[^}]*\}/g, '');
+      return `<section class="proposal-section proposal-section--${id} proposal-section--external-inline">
+        <style>${css}</style>
+        ${root.outerHTML}
+      </section>`;
+    } catch (e) {
+      return null;
+    }
+  }
+
   // Cache persistente entre builds para evitar refetch de logos/fotos/thumbs.
   // Chave: URL relativa (ex: "logo.png"). Valor: data URI ou null (já tentou e falhou).
   const _imgDataUriCache = new Map();
@@ -25459,11 +25487,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       } else if (s.externalUrl) {
         try {
           const html = await fetchExternal(s.externalUrl);
-          // Embute o documento externo via srcdoc (escapando aspas duplas) → isolamento total de CSS/JS
-          const escaped = html.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-          sections.push(`<section class="proposal-section proposal-section--${s.id} proposal-section--external">
-            <iframe class="proposal-external-frame" srcdoc="${escaped}" loading="lazy"></iframe>
-          </section>`);
+          // Preferência: INLINE (sem iframe) — o iframe srcdoc fica preto no Safari
+          // iOS na proposta baixada. Inline funciona em todos os dispositivos.
+          const inlined = inlineExternalPres(html, s.id);
+          if (inlined) {
+            sections.push(inlined);
+          } else {
+            // Fallback p/ docs externos sem container .ugc: iframe srcdoc auto-resize.
+            const escaped = html.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+            sections.push(`<section class="proposal-section proposal-section--${s.id} proposal-section--external">
+              <iframe class="proposal-external-frame" srcdoc="${escaped}" loading="lazy"></iframe>
+            </section>`);
+          }
         } catch (e) {
           sections.push(`<section class="proposal-section proposal-section--${s.id}">
             <div style="padding:48px;color:#f55;text-align:center">Erro ao carregar ${s.name}: ${e.message}</div>

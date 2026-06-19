@@ -11,7 +11,9 @@
      Slides com altura padronizada (min-height + centralização vertical),
      análogo aos .pdnvb-slide. Escopado em .ugc-*.
      ───────────────────────────────────────────────────────────── */
-  *{box-sizing:border-box;}
+  /* Regra global de margin/padding fica APENAS na versão standalone (viewer).
+     Na proposta este arquivo é inline (não-iframe, p/ não bugar no Safari iOS)
+     e o build remove a linha html,body abaixo pra não vazar pro doc da proposta. */
   html,body{margin:0;padding:0;}
   .ugc{
     --p:#4d8dff; --s:#c4a8ff; --gr:#6ee7b7; --gold:#ffcf7a;
@@ -19,9 +21,9 @@
     background:#080510; color:#fff; font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
     -webkit-font-smoothing:antialiased; line-height:1.5;
   }
-  .ugc *{box-sizing:border-box;}
+  .ugc,.ugc *{box-sizing:border-box;}
   /* ALTURA PADRÃO DOS SLIDES (igual ao padrão das outras soluções) */
-  .ugc-slide{position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(54px,6vw,86px) clamp(22px,5vw,64px);overflow:hidden;}
+  .ugc-slide{position:relative;min-height:720px;display:flex;flex-direction:column;justify-content:center;padding:clamp(54px,6vw,86px) clamp(22px,5vw,64px);overflow:hidden;}
   .ugc-slide + .ugc-slide{border-top:1px solid rgba(255,255,255,0.07);}
   .ugc-in{max-width:1120px;margin:0 auto;width:100%;position:relative;z-index:1;}
   .ugc-eyebrow{font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--s);opacity:.85;margin:0 0 14px;}
@@ -30,7 +32,7 @@
   .ugc-lead{font-size:clamp(14px,1.5vw,17px);line-height:1.6;color:rgba(255,255,255,0.64);max-width:720px;margin:0;}
 
   /* COVER */
-  .ugc-cover{align-items:center;justify-content:center;text-align:center;min-height:560px;padding:clamp(54px,8vw,96px) clamp(24px,6vw,72px);}
+  .ugc-cover{align-items:center;justify-content:center;text-align:center;min-height:680px;padding:clamp(54px,8vw,96px) clamp(24px,6vw,72px);}
   .ugc-cover-bg{position:absolute;inset:0;background:
      radial-gradient(ellipse 58% 58% at 50% 2%,rgba(77,141,255,0.32),transparent 60%),
      radial-gradient(ellipse 50% 48% at 50% 100%,rgba(196,168,255,0.18),transparent 65%);pointer-events:none;}
@@ -323,8 +325,14 @@
         <div class="ugc-pcard"><span class="tag">Seu time</span><h3>Executa o dia a dia</h3><p>Sobe os testes, acompanha os números e aplica a árvore de decisão. A metodologia deixa isso simples de seguir.</p></div>
         <div class="ugc-pcell"><span class="ugc-brain">🧠</span><div class="ugc-pcard ugc-pcard--premium"><span class="tag">Turbo</span><h3>Conduz a inteligência</h3><p>Calibra as metas, monta a estrutura de testes e treina o seu time na metodologia e na árvore de decisão — pra rodar com autonomia.</p></div></div>
       </div>
+    </div>
+  </div>
 
-      <div class="ugc-lab">O que entregamos, e quando</div>
+  <!-- ENTREGÁVEIS (slide próprio) -->
+  <div class="ugc-slide">
+    <div class="ugc-in">
+      <p class="ugc-eyebrow">// O que entregamos</p>
+      <h2 class="ugc-h">Entregáveis &amp; <span class="ac">cronograma</span></h2>
       <div class="ugc-deliver">
         <div class="ugc-drow ugc-drow--meet">
           <span class="ugc-day ugc-day--hot">D15</span>
@@ -357,6 +365,10 @@
   // Na proposta o arquivo entra via srcdoc (location 'about:srcdoc') -> flui normal.
   var isViewer = location.href.indexOf('consultoria-ugc') !== -1;
   if(!isViewer) return;
+  // No mobile a apresentação FLUI como página normal (sem deck/100vh/scroll-snap):
+  // o modo deck travava o scroll (body overflow:hidden) e deixava slides 100vh com
+  // muito espaço preto embaixo no touch. No desktop segue 1 slide por vez.
+  if(window.matchMedia && window.matchMedia('(max-width: 820px)').matches) return;
   var root = document.querySelector('.ugc');
   if(!root) return;
   root.classList.add('deck-mode');
