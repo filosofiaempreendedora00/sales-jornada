@@ -5704,6 +5704,25 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   padding-top: 10px;
   border-top: 1px dashed rgba(255,255,255,0.10);
 }
+/* TCV (Performance) — toggle abaixo do Fee de Implantação */
+.prop-invest-tcv {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-top: 10px;
+  padding: 11px 13px;
+  border-radius: 11px;
+  border: 1px solid rgba(13,207,232,0.30);
+  background: rgba(13,207,232,0.06);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.prop-invest-tcv:hover { border-color: rgba(13,207,232,0.5); }
+.prop-invest-tcv.is-on { border-color: rgba(13,207,232,0.7); background: rgba(13,207,232,0.12); }
+.prop-invest-tcv input { flex: 0 0 auto; }
+.prop-invest-tcv-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prop-invest-tcv-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
+.prop-invest-tcv-sub { font-size: 11px; color: var(--text-2); line-height: 1.35; }
 .prop-invest-extra-field {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -24019,6 +24038,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   let creatorsCustom = JSON.parse(JSON.stringify(CREATORS_CUSTOM_DEFAULT));
   // Foco a restaurar após re-render do preview (add/remover bullet).
   let ccPendingFocus = null;
+
+  // TCV (Performance): quando ligado, a proposta fica SÓ com o Starter a
+  // R$ 2.997,00/mês, contrato de 3 meses, pagamento via PIX ou cartão.
+  // Os outros tiers (Scale/Enterprise) somem do form e da proposta enquanto
+  // ligado; ao desligar, restauramos o estado anterior (tiers + preço).
+  let tcvEnabled = false;
+  const TCV_PERF_PRICE = 'R$ 2.997,00';
+  let _tcvPrevPerf = null;
+
   let creatorsInactivePrices = JSON.parse(JSON.stringify(CREATORS_RECORRENTE_DEFAULT));
   for (const tier in creatorsInactivePrices) {
     creatorsInactivePrices[tier].value = buildPriceValue(stripCurrency(creatorsInactivePrices[tier].value));
@@ -24643,7 +24671,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         `;
       }
 
-      // Soluções padrão: todos os tiers como checkboxes
+      // Soluções padrão: todos os tiers como checkboxes.
+      // Performance + TCV ligado: mostra SÓ o Starter (Scale/Enterprise somem).
+      const tiersHtml = (s.id === 'performance' && tcvEnabled)
+        ? renderTierRow('performance', 'starter', prices.performance.starter)
+        : Object.entries(prices[s.id]).map(([tier, td]) => renderTierRow(s.id, tier, td)).join('');
+      const tcvHtml = s.id === 'performance' ? `
+        <label class="prop-invest-tcv${tcvEnabled ? ' is-on' : ''}">
+          <input type="checkbox" class="prop-invest-check" id="prop-tcv-check" ${tcvEnabled ? 'checked' : ''}
+            aria-label="TCV — só Starter, R$ 2.997/mês, contrato de 3 meses">
+          <span class="prop-invest-tcv-body">
+            <span class="prop-invest-tcv-title">Contrato TCV</span>
+            <span class="prop-invest-tcv-sub">Só Starter · R$ 2.997/mês · fee isento · 3 meses · PIX ou cartão</span>
+          </span>
+        </label>` : '';
       return `
       <div class="prop-invest-card" style="--card-color:${s.color}">
         <div class="prop-invest-card-head">
@@ -24651,9 +24692,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <span class="prop-invest-name">${s.name}</span>
         </div>
         <div class="prop-invest-tiers">
-          ${Object.entries(prices[s.id]).map(([tier, td]) => renderTierRow(s.id, tier, td)).join('')}
+          ${tiersHtml}
         </div>
         ${extrasHtml}
+        ${tcvHtml}
       </div>
     `;
     }).join('');
@@ -24792,6 +24834,44 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         schedulePreviewRebuild();
       });
     });
+
+    // TCV (Performance): liga → só Starter @ R$ 2.997/mês (Scale/Enterprise somem);
+    // desliga → restaura os tiers e o preço anteriores.
+    const tcvCheck = document.getElementById('prop-tcv-check');
+    if (tcvCheck) {
+      tcvCheck.addEventListener('change', () => {
+        const fd = feeData.performance;
+        if (tcvCheck.checked) {
+          _tcvPrevPerf = {
+            tiers: [...(enabledTiers.performance || [])],
+            starter: prices.performance.starter.value,
+            feeValue: fd ? fd.value : null,
+            feeAnchor: fd ? fd.anchor : null,
+            feeEnabled: isExtraEnabled('performance', 'fee')
+          };
+          enabledTiers.performance = new Set(['starter']);
+          prices.performance.starter.value = TCV_PERF_PRICE;
+          // Fee de implantação isento: risquinho em R$ 2.997,00, valor R$ 0,00.
+          if (fd) { fd.anchor = FEE_DEFAULTS.performance; fd.value = 'R$ 0,00'; }
+          enabledExtras.performance.add('fee');
+          tcvEnabled = true;
+        } else {
+          const back = (_tcvPrevPerf && _tcvPrevPerf.tiers.length) ? _tcvPrevPerf.tiers : ['starter', 'scale', 'enterprise'];
+          enabledTiers.performance = new Set(back);
+          if (_tcvPrevPerf) {
+            prices.performance.starter.value = _tcvPrevPerf.starter;
+            if (fd) { fd.value = _tcvPrevPerf.feeValue; fd.anchor = _tcvPrevPerf.feeAnchor; }
+            if (_tcvPrevPerf.feeEnabled) enabledExtras.performance.add('fee');
+            else                         enabledExtras.performance.delete('fee');
+          }
+          _tcvPrevPerf = null;
+          tcvEnabled = false;
+        }
+        renderInvestimento();
+        updateMeta();
+        schedulePreviewRebuild();
+      });
+    }
 
     // Atualiza o guard de desconto mínimo a cada (re)render do Investimento
     // — cobre trocas de subtipo (e-commerce), modo (Creators) e módulos (CRM).
@@ -25790,10 +25870,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const perfCards = [];
     if (hasPerf) {
       if (isTierEnabled('performance', 'starter')) perfCards.push(`
-        <div class="pacote-card">
+        <div class="pacote-card${tcvEnabled ? ' pacote-card--tcv' : ''}">
+          ${tcvEnabled ? '<span class="pacote-badge pacote-badge--tcv">TCV · 3 meses</span>' : ''}
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
-          ${priceWithAnchor('performance', 'starter')}
+          ${priceWithAnchor('performance', 'starter', tcvEnabled ? ' <span class="pacote-per">/mês</span>' : '')}
           <span class="pacote-tag">Investimento até R$ 5.000,00</span>
           <ul class="pacote-features">
             <li>Planejamento, gestão e estratégia dos anúncios online</li>
@@ -26209,12 +26290,17 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       // quando o checkbox correspondente no card de Investimento está marcado.
       if (perfCards.length) {
         const feeHtml = isExtraEnabled('performance', 'fee') ? renderFeeFooter('performance') : '';
+        const tcvNote = tcvEnabled ? `
+            <div class="pacotes-tcv-note">
+              <span class="pacotes-tcv-badge">TCV</span>
+              <span class="pacotes-tcv-text">Contrato de <strong>3 meses</strong> <span class="pacotes-tcv-dot">·</span> Pagamento via <strong>PIX</strong> ou <strong>cartão de crédito</strong></span>
+            </div>` : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-perf">
           <div class="pacotes-slide">
             <div class="pacotes-header">
-              <h2 class="pacotes-title">Pacotes Gestão de <span class="pacotes-title-accent">Performance</span></h2>
+              <h2 class="pacotes-title">${tcvEnabled ? 'Pacote' : 'Pacotes'} Gestão de <span class="pacotes-title-accent">Performance</span></h2>
             </div>
-            <div class="pacotes-grid">${perfCards.join('')}</div>${feeHtml}
+            <div class="pacotes-grid">${perfCards.join('')}</div>${tcvNote}${feeHtml}
           </div>
         </section>`);
       }
@@ -27113,6 +27199,29 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         background: rgba(13,207,232,0.16);
       }
       .pacote-aster { color: #0dcfe8; font-weight: 800; }
+      /* TCV (Performance): /mês no preço, badge no card e nota de contrato/pagamento */
+      .proposal-section--pacotes-perf .pacote-per {
+        font-size: 0.42em; font-weight: 700; color: rgba(255,255,255,0.55); letter-spacing: 0;
+      }
+      .proposal-section--pacotes-perf .pacote-badge--tcv {
+        background: linear-gradient(120deg, #0dcfe8, #4d8dff); color: #06121a;
+      }
+      .proposal-section--pacotes-perf .pacotes-tcv-note {
+        align-self: center;
+        display: inline-flex; align-items: center; flex-wrap: wrap; gap: 11px;
+        margin-top: 6px; padding: 13px 22px;
+        background: rgba(13,207,232,0.08);
+        border: 1px solid rgba(13,207,232,0.30);
+        border-radius: 14px;
+        font-size: 14px; color: rgba(255,255,255,0.88); text-align: center;
+      }
+      .proposal-section--pacotes-perf .pacotes-tcv-badge {
+        font-size: 11px; font-weight: 800; letter-spacing: 1.5px;
+        color: #06121a; background: linear-gradient(120deg, #0dcfe8, #4d8dff);
+        padding: 4px 10px; border-radius: 7px;
+      }
+      .proposal-section--pacotes-perf .pacotes-tcv-text strong { color: #fff; font-weight: 800; }
+      .proposal-section--pacotes-perf .pacotes-tcv-dot { color: rgba(255,255,255,0.35); margin: 0 2px; }
       .pacote-card .pacote-note {
         margin: 13px 0 0;
         padding-top: 11px;
