@@ -12682,6 +12682,43 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
   background: linear-gradient(120deg, #c4a8ff, #4d8dff 50%, #0dcfe8);
   -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
+/* Premium: profundidade — glow de fundo e clipping nos slides */
+#ee-inner .xpto-slide { position: relative; overflow: hidden; }
+#ee-inner .xpto-slide-inner { position: relative; z-index: 1; }
+.ee-cover-bg {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse 62% 56% at 50% -2%, rgba(77,141,255,0.30), transparent 60%),
+    radial-gradient(ellipse 52% 48% at 50% 102%, rgba(196,168,255,0.16), transparent 65%);
+}
+.ee-cover-title { font-size: clamp(20px, 5.6vw, 72px); letter-spacing: -2px; line-height: 1; white-space: nowrap; }
+/* Número fantasma gigante atrás das etapas */
+.ee-ghost {
+  position: absolute; top: 50%; right: 3%; transform: translateY(-50%); z-index: 0;
+  font-size: clamp(220px, 34vw, 460px); font-weight: 900; line-height: 1; letter-spacing: -12px;
+  pointer-events: none; user-select: none; color: transparent;
+  background: linear-gradient(160deg, rgba(77,141,255,0.11), rgba(77,141,255,0.012));
+  -webkit-background-clip: text; background-clip: text;
+}
+/* CTA do fechamento (botão do exemplo de Estruturação) */
+.ee-cta { margin-top: 34px; }
+.ee-cta-btn {
+  display: inline-flex; align-items: center; gap: 11px;
+  font-size: 15px; font-weight: 800; color: #fff; text-decoration: none;
+  background: linear-gradient(120deg, #4d8dff, #0dcfe8);
+  border-radius: 14px; padding: 15px 28px;
+  box-shadow: 0 14px 40px rgba(77,141,255,0.40), inset 0 1px 0 rgba(255,255,255,0.22);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.ee-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 52px rgba(77,141,255,0.55); }
+.ee-cta-ico { font-size: 17px; }
+/* Profundidade extra nos cards (hover) */
+.ee-pillar { transition: border-color .2s, transform .2s, box-shadow .2s; }
+.ee-pillar:hover { transform: translateY(-3px); border-color: rgba(77,141,255,0.42); box-shadow: 0 16px 42px rgba(28,22,78,0.42); }
+.ee-tl-step { transition: transform .2s, box-shadow .2s; }
+.ee-tl-step:hover { transform: translateY(-3px); box-shadow: 0 18px 48px rgba(28,22,78,0.5); }
+.ee-deliver li { transition: border-color .18s, transform .18s, background .18s; }
+.ee-deliver li:hover { transform: translateX(3px); border-color: rgba(77,141,255,0.30); background: rgba(77,141,255,0.05); }
 .ee-hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 30px; }
 .ee-hero-badge {
   display: inline-flex; align-items: center; gap: 8px;
@@ -12752,6 +12789,7 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
   .ee-timeline { flex-direction: column; }
   .ee-tl-conn { flex: 0 0 26px; height: 26px; }
   .ee-tl-conn i { transform: rotate(135deg); }
+  .ee-ghost { font-size: 200px; top: 6%; right: -4%; transform: none; }
 }
 
 /* Modal scroll hint arrow */
@@ -16342,11 +16380,12 @@ a.xpto-pricing-btn { text-decoration: none; }
   <div class="xpto-inner" id="ee-inner">
 
     <!-- SLIDE 01 — HERO -->
-    <section class="xpto-slide xpto-slide-hero">
+    <section class="xpto-slide xpto-slide-hero ee-cover">
+      <div class="ee-cover-bg"></div>
       <div class="xpto-slide-inner" style="text-align:center;">
-        <div class="xpto-eyebrow"><span></span>Estruturação Estratégica · Metodologia Turbo</div>
-        <h1 class="xpto-title">O mergulho que estrutura sua marca<br>para <span class="ee-accent">escalar de verdade.</span></h1>
-        <p class="xpto-subtitle">Diagnóstico completo + plano de ação, entregue em 4 reuniões — de posicionamento a roadmap de crescimento.</p>
+        <div class="xpto-eyebrow"><span></span>Metodologia Turbo · Diagnóstico 360</div>
+        <h1 class="xpto-title ee-cover-title">Estruturação <span class="ee-accent">Estratégica</span></h1>
+        <p class="xpto-subtitle">A base que organiza marca, aquisição e conversão num plano de ação claro — entregue em 4 reuniões.</p>
         <div class="ee-hero-badges">
           <span class="ee-hero-badge"><i></i>Diagnóstico 360</span>
           <span class="ee-hero-badge"><i></i>Método validado</span>
@@ -16365,7 +16404,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <div class="ee-pillars">
           <div class="ee-pillar"><span class="ee-pillar-ico">🔍</span><h4>Diagnóstico</h4><p>Onde sua marca está hoje — com dados, não palpite.</p></div>
-          <div class="ee-pillar"><span class="ee-pillar-ico">🧠</span><h4>Método</h4><p>O caminho da Turbo, validado em dezenas de marcas.</p></div>
+          <div class="ee-pillar"><span class="ee-pillar-ico">🧠</span><h4>Método</h4><p>O caminho da Turbo, validado em centenas de marcas.</p></div>
           <div class="ee-pillar"><span class="ee-pillar-ico">🗺️</span><h4>Plano de ação</h4><p>Roadmap priorizado do que fazer e em que ordem.</p></div>
         </div>
       </div>
@@ -16393,6 +16432,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 
     <!-- SLIDE 04 — ETAPA 1 -->
     <section class="xpto-slide ee-slide">
+      <span class="ee-ghost" aria-hidden="true">01</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
           <span class="ee-etapa-chip">Etapa 1 · Reunião 1</span>
@@ -16409,6 +16449,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 
     <!-- SLIDE 05 — ETAPA 2 -->
     <section class="xpto-slide ee-slide">
+      <span class="ee-ghost" aria-hidden="true">02</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
           <span class="ee-etapa-chip">Etapa 2 · Reunião 2</span>
@@ -16427,6 +16468,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 
     <!-- SLIDE 06 — ETAPA 3 -->
     <section class="xpto-slide ee-slide">
+      <span class="ee-ghost" aria-hidden="true">03</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
           <span class="ee-etapa-chip">Etapa 3 · Reunião 3</span>
@@ -16445,6 +16487,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 
     <!-- SLIDE 07 — ETAPA 4 -->
     <section class="xpto-slide ee-slide">
+      <span class="ee-ghost" aria-hidden="true">04</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
           <span class="ee-etapa-chip">Etapa 4 · Reunião 4</span>
@@ -16462,12 +16505,17 @@ a.xpto-pricing-btn { text-decoration: none; }
     </section>
 
     <!-- SLIDE 08 — FECHAMENTO -->
-    <section class="xpto-slide xpto-slide-hero">
+    <section class="xpto-slide xpto-slide-hero ee-cover">
+      <div class="ee-cover-bg"></div>
       <div class="xpto-slide-inner" style="text-align:center;">
-        <div class="xpto-eyebrow"><span></span>O resultado</div>
-        <h2 class="xpto-title">Do diagnóstico<br>ao <span class="ee-accent">crescimento.</span></h2>
-        <p class="xpto-subtitle">No fim das 4 etapas você tem um plano de ação completo e priorizado — posicionamento, aquisição, conversão e marca alinhados para escalar com previsibilidade.</p>
-        <div class="ee-close-tag">Vamos com Turbo 🚀</div>
+        <div class="xpto-eyebrow"><span></span>Veja na prática</div>
+        <h2 class="xpto-title">Um plano completo,<br>do diagnóstico ao <span class="ee-accent">crescimento.</span></h2>
+        <p class="xpto-subtitle">Veja um exemplo real da entrega — cada etapa, página por página.</p>
+        <div class="ee-cta">
+          <a class="ee-cta-btn" href="https://docs.google.com/presentation/d/1ITnUJ1nqH1fJljYJwvDkLm915u6caIxKwQWWP4UsAaE/preview" target="_blank" rel="noopener" onclick="if(window.openDeckEmbed)return openDeckEmbed(event,'1ITnUJ1nqH1fJljYJwvDkLm915u6caIxKwQWWP4UsAaE')">
+            <span class="ee-cta-ico">📄</span> Ver um exemplo de Estruturação <span aria-hidden="true">↗</span>
+          </a>
+        </div>
       </div>
     </section>
 
