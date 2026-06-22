@@ -1007,6 +1007,59 @@ a.pres-launch-btn--link { text-decoration: none; box-sizing: border-box; }
   color: var(--text);
 }
 
+/* Escopo de entrega (node 'Redes sociais bem estruturadas') */
+.redes-scope {
+  margin: 2px 0 0;
+  background: color-mix(in srgb, var(--panel-color, var(--c1)) 7%, transparent);
+  border: 1px solid color-mix(in srgb, var(--panel-color, var(--c1)) 26%, transparent);
+  border-radius: 14px;
+  padding: 15px 15px 13px;
+}
+.redes-scope-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: var(--panel-color, var(--c1));
+  margin: 0 0 12px;
+}
+.redes-scope-grid { display: flex; flex-direction: column; gap: 9px; }
+.redes-scope-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  background: var(--surface2, rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 11px;
+  padding: 11px 13px;
+}
+.redes-scope-num {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--panel-color, var(--c1));
+  background: color-mix(in srgb, var(--panel-color, var(--c1)) 15%, transparent);
+}
+.redes-scope-num--ico { font-size: 17px; }
+.redes-scope-body h4 {
+  font-size: 13.5px;
+  font-weight: 700;
+  margin: 0 0 2px;
+  color: var(--text);
+}
+.redes-scope-body p {
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+  color: var(--text-2);
+}
+
 .alert-block {
   border-radius: 11px;
   padding: 14px 16px;
@@ -18664,6 +18717,7 @@ function openPanel(nodeId) {
   const isCrm = nodeId === 'crm-estrategico';
   const isLoja = nodeId === 'loja';
   const isConsultoriaUgc = nodeId === 'consultoria-ugc' || nodeId === 'lead-consultoria-ugc';
+  const isRedes = nodeId === 'redes' || nodeId === 'lead-redes';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -18678,6 +18732,34 @@ function openPanel(nodeId) {
       <p class="block-label">Por que importa</p>
       <p class="block-text">${node.why}</p>
     </div>
+    ${isRedes ? `
+    <div class="redes-scope">
+      <p class="redes-scope-label">📦 Escopo de entrega · mensal</p>
+      <div class="redes-scope-grid">
+        <div class="redes-scope-item">
+          <div class="redes-scope-num">12</div>
+          <div class="redes-scope-body">
+            <h4>Posts no feed</h4>
+            <p>4 imagens únicas · 4 carrosséis · 4 reels</p>
+          </div>
+        </div>
+        <div class="redes-scope-item">
+          <div class="redes-scope-num">5</div>
+          <div class="redes-scope-body">
+            <h4>Destaques</h4>
+            <p>Capas do preview + 2 stories estáticos por destaque</p>
+          </div>
+        </div>
+        <div class="redes-scope-item">
+          <div class="redes-scope-num redes-scope-num--ico">✦</div>
+          <div class="redes-scope-body">
+            <h4>Estruturação da Bio</h4>
+            <p>Bio otimizada para posicionamento e conversão</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
     ${isTrafego ? `
     <button class="sim-launch-btn" onclick="${nodeId === 'lead-trafego' ? 'if(window.openLeadPerfSimulator) window.openLeadPerfSimulator()' : 'if(window.openPerfSimulator) window.openPerfSimulator()'}">
       <span class="sim-launch-icon">⚙️</span>
