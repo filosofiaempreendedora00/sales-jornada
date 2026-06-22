@@ -12674,6 +12674,86 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
   height: 72px;
 }
 
+/* ══════════════════════════════════════════════
+   ESTRUTURAÇÃO ESTRATÉGICA (ee-*) — apresentação do produto
+   (Lead/Aquecimento, 4 etapas). Usa a base .xpto-slide.
+   ══════════════════════════════════════════════ */
+.ee-accent {
+  background: linear-gradient(120deg, #c4a8ff, #4d8dff 50%, #0dcfe8);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.ee-hero-badges { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 30px; }
+.ee-hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.82);
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(77,141,255,0.28);
+  border-radius: 99px; padding: 8px 16px;
+}
+.ee-hero-badge i { width: 7px; height: 7px; border-radius: 50%; background: #4d8dff; box-shadow: 0 0 10px #4d8dff; }
+.ee-head { max-width: 720px; margin-bottom: 30px; }
+.ee-title { font-size: clamp(26px, 4vw, 42px); font-weight: 800; letter-spacing: -1.2px; line-height: 1.1; margin: 12px 0 0; color: #fff; }
+.ee-lead { font-size: clamp(14px, 1.5vw, 17px); line-height: 1.6; color: rgba(255,255,255,0.64); margin: 14px 0 0; }
+/* Pilares (slide 2) */
+.ee-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 4px; }
+.ee-pillar {
+  background: linear-gradient(150deg, rgba(77,141,255,0.08), rgba(77,141,255,0.015));
+  border: 1px solid rgba(77,141,255,0.20); border-radius: 16px; padding: 24px 22px;
+}
+.ee-pillar-ico { font-size: 26px; line-height: 1; }
+.ee-pillar h4 { font-size: 17px; font-weight: 700; margin: 14px 0 7px; color: #fff; }
+.ee-pillar p { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.6); margin: 0; }
+/* Timeline das 4 etapas (slide 3) */
+.ee-timeline { display: flex; align-items: stretch; gap: 0; margin-top: 8px; }
+.ee-tl-step {
+  flex: 1 1 0; position: relative; border-radius: 17px; padding: 24px 20px;
+  background: linear-gradient(160deg, rgba(77,141,255,0.14), rgba(124,92,255,0.05) 60%, rgba(8,5,16,0.2));
+  border: 1px solid rgba(130,150,255,0.22);
+  box-shadow: 0 12px 38px rgba(28,22,78,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.ee-tl-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 11px; font-size: 18px; font-weight: 800; color: #fff;
+  background: linear-gradient(135deg, #4d8dff, #0dcfe8); box-shadow: 0 6px 18px rgba(77,141,255,0.4);
+}
+.ee-tl-step h4 { font-size: 15px; font-weight: 700; margin: 14px 0 5px; color: #fff; line-height: 1.2; }
+.ee-tl-step p { font-size: 12.5px; line-height: 1.45; color: rgba(255,255,255,0.6); margin: 0; }
+.ee-tl-conn { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; }
+.ee-tl-conn i {
+  display: block; width: 9px; height: 9px; border-top: 2px solid #4d8dff; border-right: 2px solid #4d8dff;
+  transform: rotate(45deg); opacity: 0.7;
+}
+/* Etapa: header + lista de entregáveis (slides 4-7) */
+.ee-etapa-head { max-width: 760px; margin-bottom: 26px; }
+.ee-etapa-chip {
+  display: inline-block; font-size: 11.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;
+  color: #cfe0ff; background: rgba(77,141,255,0.16); border: 1px solid rgba(77,141,255,0.4);
+  border-radius: 99px; padding: 7px 16px; margin-bottom: 14px;
+}
+.ee-deliver { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; max-width: 860px; }
+.ee-deliver li {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px; padding: 16px 18px;
+}
+.ee-deliver-ico {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800;
+  color: #0dcfe8; background: rgba(13,207,232,0.14); margin-top: 1px;
+}
+.ee-deliver-body h4 { font-size: 15px; font-weight: 700; margin: 0 0 3px; color: #fff; }
+.ee-deliver-body p { font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.62); margin: 0; }
+.ee-close-tag {
+  display: inline-block; margin-top: 30px; font-size: 14px; font-weight: 800; letter-spacing: 0.5px;
+  color: #cfe0ff; background: rgba(77,141,255,0.14); border: 1px solid rgba(77,141,255,0.4);
+  border-radius: 99px; padding: 11px 26px;
+}
+@media (max-width: 820px) {
+  .ee-pillars { grid-template-columns: 1fr; }
+  .ee-timeline { flex-direction: column; }
+  .ee-tl-conn { flex: 0 0 26px; height: 26px; }
+  .ee-tl-conn i { transform: rotate(135deg); }
+}
+
 /* Modal scroll hint arrow */
 .xpto-scroll-hint {
   position: fixed;
@@ -15279,8 +15359,8 @@ a.xpto-pricing-btn { text-decoration: none; }
     <section class="xpto-slide pp-slide-gameplan">
       <div class="xpto-slide-inner">
         <div class="pp-gameplan-header">
-          <div class="pp-gameplan-eyebrow"><span></span>Gameplan · Entregável do 1º mês</div>
-          <h2 class="pp-gameplan-title">Estruturação Estratégica</h2>
+          <div class="pp-gameplan-eyebrow"><span></span>Entregável do 1º mês</div>
+          <h2 class="pp-gameplan-title">Gameplan</h2>
         </div>
         <div class="pp-gameplan-rows">
           <div class="pp-gameplan-row pp-gameplan-row--3">
@@ -16247,6 +16327,153 @@ a.xpto-pricing-btn { text-decoration: none; }
   </div>
 </div>
 <div class="xpto-scroll-hint" id="sm-scroll-hint">
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+  <div class="xpto-scroll-hint-chevron"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════ -->
+<!--  ESTRUTURAÇÃO ESTRATÉGICA PRESENTATION (ee-*)   -->
+<!--  Produto Lead/Aquecimento — 4 etapas (4 reuniões) -->
+<!-- ══════════════════════════════════════════════ -->
+<div class="xpto-overlay" id="ee-overlay"></div>
+<button class="xpto-close" id="ee-close" aria-label="Fechar">✕</button>
+<div class="xpto-modal" id="ee-modal">
+  <div class="xpto-inner" id="ee-inner">
+
+    <!-- SLIDE 01 — HERO -->
+    <section class="xpto-slide xpto-slide-hero">
+      <div class="xpto-slide-inner" style="text-align:center;">
+        <div class="xpto-eyebrow"><span></span>Estruturação Estratégica · Metodologia Turbo</div>
+        <h1 class="xpto-title">O mergulho que estrutura sua marca<br>para <span class="ee-accent">escalar de verdade.</span></h1>
+        <p class="xpto-subtitle">Diagnóstico completo + plano de ação, entregue em 4 reuniões — de posicionamento a roadmap de crescimento.</p>
+        <div class="ee-hero-badges">
+          <span class="ee-hero-badge"><i></i>Diagnóstico 360</span>
+          <span class="ee-hero-badge"><i></i>Método validado</span>
+          <span class="ee-hero-badge"><i></i>Plano de ação</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 02 — O QUE É -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="ee-head">
+          <div class="xpto-eyebrow"><span></span>Como funciona</div>
+          <h2 class="ee-title">Um raio-x completo<br>do seu negócio digital.</h2>
+          <p class="ee-lead">Mapeamos marca, mercado, aquisição, conversão, retenção e presença — e transformamos tudo num plano de ação claro e priorizado. Organizado em 4 etapas, uma por reunião, para você sair com decisões, não com achismos.</p>
+        </div>
+        <div class="ee-pillars">
+          <div class="ee-pillar"><span class="ee-pillar-ico">🔍</span><h4>Diagnóstico</h4><p>Onde sua marca está hoje — com dados, não palpite.</p></div>
+          <div class="ee-pillar"><span class="ee-pillar-ico">🧠</span><h4>Método</h4><p>O caminho da Turbo, validado em dezenas de marcas.</p></div>
+          <div class="ee-pillar"><span class="ee-pillar-ico">🗺️</span><h4>Plano de ação</h4><p>Roadmap priorizado do que fazer e em que ordem.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 03 — AS 4 ETAPAS -->
+    <section class="xpto-slide">
+      <div class="xpto-slide-inner">
+        <div class="ee-head">
+          <div class="xpto-eyebrow"><span></span>A jornada</div>
+          <h2 class="ee-title">4 etapas, 4 reuniões.</h2>
+          <p class="ee-lead">Cada encontro entrega um bloco completo do diagnóstico — e termina com clareza do próximo passo.</p>
+        </div>
+        <div class="ee-timeline">
+          <div class="ee-tl-step"><span class="ee-tl-num">1</span><h4>Diagnóstico &amp; Posicionamento</h4><p>Marca, mercado e público.</p></div>
+          <div class="ee-tl-conn"><i></i></div>
+          <div class="ee-tl-step"><span class="ee-tl-num">2</span><h4>Aquisição</h4><p>Tráfego e criativos.</p></div>
+          <div class="ee-tl-conn"><i></i></div>
+          <div class="ee-tl-step"><span class="ee-tl-num">3</span><h4>Conversão &amp; Retenção</h4><p>E-commerce, funil, CRM e SEO.</p></div>
+          <div class="ee-tl-conn"><i></i></div>
+          <div class="ee-tl-step"><span class="ee-tl-num">4</span><h4>Marca &amp; Plano de Ação</h4><p>Social, benchmarking e roadmap.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 04 — ETAPA 1 -->
+    <section class="xpto-slide ee-slide">
+      <div class="xpto-slide-inner">
+        <div class="ee-etapa-head">
+          <span class="ee-etapa-chip">Etapa 1 · Reunião 1</span>
+          <h2 class="ee-title">Diagnóstico &amp; Posicionamento</h2>
+          <p class="ee-lead">Quem é a sua marca, em que mercado ela joga e para quem ela vende.</p>
+        </div>
+        <ul class="ee-deliver">
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Posicionamento &amp; diferenciais</h4><p>Quem você é, quem você não é e o seu ICP — clareza antes de vender.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Análise de mercado</h4><p>Tamanho, crescimento e fatia digital do seu setor.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Públicos</h4><p>Principal, secundário e de oportunidade — onde está a demanda.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 05 — ETAPA 2 -->
+    <section class="xpto-slide ee-slide">
+      <div class="xpto-slide-inner">
+        <div class="ee-etapa-head">
+          <span class="ee-etapa-chip">Etapa 2 · Reunião 2</span>
+          <h2 class="ee-title">Aquisição: Tráfego &amp; Criativos</h2>
+          <p class="ee-lead">Como atrair a demanda certa — no Google, no Meta e com os criativos que convertem.</p>
+        </div>
+        <ul class="ee-deliver">
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Pesquisa no Google</h4><p>O que seu cliente busca em topo, meio e fundo de funil.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Google Ads</h4><p>As 3 campanhas que se complementam: Institucional, PMax e Search.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Diagnóstico de Meta Ads</h4><p>Estrutura da conta, criativos campeões e o que a concorrência faz.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Guia de criativos</h4><p>UGC, estático, carrossel, catálogo e remarketing — cada um no seu papel.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Estratégia de campanha</h4><p>Teste com ABO 1-3-5 e escala das vencedoras em CBO.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 06 — ETAPA 3 -->
+    <section class="xpto-slide ee-slide">
+      <div class="xpto-slide-inner">
+        <div class="ee-etapa-head">
+          <span class="ee-etapa-chip">Etapa 3 · Reunião 3</span>
+          <h2 class="ee-title">Conversão &amp; Retenção</h2>
+          <p class="ee-lead">Transformar o clique em venda — e a primeira venda em recorrência.</p>
+        </div>
+        <ul class="ee-deliver">
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>E-commerce que converte</h4><p>Velocidade, navegação, checkout, home e provas sociais.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Página de produto híbrida</h4><p>Página de produto + landing page num só lugar.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Funil &amp; Connect Rate</h4><p>Onde você perde venda — e como tapar o furo.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>CRM &amp; LTV</h4><p>Automações que trazem o cliente de volta: carrinho, pós-venda e upsell.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>SEO com IA</h4><p>Conteúdo no piloto automático para autoridade de longo prazo.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 07 — ETAPA 4 -->
+    <section class="xpto-slide ee-slide">
+      <div class="xpto-slide-inner">
+        <div class="ee-etapa-head">
+          <span class="ee-etapa-chip">Etapa 4 · Reunião 4</span>
+          <h2 class="ee-title">Marca, Comunidade &amp; Plano de Ação</h2>
+          <p class="ee-lead">Consolidar a presença da marca e sair com um plano claro do que fazer a seguir.</p>
+        </div>
+        <ul class="ee-deliver">
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Diagnóstico de Social Media</h4><p>Engajamento, bio e link da bio — o tripé autoridade, humanização e oferta.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Benchmarking</h4><p>O que os concorrentes estão fazendo — o que copiar e o que evitar.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Análise dos 4P's</h4><p>Produto, Preço, Praça e Promoção.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Análise SWOT</h4><p>Forças, fraquezas, oportunidades e ameaças.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Roadmap</h4><p>O plano de ação priorizado dos próximos passos.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- SLIDE 08 — FECHAMENTO -->
+    <section class="xpto-slide xpto-slide-hero">
+      <div class="xpto-slide-inner" style="text-align:center;">
+        <div class="xpto-eyebrow"><span></span>O resultado</div>
+        <h2 class="xpto-title">Do diagnóstico<br>ao <span class="ee-accent">crescimento.</span></h2>
+        <p class="xpto-subtitle">No fim das 4 etapas você tem um plano de ação completo e priorizado — posicionamento, aquisição, conversão e marca alinhados para escalar com previsibilidade.</p>
+        <div class="ee-close-tag">Vamos com Turbo 🚀</div>
+      </div>
+    </section>
+
+  </div>
+</div>
+<div class="xpto-scroll-hint" id="ee-scroll-hint">
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
   <div class="xpto-scroll-hint-chevron"></div>
@@ -17437,7 +17664,7 @@ a.xpto-pricing-btn { text-decoration: none; }
   };
 
   // Lista completa de overlays de modal/simulador rastreados
-  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'cm-overlay', 'impl-overlay', 'xpto-overlay'];
+  const MODAL_OVERLAYS = ['perf-overlay', 'lead-perf-overlay', 'pp-overlay', 'cp-overlay', 'sm-overlay', 'ee-overlay', 'cm-overlay', 'impl-overlay', 'xpto-overlay'];
 
   let _applying = false;
   let _started = false;
@@ -18266,6 +18493,19 @@ const STAGES_LEAD = STAGES.map(stage => ({
   const aq = STAGES_LEAD.find(s => s.id === 'lead-conversao');
   if (!aq) return;
   aq.nodes.push(
+    // ── Estruturação Estratégica (produto Lead/Aquecimento) ──
+    {
+      id: 'lead-estrutura-estrategica',
+      icon: '🧭',
+      name: 'Estruturação Estratégica',
+      objective: 'Estruturar marca, aquisição, conversão e presença num plano de ação completo',
+      what: 'Um mergulho estratégico no seu negócio digital — diagnóstico de marca, mercado, tráfego, criativos, e-commerce, CRM, SEO e social — entregue em 4 reuniões e fechado num roadmap priorizado.',
+      why: 'Antes de pisar no acelerador, é preciso saber exatamente onde apertar. A Estruturação Estratégica alinha posicionamento, aquisição e conversão para o crescimento não depender de achismo.',
+      mistake: 'Investir em tráfego e conteúdo sem diagnóstico nem plano — gastando em frentes desconexas que não se somam.',
+      impact: 'Esforço pulverizado: campanhas, site e social puxando para lados diferentes, com CAC alto e crescimento imprevisível.',
+      deps: []
+    });
+  aq.nodes.push(
     // ── Zona de Conversão (lead-loja) subcards ───
     {
       id: 'lead-site-institucional',
@@ -18762,6 +19002,7 @@ function openPanel(nodeId) {
   const isLoja = nodeId === 'loja';
   const isConsultoriaUgc = nodeId === 'consultoria-ugc' || nodeId === 'lead-consultoria-ugc';
   const isRedes = nodeId === 'redes' || nodeId === 'lead-redes';
+  const isEstrut = nodeId === 'lead-estrutura-estrategica';
   document.getElementById('panel').style.setProperty('--panel-color', color);
   document.getElementById('panel-stage').textContent  = `${node.stageNum} — ${node.stageName}`;
   document.getElementById('panel-stage').style.color  = color;
@@ -18848,6 +19089,13 @@ function openPanel(nodeId) {
     <button class="pres-launch-btn" onclick="if(window.openSocialPres) window.openSocialPres()">
       <span class="pres-launch-icon">📱</span>
       <span class="pres-launch-title">Apresentação de Social Media</span>
+      <span class="pres-launch-arrow">→</span>
+    </button>
+    ` : ''}
+    ${isEstrut ? `
+    <button class="pres-launch-btn" onclick="if(window.openEstruturacaoPres) window.openEstruturacaoPres()">
+      <span class="pres-launch-icon">🧭</span>
+      <span class="pres-launch-title">Apresentação: Estruturação Estratégica</span>
       <span class="pres-launch-arrow">→</span>
     </button>
     ` : ''}
@@ -22971,6 +23219,49 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   });
 
   window.openSocialPres = openSocialPres;
+})();
+
+// ─────────────────────────────────────────────────
+//  ESTRUTURAÇÃO ESTRATÉGICA PRESENTATION (ee-*)
+//  Produto Lead/Aquecimento — apresentação em 4 etapas.
+// ─────────────────────────────────────────────────
+(function() {
+  const modal = document.getElementById('ee-modal');
+  const overlay = document.getElementById('ee-overlay');
+  const closeBtn = document.getElementById('ee-close');
+  const hint = document.getElementById('ee-scroll-hint');
+  if (!modal || !overlay || !closeBtn) return;
+
+  function openEstruturacaoPres() {
+    overlay.classList.add('is-open');
+    modal.classList.add('is-open');
+    closeBtn.style.display = 'flex';
+    if (hint) hint.style.display = 'flex';
+    modal.scrollTo({ top: 0, behavior: 'instant' });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeEstruturacaoPres() {
+    overlay.classList.remove('is-open');
+    modal.classList.remove('is-open');
+    closeBtn.style.display = 'none';
+    if (hint) hint.style.display = 'none';
+    document.body.style.overflow = '';
+    const jornadaNav = document.querySelector('.nav-item[data-view="jornada"]');
+    if (jornadaNav) jornadaNav.click();
+  }
+
+  closeBtn.style.display = 'none';
+  if (hint) hint.style.display = 'none';
+
+  overlay.addEventListener('click', closeEstruturacaoPres);
+  closeBtn.addEventListener('click', closeEstruturacaoPres);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('is-open'))
+      closeEstruturacaoPres();
+  });
+
+  window.openEstruturacaoPres = openEstruturacaoPres;
 })();
 
 // ─────────────────────────────────────────────────
