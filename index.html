@@ -28643,21 +28643,22 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     box.style.cssText = 'position:relative;width:min(1120px,95vw);height:min(660px,80vh);';
     var f = d.createElement('iframe');
     f.src = 'https://docs.google.com/presentation/d/' + id + '/embed?start=false&loop=false&rm=minimal';
-    f.allowFullscreen = true; f.setAttribute('tabindex', '0');
+    f.allowFullscreen = true;
     f.style.cssText = 'width:100%;height:100%;border:0;border-radius:14px;background:#000;box-shadow:0 24px 90px rgba(0,0,0,.6);';
-    f.addEventListener('load', function () { try { f.focus(); } catch (e) {} });
-    var b = d.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Fechar apresentação'); b.innerHTML = '&#10005;';
-    b.style.cssText = 'position:absolute;top:-16px;right:-16px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:#1c1b2c;color:#fff;font-size:19px;line-height:1;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.55);';
+    var b = d.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Fechar apresentação');
+    b.innerHTML = '&#10005;&nbsp; Fechar';
+    b.style.cssText = 'position:absolute;top:-15px;right:-8px;height:42px;padding:0 16px;border-radius:21px;border:1px solid rgba(255,255,255,.3);background:#1c1b2c;color:#fff;font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 6px 22px rgba(0,0,0,.55);';
     var hint = d.createElement('div');
-    hint.innerHTML = 'Use as setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b> ou <b>&#10005;</b> para fechar';
+    hint.innerHTML = 'Clique nas setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b>, <b>Fechar</b> ou clique fora para sair';
     hint.style.cssText = 'flex:0 0 auto;color:rgba(255,255,255,.74);font:600 12.5px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center;';
-    function close() { try { o.remove(); } catch (e) {} d.removeEventListener('keydown', k); }
-    function k(e) { if (e.key === 'Escape') close(); }
+    function close() { try { o.remove(); } catch (e) {} d.removeEventListener('keydown', k, true); }
+    function k(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }
     b.addEventListener('click', close);
     o.addEventListener('click', function (e) { if (e.target === o) close(); });
-    d.addEventListener('keydown', k);
+    box.addEventListener('mouseleave', function () { try { b.focus(); } catch (e) {} });
+    d.addEventListener('keydown', k, true);
     box.appendChild(f); box.appendChild(b); o.appendChild(box); o.appendChild(hint); d.body.appendChild(o);
-    setTimeout(function () { try { f.focus(); } catch (e) {} }, 300);
+    try { b.focus(); } catch (e) {}
     return false;
   };
 })();
@@ -31679,21 +31680,25 @@ window.openDeckEmbed = function (ev, id) {
   box.style.cssText = 'position:relative;width:min(1120px,95vw);height:min(660px,80vh);';
   var f = d.createElement('iframe');
   f.src = 'https://docs.google.com/presentation/d/' + id + '/embed?start=false&loop=false&rm=minimal';
-  f.allowFullscreen = true; f.setAttribute('tabindex', '0');
+  f.allowFullscreen = true;
   f.style.cssText = 'width:100%;height:100%;border:0;border-radius:14px;background:#000;box-shadow:0 24px 90px rgba(0,0,0,.6);';
-  f.addEventListener('load', function () { try { f.focus(); } catch (e) {} });
-  var b = d.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Fechar apresentação'); b.innerHTML = '&#10005;';
-  b.style.cssText = 'position:absolute;top:-16px;right:-16px;width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.28);background:#1c1b2c;color:#fff;font-size:19px;line-height:1;cursor:pointer;box-shadow:0 6px 22px rgba(0,0,0,.55);';
+  var b = d.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Fechar apresentação');
+  b.innerHTML = '&#10005;&nbsp; Fechar';
+  b.style.cssText = 'position:absolute;top:-15px;right:-8px;height:42px;padding:0 16px;border-radius:21px;border:1px solid rgba(255,255,255,.3);background:#1c1b2c;color:#fff;font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 6px 22px rgba(0,0,0,.55);';
   var hint = d.createElement('div');
-  hint.innerHTML = 'Use as setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b> ou <b>&#10005;</b> para fechar';
+  hint.innerHTML = 'Clique nas setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b>, <b>Fechar</b> ou clique fora para sair';
   hint.style.cssText = 'flex:0 0 auto;color:rgba(255,255,255,.74);font:600 12.5px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center;';
-  function close() { try { o.remove(); } catch (e) {} d.removeEventListener('keydown', k); }
-  function k(e) { if (e.key === 'Escape') close(); }
+  function close() { try { o.remove(); } catch (e) {} d.removeEventListener('keydown', k, true); }
+  function k(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }
   b.addEventListener('click', close);
   o.addEventListener('click', function (e) { if (e.target === o) close(); });
-  d.addEventListener('keydown', k);
+  // Esc é capturado pelo doc do app; quando o mouse sai do deck, devolvemos o
+  // foco pro botão Fechar pra que o Esc volte a funcionar mesmo depois de o
+  // usuário ter clicado dentro do iframe (cross-origin rouba o teclado).
+  box.addEventListener('mouseleave', function () { try { b.focus(); } catch (e) {} });
+  d.addEventListener('keydown', k, true);
   box.appendChild(f); box.appendChild(b); o.appendChild(box); o.appendChild(hint); d.body.appendChild(o);
-  setTimeout(function () { try { f.focus(); } catch (e) {} }, 300);
+  try { b.focus(); } catch (e) {}
   return false;
 };
 
