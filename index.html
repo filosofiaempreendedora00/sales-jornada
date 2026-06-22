@@ -24229,6 +24229,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'social',      icon: '📱', name: 'Social Media',         color: '#12d490', sourceId: 'sm-inner' },
     { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
     { id: 'idvisual',    icon: '🎨', name: 'ID Visual',             color: '#f9a8d4', sourceId: null },
+    { id: 'estrutura-estrategica', icon: '🧭', name: 'Estruturação Estratégica', color: '#4d8dff', sourceId: 'ee-inner' },
     { id: 'crm',         icon: '💬', name: 'E-mail Marketing',      color: '#9b6dff', sourceId: 'crm-inner' },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
@@ -24313,6 +24314,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     },
     idvisual: {
       enterprise: { label: 'ID Visual', value: 'R$ 9.997,00' }
+    },
+    'estrutura-estrategica': {
+      unico: { label: 'Estruturação Estratégica', value: 'R$ 9.997,00' }
     },
     crm: {
       'bc-starter':       { label: 'Broadcast · Starter',       value: 'R$ 1.997,00' },
@@ -24430,6 +24434,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     comunidade:  ['unico'],
     'consultoria-ugc': ['unico'],
     idvisual:    ['enterprise'],
+    'estrutura-estrategica': ['unico'],
     crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
   };
@@ -26446,6 +26451,27 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
+    // Estruturação Estratégica — diagnóstico 360 pontual (R$ 9.997, à vista),
+    // entregue em 4 reuniões. Tier único (pontual), mesmo esquema do ID Visual.
+    const estruturaCards = [];
+    if (selected.has('estrutura-estrategica') && isTierEnabled('estrutura-estrategica', 'unico')) {
+      estruturaCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ESTRUTURAÇÃO ESTRATÉGICA</h3>
+          ${priceWithAnchor('estrutura-estrategica', 'unico')}
+          <span class="pacote-tag">Diagnóstico 360 · pagamento único · 4 reuniões</span>
+          <ul class="pacote-features">
+            <li>Diagnóstico &amp; Posicionamento <small>(marca, mercado e público)</small></li>
+            <li>Aquisição: tráfego &amp; criativos <small>(Google, Meta e guia de criativos)</small></li>
+            <li>Conversão &amp; Retenção <small>(e-commerce, funil, CRM e SEO)</small></li>
+            <li>Marca, Comunidade &amp; Plano de Ação <small>(social, benchmarking e roadmap)</small></li>
+            <li>Análise dos 4P's + SWOT do negócio</li>
+            <li>Roadmap priorizado dos próximos passos</li>
+          </ul>
+        </div>`);
+    }
+
     // CRM Estratégico — dois grupos de pacotes: Broadcast (e-mail marketing
     // gerenciado) + Implementação de CRM (plataforma unificada). Cada grupo
     // tem 3 tiers; o SCALE é o destaque (mais vendido) em ambos.
@@ -26638,7 +26664,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -26732,6 +26758,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <p class="pacotes-sub">Identidade visual estratégica — do logo ao manual aplicado</p>
             </div>
             <div class="pacotes-grid">${idvisualCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3f-ter. Estruturação Estratégica — diagnóstico 360 pontual (R$ 9.997)
+      if (estruturaCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title"><span class="pacotes-title-accent">Estruturação</span> Estratégica</h2>
+              <p class="pacotes-sub">Diagnóstico 360 do seu negócio digital — entregue em 4 reuniões</p>
+            </div>
+            <div class="pacotes-grid">${estruturaCards.join('')}</div>
           </div>
         </section>`);
       }
@@ -26969,6 +27008,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           padding: 40px 20px !important;
         }
       }
+      /* ── Estruturação Estratégica na proposta ──
+         O clipping do número-fantasma (.ee-ghost) vinha de #ee-inner (id),
+         que some no clone da proposta — reaplicamos via classe da seção pra
+         o número não vazar pro slide vizinho. E liberamos o nowrap do título
+         da capa pra não estourar a largura no mobile. */
+      .proposal-section--estrutura-estrategica .xpto-slide { overflow: hidden; }
+      .proposal-section--estrutura-estrategica .xpto-slide-inner { position: relative; z-index: 1; }
+      .proposal-section--estrutura-estrategica .ee-cover-title { white-space: normal; }
       /* ── CRM Estratégico (apresentação) na proposta ──
          O CSS do deck agora é escopado em .crm-deck (não mais #crm-modal),
          então os slides recebem o estilo completo aqui também. Cada
@@ -29195,25 +29242,58 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     var o = d.createElement('div'); o.id = 'deck-embed-lb';
     o.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(6,5,14,.93);padding:24px;';
     var box = d.createElement('div');
-    box.style.cssText = 'position:relative;width:min(1120px,95vw);height:min(660px,80vh);';
-    var f = d.createElement('iframe');
-    f.src = 'https://docs.google.com/presentation/d/' + id + '/embed?start=false&loop=false&rm=minimal';
-    f.allowFullscreen = true;
-    f.style.cssText = 'width:100%;height:100%;border:0;border-radius:14px;background:#000;box-shadow:0 24px 90px rgba(0,0,0,.6);';
+    box.style.cssText = 'position:relative;width:min(1200px,94vw);aspect-ratio:16/9;max-height:84vh;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 24px 90px rgba(0,0,0,.6);';
+    // POSTER = capa real do deck (export/png) renderizada como <img> comum. O
+    // iframe cross-origin do Google é composto com zoom/corte pelo navegador
+    // embutido do preview (e pelo Safari iOS); a imagem não tem esse problema.
+    // Clicar troca o poster pelo player ao vivo (folheia todos os slides).
+    var poster = d.createElement('button'); poster.type = 'button';
+    poster.setAttribute('aria-label', 'Folhear apresentação');
+    poster.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;margin:0;background:#000;cursor:pointer;display:block;';
+    var pimg = d.createElement('img');
+    pimg.src = 'https://docs.google.com/presentation/d/' + id + '/export/png';
+    pimg.alt = 'Capa da apresentação';
+    pimg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;';
+    pimg.onerror = function () { pimg.style.display = 'none'; };
+    var play = d.createElement('div');
+    play.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,.12),rgba(0,0,0,.5));';
+    var circ = d.createElement('span');
+    circ.style.cssText = 'display:flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;background:rgba(20,18,34,.55);border:1.5px solid rgba(255,255,255,.7);margin-bottom:14px;box-shadow:0 8px 30px rgba(0,0,0,.5);';
+    var tri = d.createElement('span');
+    tri.style.cssText = 'width:0;height:0;border-style:solid;border-width:12px 0 12px 20px;border-color:transparent transparent transparent #fff;margin-left:5px;';
+    circ.appendChild(tri);
+    var plabel = d.createElement('span');
+    plabel.textContent = 'Folhear apresentação';
+    plabel.style.cssText = 'font:800 16px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;letter-spacing:.2px;text-shadow:0 2px 14px rgba(0,0,0,.7);';
+    play.appendChild(circ); play.appendChild(plabel);
+    poster.appendChild(pimg); poster.appendChild(play);
     var b = d.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Fechar apresentação');
     b.innerHTML = '&#10005;&nbsp; Fechar';
-    b.style.cssText = 'position:absolute;top:-15px;right:-8px;height:42px;padding:0 16px;border-radius:21px;border:1px solid rgba(255,255,255,.3);background:#1c1b2c;color:#fff;font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 6px 22px rgba(0,0,0,.55);';
+    b.style.cssText = 'position:absolute;top:10px;right:10px;z-index:5;height:38px;padding:0 14px;border-radius:19px;border:1px solid rgba(255,255,255,.3);background:rgba(28,27,44,.92);color:#fff;font:700 13px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 6px 22px rgba(0,0,0,.55);';
     var hint = d.createElement('div');
-    hint.innerHTML = 'Clique nas setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b>, <b>Fechar</b> ou clique fora para sair';
+    hint.innerHTML = 'Clique em <b>Folhear apresentação</b> para ver os slides &nbsp;·&nbsp; <b>Esc</b> ou clique fora para sair';
     hint.style.cssText = 'flex:0 0 auto;color:rgba(255,255,255,.74);font:600 12.5px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center;';
     function close() { try { o.remove(); } catch (e) {} d.removeEventListener('keydown', k, true); }
     function k(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }
+    var playing = false;
+    function startDeck() {
+      if (playing) return; playing = true;
+      var f = d.createElement('iframe');
+      f.src = 'https://docs.google.com/presentation/d/' + id + '/embed?start=false&loop=false&rm=minimal';
+      f.allowFullscreen = true;
+      f.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;';
+      box.insertBefore(f, box.firstChild);
+      try { poster.remove(); } catch (e) {}
+      hint.innerHTML = 'Clique nas setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b>, <b>Fechar</b> ou clique fora para sair';
+      box.addEventListener('mouseleave', function () { try { b.focus(); } catch (e) {} });
+      try { b.focus(); } catch (e) {}
+    }
+    poster.addEventListener('click', startDeck);
     b.addEventListener('click', close);
     o.addEventListener('click', function (e) { if (e.target === o) close(); });
-    box.addEventListener('mouseleave', function () { try { b.focus(); } catch (e) {} });
     d.addEventListener('keydown', k, true);
-    box.appendChild(f); box.appendChild(b); o.appendChild(box); o.appendChild(hint); d.body.appendChild(o);
-    try { b.focus(); } catch (e) {}
+    box.appendChild(poster); box.appendChild(b); o.appendChild(box); o.appendChild(hint); d.body.appendChild(o);
+    try { poster.focus(); } catch (e) {}
     return false;
   };
 })();
@@ -32232,28 +32312,60 @@ window.openDeckEmbed = function (ev, id) {
   var o = d.createElement('div'); o.id = 'deck-embed-lb';
   o.style.cssText = 'position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(6,5,14,.93);padding:24px;';
   var box = d.createElement('div');
-  box.style.cssText = 'position:relative;width:min(1120px,95vw);height:min(660px,80vh);';
-  var f = d.createElement('iframe');
-  f.src = 'https://docs.google.com/presentation/d/' + id + '/embed?start=false&loop=false&rm=minimal';
-  f.allowFullscreen = true;
-  f.style.cssText = 'width:100%;height:100%;border:0;border-radius:14px;background:#000;box-shadow:0 24px 90px rgba(0,0,0,.6);';
+  box.style.cssText = 'position:relative;width:min(1200px,94vw);aspect-ratio:16/9;max-height:84vh;border-radius:14px;overflow:hidden;background:#000;box-shadow:0 24px 90px rgba(0,0,0,.6);';
+  // POSTER = capa real do deck (export/png) renderizada como <img> comum. O
+  // iframe cross-origin do Google é composto com zoom/corte pelo navegador
+  // embutido do preview (e pelo Safari iOS); a imagem não tem esse problema.
+  // Clicar troca o poster pelo player ao vivo (folheia todos os slides).
+  var poster = d.createElement('button'); poster.type = 'button';
+  poster.setAttribute('aria-label', 'Folhear apresentação');
+  poster.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;padding:0;margin:0;background:#000;cursor:pointer;display:block;';
+  var pimg = d.createElement('img');
+  pimg.src = 'https://docs.google.com/presentation/d/' + id + '/export/png';
+  pimg.alt = 'Capa da apresentação';
+  pimg.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;';
+  pimg.onerror = function () { pimg.style.display = 'none'; };
+  var play = d.createElement('div');
+  play.style.cssText = 'position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;background:radial-gradient(ellipse at center,rgba(0,0,0,.12),rgba(0,0,0,.5));';
+  var circ = d.createElement('span');
+  circ.style.cssText = 'display:flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;background:rgba(20,18,34,.55);border:1.5px solid rgba(255,255,255,.7);margin-bottom:14px;box-shadow:0 8px 30px rgba(0,0,0,.5);';
+  var tri = d.createElement('span');
+  tri.style.cssText = 'width:0;height:0;border-style:solid;border-width:12px 0 12px 20px;border-color:transparent transparent transparent #fff;margin-left:5px;';
+  circ.appendChild(tri);
+  var plabel = d.createElement('span');
+  plabel.textContent = 'Folhear apresentação';
+  plabel.style.cssText = 'font:800 16px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;color:#fff;letter-spacing:.2px;text-shadow:0 2px 14px rgba(0,0,0,.7);';
+  play.appendChild(circ); play.appendChild(plabel);
+  poster.appendChild(pimg); poster.appendChild(play);
   var b = d.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Fechar apresentação');
   b.innerHTML = '&#10005;&nbsp; Fechar';
-  b.style.cssText = 'position:absolute;top:-15px;right:-8px;height:42px;padding:0 16px;border-radius:21px;border:1px solid rgba(255,255,255,.3);background:#1c1b2c;color:#fff;font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 6px 22px rgba(0,0,0,.55);';
+  b.style.cssText = 'position:absolute;top:10px;right:10px;z-index:5;height:38px;padding:0 14px;border-radius:19px;border:1px solid rgba(255,255,255,.3);background:rgba(28,27,44,.92);color:#fff;font:700 13px/1 system-ui,-apple-system,"Segoe UI",sans-serif;cursor:pointer;display:inline-flex;align-items:center;box-shadow:0 6px 22px rgba(0,0,0,.55);';
   var hint = d.createElement('div');
-  hint.innerHTML = 'Clique nas setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b>, <b>Fechar</b> ou clique fora para sair';
+  hint.innerHTML = 'Clique em <b>Folhear apresentação</b> para ver os slides &nbsp;·&nbsp; <b>Esc</b> ou clique fora para sair';
   hint.style.cssText = 'flex:0 0 auto;color:rgba(255,255,255,.74);font:600 12.5px/1.4 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center;';
   function close() { try { o.remove(); } catch (e) {} d.removeEventListener('keydown', k, true); }
   function k(e) { if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); close(); } }
+  var playing = false;
+  function startDeck() {
+    if (playing) return; playing = true;
+    var f = d.createElement('iframe');
+    f.src = 'https://docs.google.com/presentation/d/' + id + '/embed?start=false&loop=false&rm=minimal';
+    f.allowFullscreen = true;
+    f.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0;background:#000;';
+    box.insertBefore(f, box.firstChild);
+    try { poster.remove(); } catch (e) {}
+    hint.innerHTML = 'Clique nas setas <b>&#9664; &#9654;</b> do slide para navegar &nbsp;·&nbsp; <b>Esc</b>, <b>Fechar</b> ou clique fora para sair';
+    // cross-origin rouba o teclado: ao sair do deck, devolve o foco ao Fechar
+    // pra o Esc voltar a funcionar mesmo após clique dentro do iframe.
+    box.addEventListener('mouseleave', function () { try { b.focus(); } catch (e) {} });
+    try { b.focus(); } catch (e) {}
+  }
+  poster.addEventListener('click', startDeck);
   b.addEventListener('click', close);
   o.addEventListener('click', function (e) { if (e.target === o) close(); });
-  // Esc é capturado pelo doc do app; quando o mouse sai do deck, devolvemos o
-  // foco pro botão Fechar pra que o Esc volte a funcionar mesmo depois de o
-  // usuário ter clicado dentro do iframe (cross-origin rouba o teclado).
-  box.addEventListener('mouseleave', function () { try { b.focus(); } catch (e) {} });
   d.addEventListener('keydown', k, true);
-  box.appendChild(f); box.appendChild(b); o.appendChild(box); o.appendChild(hint); d.body.appendChild(o);
-  try { b.focus(); } catch (e) {}
+  box.appendChild(poster); box.appendChild(b); o.appendChild(box); o.appendChild(hint); d.body.appendChild(o);
+  try { poster.focus(); } catch (e) {}
   return false;
 };
 
