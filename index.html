@@ -3741,6 +3741,16 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   display: flex; align-items: center; gap: 6px;
 }
 .depo-skyfit-back:hover { background: rgba(77,141,255,0.3); }
+/* CG Engenharia: a tabela de resultados é larga (faixa). No desktop cabe inteira;
+   no mobile mantém legível e rola na horizontal dentro do stage em vez de encolher. */
+.depo-plb-stage.depo-plb-stage--scroll {
+  max-width: 94vw; overflow-x: auto; -webkit-overflow-scrolling: touch;
+  background: #0b141a; padding: 10px; line-height: 0;
+}
+.depo-plb-img.depo-plb-img--wide {
+  max-width: none; width: auto; height: auto;
+  max-height: 80vh; min-width: min(760px, 88vw); border-radius: 6px;
+}
 .cases-header-stats {
   display: flex;
   gap: 12px;
@@ -10660,6 +10670,36 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
   color: var(--text-2);
   line-height: 1.5;
 }
+/* Sub-bullets (chips) de cada entregável do Setup 360 */
+.sm-setup-item-tags {
+  list-style: none;
+  padding: 0;
+  margin: 9px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.sm-setup-item-tags li {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #c9bdf0;
+  background: rgba(155,109,255,0.09);
+  border: 1px solid rgba(155,109,255,0.20);
+  border-radius: 7px;
+  padding: 3px 8px;
+  line-height: 1.3;
+}
+/* Nome do conceito do Setup 360 (Direcionamento Estratégico de Comunicação) */
+.sm-setup-concept {
+  margin: 10px 0 0;
+  font-size: clamp(15px, 1.7vw, 19px);
+  font-weight: 800;
+  letter-spacing: -0.2px;
+  background: linear-gradient(120deg, #12d490, #9b6dff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 
 /* Diferenciais */
 .sm-diff-grid {
@@ -14608,6 +14648,10 @@ a.xpto-pricing-btn { text-decoration: none; }
             <img class="depo-print-thumb" src="/depoimentos/skyfit/grupo.png" alt="" loading="lazy">
             <span class="depo-print-badge"><span class="depo-print-badge-play">💬</span> Skyfit · elogio do cliente</span>
           </button>
+          <button type="button" class="depo-print-card" data-depo-name="CG Engenharia" data-print-img="cgeng" aria-label="Print do WhatsApp — depoimento da CG Engenharia (clique e veja o elogio e os resultados)">
+            <img class="depo-print-thumb" src="/depoimentos/cg-engenharia/depoimento.png" alt="" loading="lazy">
+            <span class="depo-print-badge"><span class="depo-print-badge-play">💬</span> CG Engenharia · elogio + resultados</span>
+          </button>
         </div>
       </section>
 
@@ -14672,6 +14716,16 @@ a.xpto-pricing-btn { text-decoration: none; }
     <button type="button" class="depo-img-hot" id="depo-skyfit-hot" style="left:5.3%;top:50.2%;width:34%;height:15.6%" aria-label="Ver o depoimento real que o cliente escreveu">
       <span class="depo-img-hot-label">ver depoimento ↗</span>
     </button>
+  </div>
+</div>
+
+<!-- Lightbox do PRINT de TEXTO (CG Engenharia): print do elogio ⇄ tabela de resultados -->
+<div class="depo-plb" id="depo-cgeng-lb" aria-hidden="true">
+  <div class="depo-plb-overlay" data-cgeng-close></div>
+  <button class="depo-plb-close" type="button" data-cgeng-close aria-label="Fechar">✕</button>
+  <button class="depo-skyfit-back" type="button" id="depo-cgeng-toggle" aria-label="Alternar entre depoimento e resultados">📊 Ver resultados</button>
+  <div class="depo-plb-stage" id="depo-cgeng-stage">
+    <img class="depo-plb-img" id="depo-cgeng-img" src="/depoimentos/cg-engenharia/depoimento.png" alt="Depoimento — CG Engenharia (elogio do cliente sobre o trabalho da Turbo)">
   </div>
 </div>
 
@@ -15924,20 +15978,78 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div>
             <div class="sm-setup-badge">✦ Incluso no Enterprise</div>
             <h2 class="sm-section-title" style="font-size: clamp(28px, 4vw, 44px);">Setup 360</h2>
+            <p class="sm-setup-concept">Direcionamento Estratégico de Comunicação</p>
             <p class="sm-section-sub" style="margin-top: 14px;">
-              Antes de criar, a gente entende. O Setup 360 é a estruturação estratégica completa da sua presença digital — da análise de mercado ao plano de ação, tudo definido antes do primeiro post.
+              Antes de criar, a gente direciona. O Setup 360 define toda a base de comunicação da marca — do diagnóstico à direção visual e tipográfica — com aplicação prática já nos 3 primeiros criativos.
             </p>
             <div class="sm-setup-deadline">⏱ Entrega em até 15 dias após pré-kickoff</div>
           </div>
           <div class="sm-setup-items">
-            <div class="sm-setup-item"><div class="sm-setup-item-num">01</div><div class="sm-setup-item-name">Diagnóstico Digital</div><div class="sm-setup-item-desc">Radiografia completa da presença atual da marca</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">02</div><div class="sm-setup-item-name">Análise de Mercado</div><div class="sm-setup-item-desc">Mapeamento de concorrência e oportunidades</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">03</div><div class="sm-setup-item-name">Definição Estratégica</div><div class="sm-setup-item-desc">Posicionamento, tom de voz e direcionamento</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">04</div><div class="sm-setup-item-name">Estrutura de Conteúdo</div><div class="sm-setup-item-desc">Pilares, formatos e cadência editorial</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">05</div><div class="sm-setup-item-name">Estrutura de Conversão</div><div class="sm-setup-item-desc">Funil de conteúdo alinhado ao negócio</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">06</div><div class="sm-setup-item-name">Estratégia de Stories</div><div class="sm-setup-item-desc">Sequências e narrativas para engajamento diário</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">07</div><div class="sm-setup-item-name">Estrutura Visual</div><div class="sm-setup-item-desc">Identidade, paleta e coerência estética</div></div>
-            <div class="sm-setup-item"><div class="sm-setup-item-num">08</div><div class="sm-setup-item-name">Plano de Ação Inicial</div><div class="sm-setup-item-desc">Primeiros 30 dias com passos claros</div></div>
+            <div class="sm-setup-item">
+              <div class="sm-setup-item-num">01</div>
+              <div class="sm-setup-item-name">Diagnóstico da presença digital atual</div>
+              <div class="sm-setup-item-desc">Análise da comunicação atual da marca</div>
+              <ul class="sm-setup-item-tags">
+                <li>Percepção visual</li>
+                <li>Clareza de posicionamento</li>
+                <li>Consistência da comunicação</li>
+              </ul>
+            </div>
+            <div class="sm-setup-item">
+              <div class="sm-setup-item-num">02</div>
+              <div class="sm-setup-item-name">Definição do conceito de comunicação</div>
+              <div class="sm-setup-item-desc">A linha conceitual que serve de base para toda a comunicação da marca</div>
+              <ul class="sm-setup-item-tags">
+                <li>Posicionamento principal</li>
+                <li>Tom de comunicação</li>
+              </ul>
+            </div>
+            <div class="sm-setup-item">
+              <div class="sm-setup-item-num">03</div>
+              <div class="sm-setup-item-name">Moodboard estratégico</div>
+              <div class="sm-setup-item-desc">Referências visuais que traduzem a essência da marca</div>
+              <ul class="sm-setup-item-tags">
+                <li>Estilo da marca</li>
+                <li>Sensações desejadas</li>
+                <li>Linguagem visual</li>
+                <li>Universo de comunicação</li>
+              </ul>
+            </div>
+            <div class="sm-setup-item">
+              <div class="sm-setup-item-num">04</div>
+              <div class="sm-setup-item-name">Direção visual</div>
+              <div class="sm-setup-item-desc">Os elementos que compõem a identidade digital da marca</div>
+              <ul class="sm-setup-item-tags">
+                <li>Paleta de cores</li>
+                <li>Aplicação das cores</li>
+                <li>Estilo visual</li>
+                <li>Elementos gráficos</li>
+                <li>Hierarquia visual</li>
+              </ul>
+            </div>
+            <div class="sm-setup-item">
+              <div class="sm-setup-item-num">05</div>
+              <div class="sm-setup-item-name">Direção tipográfica</div>
+              <div class="sm-setup-item-desc">Estrutura de fontes dos conteúdos, garantindo consistência e legibilidade</div>
+              <ul class="sm-setup-item-tags">
+                <li>Títulos</li>
+                <li>Subtítulos</li>
+                <li>Textos de apoio</li>
+                <li>CTAs</li>
+              </ul>
+            </div>
+            <div class="sm-setup-item">
+              <div class="sm-setup-item-num">06</div>
+              <div class="sm-setup-item-name">Aplicação prática da comunicação</div>
+              <div class="sm-setup-item-desc">Exemplos reais da comunicação proposta nos 3 primeiros criativos</div>
+              <ul class="sm-setup-item-tags">
+                <li>Feed conceito</li>
+                <li>Posts estáticos</li>
+                <li>Carrosséis</li>
+                <li>Reels conceituais</li>
+                <li>Aplicações visuais</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -31434,6 +31546,43 @@ window.apiFetch = async function (url, opts, cfg) {
   hot.addEventListener('click', function (e) { e.preventDefault(); showElogio(); });
   back.addEventListener('click', function (e) { e.preventDefault(); showGrupo(); });
   lb.querySelectorAll('[data-skyfit-close]').forEach(el => el.addEventListener('click', closeLb));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLb(); });
+})();
+
+// ══════════════════════════════════════════════════════════
+// Depoimento em PRINT DE TEXTO (CG Engenharia): abre o print do
+// elogio do cliente e, no botão, alterna para a tabela de resultados
+// (ROAS, vendas, faturamento). Tabela é larga → no mobile rola na horizontal.
+// ══════════════════════════════════════════════════════════
+(function depoCgEngLightbox() {
+  const lb = document.getElementById('depo-cgeng-lb');
+  if (!lb) return;
+  const img = document.getElementById('depo-cgeng-img');
+  const stage = document.getElementById('depo-cgeng-stage');
+  const toggle = document.getElementById('depo-cgeng-toggle');
+  const DEPO = '/depoimentos/cg-engenharia/depoimento.png';
+  const RES  = '/depoimentos/cg-engenharia/resultados.jpg';
+  function showDepo() {
+    img.src = DEPO; img.alt = 'Depoimento — CG Engenharia (elogio do cliente sobre o trabalho da Turbo)';
+    img.classList.remove('depo-plb-img--wide'); stage.classList.remove('depo-plb-stage--scroll');
+    toggle.innerHTML = '📊 Ver resultados';
+  }
+  function showRes() {
+    img.src = RES; img.alt = 'Resultados — CG Engenharia (ROAS, leads, vendas e faturamento)';
+    img.classList.add('depo-plb-img--wide'); stage.classList.add('depo-plb-stage--scroll');
+    toggle.innerHTML = '💬 Ver depoimento';
+  }
+  function openLb() { showDepo(); lb.classList.add('is-open'); lb.setAttribute('aria-hidden', 'false'); document.body.style.overflow = 'hidden'; }
+  function closeLb() { lb.classList.remove('is-open'); lb.setAttribute('aria-hidden', 'true'); document.body.style.overflow = ''; showDepo(); }
+  document.addEventListener('click', function (e) {
+    if (!e.target || !e.target.closest) return;
+    if (e.target.closest('.depo-print-card[data-print-img="cgeng"]')) { e.preventDefault(); openLb(); }
+  });
+  toggle.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (img.classList.contains('depo-plb-img--wide')) showDepo(); else showRes();
+  });
+  lb.querySelectorAll('[data-cgeng-close]').forEach(el => el.addEventListener('click', closeLb));
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lb.classList.contains('is-open')) closeLb(); });
 })();
 
