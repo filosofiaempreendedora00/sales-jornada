@@ -9222,6 +9222,24 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   letter-spacing: -1px; color: #fff;
 }
 .pp-gameplan-rows { display: flex; flex-direction: column; gap: 12px; }
+/* Link de exemplo de Gameplan (Figma) */
+.pp-gameplan-example { display: flex; justify-content: center; margin-top: 22px; }
+.pp-gameplan-example-link {
+  display: inline-flex; align-items: center; gap: 10px;
+  font-size: 14px; font-weight: 700; color: #cfe0ff; text-decoration: none;
+  background: linear-gradient(135deg, rgba(77,141,255,0.18), rgba(13,207,232,0.10));
+  border: 1px solid rgba(77,141,255,0.40);
+  border-radius: 12px; padding: 12px 22px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 24px rgba(4,10,28,0.40);
+  transition: border-color 0.18s, transform 0.18s, background 0.18s;
+}
+.pp-gameplan-example-link:hover {
+  border-color: rgba(77,141,255,0.70);
+  background: linear-gradient(135deg, rgba(77,141,255,0.28), rgba(13,207,232,0.16));
+  transform: translateY(-1px);
+}
+.pp-gameplan-example-ico { font-size: 15px; line-height: 1; }
+.pp-gameplan-example-arrow { color: #4d8dff; font-weight: 800; }
 .pp-gameplan-row { display: grid; gap: 12px; }
 .pp-gameplan-row--3 { grid-template-columns: repeat(3, 1fr); }
 .pp-gameplan-row--2 { display: flex; gap: 12px; justify-content: center; }
@@ -15289,6 +15307,13 @@ a.xpto-pricing-btn { text-decoration: none; }
               <p class="pp-gameplan-card-title">Próximos<br>Passos</p>
             </div>
           </div>
+        </div>
+        <div class="pp-gameplan-example">
+          <a class="pp-gameplan-example-link" href="https://www.figma.com/proto/SeEynWY3qMC2N66PxDqZki/-N%C3%83O-USAR--Exemplos-Gameplan--N%C3%A3o-fazer-aqui--apenas-pegar-de-exemplo-?node-id=6013-2631&amp;p=f&amp;t=dSb0NTkjZxgTf7hX-0&amp;scaling=contain&amp;content-scaling=fixed&amp;page-id=6013%3A2630" target="_blank" rel="noopener">
+            <span class="pp-gameplan-example-ico">🔗</span>
+            Ver um exemplo de Gameplan
+            <span class="pp-gameplan-example-arrow" aria-hidden="true">↗</span>
+          </a>
         </div>
       </div>
     </section>
