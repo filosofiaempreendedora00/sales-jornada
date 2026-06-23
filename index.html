@@ -2946,8 +2946,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 /* ── Melhorias: Kanban (3 colunas) ───────────────── */
 .melh-kanban {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
   align-items: flex-start;
 }
 .melh-column {
@@ -2975,6 +2975,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-shrink: 0;
   box-shadow: 0 0 8px currentColor;
 }
+.melh-column-dot--backlog      { background: #94a3b8; color: rgba(148,163,184,0.55); }
 .melh-column-dot--pendente     { background: #fbbf24; color: rgba(251,191,36,0.55); }
 .melh-column-dot--em_andamento { background: #c4a8ff; color: rgba(155,109,255,0.55); }
 .melh-column-dot--concluido    { background: #4ade80; color: rgba(74,222,128,0.55); }
@@ -15100,17 +15101,20 @@ a.xpto-pricing-btn { text-decoration: none; }
     <section class="config-pane is-active" data-config-pane-content="melhorias">
       <div class="melh-toolbar">
         <div class="melh-toolbar-stats">
-          <span class="melh-stat"><strong id="melh-stat-pending">0</strong> em aberto</span>
+          <span class="melh-stat"><strong id="melh-stat-backlog">0</strong> backlog</span>
           <span class="melh-stat-sep">·</span>
-          <span class="melh-stat"><strong id="melh-stat-doing">0</strong> em andamento</span>
+          <span class="melh-stat"><strong id="melh-stat-pending">0</strong> to do</span>
           <span class="melh-stat-sep">·</span>
-          <span class="melh-stat"><strong id="melh-stat-done">0</strong> concluídas</span>
+          <span class="melh-stat"><strong id="melh-stat-doing">0</strong> doing</span>
+          <span class="melh-stat-sep">·</span>
+          <span class="melh-stat"><strong id="melh-stat-done">0</strong> complete</span>
         </div>
         <div class="melh-toolbar-actions">
           <button type="button" class="melh-filter-chip is-active" data-melh-filter="all">Todas</button>
-          <button type="button" class="melh-filter-chip" data-melh-filter="pendente">Em aberto</button>
-          <button type="button" class="melh-filter-chip" data-melh-filter="em_andamento">Em andamento</button>
-          <button type="button" class="melh-filter-chip" data-melh-filter="concluido">Concluídas</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="backlog">Backlog</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="pendente">To Do</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="em_andamento">Doing</button>
+          <button type="button" class="melh-filter-chip" data-melh-filter="concluido">Complete</button>
         </div>
         <label class="melh-sort">
           <span class="melh-sort-label">Ordenar:</span>
@@ -15127,12 +15131,21 @@ a.xpto-pricing-btn { text-decoration: none; }
         </button>
       </div>
 
-      <!-- Kanban: 3 colunas por status -->
+      <!-- Kanban: 4 colunas por status (BACKLOG · TO DO · DOING · COMPLETE) -->
       <div class="melh-kanban" id="melh-kanban">
+        <section class="melh-column" data-melh-col="backlog">
+          <header class="melh-column-header">
+            <span class="melh-column-dot melh-column-dot--backlog"></span>
+            <span class="melh-column-title">BACKLOG</span>
+            <span class="melh-column-count" data-melh-col-count>0</span>
+          </header>
+          <div class="melh-column-list" data-melh-col-list></div>
+          <div class="melh-column-empty" data-melh-col-empty>Sem itens</div>
+        </section>
         <section class="melh-column" data-melh-col="pendente">
           <header class="melh-column-header">
             <span class="melh-column-dot melh-column-dot--pendente"></span>
-            <span class="melh-column-title">Em aberto</span>
+            <span class="melh-column-title">TO DO</span>
             <span class="melh-column-count" data-melh-col-count>0</span>
           </header>
           <div class="melh-column-list" data-melh-col-list></div>
@@ -15141,7 +15154,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         <section class="melh-column" data-melh-col="em_andamento">
           <header class="melh-column-header">
             <span class="melh-column-dot melh-column-dot--em_andamento"></span>
-            <span class="melh-column-title">Em andamento</span>
+            <span class="melh-column-title">DOING</span>
             <span class="melh-column-count" data-melh-col-count>0</span>
           </header>
           <div class="melh-column-list" data-melh-col-list></div>
@@ -15150,7 +15163,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         <section class="melh-column" data-melh-col="concluido">
           <header class="melh-column-header">
             <span class="melh-column-dot melh-column-dot--concluido"></span>
-            <span class="melh-column-title">Concluídas</span>
+            <span class="melh-column-title">COMPLETE</span>
             <span class="melh-column-count" data-melh-col-count>0</span>
           </header>
           <div class="melh-column-list" data-melh-col-list></div>
@@ -15206,13 +15219,14 @@ a.xpto-pricing-btn { text-decoration: none; }
                  placeholder="Ex: Adicionar drag-and-drop nos cases">
         </label>
         <!-- Status: só aparece ao EDITAR um card já criado. Na criação fica
-             escondido (toda melhoria nova nasce em 'Em aberto'). -->
+             escondido (toda melhoria nova nasce no 'BACKLOG'). -->
         <label class="melh-form-field" id="melh-form-status-field" hidden>
           <span class="melh-form-label">Status</span>
           <select id="melh-form-status">
-            <option value="pendente">Em aberto</option>
-            <option value="em_andamento">Em andamento</option>
-            <option value="concluido">Concluída</option>
+            <option value="backlog">Backlog</option>
+            <option value="pendente">To Do</option>
+            <option value="em_andamento">Doing</option>
+            <option value="concluido">Complete</option>
           </select>
         </label>
         <label class="melh-form-field">
@@ -31882,6 +31896,7 @@ window.apiFetch = async function (url, opts, cfg) {
   const $idFld  = document.getElementById('melh-form-id');
   const $modalTitle = document.getElementById('melh-modal-title');
   const $delBtn = document.getElementById('melh-form-delete');
+  const $statBacklog = document.getElementById('melh-stat-backlog');
   const $statPending = document.getElementById('melh-stat-pending');
   const $statDoing   = document.getElementById('melh-stat-doing');
   const $statDone    = document.getElementById('melh-stat-done');
@@ -31993,7 +32008,7 @@ window.apiFetch = async function (url, opts, cfg) {
   // Helpers de display
   const STATUS_LABEL = { pendente: 'Em aberto', em_andamento: 'Em andamento', concluido: 'Concluída' };
   const PRIO_LABEL   = { alta: 'Alta', media: 'Média', baixa: 'Baixa' };
-  const STATUSES     = ['pendente', 'em_andamento', 'concluido'];
+  const STATUSES     = ['backlog', 'pendente', 'em_andamento', 'concluido'];
 
   // Função pra extrair iniciais (avatar)
   function initialsOf(name) {
@@ -32105,6 +32120,7 @@ window.apiFetch = async function (url, opts, cfg) {
 
   function render() {
     // Stats globais
+    if ($statBacklog) $statBacklog.textContent = data.filter(t => t.status === 'backlog').length;
     $statPending.textContent = data.filter(t => t.status === 'pendente').length;
     $statDoing.textContent   = data.filter(t => t.status === 'em_andamento').length;
     $statDone.textContent    = data.filter(t => t.status === 'concluido').length;
@@ -32200,13 +32216,13 @@ window.apiFetch = async function (url, opts, cfg) {
         data[i] = { ...data[i], ...payload, status: novoStatus, atualizadoEm: new Date().toISOString() };
       }
     } else {
-      // Em inclusão: status sempre 'pendente'; prioridade e data
-      // ficam vazias (não aparecem no form). Podem ser geridas via
-      // Kanban (status) ou edições futuras.
+      // Em inclusão: status sempre 'backlog' (1ª coluna / inbox); prioridade
+      // e data ficam vazias (não aparecem no form). Depois é só arrastar no
+      // Kanban (BACKLOG → TO DO → DOING → COMPLETE).
       data.push({
         id: uid(),
         ...payload,
-        status: 'pendente',
+        status: 'backlog',
         prioridade: 'media',
         dataAlvo: '',
         criadoEm: new Date().toISOString(),
@@ -32354,7 +32370,7 @@ window.apiFetch = async function (url, opts, cfg) {
   // API mínima
   window.__melhorias = {
     getAll: () => data.slice(),
-    add: (t) => { data.push({ id: uid(), criadoEm: new Date().toISOString(), prioridade: 'media', status: 'pendente', ...t }); save(); render(); },
+    add: (t) => { data.push({ id: uid(), criadoEm: new Date().toISOString(), prioridade: 'media', status: 'backlog', ...t }); save(); render(); },
     refresh: render,
   };
 
