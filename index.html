@@ -12779,6 +12779,9 @@ a.cp-phone-frame--link:hover .cp-cover-play-icon {
 }
 .ee-deliver-body h4 { font-size: 15px; font-weight: 700; margin: 0 0 3px; color: #fff; }
 .ee-deliver-body p { font-size: 13px; line-height: 1.5; color: rgba(255,255,255,0.62); margin: 0; }
+.ee-deliver-sub { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-direction: column; gap: 4px; }
+.ee-deliver-sub li { position: relative; font-size: 13px; line-height: 1.45; color: rgba(255,255,255,0.62); padding-left: 15px; }
+.ee-deliver-sub li::before { content: ''; position: absolute; left: 2px; top: 7px; width: 4px; height: 4px; border-radius: 50%; background: #0dcfe8; }
 .ee-close-tag {
   display: inline-block; margin-top: 30px; font-size: 14px; font-weight: 800; letter-spacing: 0.5px;
   color: #cfe0ff; background: rgba(77,141,255,0.14); border: 1px solid rgba(77,141,255,0.4);
@@ -16372,7 +16375,7 @@ a.xpto-pricing-btn { text-decoration: none; }
 
 <!-- ══════════════════════════════════════════════ -->
 <!--  ESTRUTURAÇÃO ESTRATÉGICA PRESENTATION (ee-*)   -->
-<!--  Produto Lead/Aquecimento — 4 etapas (4 reuniões) -->
+<!--  Produto Lead/Aquecimento — 4 etapas (4 encontros) -->
 <!-- ══════════════════════════════════════════════ -->
 <div class="xpto-overlay" id="ee-overlay"></div>
 <button class="xpto-close" id="ee-close" aria-label="Fechar">✕</button>
@@ -16385,7 +16388,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       <div class="xpto-slide-inner" style="text-align:center;">
         <div class="xpto-eyebrow"><span></span>Metodologia Turbo · Diagnóstico 360</div>
         <h1 class="xpto-title ee-cover-title">Estruturação <span class="ee-accent">Estratégica</span></h1>
-        <p class="xpto-subtitle">A base que organiza marca, aquisição e conversão num plano de ação claro — entregue em 4 reuniões.</p>
+        <p class="xpto-subtitle">A base que organiza marca, aquisição e conversão num plano de ação claro — entregue ao longo de 4 encontros.</p>
         <div class="ee-hero-badges">
           <span class="ee-hero-badge"><i></i>Diagnóstico 360</span>
           <span class="ee-hero-badge"><i></i>Método validado</span>
@@ -16400,7 +16403,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         <div class="ee-head">
           <div class="xpto-eyebrow"><span></span>Como funciona</div>
           <h2 class="ee-title">Um raio-x completo<br>do seu negócio digital.</h2>
-          <p class="ee-lead">Mapeamos marca, mercado, aquisição, conversão, retenção e presença — e transformamos tudo num plano de ação claro e priorizado. Organizado em 4 etapas, uma por reunião, para você sair com decisões, não com achismos.</p>
+          <p class="ee-lead">Mapeamos mercado, marca, posicionamento, aquisição, nutrição e retenção — e transformamos tudo num plano de ação com passos claros. Organizado em 4 etapas, uma por encontro, para você sair com um caminho concreto para aplicar.</p>
         </div>
         <div class="ee-pillars">
           <div class="ee-pillar"><span class="ee-pillar-ico">🔍</span><h4>Diagnóstico</h4><p>Onde sua marca está hoje — com dados, não palpite.</p></div>
@@ -16415,7 +16418,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       <div class="xpto-slide-inner">
         <div class="ee-head">
           <div class="xpto-eyebrow"><span></span>A jornada</div>
-          <h2 class="ee-title">4 etapas, 4 reuniões.</h2>
+          <h2 class="ee-title">4 etapas, 4 encontros.</h2>
           <p class="ee-lead">Cada encontro entrega um bloco completo do diagnóstico — e termina com clareza do próximo passo.</p>
         </div>
         <div class="ee-timeline">
@@ -16435,14 +16438,14 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="ee-ghost" aria-hidden="true">01</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
-          <span class="ee-etapa-chip">Etapa 1 · Reunião 1</span>
+          <span class="ee-etapa-chip">Etapa 1 · Encontro 1</span>
           <h2 class="ee-title">Diagnóstico &amp; Posicionamento</h2>
-          <p class="ee-lead">Quem é a sua marca, em que mercado ela joga e para quem ela vende.</p>
+          <p class="ee-lead">Quem é a sua marca, como ela se insere no mercado e como ela atrai clientes na prática.</p>
         </div>
         <ul class="ee-deliver">
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Posicionamento &amp; diferenciais</h4><p>Quem você é, quem você não é e o seu ICP — clareza antes de vender.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Análise de mercado</h4><p>Tamanho, crescimento e fatia digital do seu setor.</p></div></li>
-          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Públicos</h4><p>Principal, secundário e de oportunidade — onde está a demanda.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Públicos</h4><ul class="ee-deliver-sub"><li>Público principal</li><li>Público secundário</li><li>Público de oportunidade</li></ul></div></li>
         </ul>
       </div>
     </section>
@@ -16452,7 +16455,7 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="ee-ghost" aria-hidden="true">02</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
-          <span class="ee-etapa-chip">Etapa 2 · Reunião 2</span>
+          <span class="ee-etapa-chip">Etapa 2 · Encontro 2</span>
           <h2 class="ee-title">Aquisição: Tráfego &amp; Criativos</h2>
           <p class="ee-lead">Como atrair a demanda certa — no Google, no Meta e com os criativos que convertem.</p>
         </div>
@@ -16471,13 +16474,13 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="ee-ghost" aria-hidden="true">03</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
-          <span class="ee-etapa-chip">Etapa 3 · Reunião 3</span>
+          <span class="ee-etapa-chip">Etapa 3 · Encontro 3</span>
           <h2 class="ee-title">Conversão &amp; Retenção</h2>
           <p class="ee-lead">Transformar o clique em venda — e a primeira venda em recorrência.</p>
         </div>
         <ul class="ee-deliver">
-          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>E-commerce que converte</h4><p>Velocidade, navegação, checkout, home e provas sociais.</p></div></li>
-          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Página de produto híbrida</h4><p>Página de produto + landing page num só lugar.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Boas práticas de e-commerce que convertem</h4><p>O racional por trás das estruturas vencedoras do seu nicho — velocidade, navegação, checkout, home e provas sociais.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Boas práticas de página de produto</h4><p>Por que as páginas que mais vendem unem página de produto + landing page num só lugar.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Funil &amp; Connect Rate</h4><p>Onde você perde venda — e como tapar o furo.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>CRM &amp; LTV</h4><p>Automações que trazem o cliente de volta: carrinho, pós-venda e upsell.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>SEO com IA</h4><p>Conteúdo no piloto automático para autoridade de longo prazo.</p></div></li>
@@ -16490,12 +16493,12 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="ee-ghost" aria-hidden="true">04</span>
       <div class="xpto-slide-inner">
         <div class="ee-etapa-head">
-          <span class="ee-etapa-chip">Etapa 4 · Reunião 4</span>
+          <span class="ee-etapa-chip">Etapa 4 · Encontro 4</span>
           <h2 class="ee-title">Marca, Comunidade &amp; Plano de Ação</h2>
           <p class="ee-lead">Consolidar a presença da marca e sair com um plano claro do que fazer a seguir.</p>
         </div>
         <ul class="ee-deliver">
-          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Diagnóstico de Social Media</h4><p>Engajamento, bio e link da bio — o tripé autoridade, humanização e oferta.</p></div></li>
+          <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Diagnóstico de Social Media</h4><p>Engajamento, destaques e link da bio — o tripé autoridade, humanização e oferta.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Benchmarking</h4><p>O que os concorrentes estão fazendo — o que copiar e o que evitar.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Análise dos 4P's</h4><p>Produto, Preço, Praça e Promoção.</p></div></li>
           <li><div class="ee-deliver-ico">✓</div><div class="ee-deliver-body"><h4>Análise SWOT</h4><p>Forças, fraquezas, oportunidades e ameaças.</p></div></li>
@@ -18547,7 +18550,7 @@ const STAGES_LEAD = STAGES.map(stage => ({
       icon: '🧭',
       name: 'Estruturação Estratégica',
       objective: 'Estruturar marca, aquisição, conversão e presença num plano de ação completo',
-      what: 'Um mergulho estratégico no seu negócio digital — diagnóstico de marca, mercado, tráfego, criativos, e-commerce, CRM, SEO e social — entregue em 4 reuniões e fechado num roadmap priorizado.',
+      what: 'Um mergulho estratégico no seu negócio digital — diagnóstico de marca, mercado, tráfego, criativos, e-commerce, CRM, SEO e social — entregue ao longo de 4 encontros e fechado num roadmap priorizado.',
       why: 'Antes de pisar no acelerador, é preciso saber exatamente onde apertar. A Estruturação Estratégica alinha posicionamento, aquisição e conversão para o crescimento não depender de achismo.',
       mistake: 'Investir em tráfego e conteúdo sem diagnóstico nem plano — gastando em frentes desconexas que não se somam.',
       impact: 'Esforço pulverizado: campanhas, site e social puxando para lados diferentes, com CAC alto e crescimento imprevisível.',
@@ -26452,7 +26455,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }
 
     // Estruturação Estratégica — diagnóstico 360 pontual (R$ 9.997, à vista),
-    // entregue em 4 reuniões. Tier único (pontual), mesmo esquema do ID Visual.
+    // entregue ao longo de 4 encontros. Tier único (pontual), mesmo esquema do ID Visual.
     const estruturaCards = [];
     if (selected.has('estrutura-estrategica') && isTierEnabled('estrutura-estrategica', 'unico')) {
       estruturaCards.push(`
@@ -26460,7 +26463,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           ${pacoteIcon}
           <h3 class="pacote-name">ESTRUTURAÇÃO ESTRATÉGICA</h3>
           ${priceWithAnchor('estrutura-estrategica', 'unico')}
-          <span class="pacote-tag">Diagnóstico 360 · pagamento único · 4 reuniões</span>
+          <span class="pacote-tag">Diagnóstico&nbsp;360 · pagamento&nbsp;único · 4&nbsp;encontros</span>
           <ul class="pacote-features">
             <li>Diagnóstico &amp; Posicionamento <small>(marca, mercado e público)</small></li>
             <li>Aquisição: tráfego &amp; criativos <small>(Google, Meta e guia de criativos)</small></li>
@@ -26768,7 +26771,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <div class="pacotes-slide">
             <div class="pacotes-header">
               <h2 class="pacotes-title"><span class="pacotes-title-accent">Estruturação</span> Estratégica</h2>
-              <p class="pacotes-sub">Diagnóstico 360 do seu negócio digital — entregue em 4 reuniões</p>
+              <p class="pacotes-sub">Diagnóstico 360 do seu negócio digital — entregue ao longo de 4 encontros</p>
             </div>
             <div class="pacotes-grid">${estruturaCards.join('')}</div>
           </div>
