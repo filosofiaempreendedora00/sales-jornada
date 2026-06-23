@@ -24602,6 +24602,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'comunidade',  icon: '🤝', name: 'Gestão de Comunidade', color: '#9b6dff', sourceId: 'cm-inner' },
     { id: 'idvisual',    icon: '🎨', name: 'ID Visual',             color: '#f9a8d4', sourceId: null },
     { id: 'estrutura-estrategica', icon: '🧭', name: 'Estruturação Estratégica', color: '#4d8dff', sourceId: 'ee-inner' },
+    { id: 'estrutura-social', icon: '✨', name: 'Estruturação do Social', color: '#12d490', sourceId: null },
     { id: 'crm',         icon: '💬', name: 'E-mail Marketing',      color: '#9b6dff', sourceId: 'crm-inner' },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
@@ -24689,6 +24690,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     },
     'estrutura-estrategica': {
       unico: { label: 'Estruturação Estratégica', value: 'R$ 9.997,00' }
+    },
+    'estrutura-social': {
+      unico: { label: 'Estruturação do Social', value: 'R$ 3.997,00' }
     },
     crm: {
       'bc-starter':       { label: 'Broadcast · Starter',       value: 'R$ 1.997,00' },
@@ -24807,6 +24811,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     'consultoria-ugc': ['unico'],
     idvisual:    ['enterprise'],
     'estrutura-estrategica': ['unico'],
+    'estrutura-social': ['unico'],
     crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale', 'crm-starter', 'crm-scale', 'crm-enterprise'],
     ecommerce:   ['dnvb']
   };
@@ -26849,6 +26854,25 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
+    // Estruturação do Social — produto pontual (R$ 3.997). Escopo = entregáveis
+    // do card "Redes sociais bem estruturadas" (feed + destaques + bio), mas
+    // entregue de uma vez (não recorrente).
+    const estruturaSocialCards = [];
+    if (selected.has('estrutura-social') && isTierEnabled('estrutura-social', 'unico')) {
+      estruturaSocialCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ESTRUTURAÇÃO DO SOCIAL</h3>
+          ${priceWithAnchor('estrutura-social', 'unico')}
+          <span class="pacote-tag">Escopo de entrega · pagamento único</span>
+          <ul class="pacote-features">
+            <li>12 posts no feed <small>(4 imagens únicas · 4 carrosséis · 4 reels)</small></li>
+            <li>5 destaques <small>(capas do preview + 2 stories estáticos cada)</small></li>
+            <li>Estruturação da Bio <small>(otimizada para posicionamento e conversão)</small></li>
+          </ul>
+        </div>`);
+    }
+
     // CRM Estratégico — dois grupos de pacotes: Broadcast (e-mail marketing
     // gerenciado) + Implementação de CRM (plataforma unificada). Cada grupo
     // tem 3 tiers; o SCALE é o destaque (mais vendido) em ambos.
@@ -27041,7 +27065,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -27148,6 +27172,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <p class="pacotes-sub">Diagnóstico 360 do seu negócio digital — entregue ao longo de 4 encontros</p>
             </div>
             <div class="pacotes-grid">${estruturaCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3f-quater. Estruturação do Social — entrega pontual (R$ 3.997)
+      if (estruturaSocialCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Estruturação do <span class="pacotes-title-accent">Social</span></h2>
+              <p class="pacotes-sub">Feed, destaques e bio estruturados — entrega pontual</p>
+            </div>
+            <div class="pacotes-grid">${estruturaSocialCards.join('')}</div>
           </div>
         </section>`);
       }
