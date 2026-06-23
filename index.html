@@ -2753,6 +2753,80 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .config-pane { display: none; }
 .config-pane.is-active { display: block; }
 
+/* ── Configurações: sub-nav lateral (mesmo padrão da Apresentação) ── */
+#view-config.is-active { padding-left: 152px; }
+.config-subnav {
+  position: fixed; top: 0; bottom: 0; left: 224px; width: 152px; z-index: 25;
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 56px 8px 16px;
+  background: rgba(6, 7, 14, 0.72);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.sidebar.is-collapsed ~ .main-content .config-subnav { left: 56px; }
+.config-subtab {
+  appearance: none; font-family: inherit; cursor: pointer; text-align: left; width: 100%;
+  display: flex; flex-direction: row; align-items: center; gap: 9px;
+  padding: 9px 10px; border-radius: 7px;
+  background: transparent; border: 1px solid transparent;
+  color: var(--text-2); font-size: 11.5px; font-weight: 600; letter-spacing: 0.1px;
+  white-space: nowrap; overflow: hidden; flex-shrink: 0;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.config-subtab-icon { font-size: 15px; flex-shrink: 0; width: 20px; text-align: center; }
+.config-subtab-label { overflow: hidden; }
+.config-subtab:hover { background: rgba(255,255,255,0.04); color: var(--text); }
+.config-subtab.is-active {
+  background: rgba(155,109,255,0.07); border-color: rgba(155,109,255,0.14); color: var(--c1);
+}
+
+/* ── Museu (itens descontinuados) ── */
+.museu-intro { margin-bottom: 20px; }
+.museu-title { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 5px; color: #fff; }
+.museu-sub { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.55); margin: 0; max-width: 640px; }
+.museu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 15px; }
+.museu-card {
+  position: relative; overflow: hidden; cursor: pointer; font-family: inherit; text-align: left;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 7px;
+  padding: 22px 20px; border-radius: 16px;
+  background: linear-gradient(135deg, rgba(155,109,255,0.13) 0%, rgba(77,141,255,0.09) 45%, rgba(13,207,232,0.07) 100%);
+  border: 1px solid rgba(155,109,255,0.40);
+  box-shadow: 0 0 0 1px rgba(77,141,255,0.14), 0 4px 20px rgba(155,109,255,0.10), inset 0 1px 0 rgba(255,255,255,0.04);
+  transition: transform 0.18s, border-color 0.18s, box-shadow 0.18s;
+}
+.museu-card::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 45%; height: 100%;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.07) 50%, transparent 100%);
+  animation: shimmerSlide 3.8s ease-in-out infinite; pointer-events: none;
+}
+.museu-card:hover {
+  transform: translateY(-2px); border-color: rgba(155,109,255,0.62);
+  box-shadow: 0 0 0 1px rgba(77,141,255,0.30), 0 8px 28px rgba(155,109,255,0.18), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.museu-card-badge {
+  font-size: 9px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+  color: #c49bff; background: rgba(155,109,255,0.17); border: 1px solid rgba(155,109,255,0.35);
+  border-radius: 99px; padding: 3px 10px;
+}
+.museu-card-icon { font-size: 30px; line-height: 1; margin-top: 4px; }
+.museu-card-name { font-size: 16.5px; font-weight: 800; color: #fff; line-height: 1.2; }
+.museu-card-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.6px; text-transform: uppercase; color: rgba(255,255,255,0.5); }
+.museu-card-arrow { position: absolute; top: 18px; right: 18px; font-size: 18px; color: rgba(255,255,255,0.5); transition: transform 0.18s, color 0.18s; }
+.museu-card:hover .museu-card-arrow { transform: translateX(3px); color: #fff; }
+
+@media (max-width: 860px) {
+  /* Sidebar vira barra horizontal no topo → o subnav de config também
+     deixa de ser fixo lateral e passa a ser uma faixa horizontal. */
+  #view-config.is-active { padding-left: 0; }
+  .config-subnav {
+    position: static; flex-direction: row; width: auto; left: auto;
+    padding: 10px 12px; border-right: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: rgba(6,7,14,0.5);
+  }
+  .config-subtab { width: auto; flex: 0 0 auto; }
+}
+
 /* ── Melhorias: toolbar + filtros ────────────────── */
 .melh-toolbar {
   display: flex;
@@ -14975,6 +15049,19 @@ a.xpto-pricing-btn { text-decoration: none; }
 <!--  VIEW: CONFIGURAÇÕES                           -->
 <!-- ══════════════════════════════════════════════ -->
 <div class="view" id="view-config">
+
+  <!-- Sub-nav lateral (Melhorias / Museu) — mesmo estilo do subnav da Apresentação -->
+  <div class="config-subnav" id="config-subnav">
+    <button type="button" class="config-subtab is-active" data-config-pane="melhorias">
+      <span class="config-subtab-icon">📋</span>
+      <span class="config-subtab-label">Melhorias</span>
+    </button>
+    <button type="button" class="config-subtab" data-config-pane="museu">
+      <span class="config-subtab-icon">🏛️</span>
+      <span class="config-subtab-label">Museu</span>
+    </button>
+  </div>
+
   <div class="config-wrap">
     <header class="config-header">
       <h1 class="config-title">
@@ -14983,14 +15070,6 @@ a.xpto-pricing-btn { text-decoration: none; }
       </h1>
       <p class="config-subtitle">Espaço pessoal pra organizar a evolução do Octopus.</p>
     </header>
-
-    <nav class="config-tabs" role="tablist">
-      <button type="button" class="config-tab is-active" data-config-pane="melhorias" role="tab">
-        <span class="config-tab-icon">📋</span>
-        <span>Melhorias</span>
-      </button>
-      <!-- futuras abas (Preferências, Dados, etc) entram aqui -->
-    </nav>
 
     <!-- Painel: Melhorias -->
     <section class="config-pane is-active" data-config-pane-content="melhorias">
@@ -15058,6 +15137,30 @@ a.xpto-pricing-btn { text-decoration: none; }
       <div class="melh-empty" id="melh-empty" hidden>
         <span class="melh-empty-icon">📋</span>
         <p class="melh-empty-text">Nenhuma melhoria ainda. Adicione a primeira clicando em "+ Nova melhoria".</p>
+      </div>
+    </section>
+
+    <!-- Painel: Museu (itens descontinuados) -->
+    <section class="config-pane" data-config-pane-content="museu">
+      <div class="museu-intro">
+        <h2 class="museu-title">🏛️ Museu</h2>
+        <p class="museu-sub">Itens descontinuados que ficam guardados na aplicação — nada é apagado. Clique num card para abrir a apresentação como ela existe hoje.</p>
+      </div>
+      <div class="museu-grid">
+        <button type="button" class="museu-card" onclick="if(window.openXpto) window.openXpto()">
+          <span class="museu-card-badge">Descontinuado</span>
+          <span class="museu-card-icon">🧠</span>
+          <span class="museu-card-name">Protocolo Do Zero ao Lucro</span>
+          <span class="museu-card-tag">E-commerce</span>
+          <span class="museu-card-arrow">→</span>
+        </button>
+        <button type="button" class="museu-card" onclick="if(window.openXptoLead) window.openXptoLead()">
+          <span class="museu-card-badge">Descontinuado</span>
+          <span class="museu-card-icon">🧠</span>
+          <span class="museu-card-name">Protocolo Lead ao Lucro</span>
+          <span class="museu-card-tag">Lead</span>
+          <span class="museu-card-arrow">→</span>
+        </button>
       </div>
     </section>
   </div>
@@ -18874,6 +18977,9 @@ function renderFlow() {
       else if (warn) el.classList.add('is-warn');
       if (st.active === node.id) el.classList.add('is-active');
       if (node.id === flagshipId) el.classList.add('is-flagship');
+      // Estruturação Estratégica ganha o mesmo brilho do flagship (sem o badge
+      // Carro-chefe, que segue exclusivo do node de tráfego).
+      if (node.id === 'estrutura-estrategica' || node.id === 'lead-estrutura-estrategica') el.classList.add('is-flagship');
 
       el.innerHTML = `
         <div class="node-row">
@@ -23521,6 +23627,23 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   });
 
   window.openEstruturacaoLeadPres = openEstruturacaoLeadPres;
+})();
+
+// ─────────────────────────────────────────────────
+//  CONFIGURAÇÕES — menu lateral (Melhorias / Museu)
+//  Troca o pane ativo conforme o item clicado.
+// ─────────────────────────────────────────────────
+(function configSideMenu() {
+  const items = document.querySelectorAll('#view-config .config-subtab');
+  const panes = document.querySelectorAll('#view-config .config-pane');
+  if (!items.length) return;
+  items.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = item.dataset.configPane;
+      items.forEach(x => x.classList.toggle('is-active', x === item));
+      panes.forEach(p => p.classList.toggle('is-active', p.dataset.configPaneContent === target));
+    });
+  });
 })();
 
 // ─────────────────────────────────────────────────
