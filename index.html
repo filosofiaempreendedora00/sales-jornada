@@ -5720,7 +5720,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: var(--text-soft);
   line-height: 1.4;
 }
-.prop-solutions { display: flex; flex-direction: column; gap: 8px; }
+.prop-solutions { display: flex; flex-direction: column; gap: 16px; }
 .prop-invest { display: flex; flex-direction: column; gap: 10px; }
 .prop-invest-empty {
   font-size: 11.5px;
@@ -6107,6 +6107,23 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   transition: color 0.18s;
 }
 .prop-invest-reset:hover { color: var(--text); text-decoration: underline; }
+/* Soluções agrupadas sob as fases da metodologia (Concepção → Eficiência) */
+.prop-sol-group { display: flex; flex-direction: column; gap: 7px; }
+.prop-sol-group-head { display: flex; align-items: center; gap: 7px; padding: 0 2px; }
+.prop-sol-group-num {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.5px; line-height: 1;
+  color: #fff; background: var(--phase-color);
+  border-radius: 5px; padding: 3px 5px;
+}
+.prop-sol-group-name {
+  font-size: 10.5px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--phase-color);
+}
+.prop-sol-group-items {
+  display: flex; flex-direction: column; gap: 7px;
+  margin: 1px 0 0 6px; padding-left: 11px;
+  border-left: 2px solid color-mix(in srgb, var(--phase-color) 40%, transparent);
+}
 .prop-sol-chip {
   display: flex;
   align-items: center;
@@ -6214,6 +6231,27 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   white-space: nowrap;
   flex-shrink: 0;
 }
+/* Menu de download (Baixar → HTML / PDF) */
+.prop-download-wrap { position: relative; }
+.prop-download-wrap--top { display: inline-flex; flex-shrink: 0; }
+.prop-download-caret { font-size: 0.8em; opacity: 0.85; margin-left: 1px; }
+.prop-download-menu {
+  position: absolute; z-index: 60; bottom: calc(100% + 6px); right: 0;
+  min-width: 212px; padding: 6px;
+  background: #15131f; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px; box-shadow: 0 18px 44px rgba(0,0,0,0.55);
+}
+.prop-download-wrap--top .prop-download-menu { bottom: auto; top: calc(100% + 6px); }
+.prop-download-menu[hidden] { display: none; }
+.prop-download-opt {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  padding: 10px 11px; border-radius: 8px;
+  background: transparent; border: 0; cursor: pointer;
+  color: var(--text); font: 600 13px/1.2 inherit; text-align: left;
+}
+.prop-download-opt:hover { background: rgba(124,92,255,0.16); }
+.prop-download-opt > span { font-size: 16px; flex-shrink: 0; }
+.prop-download-opt small { color: var(--text-soft); font-weight: 500; margin-left: 2px; }
 .prop-preview-frame {
   flex: 1;
   width: 100%;
@@ -14813,7 +14851,13 @@ a.xpto-pricing-btn { text-decoration: none; }
       </div>
       <div class="prop-actions">
         <button class="prop-btn prop-btn--ghost" id="prop-refresh" type="button">↻ Atualizar preview</button>
-        <button class="prop-btn prop-btn--primary" id="prop-download" type="button">⬇ Baixar HTML</button>
+        <div class="prop-download-wrap">
+          <button class="prop-btn prop-btn--primary" id="prop-download" type="button" aria-haspopup="true" aria-expanded="false">⬇ Baixar <span class="prop-download-caret">▾</span></button>
+          <div class="prop-download-menu" id="prop-download-menu" role="menu" hidden>
+            <button type="button" class="prop-download-opt" data-download="html" role="menuitem"><span>📄</span> Documento HTML</button>
+            <button type="button" class="prop-download-opt" data-download="pdf" role="menuitem"><span>🖨️</span> PDF <small>(imprimir → salvar)</small></button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="prop-preview-wrap">
@@ -14830,7 +14874,13 @@ a.xpto-pricing-btn { text-decoration: none; }
           </button>
         </div>
         <span class="prop-preview-meta" id="prop-preview-meta">— selecione ao menos uma solução</span>
-        <button class="prop-btn prop-btn--primary prop-btn--compact" id="prop-download-top" type="button">⬇ Baixar HTML</button>
+        <div class="prop-download-wrap prop-download-wrap--top">
+          <button class="prop-btn prop-btn--primary prop-btn--compact" id="prop-download-top" type="button" aria-haspopup="true" aria-expanded="false">⬇ Baixar <span class="prop-download-caret">▾</span></button>
+          <div class="prop-download-menu" id="prop-download-menu-top" role="menu" hidden>
+            <button type="button" class="prop-download-opt" data-download="html" role="menuitem"><span>📄</span> Documento HTML</button>
+            <button type="button" class="prop-download-opt" data-download="pdf" role="menuitem"><span>🖨️</span> PDF <small>(imprimir → salvar)</small></button>
+          </div>
+        </div>
       </div>
       <div class="prop-pane is-active" data-prop-pane-content="preview">
         <iframe class="prop-preview-frame" id="prop-preview-frame" title="Preview da proposta"></iframe>
@@ -24622,6 +24672,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
+  // Agrupamento das soluções OFICIAIS da proposta padrão sob as 5 fases da
+  // metodologia Turbo (mesmas cores/nums das colunas da jornada). É só o
+  // agrupamento visual do seletor — não tem relação com os nodes da jornada.
+  // Fine Tuning (05) fica de fora por enquanto: nenhum produto da proposta
+  // se encaixa nela hoje (CRO/otimizações não são vendidos como pacote aqui).
+  const PROPOSAL_PHASES = [
+    { num: '01', label: 'Concepção',   color: '#9b6dff', sols: ['estrutura-estrategica'] },
+    { num: '02', label: 'Aquecimento', color: '#4d8dff', sols: ['idvisual', 'estrutura-social', 'ecommerce'] },
+    { num: '03', label: 'Aceleração',  color: '#0dcfe8', sols: ['performance', 'creators', 'consultoria-ugc', 'comunidade'] },
+    { num: '04', label: 'Eficiência',  color: '#12d490', sols: ['social', 'crm', 'crm-vendas'] },
+  ];
+
   // Closers — aparecem no slide de fechamento (nome + telefone).
   // ID === valor do <option> no #prop-closer
   const CLOSERS = {
@@ -25203,7 +25265,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
   function renderSolutions() {
     if (!$solutions) return;
-    $solutions.innerHTML = SOLUTIONS.map(s => {
+    const chipHtml = (s) => {
       const active   = selected.has(s.id);
       const disabled = s.disabled;
       const badge    = disabled ? `<span class="prop-sol-badge">${s.disabledReason}</span>` : '';
@@ -25213,6 +25275,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <span class="prop-sol-icon">${s.icon}</span>
         <span class="prop-sol-name">${s.name}</span>
         ${badge}
+      </div>`;
+    };
+    const byId = id => SOLUTIONS.find(s => s.id === id);
+    // Agrupa as soluções sob as fases da metodologia (só fases com produto).
+    $solutions.innerHTML = PROPOSAL_PHASES.map(ph => {
+      const chips = ph.sols.map(byId).filter(Boolean);
+      if (!chips.length) return '';
+      return `<div class="prop-sol-group" style="--phase-color:${ph.color}">
+        <div class="prop-sol-group-head">
+          <span class="prop-sol-group-num">${ph.num}</span>
+          <span class="prop-sol-group-name">${ph.label}</span>
+        </div>
+        <div class="prop-sol-group-items">${chips.map(chipHtml).join('')}</div>
       </div>`;
     }).join('');
     $solutions.querySelectorAll('.prop-sol-chip').forEach(chip => {
@@ -29338,6 +29413,47 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           margin: 0 auto !important;
         }
       }
+
+      /* ════════════════════════════════════════════════════════
+         PRINT / PDF — o "Baixar → PDF" usa o print-to-PDF do
+         navegador. Imprime o fundo escuro + gradientes
+         (print-color-adjust), tira a altura de tela dos slides e
+         pagina como um deck: cada slide/seção numa página, sem
+         cortar cards no meio. Funciona desktop e mobile.
+         ════════════════════════════════════════════════════════ */
+      @media print {
+        @page { size: A4 portrait; margin: 0; }
+        html, body { background: #07070f !important; margin: 0 !important; }
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+        /* cada seção e cada slide começam numa página nova (estilo deck) */
+        .proposal-section { break-before: page; page-break-before: always; }
+        .proposal-section:first-child { break-before: avoid; page-break-before: avoid; }
+        .proposal-section .xpto-slide,
+        .proposal-section .turbo-slide { break-before: page; page-break-before: always; }
+        .proposal-section .xpto-slide:first-child,
+        .proposal-section .turbo-slide:first-child { break-before: avoid; page-break-before: avoid; }
+
+        /* sem altura de tela: cada slide se ajusta ao conteúdo */
+        .proposal-section .xpto-slide,
+        .proposal-section .turbo-slide,
+        .pacotes-slide, .invest-slide,
+        #apres-sub-turbo, .turbo-slides {
+          min-height: 0 !important; height: auto !important; overflow: visible !important;
+        }
+
+        /* não corta cards/itens entre páginas */
+        .pacote-card, .pp-gameplan-card, .ee-deliver li, .ee-pillar, .ee-tl-step,
+        .redes-scope-item, .sm-setup-item, .pacotes-grid,
+        .pp-compare-card, .pp-result-card, .dnvb-card {
+          break-inside: avoid; page-break-inside: avoid;
+        }
+
+        /* esconde dicas/controles que não fazem sentido no papel */
+        .xpto-scroll-hint, .pp-scroll-hint, .turbo-scroll-hint,
+        .ee-cta, .pp-gameplan-example, .sm-setup-examples,
+        #deck-embed-lb { display: none !important; }
+      }
     `;
 
     const autoResizeScript = `
@@ -29923,6 +30039,61 @@ ${deckEmbedScript}
     }
   }
 
+  // Baixar PDF = print-to-PDF do navegador. Monta a proposta (mesmo HTML do
+  // download, com @media print embutido), joga num iframe oculto e dispara o
+  // print(); o usuário escolhe "Salvar como PDF". Fidelidade máxima do visual
+  // escuro/gradientes (não é screenshot — é o motor do navegador).
+  async function downloadPDF() {
+    if (!clientName) { flagClientMissing(); return; }
+    if (anyBelowMin()) {
+      if ($meta) $meta.textContent = '⚠ Desconto inválido — ajuste os preços abaixo do mínimo antes de gerar';
+      updateMeta();
+      return;
+    }
+    setBusy(true);
+    const setMeta = txt => { if ($meta) $meta.textContent = txt; };
+    try {
+      setMeta('Preparando PDF...');
+      const html = await buildProposalHTML({
+        clientName,
+        inline: true,
+        onProgress: (d, t) => setMeta(`Embutindo imagens ${d}/${t}...`)
+      });
+      // Remove qualquer iframe de print anterior.
+      const old = document.getElementById('prop-print-frame');
+      if (old) old.remove();
+      const iframe = document.createElement('iframe');
+      iframe.id = 'prop-print-frame';
+      iframe.setAttribute('aria-hidden', 'true');
+      iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      document.body.appendChild(iframe);
+      iframe.addEventListener('load', function () {
+        // Espera imagens/layout assentarem antes de chamar print().
+        setTimeout(function () {
+          try {
+            const win = iframe.contentWindow;
+            // Limpa o iframe quando o diálogo de impressão fecha.
+            win.addEventListener('afterprint', function () { setTimeout(() => { try { iframe.remove(); } catch (e) {} }, 200); });
+            win.focus();
+            win.print();
+            setMeta('Impressão aberta — escolha “Salvar como PDF”.');
+          } catch (e) {
+            console.error('[proposta] print falhou:', e);
+            setMeta('⚠ Não consegui abrir a impressão — veja o console.');
+          }
+          // Fallback: remove o iframe depois de um tempo, caso afterprint não dispare.
+          setTimeout(function () { try { iframe.remove(); } catch (e) {} }, 120000);
+        }, 800);
+      }, { once: true });
+      iframe.srcdoc = html;
+    } catch (e) {
+      console.error('[proposta] Erro no PDF:', e);
+      setMeta(e && e.message ? '⚠ ' + e.message : 'Erro ao gerar PDF — veja o console.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function setBusy(busy) {
     // Download só fica disabled enquanto está gerando. selected.size === 0 agora
     // é caso válido (gera só apresentação Turbo institucional).
@@ -29934,8 +30105,32 @@ ${deckEmbedScript}
     }
   }
 
-  $download?.addEventListener('click', downloadHTML);
-  $downloadTop?.addEventListener('click', downloadHTML);
+  // "Baixar" abre um menu com HTML / PDF (em vez de baixar direto).
+  function closeAllDownloadMenus() {
+    document.querySelectorAll('.prop-download-menu').forEach(m => { m.hidden = true; });
+    [$download, $downloadTop].forEach(b => b && b.setAttribute('aria-expanded', 'false'));
+  }
+  function wireDownloadMenu(btn, menu) {
+    if (!btn || !menu) return;
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const willOpen = menu.hidden;
+      closeAllDownloadMenus();
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    menu.querySelectorAll('[data-download]').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeAllDownloadMenus();
+        if (opt.dataset.download === 'pdf') downloadPDF();
+        else downloadHTML();
+      });
+    });
+  }
+  wireDownloadMenu($download, document.getElementById('prop-download-menu'));
+  wireDownloadMenu($downloadTop, document.getElementById('prop-download-menu-top'));
+  document.addEventListener('click', closeAllDownloadMenus);
   $refresh?.addEventListener('click', renderPreview);
 
   // Lazy-render preview the first time the tab is opened
