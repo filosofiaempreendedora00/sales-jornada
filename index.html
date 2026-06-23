@@ -24604,6 +24604,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'estrutura-estrategica', icon: '🧭', name: 'Estruturação Estratégica', color: '#4d8dff', sourceId: 'ee-inner' },
     { id: 'estrutura-social', icon: '✨', name: 'Estruturação do Social', color: '#12d490', sourceId: null },
     { id: 'crm',         icon: '💬', name: 'E-mail Marketing',      color: '#9b6dff', sourceId: 'crm-inner' },
+    { id: 'crm-vendas',  icon: '📊', name: 'CRM de Vendas',         color: '#0dcfe8', sourceId: null },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
@@ -24704,10 +24705,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       'rg-scale':       { label: 'Régua · Scale',       value: 'R$ 19.997,00' },
       'rg-enterprise':  { label: 'Régua · Enterprise',  value: 'R$ 28.900,00' },
       'sus-basic':      { label: 'Sustentação · Basic', value: 'R$ 2.500,00' },
-      'sus-scale':      { label: 'Sustentação · Scale', value: 'R$ 3.997,00' },
-      'crm-starter':    { label: 'Plataforma · Starter',    value: 'R$ 197,00' },
-      'crm-scale':      { label: 'Plataforma · Scale',      value: 'R$ 297,00' },
-      'crm-enterprise': { label: 'Plataforma · Enterprise', value: 'R$ 597,00' }
+      'sus-scale':      { label: 'Sustentação · Scale', value: 'R$ 3.997,00' }
+    },
+    'crm-vendas': {
+      starter:    { label: 'Starter',    value: 'R$ 197,00' },
+      scale:      { label: 'Scale',      value: 'R$ 297,00' },
+      enterprise: { label: 'Enterprise', value: 'R$ 597,00' }
     },
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.997,00' },
@@ -24812,7 +24815,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     idvisual:    ['enterprise'],
     'estrutura-estrategica': ['unico'],
     'estrutura-social': ['unico'],
-    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale', 'crm-starter', 'crm-scale', 'crm-enterprise'],
+    crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale'],
+    'crm-vendas': ['starter', 'scale', 'enterprise'],
     ecommerce:   ['dnvb']
   };
 
@@ -24955,7 +24959,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'broadcast',   label: 'Broadcast',            tiers: ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado'] },
     { id: 'regua',       label: 'Régua de Comunicação', tiers: ['rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise'] },
     { id: 'sustentacao', label: 'Sustentação CRM',      tiers: ['sus-basic', 'sus-scale'] },
-    { id: 'plataforma',  label: 'Plataforma CRM',       tiers: ['crm-starter', 'crm-scale', 'crm-enterprise'] },
+    // 'Plataforma CRM' saiu daqui — virou o produto à parte 'CRM de Vendas'.
   ];
   // Default: só Broadcast ligado (clean). Os outros aparecem ao clicar.
   const enabledCrmModules = new Set(['broadcast']);
@@ -24966,8 +24970,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Hoje: 'fee' do Performance (Fee de implantação R$ 2.997,00).
   // Default Fee marcado, sem persistência entre sessões.
   const DEFAULT_ENABLED_EXTRAS = {
-    performance: ['fee'],
-    crm:         ['fee']
+    performance:  ['fee'],
+    'crm-vendas': ['fee']
   };
   const enabledExtras = {};
   for (const sol in DEFAULT_ENABLED_EXTRAS) {
@@ -25010,7 +25014,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // ── Fee de implantação: preço EDITÁVEL + ancoragem própria ──
   // Antes era fixo (R$ 2.997 / R$ 10.000). Agora o closer pode reduzir,
   // zerar/dar de cortesia, e mostrar "de X por Y" (ancoragem).
-  const FEE_DEFAULTS = { performance: 'R$ 2.997,00', crm: 'R$ 10.000,00' };
+  const FEE_DEFAULTS = { performance: 'R$ 2.997,00', 'crm-vendas': 'R$ 10.000,00' };
   const feeData = {};
   for (const sol in FEE_DEFAULTS) feeData[sol] = { value: FEE_DEFAULTS[sol], anchor: '' };
   function isFeeDefault(sol) { return !!feeData[sol] && feeData[sol].value === FEE_DEFAULTS[sol]; }
@@ -26879,7 +26883,6 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const crmBroadcastCards = [];
     const crmReguaCards = [];
     const crmSustentacaoCards = [];
-    const crmPlatformCards = [];
     if (hasCrm) {
       // Um tier do CRM só entra se: (a) o tier está habilitado E (b) o
       // módulo dele (Broadcast/Régua/Plataforma) está ligado. Assim a
@@ -27017,11 +27020,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <ul class="pacote-features">${sustentacaoDeliverables}</ul>
         </div>`);
 
-      if (crmTierOn('crm-starter')) crmPlatformCards.push(`
+    }
+
+    // CRM de Vendas — plataforma SaaS. Era o módulo 'Plataforma CRM' dentro do
+    // E-mail Marketing; agora é produto à parte, com o mesmo escopo (3 tiers +
+    // fee de implantação). Tiers Starter/Scale/Enterprise (checkbox padrão).
+    const hasCrmVendas = selected.has('crm-vendas');
+    const crmVendasCards = [];
+    if (hasCrmVendas) {
+      if (isTierEnabled('crm-vendas', 'starter')) crmVendasCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
-          ${priceWithAnchor('crm', 'crm-starter')}
+          ${priceWithAnchor('crm-vendas', 'starter')}
           <span class="pacote-tag">1 usuário · até 500 contatos</span>
           <ul class="pacote-features">
             <li>CRM</li>
@@ -27032,12 +27043,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Relatórios</li>
           </ul>
         </div>`);
-      if (crmTierOn('crm-scale')) crmPlatformCards.push(`
+      if (isTierEnabled('crm-vendas', 'scale')) crmVendasCards.push(`
         <div class="pacote-card pacote-card--featured">
           <span class="pacote-badge">mais vendido</span>
           ${pacoteIcon}
           <h3 class="pacote-name">SCALE</h3>
-          ${priceWithAnchor('crm', 'crm-scale')}
+          ${priceWithAnchor('crm-vendas', 'scale')}
           <span class="pacote-tag">5 usuários · até 25.000 contatos</span>
           <ul class="pacote-features">
             <li><strong>Tudo do Starter</strong>, mais:</li>
@@ -27046,11 +27057,11 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Templates de email</li>
           </ul>
         </div>`);
-      if (crmTierOn('crm-enterprise')) crmPlatformCards.push(`
+      if (isTierEnabled('crm-vendas', 'enterprise')) crmVendasCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">ENTERPRISE</h3>
-          ${priceWithAnchor('crm', 'crm-enterprise')}
+          ${priceWithAnchor('crm-vendas', 'enterprise')}
           <span class="pacote-tag">50 usuários · até 100.000 contatos</span>
           <ul class="pacote-features">
             <li><strong>Tudo do Scale</strong>, mais:</li>
@@ -27065,7 +27076,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmPlatformCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmVendasCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -27225,15 +27236,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           </div>
         </section>`);
       }
-      if (crmPlatformCards.length) {
-        const crmFeeHtml = isExtraEnabled('crm', 'fee') ? renderFeeFooter('crm') : '';
+      if (crmVendasCards.length) {
+        const crmFeeHtml = isExtraEnabled('crm-vendas', 'fee') ? renderFeeFooter('crm-vendas') : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
           <div class="pacotes-slide">
             <div class="pacotes-header">
-              <h2 class="pacotes-title">Implementação de <span class="pacotes-title-accent">CRM</span></h2>
+              <h2 class="pacotes-title">CRM de <span class="pacotes-title-accent">Vendas</span></h2>
               <p class="pacotes-sub">Plataforma unificada de marketing e vendas</p>
             </div>
-            <div class="pacotes-grid">${crmPlatformCards.join('')}</div>${crmFeeHtml}
+            <div class="pacotes-grid">${crmVendasCards.join('')}</div>${crmFeeHtml}
           </div>
         </section>`);
       }
