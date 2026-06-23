@@ -9274,7 +9274,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .pp-criativos-ad-line.short { width: 55%; }
 
 /* ── PP GAMEPLAN SLIDE ──────────────────────────── */
-.pp-slide-gameplan { overflow: hidden; }
+.pp-slide-gameplan { overflow: hidden; padding-top: 44px; padding-bottom: 48px; }
 .pp-slide-gameplan::before {
   content: '';
   position: absolute; inset: 0;
@@ -9282,22 +9282,34 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   pointer-events: none; z-index: 0;
 }
 .pp-slide-gameplan .xpto-slide-inner { max-width: 980px; width: 100%; margin: 0 auto; position: relative; z-index: 1; }
-.pp-gameplan-header { text-align: center; margin-bottom: 30px; }
+.pp-gameplan-header { text-align: center; margin-bottom: 16px; }
 .pp-gameplan-eyebrow {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(77,141,255,0.1); border: 1px solid rgba(77,141,255,0.22);
-  border-radius: 99px; padding: 4px 14px; margin-bottom: 14px;
+  border-radius: 99px; padding: 4px 14px; margin-bottom: 9px;
   font-size: 9.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
   color: rgba(130,180,255,0.85);
 }
 .pp-gameplan-eyebrow span { width: 5px; height: 5px; border-radius: 50%; background: #4d8dff; box-shadow: 0 0 6px #4d8dff; }
 .pp-gameplan-title {
-  font-size: clamp(28px, 3.8vw, 44px); font-weight: 900;
+  font-size: clamp(22px, 3vw, 32px); font-weight: 900;
   letter-spacing: -1px; color: #fff;
 }
-.pp-gameplan-rows { display: flex; flex-direction: column; gap: 12px; }
+.pp-gameplan-rows { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+/* "Próximos Passos" fecha como faixa COMPACTA de largura total (10º item) —
+   estética enxuta de propósito (número + título + detalhe em 1 linha) pra
+   tudo caber num único slide. */
+.pp-gameplan-card.pp-gameplan-card--full {
+  grid-column: 1 / -1;
+  flex-direction: row; justify-content: center; align-items: center;
+  gap: 12px; text-align: left; min-height: 0; padding: 12px 22px;
+}
+.pp-gameplan-card--full .pp-gameplan-card-num { font-size: 30px; flex: 0 0 auto; margin-bottom: 0; }
+.pp-gameplan-card--full .pp-gameplan-card-title { font-size: 12.5px; }
+.pp-gameplan-card--full .pp-gameplan-card-sub { margin-top: 0; font-size: 11px; }
+.pp-gameplan-card--full .pp-gameplan-card-sub::before { content: '— '; }
 /* Link de exemplo de Gameplan (Figma) */
-.pp-gameplan-example { display: flex; justify-content: center; margin-top: 22px; }
+.pp-gameplan-example { display: flex; justify-content: center; margin-top: 14px; }
 .pp-gameplan-example-link {
   display: inline-flex; align-items: center; gap: 10px;
   font-size: 14px; font-weight: 700; color: #cfe0ff; text-decoration: none;
@@ -9324,10 +9336,10 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
     linear-gradient(152deg, rgba(77,141,255,0.20) 0%, rgba(13,207,232,0.07) 44%, rgba(255,255,255,0.012) 100%),
     rgba(255,255,255,0.026);
   border: 1px solid rgba(77,141,255,0.22);
-  border-radius: 18px;
-  padding: 24px 22px 22px;
-  min-height: 178px;
-  display: flex; flex-direction: column; justify-content: flex-end;
+  border-radius: 16px;
+  padding: 14px 16px 15px;
+  min-height: 118px;
+  display: flex; flex-direction: column; justify-content: flex-start;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.08),
     inset 0 0 30px rgba(77,141,255,0.05),
@@ -9361,25 +9373,23 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 }
 .pp-gameplan-card:hover::after { opacity: 1; }
 .pp-gameplan-card-num {
-  position: absolute;
-  top: 12px; left: 18px;
-  font-size: 94px; font-weight: 900; font-style: italic;
-  line-height: 1; pointer-events: none; user-select: none;
-  letter-spacing: -2px;
-  background: linear-gradient(158deg, rgba(140,185,255,0.32) 0%, rgba(13,207,232,0.14) 52%, rgba(77,141,255,0.02) 100%);
+  font-size: 42px; font-weight: 900; font-style: italic;
+  line-height: 0.95; pointer-events: none; user-select: none;
+  letter-spacing: -2px; margin-bottom: 3px;
+  background: linear-gradient(158deg, rgba(150,195,255,0.55) 0%, rgba(13,207,232,0.30) 52%, rgba(77,141,255,0.12) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
 }
 .pp-gameplan-card-title {
-  font-size: 14px; font-weight: 800;
+  font-size: 12.5px; font-weight: 800;
   color: rgba(255,255,255,0.95);
-  text-transform: uppercase; letter-spacing: 0.7px;
-  line-height: 1.3; position: relative; z-index: 2;
+  text-transform: uppercase; letter-spacing: 0.6px;
+  line-height: 1.25; position: relative; z-index: 2;
 }
 .pp-gameplan-card-sub {
-  font-size: 12px; font-weight: 500;
+  font-size: 11px; font-weight: 500;
   text-transform: none; letter-spacing: 0;
   color: rgba(255,255,255,0.62);
-  line-height: 1.45; margin-top: 7px;
+  line-height: 1.35; margin-top: 4px;
   position: relative; z-index: 2;
 }
 
@@ -13910,8 +13920,18 @@ a.xpto-pricing-btn { text-decoration: none; }
   /* Slide 5 — Gameplan: 3+2 mantém mas reduz.
      Número menor pra não encostar no título (que pode quebrar em 3 linhas
      quando o card fica estreito). */
+  .pp-gameplan-rows { grid-template-columns: 1fr 1fr; }
   .pp-gameplan-card { min-height: 130px; padding: 18px 16px 16px; }
-  .pp-gameplan-card-num { font-size: 50px; top: 10px; }
+  /* Mobile: 10 cards = grade par (2 colunas). O "Próximos Passos" deixa de
+     ser faixa de largura total e vira um card normal ao lado do 9, alinhado. */
+  .pp-gameplan-card.pp-gameplan-card--full {
+    grid-column: auto;
+    flex-direction: column; justify-content: flex-start; align-items: stretch;
+    text-align: left; min-height: 130px; padding: 18px 16px 16px; gap: 0;
+  }
+  .pp-gameplan-card--full .pp-gameplan-card-num { font-size: 50px; margin-bottom: 3px; }
+  .pp-gameplan-card--full .pp-gameplan-card-sub::before { content: ''; }
+  .pp-gameplan-card-num { font-size: 50px; }
   .pp-gameplan-title { font-size: clamp(22px, 6vw, 34px); }
   .pp-gameplan-header { margin-bottom: 20px; }
 
@@ -13937,8 +13957,6 @@ a.xpto-pricing-btn { text-decoration: none; }
 
 @media (max-width: 440px) {
   .pp-strategy-grid { grid-template-columns: 1fr; }
-  .pp-gameplan-row--3 { grid-template-columns: 1fr 1fr; }
-  .pp-gameplan-row--2 .pp-gameplan-card { flex: 0 0 calc(50% - 6px); }
   .pp-criativos-grid { grid-template-columns: repeat(2, 1fr); height: auto; }
 }
 
@@ -15514,39 +15532,55 @@ a.xpto-pricing-btn { text-decoration: none; }
           <h2 class="pp-gameplan-title">Gameplan</h2>
         </div>
         <div class="pp-gameplan-rows">
-          <div class="pp-gameplan-row pp-gameplan-row--3">
-            <div class="pp-gameplan-card">
-              <span class="pp-gameplan-card-num">1</span>
-              <p class="pp-gameplan-card-title">Destrinchamento da Persona</p>
-              <p class="pp-gameplan-card-sub">Dados demográficos, dores, desejos, objeções e comportamentos</p>
-            </div>
-            <div class="pp-gameplan-card">
-              <span class="pp-gameplan-card-num">2</span>
-              <p class="pp-gameplan-card-title">Análise S.W.O.T</p>
-              <p class="pp-gameplan-card-sub">Forças, fraquezas, oportunidades e ameaças</p>
-            </div>
-            <div class="pp-gameplan-card">
-              <span class="pp-gameplan-card-num">3</span>
-              <p class="pp-gameplan-card-title">Oportunidades em Meta + Google Ads</p>
-              <p class="pp-gameplan-card-sub">Melhorias mapeadas nas duas plataformas de mídia</p>
-            </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">1</span>
+            <p class="pp-gameplan-card-title">Destrinchamento da Persona</p>
+            <p class="pp-gameplan-card-sub">Dados demográficos, dores, desejos, objeções e comportamentos</p>
           </div>
-          <div class="pp-gameplan-row pp-gameplan-row--3">
-            <div class="pp-gameplan-card">
-              <span class="pp-gameplan-card-num">4</span>
-              <p class="pp-gameplan-card-title">Estratégia de Campanhas</p>
-              <p class="pp-gameplan-card-sub">Estrutura e priorização do investimento</p>
-            </div>
-            <div class="pp-gameplan-card">
-              <span class="pp-gameplan-card-num">5</span>
-              <p class="pp-gameplan-card-title">Funil de Comunicação</p>
-              <p class="pp-gameplan-card-sub">A mensagem certa em cada etapa da jornada</p>
-            </div>
-            <div class="pp-gameplan-card">
-              <span class="pp-gameplan-card-num">6</span>
-              <p class="pp-gameplan-card-title">Copys para Google Ads</p>
-              <p class="pp-gameplan-card-sub">Rede de Pesquisa e P-Max</p>
-            </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">2</span>
+            <p class="pp-gameplan-card-title">Análise S.W.O.T</p>
+            <p class="pp-gameplan-card-sub">Forças, fraquezas, oportunidades e ameaças</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">3</span>
+            <p class="pp-gameplan-card-title">Feedbacks das Redes Sociais</p>
+            <p class="pp-gameplan-card-sub">Diagnóstico do perfil — o que está e o que não está funcionando</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">4</span>
+            <p class="pp-gameplan-card-title">Feedbacks do Site</p>
+            <p class="pp-gameplan-card-sub">Pontos de atrito e oportunidades de conversão</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">5</span>
+            <p class="pp-gameplan-card-title">Oportunidades em Meta + Google Ads</p>
+            <p class="pp-gameplan-card-sub">Melhorias mapeadas nas duas plataformas de mídia</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">6</span>
+            <p class="pp-gameplan-card-title">Estratégia de Campanhas</p>
+            <p class="pp-gameplan-card-sub">Estrutura e priorização do investimento</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">7</span>
+            <p class="pp-gameplan-card-title">Funil de Comunicação</p>
+            <p class="pp-gameplan-card-sub">A mensagem certa em cada etapa da jornada</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">8</span>
+            <p class="pp-gameplan-card-title">Copys para Google Ads</p>
+            <p class="pp-gameplan-card-sub">Rede de Pesquisa e P-Max</p>
+          </div>
+          <div class="pp-gameplan-card">
+            <span class="pp-gameplan-card-num">9</span>
+            <p class="pp-gameplan-card-title">Guia e Pedido de Criativos</p>
+            <p class="pp-gameplan-card-sub">Briefing dos criativos de venda do mês</p>
+          </div>
+          <div class="pp-gameplan-card pp-gameplan-card--full">
+            <span class="pp-gameplan-card-num">10</span>
+            <p class="pp-gameplan-card-title">Próximos Passos</p>
+            <p class="pp-gameplan-card-sub">O plano de ação priorizado do mês</p>
           </div>
         </div>
         <div class="pp-gameplan-example">
