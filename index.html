@@ -9375,6 +9375,13 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-transform: uppercase; letter-spacing: 0.7px;
   line-height: 1.3; position: relative; z-index: 2;
 }
+.pp-gameplan-card-sub {
+  font-size: 12px; font-weight: 500;
+  text-transform: none; letter-spacing: 0;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.45; margin-top: 7px;
+  position: relative; z-index: 2;
+}
 
 /* ── PP STRATEGY SLIDE ──────────────────────────── */
 .pp-slide-strategy { overflow: hidden; }
@@ -15510,25 +15517,35 @@ a.xpto-pricing-btn { text-decoration: none; }
           <div class="pp-gameplan-row pp-gameplan-row--3">
             <div class="pp-gameplan-card">
               <span class="pp-gameplan-card-num">1</span>
-              <p class="pp-gameplan-card-title">Feedbacks das<br>Redes Sociais</p>
+              <p class="pp-gameplan-card-title">Destrinchamento da Persona</p>
+              <p class="pp-gameplan-card-sub">Dados demográficos, dores, desejos, objeções e comportamentos</p>
             </div>
             <div class="pp-gameplan-card">
               <span class="pp-gameplan-card-num">2</span>
-              <p class="pp-gameplan-card-title">Feedbacks<br>do Site</p>
+              <p class="pp-gameplan-card-title">Análise S.W.O.T</p>
+              <p class="pp-gameplan-card-sub">Forças, fraquezas, oportunidades e ameaças</p>
             </div>
             <div class="pp-gameplan-card">
               <span class="pp-gameplan-card-num">3</span>
-              <p class="pp-gameplan-card-title">Feedbacks das<br>Campanhas</p>
+              <p class="pp-gameplan-card-title">Oportunidades em Meta + Google Ads</p>
+              <p class="pp-gameplan-card-sub">Melhorias mapeadas nas duas plataformas de mídia</p>
             </div>
           </div>
-          <div class="pp-gameplan-row pp-gameplan-row--2">
+          <div class="pp-gameplan-row pp-gameplan-row--3">
             <div class="pp-gameplan-card">
               <span class="pp-gameplan-card-num">4</span>
-              <p class="pp-gameplan-card-title">Guia e Pedido<br>de Criativos</p>
+              <p class="pp-gameplan-card-title">Estratégia de Campanhas</p>
+              <p class="pp-gameplan-card-sub">Estrutura e priorização do investimento</p>
             </div>
             <div class="pp-gameplan-card">
               <span class="pp-gameplan-card-num">5</span>
-              <p class="pp-gameplan-card-title">Próximos<br>Passos</p>
+              <p class="pp-gameplan-card-title">Funil de Comunicação</p>
+              <p class="pp-gameplan-card-sub">A mensagem certa em cada etapa da jornada</p>
+            </div>
+            <div class="pp-gameplan-card">
+              <span class="pp-gameplan-card-num">6</span>
+              <p class="pp-gameplan-card-title">Copys para Google Ads</p>
+              <p class="pp-gameplan-card-sub">Rede de Pesquisa e P-Max</p>
             </div>
           </div>
         </div>
@@ -19009,22 +19026,9 @@ function renderFlow() {
         el.appendChild(sub);
       }
       wrap.appendChild(el);
-
-      const concepcaoId = activeJourney === 'lead' ? 'lead-concepcao' : 'concepcao';
-      if (stage.id === concepcaoId && ni === 0) {
-        const btn = document.createElement('button');
-        btn.className = 'proto-btn';
-        // E-commerce abre openXpto; Lead abre a cópia openXptoLead (mesmo modal).
-        btn.onclick = () => (activeJourney === 'lead' ? openXptoLead() : openXpto());
-        btn.innerHTML = `
-          <span class="proto-btn-text">
-            <span class="proto-btn-new">NOVO</span>
-            <span class="proto-btn-title">Protocolo Do Zero ao Lucro</span>
-          </span>
-          <span class="proto-btn-arrow">→</span>
-        `;
-        wrap.appendChild(btn);
-      }
+      // O launcher do "Protocolo Do Zero ao Lucro" foi descontinuado da jornada
+      // — as apresentações (e-commerce e lead) agora vivem no Museu
+      // (Configurações → Museu), via openXpto / openXptoLead.
     });
 
     flow.appendChild(col);
@@ -25190,10 +25194,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const fd = feeData[solId];
       const enabled = isExtraEnabled(solId, 'fee');
       const anchored = !!fd.anchor;
+      // No Performance o Fee de Implantação é o "Gameplan" (entregável do 1º mês).
+      // Nos demais (CRM) segue "Fee de implantação".
+      const feeLabel = solId === 'performance' ? 'Gameplan' : 'Fee de implantação';
       return `
         <div class="prop-invest-extras">
           <div class="prop-invest-field prop-invest-field--fee${enabled ? '' : ' is-disabled'}">
-            <span class="prop-invest-tier">Fee de implantação</span>
+            <span class="prop-invest-tier">${feeLabel}</span>
             <div class="prop-invest-input-wrap">
               <span class="prop-invest-currency">R$</span>
               <input type="text"
@@ -25211,8 +25218,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <input type="checkbox" class="prop-invest-check"
               data-sol="${solId}" data-extra="fee"
               ${enabled ? 'checked' : ''}
-              aria-label="Incluir Fee de implantação na proposta"
-              title="Incluir Fee de implantação na proposta">
+              aria-label="Incluir ${feeLabel} na proposta"
+              title="Incluir ${feeLabel} na proposta">
           </div>
           ${anchored ? `
           <div class="prop-invest-anchor-row" data-fee-anchor-row="${solId}">
@@ -25224,7 +25231,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                 data-fee-sol="${solId}"
                 value="${escapeAttr(stripCurrency(fd.anchor))}"
                 spellcheck="false" autocomplete="off" inputmode="decimal"
-                aria-label="Preço de ancoragem do Fee de implantação">
+                aria-label="Preço de ancoragem do ${feeLabel}">
             </div>
             <span class="prop-invest-anchor-row-spacer"></span>
           </div>` : ''}
@@ -25385,7 +25392,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             aria-label="TCV — só Starter, R$ 2.997/mês, contrato de 3 meses">
           <span class="prop-invest-tcv-body">
             <span class="prop-invest-tcv-title">Contrato TCV</span>
-            <span class="prop-invest-tcv-sub">Só Starter · R$ 2.997/mês · fee isento · 3 meses · PIX ou cartão</span>
+            <span class="prop-invest-tcv-sub">Só Starter · R$ 2.997/mês · Gameplan isento · 3 meses · PIX ou cartão</span>
           </span>
         </label>` : '';
       return `
@@ -25614,12 +25621,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   function renderFeeFooter(sol) {
     const fd = feeData[sol];
     if (!fd) return '';
+    // Performance: o fee é o "Gameplan". CRM segue "Fee de implantação".
+    const feeLabel = sol === 'performance' ? 'Gameplan' : 'Fee de implantação';
     const valHtml = feeIsGratis(sol)
       ? '<span class="pacotes-footer-gratis">Grátis</span>'
       : formatPriceHtml(fd.value);
     if (fd.anchor) {
       return `<div class="pacotes-footer pacotes-footer--anchored">
-              <span class="pacotes-footer-label">Fee de implantação:</span>
+              <span class="pacotes-footer-label">${feeLabel}:</span>
               <span class="pacotes-footer-de">de</span>
               <span class="pacotes-footer-anchor">${formatPriceHtml(fd.anchor)}</span>
               <span class="pacotes-footer-por">por</span>
@@ -25627,7 +25636,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             </div>`;
     }
     return `<div class="pacotes-footer">
-              <span class="pacotes-footer-label">Fee de implantação:</span>
+              <span class="pacotes-footer-label">${feeLabel}:</span>
               <span class="pacotes-footer-value">${valHtml}</span>
             </div>`;
   }
