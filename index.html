@@ -24714,7 +24714,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   };
   const DEFAULT_CLOSER_ID = '1'; // Roberto Fachetti (default antigo)
 
-  const selected = new Set(['performance', 'creators']);
+  // Default: NENHUMA solução selecionada — o closer escolhe clicando.
+  const selected = new Set();
   const externalCache = new Map();
   // Tipo de proposta: 'lead-externo' (completa, padrão) | 'crossell' (pula a
   // apresentação institucional da Turbo — vai da capa direto pras soluções).
