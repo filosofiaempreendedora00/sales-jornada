@@ -5808,6 +5808,42 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-invest-tcv-body { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .prop-invest-tcv-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .prop-invest-tcv-sub { font-size: 11px; color: var(--text-2); line-height: 1.35; }
+
+/* ── Concessões — painel inline no card do Performance (modo "com concessão") ── */
+.prop-conc { margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.13); display: flex; flex-direction: column; gap: 8px; }
+.prop-conc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.prop-conc-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
+.prop-conc-count { font-size: 11px; font-weight: 800; color: #ffa826; background: rgba(255,168,38,0.14); border: 1px solid rgba(255,168,38,0.35); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
+.prop-conc-count.is-over { color: #ff8a8a; background: rgba(255,107,107,0.16); border-color: rgba(255,107,107,0.45); }
+.prop-conc-hint { font-size: 10.5px; color: var(--text-2); line-height: 1.4; margin: 0; }
+.prop-conc-items { display: flex; flex-direction: column; gap: 6px; }
+.prop-conc-item { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: rgba(255,255,255,0.02); cursor: pointer; transition: border-color .15s, background .15s; }
+.prop-conc-item:hover { border-color: rgba(13,207,232,0.4); }
+.prop-conc-item:focus-visible { outline: 2px solid rgba(13,207,232,0.6); outline-offset: 1px; }
+.prop-conc-item.is-on { border-color: rgba(13,207,232,0.7); background: rgba(13,207,232,0.1); }
+.prop-conc-check { flex: 0 0 auto; width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid rgba(255,255,255,0.3); display: grid; place-items: center; font-size: 11px; line-height: 1; color: transparent; margin-top: 1px; transition: all .15s; }
+.prop-conc-item.is-on .prop-conc-check { background: #0dcfe8; border-color: #0dcfe8; color: #04222a; }
+.prop-conc-item-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.prop-conc-item-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.prop-conc-item-name { font-size: 12.5px; font-weight: 700; color: var(--text); }
+.prop-conc-cat { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: var(--cat); border: 1px solid color-mix(in srgb, var(--cat) 45%, transparent); border-radius: 999px; padding: 1px 7px; }
+.prop-conc-gestor { font-size: 9.5px; font-weight: 800; color: #c7b3ff; background: rgba(155,109,255,0.14); border: 1px solid rgba(155,109,255,0.4); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.prop-conc-val { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--text-2); white-space: nowrap; }
+.prop-conc-cp { font-size: 10.5px; color: #7fe3b0; line-height: 1.4; }
+.prop-conc-cp-label { font-weight: 800; color: #12d490; }
+.prop-conc-note { font-size: 10px; color: var(--text-2); line-height: 1.4; font-style: italic; }
+.prop-conc-signals { display: flex; flex-direction: column; gap: 3px; font-size: 10.5px; color: #c7b3ff; line-height: 1.4; }
+.prop-conc-status { border-radius: 10px; padding: 9px 11px; font-size: 11px; line-height: 1.45; }
+.prop-conc-status.is-ok { background: rgba(18,212,144,0.1); border: 1px solid rgba(18,212,144,0.35); color: #7fe3b0; font-weight: 700; }
+.prop-conc-status.is-warn { background: rgba(255,168,38,0.1); border: 1px solid rgba(255,168,38,0.35); color: #ffce8a; display: flex; flex-direction: column; gap: 3px; }
+.prop-conc-status.is-block { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.4); color: #ffb3b3; }
+.prop-conc-status.is-block.is-overridden { background: rgba(155,109,255,0.1); border-color: rgba(155,109,255,0.4); color: #c7b3ff; }
+.prop-conc-status.is-block strong { display: block; margin-bottom: 4px; font-size: 12px; }
+.prop-conc-status.is-block ul { margin: 0 0 6px; padding-left: 16px; }
+.prop-conc-status.is-block li { margin: 2px 0; }
+.prop-conc-warn-line { color: #ffce8a; margin: 3px 0; }
+.prop-conc-override { display: flex; align-items: center; gap: 7px; margin-top: 4px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,0.12); cursor: pointer; font-weight: 700; color: var(--text); }
+.prop-conc-override input { flex: 0 0 auto; }
 .prop-invest-extra-field {
   display: grid;
   grid-template-columns: 1fr auto auto;
@@ -14820,6 +14856,28 @@ a.xpto-pricing-btn { text-decoration: none; }
           </div>
           <span class="prop-client-hint" id="prop-type-hint">Proposta completa — inclui a apresentação institucional da Turbo.</span>
         </div>
+      </div>
+      <div class="prop-section">
+        <p class="prop-section-label">Modo de negociação</p>
+        <div class="prop-mode-switcher" role="tablist" aria-label="Modo de concessão">
+          <button
+            type="button"
+            class="prop-type-btn is-active"
+            role="tab"
+            aria-selected="true"
+            data-conc-mode="sem"
+            title="Oferta limpa — sem concessões (regra zero)"
+          >Sem concessão</button>
+          <button
+            type="button"
+            class="prop-type-btn"
+            role="tab"
+            aria-selected="false"
+            data-conc-mode="com"
+            title="Negociação — libera concessões com as travas das regras"
+          >Com concessão</button>
+        </div>
+        <span class="prop-client-hint" id="prop-conc-mode-hint">Oferta limpa: nenhuma concessão. As travas das regras ficam adormecidas.</span>
       </div>
       <div class="prop-section">
         <p class="prop-section-label">Soluções &amp; Planos</p>
@@ -24884,6 +24942,42 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   const TCV_PERF_PRICE = 'R$ 2.997,00';
   let _tcvPrevPerf = null;
 
+  // ── CONCESSÕES — piloto: Performance (doc "Concessões e Contrapartidas") ──
+  // Switcher global de negociação:
+  //   'sem' (default) → oferta limpa, regra zero. Travas ADORMECIDAS.
+  //   'com'           → negociação. Travas APLICADAS: limite de concessões,
+  //                     combinações proibidas e piso de preço passam a valer.
+  // Concessão é registro INTERNO — NÃO entra no HTML/PDF do cliente (decisão
+  // do Roberto). O painel vive no card do Performance, no seletor de soluções.
+  let concMode = 'sem';
+  const concGranted = { performance: new Set() }; // itens concedidos por solução
+  let concOverride = false; // destrave do gestor: libera Baixar apesar da violação
+
+  // Categorias (doc §2.5):
+  //   leve   → não conta no limite; combina com tudo (menos desconto-mensal)
+  //   pesada → conta no limite (máx 3); gestor a partir da 2ª
+  //   desc   → desconto de mensalidade: anda SOZINHO (não combina com nada)
+  const CONC_CAT = {
+    leve:   { label: 'Leve',     color: '#12d490' },
+    pesada: { label: 'Pesada',   color: '#ffa826' },
+    desc:   { label: 'Desconto', color: '#ff6b6b' },
+  };
+  // Itens de valor do Performance (doc §2.3–2.4). O TCV NÃO está aqui — é o
+  // toggle existente (conta como 1 pesada via tcvEnabled). O "desconto integral"
+  // é o próprio input de preço, limitado pelo piso (doc §2.6).
+  const CONC_PERF = [
+    { id:'prazo',         label:'Prazo de pagamento',             val:'Custo zero',       cat:'leve',   gestor:false, cp:'Tempo de decisão (fechar na call ou em 7 dias)' },
+    { id:'turbocommerce', label:'Turbo Commerce',                 val:'R$ 197/mês',       cat:'leve',   gestor:false, cp:'Tempo de decisão', note:'Só e-commerce. Não combina com desconto de mensalidade.' },
+    { id:'gameplan50',    label:'Gameplan −50%',                  val:'R$ 1.497',         cat:'pesada', gestor:false, cp:'5 indicações ativas na assinatura' },
+    { id:'gameplan100',   label:'Gameplan −100%',                 val:'Grátis',           cat:'pesada', gestor:true,  cp:'Depoimento em vídeo + 10 indicações', note:'Só rede de alto valor ou case âncora.' },
+    { id:'criativos',     label:'Criativos adicionais',           val:'R$ 150/criativo',  cat:'pesada', gestor:false, cp:'5 indicações ativas na assinatura', note:'Não combina com Motion.' },
+    { id:'motion',        label:'Motion (1 peça/mês)',            val:'R$ 500/mês',       cat:'pesada', gestor:false, cp:'5 indicações ativas na assinatura', note:'Não combina com Criativos adicionais.' },
+    { id:'crmbasico',     label:'CRM básico',                     val:'R$ 2.000',         cat:'pesada', gestor:false, cp:'5 indicações ativas na assinatura', note:'Só lead gen.' },
+    { id:'senior',        label:'Profissional sênior',            val:'Escassez',         cat:'pesada', gestor:true,  cp:'Tempo de decisão (fechar na call ou em 7 dias)', note:'Validar disponibilidade antes de prometer.' },
+    { id:'squad',         label:'Squad fixo',                     val:'Escassez',         cat:'pesada', gestor:true,  cp:'Tempo de decisão (fechar na call ou em 7 dias)', note:'Validar disponibilidade antes de prometer.' },
+    { id:'desconto3m',    label:'Desconto nos 3 primeiros meses', val:'Até o piso',       cat:'desc',   gestor:true,  cp:'5 indicações + depoimento em vídeo', note:'Anda sozinho. Só se o cliente recusar o TCV. Meses 4–6 voltam ao padrão.' },
+  ];
+
   let creatorsInactivePrices = JSON.parse(JSON.stringify(CREATORS_RECORRENTE_DEFAULT));
   for (const tier in creatorsInactivePrices) {
     creatorsInactivePrices[tier].value = buildPriceValue(stripCurrency(creatorsInactivePrices[tier].value));
@@ -25153,7 +25247,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return 'R$ ' + intStr + ',00';
   }
   function isBelowMin(sol, tier) {
-    if (!MIN_PRICES_ENABLED) return false; // regra desativada temporariamente
+    // Piso ativo quando: (a) a regra global está ligada, OU (b) modo "com
+    // concessão" e a solução tem piso de concessão (piloto: Performance).
+    const active = MIN_PRICES_ENABLED || (concMode === 'com' && sol === 'performance');
+    if (!active) return false;
     const min = minForTier(sol, tier);
     if (min == null) return false;
     const cur = priceToNumber(prices[sol]?.[tier]?.value);
@@ -25180,6 +25277,142 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
     }
     return false;
+  }
+
+  // ── Engine das concessões (piloto: Performance) ──────────────────────
+  // Piso por tier do Performance: com TCV ligado, o piso é o do TCV (Starter
+  // R$ 2.997); sem TCV, é o "piso com desconto" do MIN_PRICES (§2.6).
+  function concPerfFloor(tier) {
+    if (tcvEnabled) return tier === 'starter' ? priceToNumber(TCV_PERF_PRICE) : null;
+    return MIN_PRICES.performance[tier] ?? null;
+  }
+  // Calcula travas/avisos/sinais do Performance a partir do estado atual.
+  function concPerfStatus() {
+    const g = concGranted.performance;
+    const on = id => g.has(id);
+    const blocks = [], warns = [], signals = [];
+    const pesadas = CONC_PERF.filter(it => it.cat === 'pesada' && on(it.id));
+    const leves   = CONC_PERF.filter(it => it.cat === 'leve'   && on(it.id));
+    const descOn  = on('desconto3m');
+    const pesadaCount = pesadas.length + (tcvEnabled ? 1 : 0); // TCV conta como pesada
+
+    // Piso de preço (§2.6) — nunca conceder abaixo. Só os tiers habilitados.
+    for (const tier of (enabledTiers.performance || [])) {
+      const floor = concPerfFloor(tier);
+      if (floor == null) continue;
+      const cur = priceToNumber(prices.performance?.[tier]?.value);
+      if (cur != null && cur < floor) {
+        const tlabel = (prices.performance[tier] && prices.performance[tier].label) || tier;
+        blocks.push(`Preço abaixo do piso (${fmtMinReais(floor)}) no plano ${tlabel}.`);
+      }
+    }
+    // Limite: no máximo 3 pesadas (§2.1 / "nunca fazer").
+    if (pesadaCount > 3) blocks.push('Mais de 3 concessões pesadas — não existe. Reveja o problema com o gestor.');
+    // Criativos x Motion não combinam (§2.3).
+    if (on('criativos') && on('motion')) blocks.push('Criativos e Motion não combinam — escolha um.');
+    // Desconto de mensalidade anda sozinho (§2.5).
+    if (descOn) {
+      const companhia = pesadas.length + leves.length + (tcvEnabled ? 1 : 0);
+      if (companhia > 0) blocks.push('Desconto de mensalidade anda sozinho — remova as outras concessões.');
+      if (!tcvEnabled)   warns.push('Ofereça o TCV antes de partir pro desconto de mensalidade.');
+    }
+    // Sinais de gestor (não bloqueiam — decisão do Roberto: "só sinaliza").
+    if (pesadaCount >= 2) signals.push('2+ concessões pesadas — requer validação do gestor.');
+    for (const it of CONC_PERF) if (it.gestor && on(it.id)) signals.push(`${it.label}: requer aprovação do gestor.`);
+
+    return { blocks, warns, signals, pesadaCount, descOn };
+  }
+  // Piloto: só o Performance tem regras modeladas. Demais produtos em fases futuras.
+  function concSelectedHasRules() { return concMode === 'com' && selected.has('performance'); }
+  function concStatus() {
+    if (!concSelectedHasRules()) return { blocks: [], warns: [], signals: [], pesadaCount: 0, descOn: false };
+    return concPerfStatus();
+  }
+  // Motivo do bloqueio do Baixar (string vazia = liberado). O override do gestor
+  // libera as travas de concessão; fora do modo "com", vale o piso global (que
+  // hoje está desligado) para as demais soluções.
+  function downloadBlockReason() {
+    if (concMode === 'com' && concSelectedHasRules()) {
+      const st = concStatus();
+      if (st.blocks.length && !concOverride) return st.blocks[0];
+      return '';
+    }
+    if (anyBelowMin()) return 'Desconto inválido — há preço(s) abaixo do mínimo permitido';
+    return '';
+  }
+  // HTML do painel de concessões — injetado no card do Performance (renderInvestimento).
+  function concPanelHTML() {
+    const st = concPerfStatus();
+    const g = concGranted.performance;
+    const itemsHtml = CONC_PERF.map(it => {
+      const onItem = g.has(it.id);
+      const cat = CONC_CAT[it.cat];
+      const gestorBadge = it.gestor ? `<span class="prop-conc-gestor" title="Requer aprovação/validação do gestor">⚑ gestor</span>` : '';
+      const cp   = onItem ? `<div class="prop-conc-cp"><span class="prop-conc-cp-label">Contrapartida:</span> ${escapeHtml(it.cp)}</div>` : '';
+      const note = (onItem && it.note) ? `<div class="prop-conc-note">${escapeHtml(it.note)}</div>` : '';
+      return `<div class="prop-conc-item${onItem ? ' is-on' : ''}" data-conc="${it.id}" role="button" tabindex="0" aria-pressed="${onItem}">
+        <span class="prop-conc-check" aria-hidden="true">✓</span>
+        <div class="prop-conc-item-body">
+          <div class="prop-conc-item-top">
+            <span class="prop-conc-item-name">${escapeHtml(it.label)}</span>
+            <span class="prop-conc-cat" style="--cat:${cat.color}">${cat.label}</span>
+            ${gestorBadge}
+            <span class="prop-conc-val">${escapeHtml(it.val)}</span>
+          </div>
+          ${cp}${note}
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="prop-conc">
+      <div class="prop-conc-head">
+        <span class="prop-conc-title">🤝 Concessões</span>
+        <span class="prop-conc-count${st.pesadaCount > 3 ? ' is-over' : ''}">${st.pesadaCount}/3 pesadas</span>
+      </div>
+      <p class="prop-conc-hint">Comece pelo que custa menos pra Turbo. Leves não contam no limite. Registro interno — não aparece na proposta do cliente.</p>
+      <div class="prop-conc-items">${itemsHtml}</div>
+      <div class="prop-conc-foot">${concFootHTML()}</div>
+    </div>`;
+  }
+  // Rodapé do painel (sinais + status). Separado pra ser regenerado in-place
+  // quando o preço muda — assim o status reflete o piso sem rebuild do painel
+  // inteiro (que perderia o foco do input enquanto o vendedor digita).
+  function concFootHTML() {
+    const st = concPerfStatus();
+    let statusHtml;
+    if (st.blocks.length) {
+      statusHtml = `<div class="prop-conc-status is-block${concOverride ? ' is-overridden' : ''}">
+        <strong>${concOverride ? '🔓 Liberado pelo gestor' : '⛔ Bloqueado'}</strong>
+        <ul>${st.blocks.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
+        ${st.warns.map(w => `<div class="prop-conc-warn-line">⚠ ${escapeHtml(w)}</div>`).join('')}
+        <label class="prop-conc-override">
+          <input type="checkbox" id="prop-conc-override"${concOverride ? ' checked' : ''}>
+          <span>Aprovado pelo gestor — destravar mesmo assim</span>
+        </label>
+      </div>`;
+    } else if (st.warns.length) {
+      statusHtml = `<div class="prop-conc-status is-warn">${st.warns.map(w => `<div>⚠ ${escapeHtml(w)}</div>`).join('')}</div>`;
+    } else {
+      statusHtml = `<div class="prop-conc-status is-ok">✅ Concessões dentro das regras.</div>`;
+    }
+    const signalsHtml = st.signals.length
+      ? `<div class="prop-conc-signals">${st.signals.map(s => `<div>⚑ ${escapeHtml(s)}</div>`).join('')}</div>`
+      : '';
+    return signalsHtml + statusHtml;
+  }
+  // Atualiza contagem + rodapé do painel sem rebuild (e re-fia o override).
+  function syncConcPanel() {
+    const panel = document.querySelector('.prop-conc');
+    if (!panel) return;
+    const st = concPerfStatus();
+    const cnt = panel.querySelector('.prop-conc-count');
+    if (cnt) { cnt.textContent = `${st.pesadaCount}/3 pesadas`; cnt.classList.toggle('is-over', st.pesadaCount > 3); }
+    const foot = panel.querySelector('.prop-conc-foot');
+    if (foot) {
+      foot.innerHTML = concFootHTML();
+      const ovrCheck = document.getElementById('prop-conc-override');
+      if (ovrCheck) ovrCheck.addEventListener('change', () => { concOverride = ovrCheck.checked; renderInvestimento(); updateMeta(); });
+    }
   }
 
   // Nome do cliente — campo obrigatório para baixar. Persiste no localStorage
@@ -25253,6 +25486,31 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       if ($typeHint) $typeHint.textContent = TYPE_HINTS[proposalType] || '';
       previewDirty = true;
       renderPreview();
+    });
+  });
+
+  // Modo de negociação (Sem / Com concessão) — liga/desliga as travas. NÃO
+  // mexe na proposta do cliente (concessão é registro interno); só re-renderiza
+  // o painel e revalida o gating do Baixar.
+  const $concModeHint = document.getElementById('prop-conc-mode-hint');
+  const CONC_MODE_HINTS = {
+    sem: 'Oferta limpa: nenhuma concessão. As travas das regras ficam adormecidas.',
+    com: 'Negociação: dá pra conceder itens — limite, combinações e piso de preço passam a valer (piloto: Performance).',
+  };
+  document.querySelectorAll('[data-conc-mode]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const m = btn.dataset.concMode;
+      if (!m || m === concMode) return;
+      concMode = m;
+      if (concMode === 'sem') concOverride = false; // volta limpo
+      document.querySelectorAll('[data-conc-mode]').forEach(b => {
+        const on = b.dataset.concMode === concMode;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      if ($concModeHint) $concModeHint.textContent = CONC_MODE_HINTS[concMode] || '';
+      renderInvestimento(); // mostra/esconde o painel + recolore inputs abaixo do piso
+      updateMeta();
     });
   });
 
@@ -25552,6 +25810,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>
         ${extrasHtml}
         ${tcvHtml}
+        ${(s.id === 'performance' && concMode === 'com') ? concPanelHTML() : ''}
       </div>
     `;
     }).join('');
@@ -25582,6 +25841,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           // O input só contém o número; sempre reconstroi como "R$ <amount>".
           prices[sol][tier].value = buildPriceValue(input.value);
           savePriceOverrides();
+          if (concMode === 'com' && sol === 'performance') concOverride = false; // mexeu no preço → re-aprovação
           input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
           // Validação de desconto mínimo — vermelho + aviso + bloqueio do download.
           const below = isBelowMin(sol, tier);
@@ -25589,6 +25849,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           const warn = $invest.querySelector(`.prop-invest-minwarn[data-sol="${sol}"][data-tier="${tier}"]`);
           if (warn) warn.hidden = !below;
           updateMeta();
+          if (concMode === 'com' && sol === 'performance') syncConcPanel(); // status reflete o piso ao vivo
           schedulePreviewRebuild();
         }
       });
@@ -25723,9 +25984,36 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           _tcvPrevPerf = null;
           tcvEnabled = false;
         }
+        concOverride = false; // mudou o caminho financeiro → aprovação do gestor expira
         renderInvestimento();
         updateMeta();
         schedulePreviewRebuild();
+      });
+    }
+
+    // Concessões (Performance): toggle de item + destrave do gestor. Re-renderiza
+    // o painel (status/contagem) e revalida o Baixar. SEM rebuild do preview —
+    // concessão é registro interno, não muda a proposta do cliente.
+    $invest.querySelectorAll('.prop-conc-item').forEach(el => {
+      const toggle = () => {
+        const id = el.dataset.conc;
+        const g = concGranted.performance;
+        if (g.has(id)) g.delete(id); else g.add(id);
+        concOverride = false; // mudou as concessões → aprovação do gestor expira
+        renderInvestimento();
+        updateMeta();
+      };
+      el.addEventListener('click', toggle);
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+      });
+    });
+    const ovrCheck = document.getElementById('prop-conc-override');
+    if (ovrCheck) {
+      ovrCheck.addEventListener('change', () => {
+        concOverride = ovrCheck.checked;
+        renderInvestimento();
+        updateMeta();
       });
     }
 
@@ -25814,12 +26102,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   function updateMeta() {
     if (!$meta) return;
     const count = selected.size;
+    const block = clientName ? downloadBlockReason() : '';
     if (!clientName) {
       $meta.textContent = '⚠ Digite o nome do cliente para gerar a proposta';
       setDownloadDisabled(true);
-    } else if (anyBelowMin()) {
-      // Desconto inválido — algum preço está abaixo do mínimo permitido.
-      $meta.textContent = '⚠ Desconto inválido — há preço(s) abaixo do mínimo permitido';
+    } else if (block) {
+      // Trava: concessão fora das regras (modo "com") ou desconto abaixo do mínimo.
+      $meta.textContent = (concMode === 'com' ? '⛔ ' : '⚠ ') + block;
       setDownloadDisabled(true);
     } else if (count === 0) {
       // Sem soluções selecionadas → proposta institucional (só Apresentação Turbo).
@@ -25828,7 +26117,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       $meta.textContent = `Para ${clientName} · Apresentação institucional da Turbo`;
       setDownloadDisabled(false);
     } else {
-      $meta.textContent = `Para ${clientName} · Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}`;
+      const st = concStatus();
+      const extra = (concMode === 'com' && (st.warns.length || st.signals.length)) ? ' · ⚠ revisar concessões' : '';
+      $meta.textContent = `Para ${clientName} · Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}${extra}`;
       setDownloadDisabled(false);
     }
   }
@@ -30049,9 +30340,10 @@ ${deckEmbedScript}
   async function downloadHTML() {
     // Validação obrigatória do nome do cliente — feedback visual no input.
     if (!clientName) { flagClientMissing(); return; }
-    // Proteção de margem: bloqueia gerar se algum preço está abaixo do mínimo.
-    if (anyBelowMin()) {
-      if ($meta) $meta.textContent = '⚠ Desconto inválido — ajuste os preços abaixo do mínimo antes de gerar';
+    // Trava: concessão fora das regras (modo "com") ou desconto abaixo do mínimo.
+    const block = downloadBlockReason();
+    if (block) {
+      if ($meta) $meta.textContent = (concMode === 'com' ? '⛔ ' : '⚠ ') + block;
       updateMeta();
       return;
     }
@@ -30094,8 +30386,9 @@ ${deckEmbedScript}
   // escuro/gradientes (não é screenshot — é o motor do navegador).
   async function downloadPDF() {
     if (!clientName) { flagClientMissing(); return; }
-    if (anyBelowMin()) {
-      if ($meta) $meta.textContent = '⚠ Desconto inválido — ajuste os preços abaixo do mínimo antes de gerar';
+    const block = downloadBlockReason();
+    if (block) {
+      if ($meta) $meta.textContent = (concMode === 'com' ? '⛔ ' : '⚠ ') + block;
       updateMeta();
       return;
     }
