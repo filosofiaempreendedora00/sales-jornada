@@ -5742,6 +5742,16 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   flex-direction: column;
   gap: 8px;
 }
+/* Planos inline — aparecem embaixo de cada solução SELECIONADA no seletor.
+   O chip já mostra nome/cor, então o card vira só os tiers + fee, leve e
+   "encaixado" (sem borda/fundo próprios e sem o cabeçalho redundante). */
+.prop-sol-plans { margin: 2px 0 2px; }
+.prop-sol-plans .prop-invest-card {
+  background: transparent; border: 0; border-radius: 0;
+  padding: 4px 0 4px 6px; gap: 7px;
+}
+.prop-sol-plans .prop-invest-card-head { display: none; }
+.prop-sol-plans .prop-invest-extras { margin-top: 2px; }
 .prop-invest-card-head {
   display: flex;
   align-items: center;
@@ -14812,10 +14822,13 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
       <div class="prop-section">
-        <p class="prop-section-label">Soluções com apresentação</p>
+        <p class="prop-section-label">Soluções &amp; Planos</p>
         <div class="prop-solutions" id="prop-solutions"></div>
       </div>
-      <div class="prop-section">
+      <!-- Investimento: os planos (tiers + fee) agora aparecem INLINE, embaixo
+           de cada solução selecionada. renderInvestimento monta os cards aqui
+           (buffer oculto) e inlinePlans() move cada um pra baixo do seu chip. -->
+      <div class="prop-section" style="display:none" aria-hidden="true">
         <p class="prop-section-label">Investimento</p>
         <div class="prop-invest" id="prop-invest"></div>
       </div>
@@ -25443,7 +25456,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         }).join('');
         const activeTd = prices[s.id][activeTier];
         return `
-        <div class="prop-invest-card" style="--card-color:${s.color}">
+        <div class="prop-invest-card" data-sol="${s.id}" style="--card-color:${s.color}">
           <div class="prop-invest-card-head">
             <span class="prop-invest-icon">${s.icon}</span>
             <span class="prop-invest-name">${s.name}</span>
@@ -25479,7 +25492,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         const emptyHint = enabledCrmModules.size === 0
           ? `<p class="prop-invest-modules-hint">Selecione os módulos que entram nesta proposta.</p>` : '';
         return `
-        <div class="prop-invest-card" style="--card-color:${s.color}">
+        <div class="prop-invest-card" data-sol="${s.id}" style="--card-color:${s.color}">
           <div class="prop-invest-card-head">
             <span class="prop-invest-icon">${s.icon}</span>
             <span class="prop-invest-name">${s.name}</span>
@@ -25499,7 +25512,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             data-creators-mode="${m}" aria-pressed="${creatorsMode === m ? 'true' : 'false'}">${lbl}</button>`
         ).join('');
         return `
-        <div class="prop-invest-card" style="--card-color:${s.color}">
+        <div class="prop-invest-card" data-sol="${s.id}" style="--card-color:${s.color}">
           <div class="prop-invest-card-head">
             <span class="prop-invest-icon">${s.icon}</span>
             <span class="prop-invest-name">${s.name}</span>
@@ -25528,7 +25541,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           </span>
         </label>` : '';
       return `
-      <div class="prop-invest-card" style="--card-color:${s.color}">
+      <div class="prop-invest-card" data-sol="${s.id}" style="--card-color:${s.color}">
         <div class="prop-invest-card-head">
           <span class="prop-invest-icon">${s.icon}</span>
           <span class="prop-invest-name">${s.name}</span>
@@ -25718,6 +25731,26 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Atualiza o guard de desconto mínimo a cada (re)render do Investimento
     // — cobre trocas de subtipo (e-commerce), modo (Creators) e módulos (CRM).
     updateMeta();
+
+    // Por fim, move cada card de plano pra baixo da sua solução no seletor.
+    inlinePlans();
+  }
+
+  // Move os cards de plano (já montados e com listeners) do buffer #prop-invest
+  // pra dentro do seletor de soluções, logo abaixo do chip correspondente —
+  // assim os planos ficam agrupados COM a solução, não num bloco separado lá
+  // embaixo. Mover o nó preserva os listeners, por isso reusamos renderInvestimento.
+  function inlinePlans() {
+    if (!$solutions || !$invest) return;
+    $solutions.querySelectorAll('.prop-sol-plans').forEach(el => el.remove());
+    $invest.querySelectorAll('.prop-invest-card[data-sol]').forEach(card => {
+      const chip = $solutions.querySelector(`.prop-sol-chip[data-sol="${card.dataset.sol}"]`);
+      if (!chip) return;
+      const wrap = document.createElement('div');
+      wrap.className = 'prop-sol-plans';
+      wrap.appendChild(card);
+      chip.after(wrap);
+    });
   }
 
   // Escape para atributo HTML (aspas duplas viram &quot;).
