@@ -29416,40 +29416,55 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
       /* ════════════════════════════════════════════════════════
          PRINT / PDF — o "Baixar → PDF" usa o print-to-PDF do
-         navegador. Imprime o fundo escuro + gradientes
-         (print-color-adjust), tira a altura de tela dos slides e
-         pagina como um deck: cada slide/seção numa página, sem
-         cortar cards no meio. Funciona desktop e mobile.
+         navegador. Em vez de "1 slide por página" (que deixa buraco
+         embaixo dos slides curtos), o conteúdo FLUI e preenche as
+         páginas: documento contínuo, escuro, harmônico, sem cortar
+         cards/blocos no meio. Capa e fechamento ganham página
+         inteira. Funciona desktop e mobile.
          ════════════════════════════════════════════════════════ */
       @media print {
         @page { size: A4 portrait; margin: 0; }
         html, body { background: #07070f !important; margin: 0 !important; }
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-        /* cada seção e cada slide começam numa página nova (estilo deck) */
-        .proposal-section { break-before: page; page-break-before: always; }
-        .proposal-section:first-child { break-before: avoid; page-break-before: avoid; }
-        .proposal-section .xpto-slide,
-        .proposal-section .turbo-slide { break-before: page; page-break-before: always; }
-        .proposal-section .xpto-slide:first-child,
-        .proposal-section .turbo-slide:first-child { break-before: avoid; page-break-before: avoid; }
-
-        /* sem altura de tela: cada slide se ajusta ao conteúdo */
+        /* fluxo de documento: sem altura de tela e sem quebra forçada —
+           cada bloco escorre e preenche a página */
+        .proposal-section,
         .proposal-section .xpto-slide,
         .proposal-section .turbo-slide,
         .pacotes-slide, .invest-slide,
         #apres-sub-turbo, .turbo-slides {
           min-height: 0 !important; height: auto !important; overflow: visible !important;
+          justify-content: flex-start !important;
+          break-before: auto !important; page-break-before: auto !important;
+          break-after: auto !important;  page-break-after: auto !important;
+        }
+        /* padding enxuto e uniforme (o fundo escuro sangra até a borda) */
+        .proposal-section .xpto-slide,
+        .proposal-section .turbo-slide { padding: 30px 32px !important; }
+        /* divisa fininha entre slides na mesma página, em vez de buraco */
+        .proposal-section .xpto-slide + .xpto-slide,
+        .proposal-section .turbo-slide + .turbo-slide {
+          border-top: 1px solid rgba(255,255,255,0.07);
         }
 
-        /* não corta cards/itens entre páginas */
+        /* blocos coesos não se partem entre páginas */
         .pacote-card, .pp-gameplan-card, .ee-deliver li, .ee-pillar, .ee-tl-step,
-        .redes-scope-item, .sm-setup-item, .pacotes-grid,
-        .pp-compare-card, .pp-result-card, .dnvb-card {
+        .redes-scope-item, .sm-setup-item, .pp-compare-card, .pp-result-card,
+        .dnvb-card, .ee-head, .ee-etapa-head, .pacotes-header, .pp-gameplan-header,
+        .invest-slide, .xpto-eyebrow, .pacotes-footer, .ee-cover .xpto-slide-inner {
           break-inside: avoid; page-break-inside: avoid;
         }
+        /* títulos nunca ficam órfãos no rodapé da página */
+        h1, h2, h3, h4, .pacotes-title, .pp-gameplan-title, .ee-title, .xpto-title {
+          break-after: avoid; page-break-after: avoid;
+        }
 
-        /* esconde dicas/controles que não fazem sentido no papel */
+        /* a capa (1ª) e o fechamento ganham página inteira — elegância */
+        .proposal-section--closing { break-before: page; page-break-before: always; }
+        body > .proposal-section:first-child { break-before: avoid !important; page-break-before: avoid !important; }
+
+        /* esconde controles/links interativos que não fazem sentido no papel */
         .xpto-scroll-hint, .pp-scroll-hint, .turbo-scroll-hint,
         .ee-cta, .pp-gameplan-example, .sm-setup-examples,
         #deck-embed-lb { display: none !important; }
