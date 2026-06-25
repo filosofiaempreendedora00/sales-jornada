@@ -24942,16 +24942,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   const TCV_PERF_PRICE = 'R$ 2.997,00';
   let _tcvPrevPerf = null;
 
-  // ── CONCESSÕES — piloto: Performance (doc "Concessões e Contrapartidas") ──
+  // ── CONCESSÕES (doc "Concessões e Contrapartidas") ──────────────────
   // Switcher global de negociação:
   //   'sem' (default) → oferta limpa, regra zero. Travas ADORMECIDAS.
   //   'com'           → negociação. Travas APLICADAS: limite de concessões,
   //                     combinações proibidas e piso de preço passam a valer.
   // Concessão é registro INTERNO — NÃO entra no HTML/PDF do cliente (decisão
-  // do Roberto). O painel vive no card do Performance, no seletor de soluções.
+  // do Roberto). O painel vive no card de cada produto com regras (Performance,
+  // Social Media, Creators), no seletor de soluções.
   let concMode = 'sem';
-  const concGranted = { performance: new Set() }; // itens concedidos por solução
-  let concOverride = false; // destrave do gestor: libera Baixar apesar da violação
+  const concGranted  = { performance: new Set(), social: new Set(), creators: new Set() };
+  const concOverride = { performance: false, social: false, creators: false }; // destrave do gestor por produto
+  function resetConcOverride() { for (const k in concOverride) concOverride[k] = false; }
 
   // Categorias (doc §2.5):
   //   leve   → não conta no limite; combina com tudo (menos desconto-mensal)
@@ -24976,6 +24978,38 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id:'senior',        label:'Profissional sênior',            val:'Escassez',         cat:'pesada', gestor:true,  cp:'Tempo de decisão (fechar na call ou em 7 dias)', note:'Validar disponibilidade antes de prometer.' },
     { id:'squad',         label:'Squad fixo',                     val:'Escassez',         cat:'pesada', gestor:true,  cp:'Tempo de decisão (fechar na call ou em 7 dias)', note:'Validar disponibilidade antes de prometer.' },
     { id:'desconto3m',    label:'Desconto nos 3 primeiros meses', val:'Até o piso',       cat:'desc',   gestor:true,  cp:'5 indicações + depoimento em vídeo', note:'Anda sozinho. Só se o cliente recusar o TCV. Meses 4–6 voltam ao padrão.' },
+  ];
+  // Social Media (§3.3–3.5). UMA única concessão na negociação inteira: um item
+  // de valor OU o caminho financeiro (desconto), NUNCA os dois. Disponibilidade
+  // por plano: Story PRO / 50% Setup só no Starter; LinkedIn só no Enterprise.
+  const CONC_SOCIAL = [
+    { id:'prazo',    label:'Prazo / data de pagamento',         val:'Custo zero',         gestor:false, cp:'Tempo de decisão (call ou 7 dias)' },
+    { id:'roteiro',  label:'Roteiro extra (dona da marca)',     val:'Custo interno',      gestor:false, cp:'Tempo de decisão (call ou 7 dias)' },
+    { id:'motion',   label:'Motion (1/mês)',                    val:'R$ 500/mês',         gestor:false, cp:'Tempo de decisão (call ou 7 dias)' },
+    { id:'impulso',  label:'Impulsionamento (gestão, 3 meses)', val:'R$ 900 (3× R$ 300)', gestor:false, cp:'Tempo de decisão (call ou 7 dias)', note:'Turbo cobre só a gestão de subir/monitorar — a verba de mídia é sempre do cliente.' },
+    { id:'linkedin', label:'LinkedIn (1 mês, 4 conteúdos)',     val:'R$ 697',             gestor:true,  cp:'Depoimento em vídeo ou 5 indicações', plan:'scale',   note:'Alavanca reservada ao Enterprise.' },
+    { id:'storypro', label:'Story PRO (1 mês)',                 val:'R$ 1.397',           gestor:true,  cp:'Decisão em 7 dias',                   plan:'starter', note:'Só Starter — Enterprise já inclui.' },
+    { id:'setup50',  label:'50% do Setup 360',                  val:'R$ 998,50',          gestor:true,  cp:'5 indicações ativas na assinatura',   plan:'starter', note:'Só Starter — Enterprise já inclui.' },
+  ];
+  // Creators (§4.3–4.4). Até 2 concessões (1 vendas + 1 operação). Desconto no
+  // projeto exclui concessão de item. Pontual exige gestor pra qualquer concessão;
+  // recorrente exige gestor nos itens marcados (recGestor). Contrapartida padrão
+  // dos itens = 5 indicações ativas na assinatura (prazo = tempo de decisão).
+  const CONC_CREATORS = [
+    { id:'video_extra',  label:'Vídeo extra com equipe Turbo',         val:'Escassez',   gestor:true,                cp:'5 indicações ativas na assinatura', note:'Validar produção antes de prometer.' },
+    { id:'consultoria',  label:'Consultoria de uso dos vídeos UGC',    val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'motion3',      label:'3 vídeos Motion (Higgsfield)',          val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'posts3',       label:'3 posts estáticos (comunicação)',       val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'ativos4',      label:'4 ativos estáticos p/ performance',     val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'mapa_infl',    label:'Mapeamento de influenciadores',        val:'',                                       cp:'5 indicações ativas na assinatura' },
+    { id:'analise_camp', label:'Análise de campanhas de performance',   val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'roteiro',      label:'Roteiro extra (dona da marca)',         val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'analise_rede', label:'Análise de rede social',               val:'',                                       cp:'5 indicações ativas na assinatura' },
+    { id:'lp_creator',   label:'Landing Page p/ captação de creator',   val:'',           gestor:true,                cp:'5 indicações ativas na assinatura', note:'Validar prazo antes de prometer.' },
+    { id:'formatos',     label:'Formatos 1:1 e 3:4',                    val:'',           recGestor:true,             cp:'5 indicações ativas na assinatura' },
+    { id:'banner',       label:'Banner para site',                     val:'',                                       cp:'5 indicações ativas na assinatura' },
+    { id:'apont_ecom',   label:'Apontamentos de e-com',                val:'',                                       cp:'5 indicações ativas na assinatura', note:'Só com e-com ativo.' },
+    { id:'prazo',        label:'Prazo / data de pagamento',            val:'Custo zero',                             cp:'Tempo de decisão (call ou 7 dias)' },
   ];
 
   let creatorsInactivePrices = JSON.parse(JSON.stringify(CREATORS_RECORRENTE_DEFAULT));
@@ -25248,8 +25282,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   }
   function isBelowMin(sol, tier) {
     // Piso ativo quando: (a) a regra global está ligada, OU (b) modo "com
-    // concessão" e a solução tem piso de concessão (piloto: Performance).
-    const active = MIN_PRICES_ENABLED || (concMode === 'com' && sol === 'performance');
+    // concessão" e a solução tem regras de concessão (Performance/Social/Creators).
+    const active = MIN_PRICES_ENABLED || (concMode === 'com' && (sol === 'performance' || sol === 'social' || sol === 'creators'));
     if (!active) return false;
     const min = minForTier(sol, tier);
     if (min == null) return false;
@@ -25279,9 +25313,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return false;
   }
 
-  // ── Engine das concessões (piloto: Performance) ──────────────────────
-  // Piso por tier do Performance: com TCV ligado, o piso é o do TCV (Starter
-  // R$ 2.997); sem TCV, é o "piso com desconto" do MIN_PRICES (§2.6).
+  // ── Engine das concessões — 3 produtos (Performance, Social, Creators) ──
+  // Cada status() devolve { blocks, warns, signals, headline, over }:
+  //   blocks  = travam o Baixar (override do gestor libera)
+  //   warns   = avisos (não travam)
+  //   signals = "requer gestor" (só sinaliza, não trava — decisão do Roberto)
+  //
+  // PERFORMANCE (§2). Piso: com TCV ligado é o do TCV (Starter R$ 2.997);
+  // sem TCV, o "piso com desconto" do MIN_PRICES (§2.6).
   function concPerfFloor(tier) {
     if (tcvEnabled) return tier === 'starter' ? priceToNumber(TCV_PERF_PRICE) : null;
     return MIN_PRICES.performance[tier] ?? null;
@@ -25320,34 +25359,113 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     if (pesadaCount >= 2) signals.push('2+ concessões pesadas — requer validação do gestor.');
     for (const it of CONC_PERF) if (it.gestor && on(it.id)) signals.push(`${it.label}: requer aprovação do gestor.`);
 
-    return { blocks, warns, signals, pesadaCount, descOn };
+    return { blocks, warns, signals, headline: `${pesadaCount}/3 pesadas`, over: pesadaCount > 3 };
   }
-  // Piloto: só o Performance tem regras modeladas. Demais produtos em fases futuras.
-  function concSelectedHasRules() { return concMode === 'com' && selected.has('performance'); }
-  function concStatus() {
-    if (!concSelectedHasRules()) return { blocks: [], warns: [], signals: [], pesadaCount: 0, descOn: false };
-    return concPerfStatus();
+
+  // SOCIAL MEDIA (§3). UMA única concessão: 1 item de valor OU o caminho
+  // financeiro (desconto), nunca os dois. Story PRO / 50% Setup só no Starter;
+  // LinkedIn só no Enterprise (scale).
+  function concSocialStatus() {
+    const g = concGranted.social;
+    const on = id => g.has(id);
+    const blocks = [], warns = [], signals = [];
+    const en = enabledTiers.social || new Set();
+    const granted = CONC_SOCIAL.filter(it => on(it.id));
+    let financialUsed = false;
+    for (const tier of en) {
+      const cur = priceToNumber(prices.social?.[tier]?.value);
+      const def = priceToNumber(DEFAULT_PRICES.social?.[tier]?.value);
+      const floor = MIN_PRICES.social?.[tier];
+      if (cur != null && def != null && cur < def) financialUsed = true;
+      if (cur != null && floor != null && cur < floor) {
+        const tlabel = (prices.social[tier] && prices.social[tier].label) || tier;
+        blocks.push(`Preço abaixo do piso (${fmtMinReais(floor)}) no plano ${tlabel}.`);
+      }
+    }
+    const total = granted.length + (financialUsed ? 1 : 0);
+    if (total > 1) blocks.push('Só 1 concessão na negociação inteira: um item OU o financeiro, nunca os dois (não há 2ª rodada).');
+    if ((on('storypro') || on('setup50')) && !en.has('starter'))
+      blocks.push('Story PRO / 50% do Setup só valem no Starter — no Enterprise já estão inclusos (seria devolução).');
+    if (on('linkedin') && !en.has('scale'))
+      blocks.push('LinkedIn é alavanca reservada ao Enterprise.');
+    for (const it of CONC_SOCIAL) if (it.gestor && on(it.id)) signals.push(`${it.label}: requer aprovação do gestor.`);
+    if (financialUsed) signals.push('Desconto financeiro: requer aprovação do gestor.');
+    return { blocks, warns, signals, headline: `${total}/1 concessão`, over: total > 1 };
   }
-  // Motivo do bloqueio do Baixar (string vazia = liberado). O override do gestor
-  // libera as travas de concessão; fora do modo "com", vale o piso global (que
-  // hoje está desligado) para as demais soluções.
+
+  // CREATORS (§4). Até 2 (1 vendas + 1 operação). Desconto no projeto exclui
+  // concessão de item. Pontual exige gestor pra qualquer concessão; recorrente
+  // exige gestor nos itens marcados (recGestor).
+  function concCreatorsStatus() {
+    const g = concGranted.creators;
+    const on = id => g.has(id);
+    const blocks = [], warns = [], signals = [];
+    const pontual = creatorsMode === 'pontual';
+    const en = enabledTiers.creators || new Set();
+    const granted = CONC_CREATORS.filter(it => on(it.id));
+    const defStore = pontual ? DEFAULT_PRICES.creators : CREATORS_RECORRENTE_DEFAULT;
+    let financialUsed = false;
+    for (const tier of en) {
+      const cur = priceToNumber(prices.creators?.[tier]?.value);
+      const def = priceToNumber(defStore?.[tier]?.value);
+      const floor = MIN_PRICES.creators?.[creatorsMode]?.[tier];
+      if (cur != null && def != null && cur < def) financialUsed = true;
+      if (cur != null && floor != null && cur < floor) {
+        const tlabel = (prices.creators[tier] && prices.creators[tier].label) || tier;
+        blocks.push(`Preço abaixo do piso ${pontual ? 'pontual' : 'recorrente'} (${fmtMinReais(floor)}) no plano ${tlabel}.`);
+      }
+    }
+    if (granted.length > 2) blocks.push('No máximo 2 concessões (1 de vendas + 1 da operação).');
+    if (financialUsed && granted.length > 0) blocks.push('Desconto no projeto exclui concessão de item — escolha um caminho.');
+    if (pontual && (granted.length || financialUsed)) {
+      signals.push('Projeto pontual: concessão exige aprovação do gestor.');
+    } else {
+      for (const it of granted) if (it.gestor || it.recGestor) signals.push(`${it.label}: requer aprovação do gestor.`);
+    }
+    if (financialUsed) signals.push('Desconto no projeto: requer aprovação do gestor.');
+    return { blocks, warns, signals, headline: `${granted.length}/2`, over: granted.length > 2 };
+  }
+  // Registro dos produtos COM regras de concessão. Os demais (ID Visual,
+  // E-commerce, Comunidade, etc.) não têm — não mostram painel.
+  const CONC_PRODUCTS = {
+    performance: { label: 'Performance',  items: CONC_PERF,     status: concPerfStatus,     hint: 'Comece pelo que custa menos pra Turbo. Leves não contam no limite. Registro interno — não vai pra proposta do cliente.' },
+    social:      { label: 'Social Media', items: CONC_SOCIAL,   status: concSocialStatus,   hint: 'UMA única concessão: um item OU o desconto financeiro, nunca os dois (não há 2ª rodada). Registro interno.' },
+    creators:    { label: 'Creators',     items: CONC_CREATORS, status: concCreatorsStatus, hint: 'Até 2 (1 vendas + 1 operação). Desconto no projeto exclui itens. Pontual exige gestor. Registro interno.' },
+  };
+  function concRuleProducts() { return ['performance', 'social', 'creators'].filter(id => selected.has(id)); }
+  function concSelectedHasRules() { return concMode === 'com' && concRuleProducts().length > 0; }
+  function concAnyWarnOrSignal() {
+    if (concMode !== 'com') return false;
+    for (const id of concRuleProducts()) {
+      const st = CONC_PRODUCTS[id].status();
+      if (st.warns.length || st.signals.length) return true;
+    }
+    return false;
+  }
+  // Motivo do bloqueio do Baixar (string vazia = liberado). No modo "com", varre
+  // os produtos com regra; o override do gestor (por produto) libera as travas.
+  // Fora do "com", vale o piso global (hoje desligado) para as demais soluções.
   function downloadBlockReason() {
-    if (concMode === 'com' && concSelectedHasRules()) {
-      const st = concStatus();
-      if (st.blocks.length && !concOverride) return st.blocks[0];
+    if (concMode === 'com') {
+      for (const id of concRuleProducts()) {
+        const st = CONC_PRODUCTS[id].status();
+        if (st.blocks.length && !concOverride[id]) return `${CONC_PRODUCTS[id].label}: ${st.blocks[0]}`;
+      }
       return '';
     }
     if (anyBelowMin()) return 'Desconto inválido — há preço(s) abaixo do mínimo permitido';
     return '';
   }
-  // HTML do painel de concessões — injetado no card do Performance (renderInvestimento).
-  function concPanelHTML() {
-    const st = concPerfStatus();
-    const g = concGranted.performance;
-    const itemsHtml = CONC_PERF.map(it => {
+  // HTML do painel de concessões dum produto — injetado no card (renderInvestimento).
+  function concPanelHTML(solId) {
+    const prod = CONC_PRODUCTS[solId];
+    const st = prod.status();
+    const g = concGranted[solId];
+    const itemsHtml = prod.items.map(it => {
       const onItem = g.has(it.id);
-      const cat = CONC_CAT[it.cat];
+      const catTag = it.cat ? `<span class="prop-conc-cat" style="--cat:${CONC_CAT[it.cat].color}">${CONC_CAT[it.cat].label}</span>` : '';
       const gestorBadge = it.gestor ? `<span class="prop-conc-gestor" title="Requer aprovação/validação do gestor">⚑ gestor</span>` : '';
+      const valTag = it.val ? `<span class="prop-conc-val">${escapeHtml(it.val)}</span>` : '';
       const cp   = onItem ? `<div class="prop-conc-cp"><span class="prop-conc-cp-label">Contrapartida:</span> ${escapeHtml(it.cp)}</div>` : '';
       const note = (onItem && it.note) ? `<div class="prop-conc-note">${escapeHtml(it.note)}</div>` : '';
       return `<div class="prop-conc-item${onItem ? ' is-on' : ''}" data-conc="${it.id}" role="button" tabindex="0" aria-pressed="${onItem}">
@@ -25355,38 +25473,39 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         <div class="prop-conc-item-body">
           <div class="prop-conc-item-top">
             <span class="prop-conc-item-name">${escapeHtml(it.label)}</span>
-            <span class="prop-conc-cat" style="--cat:${cat.color}">${cat.label}</span>
+            ${catTag}
             ${gestorBadge}
-            <span class="prop-conc-val">${escapeHtml(it.val)}</span>
+            ${valTag}
           </div>
           ${cp}${note}
         </div>
       </div>`;
     }).join('');
 
-    return `<div class="prop-conc">
+    return `<div class="prop-conc" data-conc-sol="${solId}">
       <div class="prop-conc-head">
         <span class="prop-conc-title">🤝 Concessões</span>
-        <span class="prop-conc-count${st.pesadaCount > 3 ? ' is-over' : ''}">${st.pesadaCount}/3 pesadas</span>
+        <span class="prop-conc-count${st.over ? ' is-over' : ''}">${st.headline}</span>
       </div>
-      <p class="prop-conc-hint">Comece pelo que custa menos pra Turbo. Leves não contam no limite. Registro interno — não aparece na proposta do cliente.</p>
+      <p class="prop-conc-hint">${prod.hint}</p>
       <div class="prop-conc-items">${itemsHtml}</div>
-      <div class="prop-conc-foot">${concFootHTML()}</div>
+      <div class="prop-conc-foot">${concFootHTML(solId)}</div>
     </div>`;
   }
   // Rodapé do painel (sinais + status). Separado pra ser regenerado in-place
   // quando o preço muda — assim o status reflete o piso sem rebuild do painel
   // inteiro (que perderia o foco do input enquanto o vendedor digita).
-  function concFootHTML() {
-    const st = concPerfStatus();
+  function concFootHTML(solId) {
+    const st = CONC_PRODUCTS[solId].status();
+    const ovr = concOverride[solId];
     let statusHtml;
     if (st.blocks.length) {
-      statusHtml = `<div class="prop-conc-status is-block${concOverride ? ' is-overridden' : ''}">
-        <strong>${concOverride ? '🔓 Liberado pelo gestor' : '⛔ Bloqueado'}</strong>
+      statusHtml = `<div class="prop-conc-status is-block${ovr ? ' is-overridden' : ''}">
+        <strong>${ovr ? '🔓 Liberado pelo gestor' : '⛔ Bloqueado'}</strong>
         <ul>${st.blocks.map(b => `<li>${escapeHtml(b)}</li>`).join('')}</ul>
         ${st.warns.map(w => `<div class="prop-conc-warn-line">⚠ ${escapeHtml(w)}</div>`).join('')}
         <label class="prop-conc-override">
-          <input type="checkbox" id="prop-conc-override"${concOverride ? ' checked' : ''}>
+          <input type="checkbox" class="prop-conc-override-check" data-conc-sol="${solId}"${ovr ? ' checked' : ''}>
           <span>Aprovado pelo gestor — destravar mesmo assim</span>
         </label>
       </div>`;
@@ -25400,19 +25519,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       : '';
     return signalsHtml + statusHtml;
   }
-  // Atualiza contagem + rodapé do painel sem rebuild (e re-fia o override).
-  function syncConcPanel() {
-    const panel = document.querySelector('.prop-conc');
+  // Re-fia o checkbox de override dentro dum painel (recriado via innerHTML).
+  function wireConcOverride(panel) {
+    const ch = panel.querySelector('.prop-conc-override-check');
+    if (ch) ch.addEventListener('change', () => { concOverride[ch.dataset.concSol] = ch.checked; renderInvestimento(); updateMeta(); });
+  }
+  // Atualiza contagem + rodapé dum painel sem rebuild (usado no input de preço).
+  function syncConcPanel(solId) {
+    const panel = document.querySelector(`.prop-conc[data-conc-sol="${solId}"]`);
     if (!panel) return;
-    const st = concPerfStatus();
+    const st = CONC_PRODUCTS[solId].status();
     const cnt = panel.querySelector('.prop-conc-count');
-    if (cnt) { cnt.textContent = `${st.pesadaCount}/3 pesadas`; cnt.classList.toggle('is-over', st.pesadaCount > 3); }
+    if (cnt) { cnt.textContent = st.headline; cnt.classList.toggle('is-over', !!st.over); }
     const foot = panel.querySelector('.prop-conc-foot');
-    if (foot) {
-      foot.innerHTML = concFootHTML();
-      const ovrCheck = document.getElementById('prop-conc-override');
-      if (ovrCheck) ovrCheck.addEventListener('change', () => { concOverride = ovrCheck.checked; renderInvestimento(); updateMeta(); });
-    }
+    if (foot) { foot.innerHTML = concFootHTML(solId); wireConcOverride(panel); }
   }
 
   // Nome do cliente — campo obrigatório para baixar. Persiste no localStorage
@@ -25502,7 +25622,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const m = btn.dataset.concMode;
       if (!m || m === concMode) return;
       concMode = m;
-      if (concMode === 'sem') concOverride = false; // volta limpo
+      if (concMode === 'sem') resetConcOverride(); // volta limpo
       document.querySelectorAll('[data-conc-mode]').forEach(b => {
         const on = b.dataset.concMode === concMode;
         b.classList.toggle('is-active', on);
@@ -25781,6 +25901,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           <div class="prop-invest-tiers">
             ${Object.entries(prices.creators).map(([tier, td]) => renderTierRow('creators', tier, td)).join('')}
           </div>
+          ${(concMode === 'com' && CONC_PRODUCTS.creators) ? concPanelHTML('creators') : ''}
         </div>
         `;
       }
@@ -25810,7 +25931,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>
         ${extrasHtml}
         ${tcvHtml}
-        ${(s.id === 'performance' && concMode === 'com') ? concPanelHTML() : ''}
+        ${(concMode === 'com' && CONC_PRODUCTS[s.id]) ? concPanelHTML(s.id) : ''}
       </div>
     `;
     }).join('');
@@ -25841,7 +25962,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           // O input só contém o número; sempre reconstroi como "R$ <amount>".
           prices[sol][tier].value = buildPriceValue(input.value);
           savePriceOverrides();
-          if (concMode === 'com' && sol === 'performance') concOverride = false; // mexeu no preço → re-aprovação
+          if (concMode === 'com' && CONC_PRODUCTS[sol]) concOverride[sol] = false; // mexeu no preço → re-aprovação
           input.classList.toggle('is-edited', !isPriceDefault(sol, tier));
           // Validação de desconto mínimo — vermelho + aviso + bloqueio do download.
           const below = isBelowMin(sol, tier);
@@ -25849,7 +25970,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           const warn = $invest.querySelector(`.prop-invest-minwarn[data-sol="${sol}"][data-tier="${tier}"]`);
           if (warn) warn.hidden = !below;
           updateMeta();
-          if (concMode === 'com' && sol === 'performance') syncConcPanel(); // status reflete o piso ao vivo
+          if (concMode === 'com' && CONC_PRODUCTS[sol]) syncConcPanel(sol); // status reflete o piso ao vivo
           schedulePreviewRebuild();
         }
       });
@@ -25984,22 +26105,24 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           _tcvPrevPerf = null;
           tcvEnabled = false;
         }
-        concOverride = false; // mudou o caminho financeiro → aprovação do gestor expira
+        concOverride.performance = false; // mudou o caminho financeiro → aprovação do gestor expira
         renderInvestimento();
         updateMeta();
         schedulePreviewRebuild();
       });
     }
 
-    // Concessões (Performance): toggle de item + destrave do gestor. Re-renderiza
-    // o painel (status/contagem) e revalida o Baixar. SEM rebuild do preview —
-    // concessão é registro interno, não muda a proposta do cliente.
+    // Concessões: toggle de item + destrave do gestor (em qualquer produto com
+    // regra). Lê o produto pelo data-conc-sol do painel. Re-renderiza o painel e
+    // revalida o Baixar. SEM rebuild do preview — concessão é registro interno.
     $invest.querySelectorAll('.prop-conc-item').forEach(el => {
       const toggle = () => {
+        const sol = el.closest('.prop-conc')?.dataset.concSol;
+        if (!sol) return;
         const id = el.dataset.conc;
-        const g = concGranted.performance;
+        const g = concGranted[sol];
         if (g.has(id)) g.delete(id); else g.add(id);
-        concOverride = false; // mudou as concessões → aprovação do gestor expira
+        concOverride[sol] = false; // mudou as concessões → aprovação do gestor expira
         renderInvestimento();
         updateMeta();
       };
@@ -26008,14 +26131,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
       });
     });
-    const ovrCheck = document.getElementById('prop-conc-override');
-    if (ovrCheck) {
-      ovrCheck.addEventListener('change', () => {
-        concOverride = ovrCheck.checked;
+    $invest.querySelectorAll('.prop-conc-override-check').forEach(ch => {
+      ch.addEventListener('change', () => {
+        concOverride[ch.dataset.concSol] = ch.checked;
         renderInvestimento();
         updateMeta();
       });
-    }
+    });
 
     // Atualiza o guard de desconto mínimo a cada (re)render do Investimento
     // — cobre trocas de subtipo (e-commerce), modo (Creators) e módulos (CRM).
@@ -26117,8 +26239,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       $meta.textContent = `Para ${clientName} · Apresentação institucional da Turbo`;
       setDownloadDisabled(false);
     } else {
-      const st = concStatus();
-      const extra = (concMode === 'com' && (st.warns.length || st.signals.length)) ? ' · ⚠ revisar concessões' : '';
+      const extra = concAnyWarnOrSignal() ? ' · ⚠ revisar concessões' : '';
       $meta.textContent = `Para ${clientName} · Turbo + ${count} soluç${count > 1 ? 'ões' : 'ão'}${extra}`;
       setDownloadDisabled(false);
     }
@@ -29740,59 +29861,93 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       }
 
       /* ════════════════════════════════════════════════════════
-         PRINT / PDF — o "Baixar → PDF" usa o print-to-PDF do
-         navegador. Em vez de "1 slide por página" (que deixa buraco
-         embaixo dos slides curtos), o conteúdo FLUI e preenche as
-         páginas: documento contínuo, escuro, harmônico, sem cortar
-         cards/blocos no meio. Capa e fechamento ganham página
-         inteira. Funciona desktop e mobile.
+         PRINT / PDF — "Baixar → PDF" usa o print-to-PDF do navegador.
+         Estratégia: 1 SLIDE = 1 PÁGINA, em A4 PAISAGEM, preservando a
+         composição full-screen escura que deixa o HTML lindo (em vez de
+         "fluir" tudo junto, que retalhava claro/escuro). O canvas da
+         página é escuro (html bg) → nunca sobra branco nas bordas. A
+         maioria dos slides cabe exatamente numa página; os poucos mais
+         densos escorrem pro fundo escuro da página seguinte, sem corte.
+         Funciona desktop e mobile (a impressão usa o tamanho da página,
+         não a tela do aparelho — sai sempre no layout "desktop").
          ════════════════════════════════════════════════════════ */
       @media print {
-        @page { size: A4 portrait; margin: 0; }
-        html, body { background: #07070f !important; margin: 0 !important; }
+        @page { size: 297mm 210mm; margin: 0; } /* A4 paisagem explícito (mais confiável) */
+        html, body { background: #07070f !important; margin: 0 !important; padding: 0 !important; }
         * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
 
-        /* fluxo de documento: sem altura de tela e sem quebra forçada —
-           cada bloco escorre e preenche a página */
-        .proposal-section,
-        .proposal-section .xpto-slide,
-        .proposal-section .turbo-slide,
-        .pacotes-slide, .invest-slide,
-        #apres-sub-turbo, .turbo-slides {
-          min-height: 0 !important; height: auto !important; overflow: visible !important;
-          justify-content: flex-start !important;
-          break-before: auto !important; page-break-before: auto !important;
-          break-after: auto !important;  page-break-after: auto !important;
-        }
-        /* padding enxuto e uniforme (o fundo escuro sangra até a borda) */
-        .proposal-section .xpto-slide,
-        .proposal-section .turbo-slide { padding: 30px 32px !important; }
-        /* divisa fininha entre slides na mesma página, em vez de buraco */
-        .proposal-section .xpto-slide + .xpto-slide,
-        .proposal-section .turbo-slide + .turbo-slide {
-          border-top: 1px solid rgba(255,255,255,0.07);
+        /* contêineres de deck não limitam altura nem usam scroll */
+        .turbo-slides, #apres-sub-turbo, .proposal-section {
+          height: auto !important; min-height: 0 !important; overflow: visible !important;
+          display: block !important;
         }
 
-        /* blocos coesos não se partem entre páginas */
-        .pacote-card, .pp-gameplan-card, .ee-deliver li, .ee-pillar, .ee-tl-step,
-        .redes-scope-item, .sm-setup-item, .pp-compare-card, .pp-result-card,
-        .dnvb-card, .ee-head, .ee-etapa-head, .pacotes-header, .pp-gameplan-header,
-        .invest-slide, .xpto-eyebrow, .pacotes-footer, .ee-cover .xpto-slide-inner {
+        /* cada slide ocupa uma página inteira (paisagem), centralizado e escuro */
+        .turbo-slide, .xpto-slide, .pacotes-slide, .invest-slide,
+        .pdnvb-slide, .pdnvb-cover {
+          break-before: page; page-break-before: always;
+          break-inside: avoid; page-break-inside: avoid;
+          min-height: 190mm !important;   /* ~página A4 paisagem; mm é confiável no print (vh buga) */
+          height: auto !important;
+          overflow: visible !important;    /* slide denso pode escorrer p/ próxima página (fundo escuro) */
+          background-color: #07070f !important; /* fundo garantido; gradientes pintam por cima */
+          scroll-snap-align: none !important;
+        }
+        /* CRÍTICO: zera qualquer altura em vh dentro dos slides — no print o Chrome
+           resolve vh errado e a página vira gigante (1ª folha preta, conteúdo no
+           meio) e o gráfico de crescimento escala junto, invadindo várias páginas. */
+        .turbo-slide-inner, .xpto-slide-inner,
+        .turbo-slide--growth .turbo-slide-inner { height: auto !important; }
+        .turbo-growth-chart {
+          height: 145mm !important; max-height: 145mm !important; min-height: 0 !important;
+          overflow: hidden !important; padding-top: 0 !important;
+        }
+        .turbo-chart-area, .turbo-chart-svg { height: 100% !important; overflow: hidden !important; }
+        /* FORÇA o layout desktop no papel. Na impressão a "largura" às vezes é
+           detectada estreita e dispara o @media(max-width:900px), que empilha o
+           growth (cabeçalho em cima do gráfico → 2 páginas) e quebra os pacotes
+           (1 por página). Como este bloco vem DEPOIS no código, ele vence. */
+        .proposal-section--turbo .turbo-slide--growth .turbo-slide-inner {
+          flex-direction: row !important; align-items: center !important; gap: 48px !important;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-growth-header {
+          flex: 0 0 280px !important; width: auto !important;
+        }
+        .proposal-section--turbo .turbo-slide--growth .turbo-growth-chart { width: auto !important; }
+        /* pacotes: sempre lado a lado, nunca empilhados (igual ao HTML) */
+        .proposal-section--pacotes-perf .pacotes-grid,
+        .proposal-section--pacotes-creators .pacotes-grid,
+        .proposal-section--pacotes-social .pacotes-grid,
+        .proposal-section--pacotes-comunidade .pacotes-grid,
+        .proposal-section--pacotes-dnvb .pacotes-grid {
+          flex-wrap: nowrap !important; justify-content: center !important; align-items: stretch !important;
+        }
+        /* metodologia (5 fases): em linha, num slide só (empilhava abaixo de 920px) */
+        .turbo-metodo-flow { flex-direction: row !important; flex-wrap: nowrap !important; }
+        /* trava universal: nenhuma mídia passa de ~1 página no papel (várias imagens
+           usam max-height em vh — ex.: 58vh/78vh — que no print viram gigantes). */
+        .turbo-slide img, .turbo-slide svg, .turbo-slide canvas,
+        .xpto-slide img, .xpto-slide svg, .xpto-slide canvas,
+        .pacotes-slide img, .invest-slide img, .pdnvb-slide img, .pdnvb-cover img {
+          max-height: 160mm !important;
+        }
+        /* padding enxuto no papel (sem hint de scroll) ajuda slide denso a caber */
+        .turbo-slide, .xpto-slide { padding-top: 44px !important; padding-bottom: 40px !important; }
+
+        /* blocos coesos não se partem caso um slide denso passe de 1 página */
+        .pacote-card, .pp-gameplan-card, .pp-compare-card, .pp-result-card,
+        .ee-pillar, .ee-tl-step, .redes-scope-item, .sm-setup-item, .dnvb-card,
+        .cp-phone-frame, .cp-case-row, .pacotes-footer {
           break-inside: avoid; page-break-inside: avoid;
         }
-        /* títulos nunca ficam órfãos no rodapé da página */
-        h1, h2, h3, h4, .pacotes-title, .pp-gameplan-title, .ee-title, .xpto-title {
-          break-after: avoid; page-break-after: avoid;
-        }
 
-        /* a capa (1ª) e o fechamento ganham página inteira — elegância */
-        .proposal-section--closing { break-before: page; page-break-before: always; }
-        body > .proposal-section:first-child { break-before: avoid !important; page-break-before: avoid !important; }
-
-        /* esconde controles/links interativos que não fazem sentido no papel */
-        .xpto-scroll-hint, .pp-scroll-hint, .turbo-scroll-hint,
+        /* esconde controles/links interativos que não fazem sentido no papel
+           (inclui o "toque pra ativar o som" do Creators, que vazava p/ o slide
+           seguinte deixando-o vazio) */
+        .xpto-scroll-hint, .pp-scroll-hint, .turbo-scroll-hint, .cp-scroll-hint,
         .ee-cta, .pp-gameplan-example, .sm-setup-examples,
-        #deck-embed-lb { display: none !important; }
+        .cp-sound-overlay, .cp-sound-btn, .cp-play-btn, .cp-video-play,
+        #deck-embed-lb, .pdnvb-lb { display: none !important; }
       }
     `;
 
@@ -30407,9 +30562,26 @@ ${deckEmbedScript}
       const iframe = document.createElement('iframe');
       iframe.id = 'prop-print-frame';
       iframe.setAttribute('aria-hidden', 'true');
-      iframe.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+      // CRÍTICO: o iframe precisa ter o TAMANHO REAL de uma página A4 paisagem
+      // (297×210mm ≈ 1123×794px @96dpi). Com width:0 o Chrome renderizava a
+      // impressão como página estreitíssima → layouts de várias colunas
+      // colapsavam em 1 coluna (pacotes 1 por página, "somos obcecados" em 2
+      // páginas, slides esparsos viravam páginas pretas). Off-screen pra não piscar.
+      iframe.style.cssText = 'position:fixed;left:-10000px;top:0;width:1123px;height:794px;border:0;opacity:0;pointer-events:none;';
       document.body.appendChild(iframe);
       iframe.addEventListener('load', function () {
+        // O 1º slide não deve forçar quebra de página (senão sai folha em
+        // branco antes da capa). Os demais mantêm o break-before do @media print.
+        try {
+          const d = iframe.contentDocument;
+          const first = d && d.querySelector('.turbo-slide, .xpto-slide, .pacotes-slide, .invest-slide, .pdnvb-slide, .pdnvb-cover');
+          if (first) {
+            const st = d.createElement('style');
+            st.textContent = '@media print{.pdf-first-slide{break-before:avoid!important;page-break-before:avoid!important;}}';
+            d.head.appendChild(st);
+            first.classList.add('pdf-first-slide');
+          }
+        } catch (e) {}
         // Espera imagens/layout assentarem antes de chamar print().
         setTimeout(function () {
           try {
