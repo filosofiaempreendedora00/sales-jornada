@@ -25388,6 +25388,31 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     if (!clean) return 'R$ ';
     return 'R$ ' + clean;
   }
+  // Formata um valor digitado pro padrão BRL ("2997" → "2.997,00", "2.997,5" →
+  // "2.997,50"). Usado no blur dos inputs de preço. Mantém texto não-numérico
+  // (ex.: "Grátis", "Sob consulta") e o que estiver vazio.
+  function formatBRL(raw) {
+    let s = String(raw == null ? '' : raw).replace(/^R\$\s*/i, '').trim();
+    if (!s) return '';
+    if (!/\d/.test(s)) return s; // sem dígito — não mexe
+    let num;
+    if (s.includes(',')) {
+      // vírgula = decimal; ponto = separador de milhar
+      num = parseFloat(s.replace(/\./g, '').replace(',', '.'));
+    } else if (s.includes('.')) {
+      const parts = s.split('.');
+      const lastLen = parts[parts.length - 1].length;
+      // "2997.5"/"2997.50" (1 ponto, 1-2 dígitos no fim) = decimal;
+      // "2.997"/"1.234.567" = milhar.
+      num = (parts.length === 2 && lastLen <= 2)
+        ? parseFloat(s)
+        : parseFloat(s.replace(/\./g, ''));
+    } else {
+      num = parseFloat(s);
+    }
+    if (isNaN(num)) return raw;
+    return num.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
   // Limpeza one-shot: remove caches antigos do localStorage. Usuários
   // reclamavam que os pacotes default mudavam ao reabrir a app porque
   // edições de preço/checkboxes ficavam persistidas. Estado de pacotes
@@ -25743,7 +25768,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   function isFeeDefault(sol) { return !!feeData[sol] && feeData[sol].value === FEE_DEFAULTS[sol]; }
   function feeIsGratis(sol) {
     const s = stripCurrency(feeData[sol] ? feeData[sol].value : '').trim().toLowerCase();
-    return !s || s === '0' || /gr[aá]tis|cortesia|free/.test(s);
+    // priceToNumber cobre o zero formatado ("0,00", "0.00") que o blur agora gera.
+    return !s || priceToNumber(s) === 0 || /gr[aá]tis|cortesia|free/.test(s);
   }
 
   function isPriceDefault(sol, tier) {
@@ -26477,6 +26503,15 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           updateMeta();
           if (concMode === 'com' && CONC_PRODUCTS[sol]) syncConcPanel(sol); // status reflete o piso ao vivo
           schedulePreviewRebuild();
+        }
+      });
+      // Ao sair do campo (blur), formata pro padrão BRL: "2997" → "2.997,00".
+      // Vale pra todos os preços (tiers, fee e ancoragem) de todas as soluções.
+      input.addEventListener('blur', () => {
+        const formatted = formatBRL(input.value);
+        if (formatted !== input.value) {
+          input.value = formatted;
+          input.dispatchEvent(new Event('input', { bubbles: true })); // reaproveita o handler de cima
         }
       });
     });
