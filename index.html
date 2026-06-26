@@ -15083,28 +15083,6 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
       </div>
       <div class="prop-section">
-        <p class="prop-section-label">Modo de negociação</p>
-        <div class="prop-mode-switcher" role="tablist" aria-label="Modo de concessão">
-          <button
-            type="button"
-            class="prop-type-btn is-active"
-            role="tab"
-            aria-selected="true"
-            data-conc-mode="sem"
-            title="Oferta limpa — sem concessões (regra zero)"
-          >Sem concessão</button>
-          <button
-            type="button"
-            class="prop-type-btn"
-            role="tab"
-            aria-selected="false"
-            data-conc-mode="com"
-            title="Negociação — libera concessões com as travas das regras"
-          >Com concessão</button>
-        </div>
-        <span class="prop-client-hint" id="prop-conc-mode-hint">Oferta limpa: nenhuma concessão. As travas das regras ficam adormecidas.</span>
-      </div>
-      <div class="prop-section">
         <p class="prop-section-label">Soluções &amp; Planos</p>
         <div class="prop-solutions" id="prop-solutions"></div>
       </div>
@@ -25516,14 +25494,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   let _tcvPrevPerf = null;
 
   // ── CONCESSÕES (doc "Concessões e Contrapartidas") ──────────────────
-  // Switcher global de negociação:
-  //   'sem' (default) → oferta limpa, regra zero. Travas ADORMECIDAS.
-  //   'com'           → negociação. Travas APLICADAS: limite de concessões,
-  //                     combinações proibidas e piso de preço passam a valer.
+  // SEMPRE no modo de negociação (Roberto removeu o switcher Sem/Com): as travas
+  // valem por padrão — limite de concessões, combinações proibidas e piso de
+  // preço sempre aplicados; o painel de concessões aparece em cada produto com
+  // regras (Performance, Social Media, Creators) no seletor de soluções.
   // Concessão é registro INTERNO — NÃO entra no HTML/PDF do cliente (decisão
-  // do Roberto). O painel vive no card de cada produto com regras (Performance,
-  // Social Media, Creators), no seletor de soluções.
-  let concMode = 'sem';
+  // do Roberto). Mantido como variável (em vez de constante) só porque vários
+  // pontos do código checam `concMode === 'com'`; agora é sempre 'com'.
+  let concMode = 'com';
   const concGranted  = { performance: new Set(), social: new Set(), creators: new Set() };
   const concOverride = { performance: false, social: false, creators: false }; // destrave do gestor por produto
   function resetConcOverride() { for (const k in concOverride) concOverride[k] = false; }
@@ -26197,30 +26175,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     });
   });
 
-  // Modo de negociação (Sem / Com concessão) — liga/desliga as travas. NÃO
-  // mexe na proposta do cliente (concessão é registro interno); só re-renderiza
-  // o painel e revalida o gating do Baixar.
-  const $concModeHint = document.getElementById('prop-conc-mode-hint');
-  const CONC_MODE_HINTS = {
-    sem: 'Oferta limpa: nenhuma concessão. As travas das regras ficam adormecidas.',
-    com: 'Negociação: dá pra conceder itens — limite, combinações e piso de preço passam a valer (piloto: Performance).',
-  };
-  document.querySelectorAll('[data-conc-mode]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const m = btn.dataset.concMode;
-      if (!m || m === concMode) return;
-      concMode = m;
-      if (concMode === 'sem') resetConcOverride(); // volta limpo
-      document.querySelectorAll('[data-conc-mode]').forEach(b => {
-        const on = b.dataset.concMode === concMode;
-        b.classList.toggle('is-active', on);
-        b.setAttribute('aria-selected', on ? 'true' : 'false');
-      });
-      if ($concModeHint) $concModeHint.textContent = CONC_MODE_HINTS[concMode] || '';
-      renderInvestimento(); // mostra/esconde o painel + recolore inputs abaixo do piso
-      updateMeta();
-    });
-  });
+  // Modo de negociação: o switcher Sem/Com foi removido (Roberto) — agora é
+  // sempre 'com' (ver concMode). As travas valem por padrão; nada a ligar/desligar.
 
   // Validade — input de data, dispara rebuild do preview pra refletir a
   // badge no slide de fechamento. Estado vive só na sessão.
