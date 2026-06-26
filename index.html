@@ -3818,6 +3818,9 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 
 /* Card do print (Prints de texto) */
 .depo-print-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+/* "Prints de texto": 2 por linha (Áudios segue 1 por linha). No mobile volta a 1. */
+.depo-print-grid--2col { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 600px) { .depo-print-grid--2col { grid-template-columns: 1fr; } }
 .depo-print-card {
   position: relative; display: block; width: 100%; padding: 0;
   border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden;
@@ -15341,7 +15344,7 @@ a.xpto-pricing-btn { text-decoration: none; }
             <p class="depo-type-sub">Conversas e mensagens (WhatsApp, DM, e-mail).</p>
           </div>
         </div>
-        <div class="depo-print-grid">
+        <div class="depo-print-grid depo-print-grid--2col">
           <button type="button" class="depo-print-card" data-depo-name="Skyfit" data-print-img="skyfit" aria-label="Print do WhatsApp — elogio da Skyfit (clique e veja o depoimento do cliente)">
             <img class="depo-print-thumb" src="/depoimentos/skyfit/grupo.png" alt="" loading="lazy">
             <span class="depo-print-badge"><span class="depo-print-badge-play">💬</span> Skyfit · elogio do cliente</span>
