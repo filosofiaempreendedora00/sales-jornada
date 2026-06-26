@@ -25846,6 +25846,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return isNaN(n) ? null : n;
   }
   function minForTier(sol, tier) {
+    // TCV (Performance) é EXCEÇÃO à regra de desconto: quando ligado, o piso do
+    // Starter passa a ser o próprio preço do TCV (R$ 2.997) — abaixo do piso
+    // normal (R$ 3.297), mas válido. Espelha o concPerfFloor() da engine de
+    // concessões pra a regra global não brigar com o TCV.
+    if (sol === 'performance' && tcvEnabled && tier === 'starter') {
+      return priceToNumber(TCV_PERF_PRICE);
+    }
     // Creators: mínimo depende do modo (Pontual/Recorrente).
     if (sol === 'creators') return MIN_PRICES.creators?.[creatorsMode]?.[tier] ?? null;
     return MIN_PRICES[sol]?.[tier] ?? null;
