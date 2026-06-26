@@ -5867,12 +5867,22 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   gap: 8px;
 }
 /* Planos inline — aparecem embaixo de cada solução SELECIONADA no seletor.
-   O chip já mostra nome/cor, então o card vira só os tiers + fee, leve e
-   "encaixado" (sem borda/fundo próprios e sem o cabeçalho redundante). */
-.prop-sol-plans { margin: 2px 0 2px; }
+   Chip + planos formam UM ÚNICO container na cor da solução: o chip ativo é o
+   "topo" arredondado e este wrapper é o "corpo" (preços + concessões). O -7px
+   cancela o gap do flex pra encostar no chip; o padding dá respiro pra nada
+   tocar as bordas do container. A cor (--card-color) é copiada do card pelo
+   inlinePlans(), pois o wrapper não herda a var do filho. */
+.prop-sol-plans {
+  margin: -7px 0 6px;
+  padding: 12px 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--card-color, #0dcfe8) 55%, transparent);
+  border-top: 0;
+  border-radius: 0 0 11px 11px;
+  background: color-mix(in srgb, var(--card-color, #0dcfe8) 6%, transparent);
+}
 .prop-sol-plans .prop-invest-card {
   background: transparent; border: 0; border-radius: 0;
-  padding: 4px 0 4px 6px; gap: 7px;
+  padding: 0; gap: 8px;
 }
 .prop-sol-plans .prop-invest-card-head { display: none; }
 .prop-sol-plans .prop-invest-extras { margin-top: 2px; }
@@ -5891,20 +5901,36 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   grid-template-columns: 1fr;
   gap: 6px;
 }
+/* Layout EMPILHADO: o container colorido do sidebar é estreito demais pra caber
+   [label + R$ + número + ancoragem + checkbox] numa linha só — o preço ficava
+   cortado e o "PERSONALIZADO" se sobrepunha no R$. Então: label + checkbox em
+   cima, e o input de preço ocupa a LINHA INTEIRA embaixo. Preço sempre legível
+   com respiro de sobra, e todo label cabe inteiro. */
 .prop-invest-field {
   display: grid;
-  grid-template-columns: 76px 1fr auto;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "tier  check"
+    "price price";
   align-items: center;
-  gap: 8px;
+  column-gap: 8px;
+  row-gap: 6px;
 }
 .prop-invest-tier {
+  grid-area: tier;
+  min-width: 0;
   font-size: 10.5px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.6px;
   color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   transition: opacity 0.18s;
 }
+.prop-invest-field > .prop-invest-input-wrap { grid-area: price; }
+.prop-invest-field > .prop-invest-check { grid-area: check; justify-self: end; }
 /* "Extras" são toggles abaixo dos tiers (ex: Fee de implantação no Performance).
    Linha mais sutil — não tem input editável, só label + valor + checkbox.
    Borda tracejada separa visualmente dos pacotes principais. */
@@ -5933,12 +5959,12 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-invest-tcv-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .prop-invest-tcv-sub { font-size: 11px; color: var(--text-2); line-height: 1.35; }
 
-/* ── Concessões — painel inline no card do Performance (modo "com concessão") ── */
-/* Painel envolto por um retângulo na cor da solução (--card-color: Performance
-   ciano, Creators laranja, Social verde…). */
-.prop-conc { margin-top: 12px; padding: 13px 12px; display: flex; flex-direction: column; gap: 8px;
-  border: 1.5px solid color-mix(in srgb, var(--card-color, #0dcfe8) 50%, transparent);
-  border-radius: 14px; background: color-mix(in srgb, var(--card-color, #0dcfe8) 7%, transparent); }
+/* ── Concessões — painel inline no card (modo "com concessão") ── */
+/* O container colorido externo (.prop-sol-plans) já carrega a cor da solução,
+   então aqui NÃO repetimos a borda colorida (caixa-dentro-de-caixa). As
+   concessões viram uma seção separada por um divisor sutil no topo, com respiro. */
+.prop-conc { margin-top: 13px; padding: 13px 0 0; display: flex; flex-direction: column; gap: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--card-color, #0dcfe8) 30%, transparent); }
 .prop-conc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .prop-conc-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .prop-conc-count { font-size: 11px; font-weight: 800; color: #ffa826; background: rgba(255,168,38,0.14); border: 1px solid rgba(255,168,38,0.35); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
@@ -6068,7 +6094,7 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-invest-currency {
   display: inline-flex;
   align-items: center;
-  padding: 0 8px 0 10px;
+  padding: 0 7px 0 8px;
   color: var(--text-soft);
   font-size: 12.5px;
   font-weight: 700;
@@ -6198,6 +6224,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
    já mostra qual está selecionado). Input ocupa toda a largura. */
 .prop-invest-field--exclusive {
   grid-template-columns: 1fr !important;
+  grid-template-areas: "price" !important;
+  row-gap: 0;
 }
 .prop-invest-field--exclusive .prop-invest-tier {
   display: none;
@@ -6230,16 +6258,18 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   background: rgba(155,109,255,0.16);
   border-left-color: rgba(155,109,255,0.32);
 }
-/* Linha extra que aparece embaixo do tier quando ancoragem ativa.
-   Alinhada com o input principal (offset visual do label do tier). */
+/* Linha extra "de [riscado]" que aparece embaixo do preço quando a ancoragem
+   está ativa. Com o layout empilhado, o preço ocupa a linha inteira, então a
+   ancoragem também vira linha cheia: "de" à esquerda + input ocupando o resto. */
 .prop-invest-anchor-row {
   display: grid;
-  grid-template-columns: 76px 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   margin: -2px 0 2px 0;
   animation: prop-anchor-in 0.22s ease;
 }
+.prop-invest-anchor-row-spacer { display: none; }
 @keyframes prop-anchor-in {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -6250,8 +6280,8 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   letter-spacing: 1.4px;
   text-transform: uppercase;
   color: rgba(196,168,255,0.55);
-  text-align: right;
-  padding-right: 4px;
+  text-align: left;
+  padding-left: 2px;
 }
 .prop-invest-input-wrap--anchor {
   border-style: dashed !important;
@@ -6269,7 +6299,6 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   text-decoration: line-through;
   text-decoration-color: rgba(196,168,255,0.55);
 }
-.prop-invest-anchor-row-spacer { /* invisible spacer to align checkbox column */ }
 .prop-invest-reset {
   align-self: flex-end;
   background: none;
@@ -6317,6 +6346,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-sol-chip.is-active {
   background: color-mix(in srgb, var(--chip-color) 14%, transparent);
   border-color: color-mix(in srgb, var(--chip-color) 55%, transparent);
+}
+/* Chip ativo COM planos abaixo = TOPO do container: encosta no corpo
+   (.prop-sol-plans) removendo a borda/arredondamento de baixo, pra virarem
+   um retângulo único na cor da solução. */
+.prop-sol-chip.is-active:has(+ .prop-sol-plans) {
+  border-bottom-color: transparent;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 .prop-sol-chip.is-disabled {
   opacity: 0.45;
@@ -26714,6 +26751,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       if (!chip) return;
       const wrap = document.createElement('div');
       wrap.className = 'prop-sol-plans';
+      // O wrapper não herda --card-color do card (filho), então copiamos pra
+      // ele carregar a borda/fundo do container na cor certa da solução.
+      const cc = card.style.getPropertyValue('--card-color');
+      if (cc) wrap.style.setProperty('--card-color', cc.trim());
       wrap.appendChild(card);
       chip.after(wrap);
     });
