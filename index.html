@@ -5293,6 +5293,51 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   color: var(--text);
 }
 
+/* ── Tipo de proposta — dropdown estilizado (custom, sobre um <select> oculto) ── */
+.prop-typedd { position: relative; }
+.prop-typedd-native { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.prop-typedd-trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 12px;
+  padding: 11px 14px; cursor: pointer; font-family: inherit; color: var(--text);
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.prop-typedd-trigger:hover { background: rgba(255,255,255,0.06); border-color: var(--border2); }
+.prop-typedd.is-open .prop-typedd-trigger {
+  border-color: rgba(155,109,255,0.55); background: rgba(155,109,255,0.06);
+  box-shadow: 0 0 0 3px rgba(155,109,255,0.12);
+}
+.prop-typedd-cur { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.prop-typedd-cur-name { font-size: 13.5px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-typedd-caret { color: var(--text-2); font-size: 10px; transition: transform .18s; flex: 0 0 auto; }
+.prop-typedd.is-open .prop-typedd-caret { transform: rotate(180deg); }
+.prop-typedd-badge {
+  flex: 0 0 auto; font-size: 8.5px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 999px; border: 1px solid transparent; white-space: nowrap;
+}
+.prop-typedd-badge--official { color: #c7b3ff; background: rgba(155,109,255,0.16); border-color: rgba(155,109,255,0.45); }
+.prop-typedd-badge--old { color: var(--text-2); background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); }
+.prop-typedd-panel {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 40;
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 12px;
+  padding: 6px; box-shadow: 0 18px 50px rgba(0,0,0,0.55);
+  display: flex; flex-direction: column; gap: 3px;
+}
+.prop-typedd-panel[hidden] { display: none; }
+.prop-typedd-grouplabel { font-size: 9px; font-weight: 800; letter-spacing: .9px; text-transform: uppercase; color: #5a5e7a; padding: 9px 10px 4px; }
+.prop-typedd-opt {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left;
+  background: transparent; border: 1px solid transparent; border-radius: 9px; padding: 9px 11px; cursor: pointer;
+  font-family: inherit; color: var(--text); transition: background .12s, border-color .12s;
+}
+.prop-typedd-opt:hover { background: rgba(255,255,255,0.05); }
+.prop-typedd-opt.is-active { background: rgba(155,109,255,0.10); border-color: rgba(155,109,255,0.30); }
+.prop-typedd-opt--official.is-active { background: rgba(155,109,255,0.14); }
+.prop-typedd-opt-main { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.prop-typedd-opt-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.prop-typedd-opt--official .prop-typedd-opt-name { color: #fff; }
+.prop-typedd-opt-desc { font-size: 10.5px; color: var(--text-2); line-height: 1.3; }
+
 .prop-custom-preview-btn {
   appearance: none;
   width: 100%;
@@ -14732,13 +14777,42 @@ a.xpto-pricing-btn { text-decoration: none; }
         </button>
 
         <p class="prop-section-label" style="margin-top: 6px;">Tipo de proposta</p>
-        <div class="prop-select-wrap">
-          <select class="prop-custom-select" id="prop-custom-type" aria-label="Tipo de proposta">
-            <option value="">Selecione...</option>
-            <option value="00">00 — Proposta de lançamento</option>
-            <option value="01">01 — Proposta de Performance com MQL</option>
-            <option value="02">02 — Proposta de Réguas de Comunicação</option>
+        <div class="prop-typedd" id="prop-typedd">
+          <select id="prop-custom-type" class="prop-typedd-native" aria-label="Tipo de proposta" tabindex="-1" aria-hidden="true">
+            <option value="03" selected>Modelo Oficial</option>
+            <option value="00">Proposta de lançamento</option>
+            <option value="01">Proposta de Performance com MQL</option>
+            <option value="02">Proposta de Réguas de Comunicação</option>
           </select>
+          <button type="button" class="prop-typedd-trigger" id="prop-typedd-trigger" aria-haspopup="listbox" aria-expanded="false">
+            <span class="prop-typedd-cur">
+              <span class="prop-typedd-cur-name" id="prop-typedd-cur-name">Modelo Oficial</span>
+              <span class="prop-typedd-badge prop-typedd-badge--official" id="prop-typedd-cur-badge">Oficial</span>
+            </span>
+            <span class="prop-typedd-caret" aria-hidden="true">▾</span>
+          </button>
+          <div class="prop-typedd-panel" id="prop-typedd-panel" role="listbox" aria-label="Tipo de proposta" hidden>
+            <button type="button" class="prop-typedd-opt prop-typedd-opt--official is-active" role="option" data-val="03">
+              <span class="prop-typedd-opt-main">
+                <span class="prop-typedd-opt-name">Modelo Oficial</span>
+                <span class="prop-typedd-opt-desc">Modelo atual da Turbo</span>
+              </span>
+              <span class="prop-typedd-badge prop-typedd-badge--official">Oficial</span>
+            </button>
+            <div class="prop-typedd-grouplabel">Modelos antigos</div>
+            <button type="button" class="prop-typedd-opt" role="option" data-val="00">
+              <span class="prop-typedd-opt-main"><span class="prop-typedd-opt-name">Proposta de lançamento</span></span>
+              <span class="prop-typedd-badge prop-typedd-badge--old">Antigo</span>
+            </button>
+            <button type="button" class="prop-typedd-opt" role="option" data-val="01">
+              <span class="prop-typedd-opt-main"><span class="prop-typedd-opt-name">Performance com MQL</span></span>
+              <span class="prop-typedd-badge prop-typedd-badge--old">Antigo</span>
+            </button>
+            <button type="button" class="prop-typedd-opt" role="option" data-val="02">
+              <span class="prop-typedd-opt-main"><span class="prop-typedd-opt-name">Réguas de Comunicação</span></span>
+              <span class="prop-typedd-badge prop-typedd-badge--old">Antigo</span>
+            </button>
+          </div>
         </div>
         <button
           type="button"
@@ -18114,7 +18188,7 @@ a.xpto-pricing-btn { text-decoration: none; }
     { name: 'calc',                      re: /^\/calculadora\/?$/,                          params: [] },
     { name: 'prop.padrao.closer',        re: /^\/propostas\/padrao\/([a-z]+)\/?$/,          params: ['closer'] },
     { name: 'prop.padrao',               re: /^\/propostas\/padrao\/?$/,                    params: [] },
-    { name: 'prop.personalizada.tipo',   re: /^\/propostas\/personalizada\/(lancamento|performance-mql|reguas)\/?$/, params: ['tipo'] },
+    { name: 'prop.personalizada.tipo',   re: /^\/propostas\/personalizada\/(lancamento|performance-mql|reguas|modelo-oficial)\/?$/, params: ['tipo'] },
     { name: 'prop.personalizada',        re: /^\/propostas\/personalizada\/?$/,             params: [] },
     { name: 'propostas',                 re: /^\/propostas\/?$/,                            params: [] },
     { name: 'cases',                     re: /^\/cases\/?$/,                                params: [] },
@@ -18127,8 +18201,8 @@ a.xpto-pricing-btn { text-decoration: none; }
   ];
 
   // Mapeamentos URL ↔ DOM
-  const TIPO_TO_VAL = { 'lancamento': '00', 'performance-mql': '01', 'reguas': '02' };
-  const VAL_TO_TIPO = { '00': 'lancamento', '01': 'performance-mql', '02': 'reguas' };
+  const TIPO_TO_VAL = { 'lancamento': '00', 'performance-mql': '01', 'reguas': '02', 'modelo-oficial': '03' };
+  const VAL_TO_TIPO = { '00': 'lancamento', '01': 'performance-mql', '02': 'reguas', '03': 'modelo-oficial' };
   // Closer em Propostas usa valores numéricos no <select id="prop-closer">.
   // Já o submenu da Apresentação usa slugs (data-closer="roberto"). Os slugs
   // ficam na URL — ambas as superfícies traduzem pra seus valores internos.
@@ -18234,9 +18308,10 @@ a.xpto-pricing-btn { text-decoration: none; }
   }
 
   function clearPropTipo() {
+    // Sem tipo na URL → default é o Modelo Oficial ('03'), que carrega sozinho.
     const sel = document.getElementById('prop-custom-type');
-    if (!sel || sel.value === '') return;
-    sel.value = '';
+    if (!sel) return;
+    sel.value = '03';
     sel.dispatchEvent(new Event('change', { bubbles: true }));
   }
 
@@ -24515,6 +24590,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       '00': 'lancamento',
       '01': 'performance-mql',
       '02': 'reguas',
+      '03': 'modelo-oficial',
     };
     const safe = clientName
       .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
@@ -24638,12 +24714,14 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   const TYPE_TO_FILE = {
     '00': 'proposta-lancamento.html',
     '01': 'proposta-performance-mql.html',
-    '02': 'proposta-reguas.html'
+    '02': 'proposta-reguas.html',
+    '03': 'Modelo%20de%20Propostas/Proposta-padrao.html'
   };
   const TYPE_TO_LABEL = {
     '00': 'Proposta de lançamento',
     '01': 'Proposta de Performance com MQL',
-    '02': 'Proposta de Réguas de Comunicação'
+    '02': 'Proposta de Réguas de Comunicação',
+    '03': 'Modelo Oficial'
   };
 
   // Esconde o botão "Visualizar proposta" — auto-load assume essa função.
@@ -24664,6 +24742,47 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   select.addEventListener('change', loadTemplate);
   // Mantém o handler do botão caso seja revelado de novo no futuro
   if (btn) btn.addEventListener('click', loadTemplate);
+})();
+
+// Dropdown estilizado do "Tipo de proposta": visual custom por cima de um
+// <select> oculto (fonte da verdade). Sincroniza nos dois sentidos.
+(function () {
+  const dd       = document.getElementById('prop-typedd');
+  const sel      = document.getElementById('prop-custom-type');
+  const trigger  = document.getElementById('prop-typedd-trigger');
+  const panel    = document.getElementById('prop-typedd-panel');
+  const curName  = document.getElementById('prop-typedd-cur-name');
+  const curBadge = document.getElementById('prop-typedd-cur-badge');
+  if (!dd || !sel || !trigger || !panel) return;
+  const opts = Array.from(panel.querySelectorAll('.prop-typedd-opt'));
+
+  const open  = () => { panel.hidden = false; dd.classList.add('is-open'); trigger.setAttribute('aria-expanded', 'true'); };
+  const close = () => { panel.hidden = true;  dd.classList.remove('is-open'); trigger.setAttribute('aria-expanded', 'false'); };
+
+  // Reflete o valor atual do <select> no gatilho + opção ativa.
+  function sync() {
+    const v = sel.value;
+    const opt = opts.find(o => o.dataset.val === v) || opts[0];
+    if (!opt) return;
+    const isOff = opt.classList.contains('prop-typedd-opt--official');
+    if (curName)  curName.textContent = opt.querySelector('.prop-typedd-opt-name').textContent;
+    if (curBadge) {
+      curBadge.textContent = isOff ? 'Oficial' : 'Antigo';
+      curBadge.className = 'prop-typedd-badge ' + (isOff ? 'prop-typedd-badge--official' : 'prop-typedd-badge--old');
+    }
+    opts.forEach(o => o.classList.toggle('is-active', o.dataset.val === v));
+  }
+
+  trigger.addEventListener('click', e => { e.stopPropagation(); panel.hidden ? open() : close(); });
+  opts.forEach(o => o.addEventListener('click', () => {
+    close();
+    sel.value = o.dataset.val;
+    sel.dispatchEvent(new Event('change', { bubbles: true })); // dispara loadTemplate + rota + sync
+  }));
+  sel.addEventListener('change', sync); // mudanças programáticas (rota/clearPropTipo)
+  document.addEventListener('click', e => { if (!dd.contains(e.target)) close(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  sync();
 })();
 
 // Múltiplas transcrições de reunião (modo personalizada)
@@ -30485,6 +30604,10 @@ ${deckEmbedScript}
 
   async function renderPreview() {
     if (!$frame) return;
+    // No modo Personalizada o iframe é controlado pelo template escolhido no
+    // "Tipo de proposta" (loadTemplate seta frame.src). O gerador Padrão NÃO
+    // deve renderizar por cima (srcdoc vence src e apagaria o template).
+    if (document.querySelector('.prop-sidebar')?.classList.contains('is-custom-mode')) return;
     // Sem soluções → renderiza só a Apresentação Turbo (proposta institucional).
     // O usuário pode baixar mesmo assim — útil pra mandar apresentação inicial
     // antes de fechar escopo. buildProposalHTML lida com selected vazio.
@@ -30495,6 +30618,8 @@ ${deckEmbedScript}
       // na capa); o bloqueio acontece só no download.
       // editable:true → liga a edição inline do card Personalizado de Creators.
       const html = await buildProposalHTML({ clientName, editable: true });
+      // Reverifica: se trocou pra Personalizada durante o build, não sobrescreve.
+      if (document.querySelector('.prop-sidebar')?.classList.contains('is-custom-mode')) return;
       $frame.addEventListener('load', wireCreatorsCustomEditing, { once: true });
       $frame.srcdoc = html;
     } finally {
