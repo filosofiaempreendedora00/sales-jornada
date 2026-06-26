@@ -5934,7 +5934,11 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-invest-tcv-sub { font-size: 11px; color: var(--text-2); line-height: 1.35; }
 
 /* ── Concessões — painel inline no card do Performance (modo "com concessão") ── */
-.prop-conc { margin-top: 12px; padding-top: 12px; border-top: 1px dashed rgba(255,255,255,0.13); display: flex; flex-direction: column; gap: 8px; }
+/* Painel envolto por um retângulo na cor da solução (--card-color: Performance
+   ciano, Creators laranja, Social verde…). */
+.prop-conc { margin-top: 12px; padding: 13px 12px; display: flex; flex-direction: column; gap: 8px;
+  border: 1.5px solid color-mix(in srgb, var(--card-color, #0dcfe8) 50%, transparent);
+  border-radius: 14px; background: color-mix(in srgb, var(--card-color, #0dcfe8) 7%, transparent); }
 .prop-conc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .prop-conc-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .prop-conc-count { font-size: 11px; font-weight: 800; color: #ffa826; background: rgba(255,168,38,0.14); border: 1px solid rgba(255,168,38,0.35); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
@@ -5942,12 +5946,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-conc-hint { font-size: 10.5px; color: var(--text-2); line-height: 1.4; margin: 0; }
 .prop-conc-items { display: flex; flex-direction: column; gap: 6px; }
 .prop-conc-item { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: rgba(255,255,255,0.02); cursor: pointer; transition: border-color .15s, background .15s; }
-.prop-conc-item:hover { border-color: rgba(13,207,232,0.4); }
-.prop-conc-item:focus-visible { outline: 2px solid rgba(13,207,232,0.6); outline-offset: 1px; }
-.prop-conc-item.is-on { border-color: rgba(13,207,232,0.7); background: rgba(13,207,232,0.1); }
+.prop-conc-item:hover { border-color: color-mix(in srgb, var(--card-color, #0dcfe8) 45%, transparent); }
+.prop-conc-item:focus-visible { outline: 2px solid color-mix(in srgb, var(--card-color, #0dcfe8) 60%, transparent); outline-offset: 1px; }
+.prop-conc-item.is-on { border-color: color-mix(in srgb, var(--card-color, #0dcfe8) 70%, transparent); background: color-mix(in srgb, var(--card-color, #0dcfe8) 12%, transparent); }
 .prop-conc-check { flex: 0 0 auto; width: 16px; height: 16px; border-radius: 5px; border: 1.5px solid rgba(255,255,255,0.3); display: grid; place-items: center; font-size: 11px; line-height: 1; color: transparent; margin-top: 1px; transition: all .15s; }
-.prop-conc-item.is-on .prop-conc-check { background: #0dcfe8; border-color: #0dcfe8; color: #04222a; }
+.prop-conc-item.is-on .prop-conc-check { background: var(--card-color, #0dcfe8); border-color: var(--card-color, #0dcfe8); color: #07070f; }
 .prop-conc-item-body { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+/* tags (LEVE/PESADA + gestor) no canto superior esquerdo; nome logo abaixo */
+.prop-conc-item-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .prop-conc-item-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .prop-conc-item-name { font-size: 12.5px; font-weight: 700; color: var(--text); }
 .prop-conc-cat { font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: var(--cat); border: 1px solid color-mix(in srgb, var(--cat) 45%, transparent); border-radius: 999px; padding: 1px 7px; }
@@ -25299,10 +25305,10 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   const $validity    = document.getElementById('prop-validity');
 
   // Validade da proposta — só em memória (sem persistência entre sessões).
-  // Default: hoje + 30 dias. Formato interno: ISO YYYY-MM-DD.
+  // Default: hoje + 2 semanas (14 dias). Formato interno: ISO YYYY-MM-DD.
   function defaultValidityISO() {
     const d = new Date();
-    d.setDate(d.getDate() + 30);
+    d.setDate(d.getDate() + 14);
     return d.toISOString().slice(0, 10);
   }
   let validityISO = defaultValidityISO();
@@ -26004,13 +26010,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const valTag = it.val ? `<span class="prop-conc-val">${escapeHtml(it.val)}</span>` : '';
       const cp   = onItem ? `<div class="prop-conc-cp"><span class="prop-conc-cp-label">Contrapartida:</span> ${escapeHtml(it.cp)}</div>` : '';
       const note = (onItem && it.note) ? `<div class="prop-conc-note">${escapeHtml(it.note)}</div>` : '';
+      const tagsRow = (catTag || gestorBadge) ? `<div class="prop-conc-item-tags">${catTag}${gestorBadge}</div>` : '';
       return `<div class="prop-conc-item${onItem ? ' is-on' : ''}" data-conc="${it.id}" role="button" tabindex="0" aria-pressed="${onItem}">
         <span class="prop-conc-check" aria-hidden="true">✓</span>
         <div class="prop-conc-item-body">
+          ${tagsRow}
           <div class="prop-conc-item-top">
             <span class="prop-conc-item-name">${escapeHtml(it.label)}</span>
-            ${catTag}
-            ${gestorBadge}
             ${valTag}
           </div>
           ${cp}${note}
