@@ -25785,8 +25785,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Onde não há mínimo definido, não há validação (qualquer preço vale).
   // Obs: Creators tem mínimo DISTINTO por modo (Pontual/Recorrente) — ver abaixo.
   //
-  // Desativado temporariamente (a pedido do Roberto, 2026-06). Pra reativar: true.
-  const MIN_PRICES_ENABLED = false;
+  // Regra ativa (Roberto pediu pra reativar, 2026-06). Pra desligar: false.
+  const MIN_PRICES_ENABLED = true;
   const MIN_PRICES = {
     performance: { starter: 3297, scale: 4997, enterprise: 7497 },
     social:      { starter: 2997, scale: 3997 },
@@ -25811,7 +25811,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const intStr = String(min).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     return 'R$ ' + intStr + ',00';
   }
+  // Closers que podem ULTRAPASSAR as regras de desconto (sem vermelho/bloqueio):
+  // Roberto Fachetti ('1'), João Guarçoni ('7'), Victor Peixoto ('11').
+  const FLOOR_EXEMPT_CLOSERS = new Set(['1', '7', '11']);
   function isBelowMin(sol, tier) {
+    // Closer privilegiado → piso não se aplica (pode furar à vontade).
+    if (FLOOR_EXEMPT_CLOSERS.has(closerId)) return false;
     // Piso ativo quando: (a) a regra global está ligada, OU (b) modo "com
     // concessão" e a solução tem regras de concessão (Performance/Social/Creators).
     const active = MIN_PRICES_ENABLED || (concMode === 'com' && (sol === 'performance' || sol === 'social' || sol === 'creators'));
@@ -26112,6 +26117,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         closerId = DEFAULT_CLOSER_ID;
         localStorage.removeItem('prop-closer');
       }
+      // Re-renderiza os preços: closer isento muda o estado de vermelho/aviso/piso.
+      renderInvestimento();
       previewDirty = true;
       renderPreview();
     });
@@ -26498,7 +26505,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           // Validação de desconto mínimo — vermelho + aviso + bloqueio do download.
           const below = isBelowMin(sol, tier);
           input.classList.toggle('is-below-min', below);
-          const warn = $invest.querySelector(`.prop-invest-minwarn[data-sol="${sol}"][data-tier="${tier}"]`);
+          // document (não $invest): inlinePlans move os cards pra baixo dos chips,
+          // então o aviso não vive mais dentro do buffer #prop-invest.
+          const warn = document.querySelector(`.prop-invest-minwarn[data-sol="${sol}"][data-tier="${tier}"]`);
           if (warn) warn.hidden = !below;
           updateMeta();
           if (concMode === 'com' && CONC_PRODUCTS[sol]) syncConcPanel(sol); // status reflete o piso ao vivo
