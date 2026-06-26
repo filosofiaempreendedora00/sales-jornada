@@ -5656,6 +5656,43 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   background: rgba(155,109,255,0.06);
   color: #d8c4ff;
 }
+
+/* ── Transcrição: fonte Texto / Arquivo ── */
+.prop-tsrc-switch {
+  display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+  gap: 3px; padding: 3px; margin-bottom: 10px; width: 100%;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 10px;
+}
+.prop-tsrc-btn {
+  appearance: none; background: transparent; border: 0; border-radius: 7px;
+  padding: 8px 10px; font-family: inherit; font-size: 12px; font-weight: 700;
+  color: var(--text-2); cursor: pointer; transition: background .15s, color .15s;
+  text-align: center;
+}
+.prop-tsrc-btn:hover { color: var(--text); }
+.prop-tsrc-btn.is-active { background: rgba(155,109,255,0.16); color: #d8c4ff; }
+.prop-tsrc-pane[hidden] { display: none; }
+.prop-tfile-drop {
+  width: 100%; display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center;
+  background: rgba(255,255,255,0.02); border: 1.5px dashed rgba(155,109,255,0.4); border-radius: 12px;
+  padding: 22px 16px; cursor: pointer; font-family: inherit; color: var(--text);
+  transition: border-color .15s, background .15s;
+}
+.prop-tfile-drop:hover, .prop-tfile-drop.is-drag {
+  border-color: rgba(155,109,255,0.75); background: rgba(155,109,255,0.07);
+}
+.prop-tfile-drop-icon { font-size: 26px; line-height: 1; }
+.prop-tfile-drop-main { font-size: 13px; font-weight: 600; color: var(--text); }
+.prop-tfile-drop-main strong { color: #c4a8ff; }
+.prop-tfile-drop-sub { font-size: 10.5px; color: var(--text-2); line-height: 1.4; }
+.prop-tfile-status {
+  display: flex; align-items: center; gap: 8px; margin-top: 10px;
+  font-size: 12px; font-weight: 600; border-radius: 10px; padding: 9px 11px; line-height: 1.4;
+}
+.prop-tfile-status.is-loading { background: rgba(77,141,255,0.10); border: 1px solid rgba(77,141,255,0.35); color: #a9c6ff; }
+.prop-tfile-status.is-ok      { background: rgba(18,212,144,0.10); border: 1px solid rgba(18,212,144,0.35); color: #7fe3b0; }
+.prop-tfile-status.is-error   { background: rgba(255,107,107,0.10); border: 1px solid rgba(255,107,107,0.4); color: #ffb3b3; }
+.prop-tfile-text { margin-top: 10px; }
 .prop-mode-soon-icon { font-size: 22px; line-height: 1; flex-shrink: 0; }
 .prop-mode-soon-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .prop-mode-soon-title {
@@ -14759,22 +14796,47 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
 
         <p class="prop-section-label" style="margin-top: 6px;">Transcrição da reunião de vendas</p>
-        <div class="prop-transcripts" id="prop-transcripts">
-          <div class="prop-transcript-item">
-            <div class="prop-transcript-header" hidden>
-              <span class="prop-transcript-num">Transcrição 1</span>
-            </div>
-            <textarea
-              class="prop-transcript-input"
-              placeholder="Cole aqui a transcrição da reunião de vendas…"
-              rows="6"
-              spellcheck="false"
-            ></textarea>
-          </div>
+        <div class="prop-tsrc-switch" role="tablist" aria-label="Fonte da transcrição">
+          <button type="button" class="prop-tsrc-btn is-active" role="tab" aria-selected="true" data-tsrc="texto">📝 Texto</button>
+          <button type="button" class="prop-tsrc-btn" role="tab" aria-selected="false" data-tsrc="arquivo">📎 Arquivo</button>
         </div>
-        <button type="button" class="prop-add-transcript" id="prop-add-transcript">
-          + Adicionar outra transcrição
-        </button>
+
+        <div class="prop-tsrc-pane" data-tsrc-pane="texto">
+          <div class="prop-transcripts" id="prop-transcripts">
+            <div class="prop-transcript-item">
+              <div class="prop-transcript-header" hidden>
+                <span class="prop-transcript-num">Transcrição 1</span>
+              </div>
+              <textarea
+                class="prop-transcript-input"
+                placeholder="Cole aqui a transcrição da reunião de vendas…"
+                rows="6"
+                spellcheck="false"
+              ></textarea>
+            </div>
+          </div>
+          <button type="button" class="prop-add-transcript" id="prop-add-transcript">
+            + Adicionar outra transcrição
+          </button>
+        </div>
+
+        <div class="prop-tsrc-pane" data-tsrc-pane="arquivo" hidden>
+          <input type="file" id="prop-tfile-input" accept=".pdf,.txt,.md,.csv,.rtf,.docx,text/plain" hidden>
+          <button type="button" class="prop-tfile-drop" id="prop-tfile-drop">
+            <span class="prop-tfile-drop-icon">📄</span>
+            <span class="prop-tfile-drop-main">Solte um arquivo aqui ou <strong>clique pra escolher</strong></span>
+            <span class="prop-tfile-drop-sub">PDF · DOCX · TXT · MD — extraímos o texto e a IA usa igual à transcrição</span>
+          </button>
+          <div class="prop-tfile-status" id="prop-tfile-status" hidden></div>
+          <textarea
+            class="prop-transcript-input prop-tfile-text"
+            id="prop-tfile-text"
+            placeholder="O texto extraído do arquivo aparece aqui — você pode revisar e editar antes de gerar…"
+            rows="7"
+            spellcheck="false"
+            hidden
+          ></textarea>
+        </div>
 
         <p class="prop-section-label" style="margin-top: 6px;">Tipo de proposta</p>
         <div class="prop-typedd" id="prop-typedd">
@@ -24305,6 +24367,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   function getTranscripts() {
     const items = document.querySelectorAll('.prop-transcript-input');
     return Array.from(items)
+      .filter(t => t.offsetParent !== null)   // só a aba ativa (Texto OU Arquivo)
       .map(t => (t.value || '').trim())
       .filter(t => t.length > 0);
   }
@@ -24845,6 +24908,102 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   }
 
   renumber();
+})();
+
+// Transcrição via ARQUIVO (PDF / DOCX / TXT / MD): extrai o texto no navegador
+// e joga pra transcrição — a IA recebe igual ao texto colado. As libs de PDF
+// (pdf.js) e DOCX (mammoth) são carregadas sob demanda via CDN (precisa de net).
+(function () {
+  const btns   = Array.from(document.querySelectorAll('.prop-tsrc-btn'));
+  const panes  = Array.from(document.querySelectorAll('.prop-tsrc-pane'));
+  const drop   = document.getElementById('prop-tfile-drop');
+  const input  = document.getElementById('prop-tfile-input');
+  const status = document.getElementById('prop-tfile-status');
+  const out    = document.getElementById('prop-tfile-text');
+  if (!btns.length || !drop || !input || !out) return;
+
+  // dispara 'input' num textarea de transcrição → o gerador re-checa o botão "Gerar".
+  function resync() {
+    const t = out.offsetParent !== null ? out : document.querySelector('.prop-transcript-input');
+    t && t.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+
+  // troca de aba Texto / Arquivo
+  btns.forEach(b => b.addEventListener('click', () => {
+    const src = b.dataset.tsrc;
+    btns.forEach(x => { const on = x === b; x.classList.toggle('is-active', on); x.setAttribute('aria-selected', on ? 'true' : 'false'); });
+    panes.forEach(p => { p.hidden = p.dataset.tsrcPane !== src; });
+    resync();
+  }));
+
+  function setStatus(kind, html) { status.hidden = false; status.className = 'prop-tfile-status is-' + kind; status.innerHTML = html; }
+
+  const _scripts = {};
+  function loadScript(url) {
+    if (_scripts[url]) return _scripts[url];
+    _scripts[url] = new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = url; s.onload = res; s.onerror = () => rej(new Error('Sem conexão pra carregar o leitor.'));
+      document.head.appendChild(s);
+    });
+    return _scripts[url];
+  }
+
+  async function extractPdf(file) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');
+    window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    const pdf = await window.pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    let txt = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const content = await (await pdf.getPage(i)).getTextContent();
+      txt += content.items.map(it => it.str).join(' ') + '\n\n';
+    }
+    return txt;
+  }
+  async function extractDocx(file) {
+    await loadScript('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');
+    const r = await window.mammoth.extractRawText({ arrayBuffer: await file.arrayBuffer() });
+    return (r && r.value) || '';
+  }
+  function extractPlain(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(String(r.result || ''));
+      r.onerror = () => rej(new Error('Não consegui ler o arquivo.'));
+      r.readAsText(file);
+    });
+  }
+
+  async function handleFile(file) {
+    if (!file) return;
+    const name = (file.name || 'arquivo').replace(/[<>]/g, '');
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    setStatus('loading', `⏳ Lendo <strong>${name}</strong>…`);
+    try {
+      let text = ext === 'pdf' ? await extractPdf(file)
+               : ext === 'docx' ? await extractDocx(file)
+               : await extractPlain(file);
+      text = text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+      if (!text) { setStatus('error', `⚠ Não achei texto em <strong>${name}</strong> — se for PDF escaneado/imagem, cole o texto na aba Texto.`); return; }
+      out.value = text;
+      out.hidden = false;
+      const words = text.split(/\s+/).filter(Boolean).length;
+      setStatus('ok', `✓ Texto extraído de <strong>${name}</strong> · ${words.toLocaleString('pt-BR')} palavras. Revise abaixo se quiser.`);
+      out.dispatchEvent(new Event('input', { bubbles: true })); // re-checa o botão Gerar
+    } catch (e) {
+      console.error('[transcrição arquivo]', e);
+      setStatus('error', `⚠ ${(e && e.message) || 'Falha ao extrair o texto.'}`);
+    }
+  }
+
+  drop.addEventListener('click', () => input.click());
+  input.addEventListener('change', () => { handleFile(input.files && input.files[0]); input.value = ''; });
+  ['dragover', 'dragenter'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('is-drag'); }));
+  ['dragleave', 'dragend'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('is-drag'); }));
+  drop.addEventListener('drop', e => {
+    e.preventDefault(); drop.classList.remove('is-drag');
+    handleFile(e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]);
+  });
 })();
 
 (function () {
