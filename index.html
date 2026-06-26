@@ -29887,11 +29887,21 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .pdnvb-slide, .pdnvb-cover {
           break-before: page; page-break-before: always;
           break-inside: avoid; page-break-inside: avoid;
-          min-height: 190mm !important;   /* ~página A4 paisagem; mm é confiável no print (vh buga) */
+          min-height: 209mm !important;   /* altura CHEIA da página A4 paisagem (210mm) → conteúdo centraliza na página, sem faixa preta embaixo. mm é confiável no print (vh buga) */
           height: auto !important;
           overflow: visible !important;    /* slide denso pode escorrer p/ próxima página (fundo escuro) */
           background-color: #07070f !important; /* fundo garantido; gradientes pintam por cima */
           scroll-snap-align: none !important;
+        }
+        /* IMPORTANTE: a regra de tela ".proposal-section .turbo-slide{min-height:720px}"
+           (especificidade 0,2,0) vencia a de cima (0,1,0), deixando os slides menores
+           que a página → conteúdo centralizado alto + faixa preta embaixo. Aqui igualamos
+           a especificidade pra cada slide encher a PÁGINA inteira (209mm) e centralizar. */
+        .proposal-section .turbo-slide, .proposal-section .xpto-slide,
+        .proposal-section .pacotes-slide, .proposal-section .invest-slide,
+        .proposal-section .pdnvb-slide, .proposal-section .pdnvb-cover {
+          min-height: 209mm !important;
+          padding-top: 40px !important; padding-bottom: 36px !important;
         }
         /* CRÍTICO: zera qualquer altura em vh dentro dos slides — no print o Chrome
            resolve vh errado e a página vira gigante (1ª folha preta, conteúdo no
