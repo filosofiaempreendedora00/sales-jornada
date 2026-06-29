@@ -5348,6 +5348,14 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 /* Em modo "personalizada", esconde o restante da sidebar */
 .prop-sidebar.is-custom-mode .prop-section,
 .prop-sidebar.is-custom-mode .prop-actions { display: none; }
+/* EXCEÇÃO: o seletor de Soluções & Planos é movido pra dentro do fluxo
+   Personalizada (acima do Gerar) e precisa continuar visível. Os pacotes
+   marcados aqui entram na seção de Investimento do Modelo Oficial. */
+.prop-sidebar.is-custom-mode #prop-sol-section { display: flex !important; }
+.prop-pkg-hint {
+  margin: 4px 0 0; font-size: 11px; line-height: 1.5; color: var(--text-3);
+}
+.prop-pkg-hint strong { color: var(--text-2); font-weight: 700; }
 
 /* Campos extras do modo personalizada (dropdown de tipo) */
 .prop-custom-fields {
@@ -15245,7 +15253,7 @@ a.xpto-pricing-btn { text-decoration: none; }
           <span class="prop-client-hint" id="prop-type-hint">Proposta completa — inclui a apresentação institucional da Turbo.</span>
         </div>
       </div>
-      <div class="prop-section">
+      <div class="prop-section" id="prop-sol-section">
         <p class="prop-section-label">Soluções &amp; Planos</p>
         <div class="prop-solutions" id="prop-solutions"></div>
       </div>
@@ -24613,6 +24621,34 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     if (customFields) customFields.hidden = !isCustom;
     if (sidebar) sidebar.classList.toggle('is-custom-mode', isCustom);
 
+    // Move o MESMO seletor "Soluções & Planos" pra dentro do fluxo Personalizada
+    // (acima do botão Gerar) quando em custom; devolve ao lugar no Padrão.
+    // É o mesmo elemento (#prop-sol-section) → todo o render/estado existente
+    // (renderSolutions, inlinePlans, preços) continua funcionando intacto.
+    const solSection = document.getElementById('prop-sol-section');
+    const genBtnEl   = document.getElementById('prop-custom-generate-btn');
+    if (solSection) {
+      if (!setMode._solHome) {
+        setMode._solHome = { parent: solSection.parentNode, next: solSection.nextSibling };
+      }
+      if (isCustom && genBtnEl && genBtnEl.parentNode) {
+        // só insere se ainda não está no lugar certo
+        if (genBtnEl.previousElementSibling !== solSection) {
+          genBtnEl.parentNode.insertBefore(solSection, genBtnEl);
+        }
+        // dica curta (uma vez)
+        if (!solSection.querySelector('.prop-pkg-hint')) {
+          const hint = document.createElement('p');
+          hint.className = 'prop-pkg-hint';
+          hint.innerHTML = 'Marque os pacotes que vão pro <strong>Investimento</strong> da proposta. Preço e escopo vêm exatamente do modelo padrão.';
+          solSection.appendChild(hint);
+        }
+      } else if (!isCustom) {
+        // devolve pro lugar original no seletor Padrão
+        setMode._solHome.parent.insertBefore(solSection, setMode._solHome.next);
+      }
+    }
+
     // Quando entra em "personalizada", mostra placeholder no preview.
     // Quando volta pra "padrão", deixa o sistema padrão re-renderizar.
     if (frame) {
@@ -25040,6 +25076,28 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     frame.srcdoc = html;
   }
 
+  // Injeta os pacotes selecionados (seletor do Padrão) na seção de Investimento
+  // do Modelo Oficial (#slot-bundles), no estilo .price do template. Os preços/
+  // escopo vêm EXATOS do Padrão (window.__smBuildBundles). Só age se o template
+  // tiver #slot-bundles (= Modelo Oficial) e houver pacotes marcados; senão
+  // devolve o HTML intacto (deixa o que a IA gerou).
+  async function injectBundles(html) {
+    try {
+      if (typeof window.__smBuildBundles !== 'function') return html;
+      if (!/id=["']slot-bundles["']/.test(html)) return html;
+      const bundles = await window.__smBuildBundles();
+      if (!bundles || !bundles.trim()) return html;
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const slot = doc.getElementById('slot-bundles');
+      if (!slot) return html;
+      slot.innerHTML = bundles; // remove os cards [data-preview]/IA, põe os reais
+      return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+    } catch (e) {
+      console.error('[bundles] injeção falhou (mantendo HTML da IA):', e);
+      return html;
+    }
+  }
+
   // Pega o HTML atual do iframe (com edições do usuário), limpo do edit-mode
   function getCurrentIframeHtml() {
     try {
@@ -25175,7 +25233,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         { transcripts, proposalType, clientName },
         (evt) => progress.onEvent(evt)
       );
-      renderInFrame(json.html);
+      renderInFrame(await injectBundles(json.html));
       state.lastProposalType = proposalType;
       // Mostra refinamento + download
       if (refineWrap) refineWrap.hidden = false;
@@ -25260,7 +25318,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             }
           }
         );
-        renderInFrame(json.html);
+        renderInFrame(await injectBundles(json.html));
         refineInput.value = '';
         refineBtn.disabled = true;
         progress.finish();
@@ -31590,6 +31648,50 @@ ${deckEmbedScript}
       else updateMeta();
     }
   }
+
+  // ── Pacotes do Padrão → cards .price do Modelo Oficial ──
+  // Reaproveita 100% do conteúdo do Padrão: gera o HTML do Padrão pra seleção
+  // atual (sem embutir imagens — rápido), extrai cada .pacote-card (preço +
+  // escopo EXATOS) e remonta no estilo .price do Modelo Oficial. Exposto pro
+  // fluxo Personalizada via window.__smBuildBundles (injeta no #slot-bundles).
+  async function buildModeloBundles() {
+    let html;
+    try {
+      html = await buildProposalHTML({ clientName: clientName || 'Cliente', editable: false, inline: false });
+    } catch (e) {
+      console.error('[bundles] buildProposalHTML falhou:', e);
+      return '';
+    }
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    const cards = [];
+    doc.querySelectorAll('.pacotes-slide').forEach(slide => {
+      const accent = slide.querySelector('.pacotes-title-accent');
+      const sol = (accent ? accent.textContent : (slide.querySelector('.pacotes-title')?.textContent || '')).trim();
+      slide.querySelectorAll('.pacote-card').forEach(card => {
+        const tier   = (card.querySelector('.pacote-name')?.textContent || '').trim();
+        const priceEl = card.querySelector('.pacote-price');
+        const amount = priceEl ? priceEl.innerHTML.trim() : '';
+        const anchorEl = card.querySelector('.pacote-price-anchor');
+        const anchor = anchorEl ? `<span class="price-anchor">${anchorEl.innerHTML.trim()}</span> ` : '';
+        const desc = [...card.querySelectorAll('.pacote-tag')].map(t => t.textContent.trim()).filter(Boolean).join(' · ');
+        const note = (card.querySelector('.pacote-note')?.textContent || '').trim();
+        const feats = [...card.querySelectorAll('.pacote-features li')].map(li => `<li>${li.innerHTML.trim()}</li>`).join('');
+        const featured = card.classList.contains('pacote-card--featured');
+        cards.push(`
+        <div class="price${featured ? ' rec' : ''}">
+          ${featured ? '<div class="rec-banner">Recomendado</div>' : ''}
+          <div class="price-top"><span class="tier">${tier}</span><span class="tag">${sol}</span></div>
+          <div class="amount">${anchor}${amount}</div>
+          ${desc ? `<div class="desc">${desc}</div>` : ''}
+          ${note ? `<div class="gp">${note}</div>` : ''}
+          <hr class="divider">
+          <ul class="plist">${feats}</ul>
+        </div>`);
+      });
+    });
+    return cards.join('');
+  }
+  window.__smBuildBundles = buildModeloBundles;
 
   // "Baixar" abre um menu com HTML / PDF (em vez de baixar direto).
   function closeAllDownloadMenus() {
