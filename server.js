@@ -28,6 +28,7 @@ import * as db from './db.js';
 import * as casesApi from './api-cases.js';
 import * as melhApi from './api-melhorias.js';
 import * as presetsApi from './api-presets.js';
+import * as gensApi from './api-generations.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -99,6 +100,9 @@ app.post  ('/api/melhorias',                 (req, res) => melhApi.createMelhori
 app.put   ('/api/melhorias/:id',             (req, res) => melhApi.updateMelhoria(req, res, req.params.id));
 app.delete('/api/melhorias/:id',             (req, res) => melhApi.deleteMelhoria(req, res, req.params.id));
 app.post  ('/api/melhorias/bulk-replace',    (req, res) => melhApi.bulkReplace(req, res));
+
+// ── API: Histórico de gerações (Configurações → Custos) ──
+app.get   ('/api/generations',               (req, res) => gensApi.listGenerations(req, res));
 
 // ── API: Presets de proposta (público, sem Anthropic) ────
 // Pra integrações externas (ex: NEXUS Voice Router) gerarem propostas
@@ -1130,6 +1134,11 @@ app.post('/api/generate-proposal', async (req, res) => {
           usage: result.usage,
         },
       });
+      // Registra no histórico de custos (best-effort, não bloqueia a resposta).
+      gensApi.logGeneration({
+        clientName, proposalType, kind: 'refine', model: ANTHROPIC_MODEL,
+        usage: result.usage, elapsedMs: elapsedTotal,
+      });
     } catch (e) {
       console.error('[api] erro no refinamento estrutural:', e?.message || e);
       const msg = e?.message?.includes('rate') ? 'Limite de taxa da API atingido. Aguarde e tente novamente.'
@@ -1305,6 +1314,11 @@ app.post('/api/generate-proposal', async (req, res) => {
           usage: finalUsage,
           auditUsage: leakUsage,
         },
+      });
+      // Registra no histórico de custos (best-effort, não bloqueia a resposta).
+      gensApi.logGeneration({
+        clientName, proposalType, kind: 'generate', model: ANTHROPIC_MODEL,
+        usage: finalUsage, auditUsage: leakUsage, elapsedMs: elapsedTotal,
       });
     }
   } catch (e) {

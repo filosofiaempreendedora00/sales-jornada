@@ -2855,6 +2855,46 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .museu-card-arrow { position: absolute; top: 18px; right: 18px; font-size: 18px; color: rgba(255,255,255,0.5); transition: transform 0.18s, color 0.18s; }
 .museu-card:hover .museu-card-arrow { transform: translateX(3px); color: #fff; }
 
+/* ── Custos (histórico de gerações com IA) ── */
+.custos-intro { margin-bottom: 18px; }
+.custos-title { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; margin: 0 0 5px; color: #fff; }
+.custos-sub { font-size: 13.5px; line-height: 1.55; color: rgba(255,255,255,0.55); margin: 0; max-width: 680px; }
+.custos-sub strong { color: rgba(255,255,255,0.8); font-weight: 700; }
+.custos-summary { display: flex; flex-wrap: wrap; align-items: stretch; gap: 12px; margin-bottom: 18px; }
+.custos-stat {
+  display: flex; flex-direction: column; gap: 3px; padding: 12px 16px;
+  border-radius: 12px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  min-width: 120px;
+}
+.custos-stat--total { background: rgba(18,212,144,0.07); border-color: rgba(18,212,144,0.30); }
+.custos-stat-val { font-size: 22px; font-weight: 800; color: #fff; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.custos-stat--total .custos-stat-val { color: #7fe3b0; }
+.custos-stat-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); }
+.custos-refresh {
+  margin-left: auto; align-self: center; appearance: none; cursor: pointer;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-radius: 9px;
+  padding: 9px 14px; font-family: inherit; font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.custos-refresh:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.22); }
+.custos-empty { font-size: 13px; color: rgba(255,255,255,0.5); padding: 24px 4px; line-height: 1.6; }
+.custos-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); }
+.custos-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+.custos-table thead th {
+  position: sticky; top: 0; text-align: left; padding: 11px 12px; white-space: nowrap;
+  font-size: 10.5px; font-weight: 800; letter-spacing: 0.6px; text-transform: uppercase;
+  color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.custos-table tbody td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.85); vertical-align: middle; }
+.custos-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+.custos-table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.custos-table .custo-cell { font-weight: 800; color: #7fe3b0; }
+.custos-cliente { font-weight: 700; color: #fff; }
+.custos-badge { display: inline-block; font-size: 10px; font-weight: 800; letter-spacing: 0.3px; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+.custos-badge--gen { color: #8fd3ff; background: rgba(13,207,232,0.14); border: 1px solid rgba(13,207,232,0.32); }
+.custos-badge--ref { color: #c4a8ff; background: rgba(155,109,255,0.14); border: 1px solid rgba(155,109,255,0.32); }
+.custos-tipo { font-size: 11.5px; color: rgba(255,255,255,0.6); }
+
 @media (max-width: 860px) {
   /* Sidebar vira barra horizontal no topo → o subnav de config também
      deixa de ser fixo lateral e passa a ser uma faixa horizontal. */
@@ -15538,6 +15578,10 @@ a.xpto-pricing-btn { text-decoration: none; }
       <span class="config-subtab-icon">🏛️</span>
       <span class="config-subtab-label">Museu</span>
     </button>
+    <button type="button" class="config-subtab" data-config-pane="custos">
+      <span class="config-subtab-icon">💸</span>
+      <span class="config-subtab-label">Custos</span>
+    </button>
   </div>
 
   <div class="config-wrap">
@@ -15651,6 +15695,32 @@ a.xpto-pricing-btn { text-decoration: none; }
           <span class="museu-card-tag">Lead</span>
           <span class="museu-card-arrow">→</span>
         </button>
+      </div>
+    </section>
+
+    <!-- Painel: Custos (histórico de 100% das gerações com IA) -->
+    <section class="config-pane" data-config-pane-content="custos">
+      <div class="custos-intro">
+        <h2 class="custos-title">💸 Custos das gerações</h2>
+        <p class="custos-sub">Histórico de <strong>100% das propostas geradas com IA</strong> — pra nunca perder de vista o gasto. Cada geração e cada refino fica registrado aqui assim que termina.</p>
+      </div>
+      <div class="custos-summary">
+        <div class="custos-stat custos-stat--total">
+          <span class="custos-stat-val" id="custos-total">—</span>
+          <span class="custos-stat-label">Total gasto (US$)</span>
+        </div>
+        <div class="custos-stat">
+          <span class="custos-stat-val" id="custos-total-brl">—</span>
+          <span class="custos-stat-label">≈ em R$</span>
+        </div>
+        <div class="custos-stat">
+          <span class="custos-stat-val" id="custos-count">—</span>
+          <span class="custos-stat-label">Gerações</span>
+        </div>
+        <button type="button" class="custos-refresh" id="custos-refresh">↻ Atualizar</button>
+      </div>
+      <div class="custos-body" id="custos-body">
+        <p class="custos-empty">Carregando histórico…</p>
       </div>
     </section>
   </div>
@@ -24295,8 +24365,85 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const target = item.dataset.configPane;
       items.forEach(x => x.classList.toggle('is-active', x === item));
       panes.forEach(p => p.classList.toggle('is-active', p.dataset.configPaneContent === target));
+      if (target === 'custos') loadCustos();
     });
   });
+
+  // ── Custos: histórico de gerações com IA ──────────
+  const USD_BRL = 5.40; // câmbio aproximado só p/ referência
+  const TYPE_LABELS = { '00': 'Lançamento', '01': 'Performance MQL', '02': 'Réguas', '03': 'Modelo Oficial' };
+  const $total = document.getElementById('custos-total');
+  const $totalBrl = document.getElementById('custos-total-brl');
+  const $count = document.getElementById('custos-count');
+  const $body = document.getElementById('custos-body');
+  const $refresh = document.getElementById('custos-refresh');
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const fmtUSD = v => 'US$ ' + v.toFixed(4).replace('.', ',');
+  const fmtBRL = v => 'R$ ' + (v * USD_BRL).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtTok = n => (n || 0) >= 1000 ? ((n/1000).toFixed(1).replace('.', ',') + 'k') : String(n || 0);
+  function fmtDate(iso) {
+    if (!iso) return '—';
+    const d = new Date(iso);
+    if (isNaN(d)) return esc(iso);
+    return d.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+
+  let loading = false;
+  async function loadCustos() {
+    if (loading) return;
+    loading = true;
+    if ($body) $body.innerHTML = '<p class="custos-empty">Carregando histórico…</p>';
+    try {
+      const r = await fetch('/api/generations', { headers: { 'Accept': 'application/json' } });
+      if (r.status === 503) {
+        if ($body) $body.innerHTML = '<p class="custos-empty">⚙️ Banco de dados não configurado neste ambiente. O histórico aparece na produção (turbo-octopus.onrender.com).</p>';
+        [$total, $totalBrl, $count].forEach(el => el && (el.textContent = '—'));
+        return;
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const data = await r.json();
+      const gens = Array.isArray(data.generations) ? data.generations : [];
+      const totalUSD = data.totalUSD || 0;
+      if ($total)    $total.textContent = fmtUSD(totalUSD);
+      if ($totalBrl) $totalBrl.textContent = fmtBRL(totalUSD);
+      if ($count)    $count.textContent = String(data.count || gens.length);
+      if (gens.length === 0) {
+        if ($body) $body.innerHTML = '<p class="custos-empty">Nenhuma geração registrada ainda. Toda proposta gerada com IA (modo Personalizada) aparece aqui.</p>';
+        return;
+      }
+      const rows = gens.map(g => {
+        const tipo = TYPE_LABELS[g.tipo] || (g.tipo || '—');
+        const acao = g.kind === 'refine'
+          ? '<span class="custos-badge custos-badge--ref">refino</span>'
+          : '<span class="custos-badge custos-badge--gen">geração</span>';
+        const cacheTok = (g.cacheReadTokens || 0) + (g.cacheCreationTokens || 0);
+        return `<tr>
+          <td class="num">${esc(fmtDate(g.criadoEm))}</td>
+          <td class="custos-cliente">${esc(g.cliente || '—')}</td>
+          <td class="custos-tipo">${esc(tipo)}</td>
+          <td>${acao}</td>
+          <td class="num">${fmtTok(g.inputTokens)} / ${fmtTok(g.outputTokens)} / ${fmtTok(cacheTok)}</td>
+          <td class="num custo-cell">${fmtUSD(g.custoUSD || 0)}</td>
+        </tr>`;
+      }).join('');
+      if ($body) $body.innerHTML = `
+        <div class="custos-table-wrap">
+          <table class="custos-table">
+            <thead><tr>
+              <th>Data</th><th>Cliente</th><th>Tipo</th><th>Ação</th>
+              <th class="num">Tokens (in / out / cache)</th><th class="num">Custo</th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    } catch (e) {
+      console.error('[custos] erro:', e);
+      if ($body) $body.innerHTML = '<p class="custos-empty">⚠ Não consegui carregar o histórico agora. Tente Atualizar em alguns segundos (o servidor pode estar acordando).</p>';
+    } finally {
+      loading = false;
+    }
+  }
+  if ($refresh) $refresh.addEventListener('click', loadCustos);
 })();
 
 // ─────────────────────────────────────────────────
@@ -31422,10 +31569,21 @@ ${deckEmbedScript}
     document.querySelectorAll('.prop-download-menu').forEach(m => { m.hidden = true; });
     [$download, $downloadTop].forEach(b => b && b.setAttribute('aria-expanded', 'false'));
   }
+  function isCustomMode() {
+    return !!document.querySelector('.prop-sidebar')?.classList.contains('is-custom-mode');
+  }
   function wireDownloadMenu(btn, menu) {
     if (!btn || !menu) return;
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
+      // Modo Personalizada: o Baixar deve baixar a proposta PERSONALIZADA (HTML
+      // gerado pela IA), não o template padrão. Baixa direto, sem abrir o menu
+      // HTML/PDF — o modo Personalizada é HTML-only (igual ao botão próprio dele).
+      if (isCustomMode()) {
+        closeAllDownloadMenus();
+        if (typeof window.__smRequestDownload === 'function') window.__smRequestDownload();
+        return;
+      }
       const willOpen = menu.hidden;
       closeAllDownloadMenus();
       menu.hidden = !willOpen;
