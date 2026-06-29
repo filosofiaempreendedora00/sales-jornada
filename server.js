@@ -41,6 +41,7 @@ const PROPOSAL_FILES = {
   '00': 'proposta-lancamento.html',
   '01': 'proposta-performance-mql.html',
   '02': 'proposta-reguas.html',
+  '03': 'Modelo de Propostas/Proposta-padrao.html', // Modelo Oficial — marca placeholder: "Aurora"
 };
 
 // Limites generosos pra suportar transcrições longas + HTMLs grandes.
@@ -159,7 +160,7 @@ function validateGenerateInput(body) {
 
   const proposalType = String(body.proposalType || '').trim();
   if (!PROPOSAL_FILES[proposalType]) {
-    errors.push('Tipo de proposta inválido. Use 00, 01 ou 02.');
+    errors.push('Tipo de proposta inválido. Use 00, 01, 02 ou 03.');
   }
 
   const clientName = (typeof body.clientName === 'string' ? body.clientName : '').trim().slice(0, 80);
@@ -262,7 +263,8 @@ function applyPatches(htmlWithIds, patches, clientName) {
     const updatedTitle = currentTitle
       .replace(/Digital Aligner/gi, clientName)
       .replace(/\bLuma\b/g, clientName)
-      .replace(/\bHaira\b/g, clientName);
+      .replace(/\bHaira\b/g, clientName)
+      .replace(/\bAurora\b/g, clientName);
     if (updatedTitle !== currentTitle) {
       $('title').text(updatedTitle);
     }
@@ -289,6 +291,9 @@ const TEMPLATE_LEAK_TERMS = {
     'consultório', 'clínica odontológica',
     'Juliana',
   ],
+  '03': [ // Modelo Oficial — marca placeholder "Aurora" (Noway/Guday são cases citados, mantém)
+    'Aurora',
+  ],
 };
 
 // Hard replacements: aplicados no HTML inteiro (inclui scripts JS,
@@ -302,6 +307,9 @@ const HARD_REPLACEMENTS = {
   ],
   '01': (clientName) => [
     [/\bLuma\b/g, clientName],
+  ],
+  '03': (clientName) => [
+    [/\bAurora\b/g, clientName],
   ],
   '02': (clientName) => [
     [/\bDigital Aligner\b/g, clientName],
@@ -875,8 +883,9 @@ O QUE SUBSTITUIR (SEMPRE, em CADA texto onde aparecer)
 ═══════════════════════════════════════════════════
 
 ▶ NOMES DE CLIENTES DO TEMPLATE:
-   "Digital Aligner", "Luma", "Haira" → nome do cliente real
-   Variações: "a Digital", "a Luma" → "a {cliente}" ou "ao {cliente}"
+   "Digital Aligner", "Luma", "Haira", "Aurora" → nome do cliente real
+   Variações: "a Digital", "a Luma", "a Aurora", "da Aurora" → "a {cliente}" / "ao {cliente}" / "da {cliente}"
+   (ATENÇÃO: "Noway" e "Guday" são CASES reais citados como exemplo — NÃO troque esses.)
 
 ▶ FOUNDERS, GESTORES, PESSOAS NOMEADAS:
    Qualquer nome próprio de pessoa do template (Juliana, etc.) → omitir,
@@ -1177,7 +1186,7 @@ app.post('/api/generate-proposal', async (req, res) => {
     messages: [
       {
         role: 'user',
-        content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nPersonalize a proposta para ${clientName}. Retorne SOMENTE um JSON com os IDs cujos textos você quer alterar (omita os que ficam iguais). Lembre-se: substitua menções a Digital Aligner / Luma / Haira pelo nome ${clientName}.`,
+        content: `CLIENTE: ${clientName}\n\nTRANSCRIÇÕES DA REUNIÃO DE VENDAS:\n\n${transcriptsBlock}\n\n---\n\nPersonalize a proposta para ${clientName}. Retorne SOMENTE um JSON com os IDs cujos textos você quer alterar (omita os que ficam iguais). Lembre-se: substitua menções a ${proposalType === '03' ? 'Aurora' : 'Digital Aligner / Luma / Haira'} pelo nome ${clientName} (mas NÃO troque cases citados como Noway / Guday).`,
       },
     ],
   };

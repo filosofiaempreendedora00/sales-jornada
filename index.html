@@ -5456,6 +5456,77 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-custom-generate-btn.is-loading .prop-gen-spinner { display: inline-block; }
 @keyframes prop-spin { to { transform: rotate(360deg); } }
 
+/* ─── Barra de progresso da geração (IA) ─── */
+.prop-gen-progress {
+  margin-top: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+}
+.prop-gen-progress.is-on { display: flex; }
+.prop-gen-progress-head {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 11px; font-weight: 700; color: var(--text-2); letter-spacing: 0.2px;
+}
+.prop-gen-progress-phase { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.prop-gen-progress-phase span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prop-gen-progress-phase .dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: #0dcfe8; box-shadow: 0 0 8px rgba(13,207,232,0.85);
+  animation: prop-gen-pulse 1.1s ease-in-out infinite;
+}
+@keyframes prop-gen-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.prop-gen-progress-meta { color: var(--text-3); font-variant-numeric: tabular-nums; white-space: nowrap; flex-shrink: 0; }
+.prop-gen-progress-track {
+  position: relative; height: 8px; border-radius: 999px; overflow: hidden;
+  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.08);
+}
+.prop-gen-progress-fill {
+  position: absolute; top: 0; bottom: 0; left: 0; width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #0dcfe8, #9b6dff);
+  transition: width 0.4s ease, background 0.3s ease;
+}
+/* shimmer — mostra que está "andando" mesmo entre eventos do servidor */
+.prop-gen-progress-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transform: translateX(-100%);
+  animation: prop-gen-shimmer 1.3s ease-in-out infinite;
+}
+@keyframes prop-gen-shimmer { to { transform: translateX(100%); } }
+.prop-gen-progress.is-done .prop-gen-progress-fill { background: #12d490; }
+.prop-gen-progress.is-error .prop-gen-progress-fill { background: #ff6b6b; }
+.prop-gen-progress.is-done .prop-gen-progress-fill::after,
+.prop-gen-progress.is-error .prop-gen-progress-fill::after { animation: none; opacity: 0; }
+.prop-gen-progress.is-done .prop-gen-progress-phase .dot { animation: none; background: #12d490; box-shadow: 0 0 8px rgba(18,212,144,0.85); }
+.prop-gen-progress.is-error .prop-gen-progress-phase .dot { animation: none; background: #ff6b6b; box-shadow: none; }
+
+/* ─── Custo da geração (IA) ─── */
+.prop-gen-cost {
+  margin-top: 10px; display: none; flex-direction: column; gap: 8px;
+  padding: 11px 12px; border-radius: 10px;
+  background: rgba(18,212,144,0.06); border: 1px solid rgba(18,212,144,0.28);
+}
+.prop-gen-cost.is-on { display: flex; }
+.prop-gen-cost-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.prop-gen-cost-label { font-size: 11px; font-weight: 700; color: var(--text-2); letter-spacing: 0.2px; }
+.prop-gen-cost-val { font-size: 15px; font-weight: 800; color: #7fe3b0; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.prop-gen-cost-val small { font-size: 11px; font-weight: 700; color: var(--text-3); margin-left: 5px; }
+.prop-gen-cost-break { margin: 0; font-size: 10.5px; color: var(--text-3); line-height: 1.5; }
+.prop-gen-cost-total {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.12);
+}
+.prop-gen-cost-total-label { font-size: 10.5px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.6px; }
+.prop-gen-cost-total-val { font-size: 12.5px; font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.prop-gen-cost-reset {
+  background: none; border: 0; padding: 0; margin-left: 8px;
+  font-family: inherit; font-size: 10px; font-weight: 700; color: var(--text-3);
+  text-decoration: underline; cursor: pointer;
+}
+.prop-gen-cost-reset:hover { color: var(--text-2); }
+
 /* Divisor "ou" entre Gerar e Carregar HTML */
 .prop-or-divider {
   display: flex;
@@ -14988,6 +15059,28 @@ a.xpto-pricing-btn { text-decoration: none; }
           <span class="prop-gen-label">⚡ Gerar proposta com IA</span>
           <span class="prop-gen-spinner" aria-hidden="true"></span>
         </button>
+
+        <!-- Barra de progresso da geração (aparece enquanto a IA trabalha) -->
+        <div class="prop-gen-progress" id="prop-gen-progress" aria-live="polite">
+          <div class="prop-gen-progress-head">
+            <span class="prop-gen-progress-phase"><span class="dot"></span><span id="prop-gen-progress-phase">Iniciando…</span></span>
+            <span class="prop-gen-progress-meta" id="prop-gen-progress-meta"></span>
+          </div>
+          <div class="prop-gen-progress-track"><div class="prop-gen-progress-fill" id="prop-gen-progress-fill"></div></div>
+        </div>
+
+        <!-- Custo exato da geração + acumulado da sessão -->
+        <div class="prop-gen-cost" id="prop-gen-cost">
+          <div class="prop-gen-cost-row">
+            <span class="prop-gen-cost-label">💸 Custo desta geração</span>
+            <span class="prop-gen-cost-val" id="prop-gen-cost-val">—</span>
+          </div>
+          <p class="prop-gen-cost-break" id="prop-gen-cost-break"></p>
+          <div class="prop-gen-cost-total">
+            <span class="prop-gen-cost-total-label">Total da sessão <button type="button" class="prop-gen-cost-reset" id="prop-gen-cost-reset">zerar</button></span>
+            <span class="prop-gen-cost-total-val" id="prop-gen-cost-total-val">US$ 0,0000 · 0 ger.</span>
+          </div>
+        </div>
 
         <!-- Aviso de modo MOCK (se o backend respondeu mas sem API key) -->
         <p class="prop-gen-mock-note" id="prop-gen-mock-note" hidden>
@@ -24614,6 +24707,128 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     status.textContent = '';
   }
 
+  // ── Custo da geração (IA) ──────────────────────────
+  // Preços do Claude Sonnet 4.5 (US$ por 1M tokens) — pra mostrar o custo EXATO
+  // de cada geração e o acumulado da sessão. O billing real é em US$; o R$ é só
+  // referência aproximada. Se trocar ANTHROPIC_MODEL no Render, ajuste aqui.
+  const AI_PRICING = { in: 3.0, out: 15.0, cacheWrite: 3.75, cacheRead: 0.30 }; // US$/1M tok
+  const USD_BRL = 5.40; // câmbio aproximado só p/ referência
+  const costEls = {
+    box:   document.getElementById('prop-gen-cost'),
+    val:   document.getElementById('prop-gen-cost-val'),
+    brk:   document.getElementById('prop-gen-cost-break'),
+    total: document.getElementById('prop-gen-cost-total-val'),
+    reset: document.getElementById('prop-gen-cost-reset'),
+  };
+  let sessionCostUSD = 0;
+  let sessionGens = 0;
+  function usageCostUSD(u) {
+    if (!u) return 0;
+    return ((u.input_tokens || 0) * AI_PRICING.in
+          + (u.output_tokens || 0) * AI_PRICING.out
+          + (u.cache_creation_input_tokens || 0) * AI_PRICING.cacheWrite
+          + (u.cache_read_input_tokens || 0) * AI_PRICING.cacheRead) / 1e6;
+  }
+  const fmtUSD = v => 'US$ ' + v.toFixed(4).replace('.', ',');
+  const fmtBRL = v => 'R$ ' + (v * USD_BRL).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmtTok = n => (n || 0).toLocaleString('pt-BR');
+  function renderSessionTotal() {
+    if (costEls.total) costEls.total.textContent = `${fmtUSD(sessionCostUSD)} · ${sessionGens} ger.`;
+  }
+  // Soma o custo da geração (usage principal + passada de revisão de leaks) e
+  // acumula no total da sessão.
+  function showCost(meta) {
+    if (!costEls.box || !meta || meta.model === 'mock') return;
+    const total = usageCostUSD(meta.usage) + usageCostUSD(meta.auditUsage);
+    if (total <= 0) return; // refine sem usage / nada a cobrar
+    sessionCostUSD += total;
+    sessionGens += 1;
+    const u = meta.usage || {};
+    const audit = usageCostUSD(meta.auditUsage);
+    const cacheTok = (u.cache_read_input_tokens || 0) + (u.cache_creation_input_tokens || 0);
+    if (costEls.val) costEls.val.innerHTML = `${fmtUSD(total)} <small>≈ ${fmtBRL(total)}</small>`;
+    if (costEls.brk) costEls.brk.textContent =
+      `entrada ${fmtTok(u.input_tokens)} tok · cache ${fmtTok(cacheTok)} tok · saída ${fmtTok(u.output_tokens)} tok`
+      + (audit > 0 ? ` · +revisão ${fmtUSD(audit)}` : '');
+    renderSessionTotal();
+    costEls.box.classList.add('is-on');
+  }
+  if (costEls.reset) costEls.reset.addEventListener('click', () => {
+    sessionCostUSD = 0; sessionGens = 0;
+    renderSessionTotal();
+    costEls.box.classList.remove('is-on');
+  });
+
+  // ── Barra de progresso da geração (IA) ─────────────
+  // Não dá pra saber o tamanho final da resposta de antemão, então a barra
+  // cresce de forma ASSINTÓTICA (nunca chega a 100% antes do 'done') + um creep
+  // por tempo pra nunca parecer travada; o shimmer no CSS mostra que está ativa.
+  const progEls = {
+    box:   document.getElementById('prop-gen-progress'),
+    phase: document.getElementById('prop-gen-progress-phase'),
+    meta:  document.getElementById('prop-gen-progress-meta'),
+    fill:  document.getElementById('prop-gen-progress-fill'),
+  };
+  const progress = {
+    _pct: 0, _timer: null, _t0: 0, _chars: 0,
+    _render() {
+      if (progEls.fill) progEls.fill.style.width = Math.min(100, Math.max(0, this._pct)).toFixed(1) + '%';
+      if (progEls.meta) {
+        const secs = Math.round((Date.now() - this._t0) / 1000);
+        const charPart = this._chars ? `${this._chars.toLocaleString('pt-BR')} car · ` : '';
+        progEls.meta.textContent = `${charPart}${secs}s`;
+      }
+    },
+    _setPhase(t) { if (progEls.phase) progEls.phase.textContent = t; },
+    start(label) {
+      if (!progEls.box) return;
+      this._pct = 4; this._chars = 0; this._t0 = Date.now();
+      progEls.box.classList.remove('is-done', 'is-error');
+      progEls.box.classList.add('is-on');
+      this._setPhase(label || 'Conectando à IA…');
+      this._render();
+      clearInterval(this._timer);
+      this._timer = setInterval(() => { this._pct += (90 - this._pct) * 0.08; this._render(); }, 600);
+    },
+    onEvent(evt) {
+      if (!progEls.box || !evt) return;
+      if (evt.type === 'start') {
+        this._setPhase('Gerando a proposta…');
+      } else if (evt.type === 'progress') {
+        if (evt.audit) {
+          this._setPhase('Revisando termos do template…');
+        } else if (evt.stage === 'thinking') {
+          this._setPhase(`Refinando — pensando (passo ${evt.iteration || 1})…`);
+        } else if (evt.stage === 'tool') {
+          this._setPhase('Refinando — aplicando edições…');
+        } else if (typeof evt.chars === 'number') {
+          this._setPhase('Gerando a proposta…');
+          this._chars = evt.chars;
+          const target = 88 * (1 - Math.exp(-evt.chars / 3500)); // saída típica ~3–8KB
+          if (target > this._pct) this._pct = target;
+        }
+        this._render();
+      }
+    },
+    finish() {
+      if (!progEls.box) return;
+      clearInterval(this._timer);
+      this._pct = 100;
+      progEls.box.classList.add('is-done');
+      this._setPhase('Pronto!');
+      this._render();
+      setTimeout(() => { if (progEls.box.classList.contains('is-done')) progEls.box.classList.remove('is-on'); }, 1600);
+    },
+    fail() {
+      if (!progEls.box) return;
+      clearInterval(this._timer);
+      progEls.box.classList.add('is-error');
+      this._setPhase('Falhou — veja a mensagem abaixo');
+      this._render();
+      setTimeout(() => { if (progEls.box.classList.contains('is-error')) progEls.box.classList.remove('is-on'); }, 2500);
+    },
+  };
+
   function getTranscripts() {
     const items = document.querySelectorAll('.prop-transcript-input');
     return Array.from(items)
@@ -24778,27 +24993,27 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     }
     state.inFlight = true;
     setLoading(generateBtn, true);
+    progress.start('Conectando à IA…');
     showStatus('Gerando proposta com IA — pode demorar 1–5min em propostas grandes…', 'info');
 
     try {
       const json = await callGenerate(
         { transcripts, proposalType, clientName },
-        (evt) => {
-          if (evt.type === 'progress' && evt.chars) {
-            showStatus(`Gerando… ${evt.chars.toLocaleString('pt-BR')} caracteres recebidos`, 'info');
-          }
-        }
+        (evt) => progress.onEvent(evt)
       );
       renderInFrame(json.html);
       state.lastProposalType = proposalType;
       // Mostra refinamento + download
       if (refineWrap) refineWrap.hidden = false;
       if (downloadBtn) downloadBtn.hidden = false;
+      progress.finish();
+      showCost(json.meta);
       const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
       const modeNote = json.mode === 'mock' ? ' — modo MOCK (sem API key)' : '';
       showStatus(`✓ Proposta gerada${elapsed}${modeNote}. Edite os textos clicando neles, arraste o ⋮⋮ pra reordenar seções, ou refine com IA abaixo.`, 'success');
     } catch (e) {
       console.error('[gerar]', e);
+      progress.fail();
       const msg = e.name === 'AbortError'
         ? 'Tempo esgotado. A IA demorou demais — tente uma transcrição mais curta.'
         : (e.message || 'Erro inesperado.');
@@ -24825,6 +25040,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
       state.inFlight = true;
       setLoading(refineBtn, true);
+      progress.start('Refinando com IA…');
       showStatus('Aplicando refinamento com IA…', 'info');
 
       try {
@@ -24853,6 +25069,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             currentHtml,
           },
           (evt) => {
+            progress.onEvent(evt);
             if (evt.type === 'start') {
               showStatus(evt.mode === 'structural'
                 ? 'Refinando — Claude está analisando o HTML…'
@@ -24872,6 +25089,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         renderInFrame(json.html);
         refineInput.value = '';
         refineBtn.disabled = true;
+        progress.finish();
+        showCost(json.meta);
         const elapsed = json.meta?.elapsedMs ? ` (${(json.meta.elapsedMs/1000).toFixed(1)}s)` : '';
         const modeNote = json.mode === 'mock' ? ' — modo MOCK' : '';
         const summary = json.meta?.summary ? ` ${json.meta.summary}` : '';
@@ -24879,6 +25098,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         showStatus(`✓ Refinamento aplicado${elapsed}${tools}${modeNote}.${summary} Pode continuar refinando ou editar inline.`, 'success');
       } catch (e) {
         console.error('[refinar]', e);
+        progress.fail();
         const msg = e.name === 'AbortError'
           ? 'Tempo esgotado.'
           : (e.message || 'Erro inesperado.');
