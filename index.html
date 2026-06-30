@@ -5351,7 +5351,9 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 /* EXCEÇÃO: o seletor de Soluções & Planos é movido pra dentro do fluxo
    Personalizada (acima do Gerar) e precisa continuar visível. Os pacotes
    marcados aqui entram na seção de Investimento do Modelo Oficial. */
-.prop-sidebar.is-custom-mode #prop-sol-section { display: flex !important; }
+.prop-sidebar.is-custom-mode #prop-sol-section,
+.prop-sidebar.is-custom-mode #prop-closer-section,
+.prop-sidebar.is-custom-mode #prop-validity-section { display: flex !important; }
 .prop-pkg-hint {
   margin: 4px 0 0; font-size: 11px; line-height: 1.5; color: var(--text-3);
 }
@@ -15264,7 +15266,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         <p class="prop-section-label">Investimento</p>
         <div class="prop-invest" id="prop-invest"></div>
       </div>
-      <div class="prop-section">
+      <div class="prop-section" id="prop-closer-section">
         <p class="prop-section-label">Closer</p>
         <div class="prop-select-wrap">
           <select class="prop-custom-select" id="prop-closer" aria-label="Closer responsável">
@@ -15285,7 +15287,7 @@ a.xpto-pricing-btn { text-decoration: none; }
         </div>
         <span class="prop-client-hint">Aparece no slide de fechamento da proposta com o telefone</span>
       </div>
-      <div class="prop-section">
+      <div class="prop-section" id="prop-validity-section">
         <p class="prop-section-label">Validade da proposta</p>
         <input
           class="prop-client-input"
@@ -24621,32 +24623,32 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     if (customFields) customFields.hidden = !isCustom;
     if (sidebar) sidebar.classList.toggle('is-custom-mode', isCustom);
 
-    // Move o MESMO seletor "Soluções & Planos" pra dentro do fluxo Personalizada
-    // (acima do botão Gerar) quando em custom; devolve ao lugar no Padrão.
-    // É o mesmo elemento (#prop-sol-section) → todo o render/estado existente
-    // (renderSolutions, inlinePlans, preços) continua funcionando intacto.
-    const solSection = document.getElementById('prop-sol-section');
-    const genBtnEl   = document.getElementById('prop-custom-generate-btn');
-    if (solSection) {
-      if (!setMode._solHome) {
-        setMode._solHome = { parent: solSection.parentNode, next: solSection.nextSibling };
+    // Move os MESMOS seletores do Padrão (Soluções & Planos, Closer, Validade)
+    // pra dentro do fluxo Personalizada (acima do Gerar, nessa ordem) quando em
+    // custom; devolve ao lugar no Padrão ao sair. São os mesmos elementos →
+    // todo o render/estado existente continua funcionando intacto. Os valores
+    // (pacotes, closer, validade) são injetados na proposta gerada.
+    const genBtnEl = document.getElementById('prop-custom-generate-btn');
+    setMode._homes = setMode._homes || {};
+    ['prop-sol-section', 'prop-closer-section', 'prop-validity-section'].forEach(id => {
+      const sec = document.getElementById(id);
+      if (!sec) return;
+      if (!setMode._homes[id]) {
+        setMode._homes[id] = { parent: sec.parentNode, next: sec.nextSibling };
       }
       if (isCustom && genBtnEl && genBtnEl.parentNode) {
-        // só insere se ainda não está no lugar certo
-        if (genBtnEl.previousElementSibling !== solSection) {
-          genBtnEl.parentNode.insertBefore(solSection, genBtnEl);
-        }
-        // dica curta (uma vez)
-        if (!solSection.querySelector('.prop-pkg-hint')) {
-          const hint = document.createElement('p');
-          hint.className = 'prop-pkg-hint';
-          hint.innerHTML = 'Marque os pacotes que vão pro <strong>Investimento</strong> da proposta. Preço e escopo vêm exatamente do modelo padrão.';
-          solSection.appendChild(hint);
-        }
+        genBtnEl.parentNode.insertBefore(sec, genBtnEl); // empilha na ordem, acima do Gerar
       } else if (!isCustom) {
-        // devolve pro lugar original no seletor Padrão
-        setMode._solHome.parent.insertBefore(solSection, setMode._solHome.next);
+        setMode._homes[id].parent.insertBefore(sec, setMode._homes[id].next);
       }
+    });
+    // Dica curta no topo do seletor de pacotes (uma vez)
+    const solSec = document.getElementById('prop-sol-section');
+    if (isCustom && solSec && !solSec.querySelector('.prop-pkg-hint')) {
+      const hint = document.createElement('p');
+      hint.className = 'prop-pkg-hint';
+      hint.innerHTML = 'Marque os pacotes (vão pro <strong>Investimento</strong>), o <strong>closer</strong> e a <strong>validade</strong>. Tudo entra na proposta com preço/escopo do modelo padrão.';
+      solSec.appendChild(hint);
     }
 
     // Quando entra em "personalizada", mostra placeholder no preview.
@@ -25083,17 +25085,56 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // devolve o HTML intacto (deixa o que a IA gerou).
   async function injectBundles(html) {
     try {
-      if (typeof window.__smBuildBundles !== 'function') return html;
+      // Só age no Modelo Oficial (tem #slot-bundles); outros tipos passam intactos.
       if (!/id=["']slot-bundles["']/.test(html)) return html;
-      const bundles = await window.__smBuildBundles();
-      if (!bundles || !bundles.trim()) return html;
       const doc = new DOMParser().parseFromString(html, 'text/html');
-      const slot = doc.getElementById('slot-bundles');
-      if (!slot) return html;
-      slot.innerHTML = bundles; // remove os cards [data-preview]/IA, põe os reais
+      let touched = false;
+
+      // 1) Pacotes → seção de Investimento (preço/escopo exatos do Padrão)
+      if (typeof window.__smBuildBundles === 'function') {
+        const bundles = await window.__smBuildBundles();
+        const slot = doc.getElementById('slot-bundles');
+        if (slot && bundles && bundles.trim()) { slot.innerHTML = bundles; touched = true; }
+      }
+
+      // 2) Remove qualquer "Nº de proposta" remanescente (segurança)
+      doc.querySelectorAll('.docref').forEach(el => { el.remove(); touched = true; });
+
+      // 3) Closer + validade (mesmos seletores do Padrão)
+      const extras = (typeof window.__smModeloExtras === 'function') ? window.__smModeloExtras() : null;
+      if (extras) {
+        if (extras.validity) {
+          // hero .meta "Válida até" + .validity no CTA final
+          doc.querySelectorAll('.meta > div').forEach(div => {
+            const k = div.querySelector('.k');
+            if (k && /v[áa]lida at[ée]/i.test(k.textContent || '')) {
+              const v = div.querySelector('.v'); if (v) { v.textContent = extras.validity; touched = true; }
+            }
+          });
+          doc.querySelectorAll('.validity').forEach(el => { el.textContent = `Proposta válida até ${extras.validity}`; touched = true; });
+        }
+        if (extras.closer) {
+          // footer .contact: Estrategista / Telefone / E-mail
+          doc.querySelectorAll('.contact > div').forEach(div => {
+            const k = div.querySelector('.k'); const v = div.querySelector('.v');
+            if (!k || !v) return;
+            const kt = (k.textContent || '').toLowerCase();
+            if (/estrateg|closer|respons/.test(kt))      { v.textContent = extras.closer.name; touched = true; }
+            else if (/telefone|fone|whats|contato/.test(kt)) { v.textContent = extras.closer.phone; touched = true; }
+            else if (/mail/.test(kt))                    { v.textContent = extras.closer.email; touched = true; }
+          });
+          // CTA "Aprovar proposta" → WhatsApp do closer (mantém o ?text= original)
+          doc.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+            const q = (a.getAttribute('href') || '').split('?')[1];
+            a.setAttribute('href', extras.closer.whatsapp + (q ? '?' + q : '')); touched = true;
+          });
+        }
+      }
+
+      if (!touched) return html;
       return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     } catch (e) {
-      console.error('[bundles] injeção falhou (mantendo HTML da IA):', e);
+      console.error('[modelo] pós-processo falhou (mantendo HTML da IA):', e);
       return html;
     }
   }
@@ -31692,6 +31733,26 @@ ${deckEmbedScript}
     return cards.join('');
   }
   window.__smBuildBundles = buildModeloBundles;
+
+  // Closer + validade selecionados (mesmos seletores do Padrão) → dados pro
+  // Modelo Oficial. Email derivado do 1º nome; whatsapp = telefone só dígitos
+  // com DDI 55; validade por extenso (ex.: "9 de julho de 2026").
+  window.__smModeloExtras = function () {
+    const c = CLOSERS[closerId] || CLOSERS[DEFAULT_CLOSER_ID] || null;
+    let closer = null;
+    if (c) {
+      const first = (c.name || '').split(/\s+/)[0].normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+      const waDigits = '55' + String(c.phone || '').replace(/\D/g, '');
+      closer = { name: c.name, phone: c.phone, email: `${first}@turbopartners.com.br`, whatsapp: `https://wa.me/${waDigits}` };
+    }
+    let validity = '';
+    const m = String(validityISO || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+      const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+      validity = `${parseInt(m[3], 10)} de ${meses[parseInt(m[2], 10) - 1]} de ${m[1]}`;
+    }
+    return { closer, validity };
+  };
 
   // "Baixar" abre um menu com HTML / PDF (em vez de baixar direto).
   function closeAllDownloadMenus() {
