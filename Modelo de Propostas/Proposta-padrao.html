@@ -321,106 +321,6 @@
     </div>
   </section>
 
-  <!-- ================= 5. SOLUÇÕES (slot modular) ================= -->
-  <section class="block">
-    <div class="wrap reveal">
-      <div class="eyebrow">Soluções recomendadas</div>
-      <h2 class="title">Como vamos executar.</h2>
-      <p class="lead">Cada frente ataca um ponto específico do diagnóstico — aquisição, criativo e retenção.</p>
-
-      <!-- =====================================================================
-           SLOT MODULAR · SOLUÇÕES
-           A ferramenta injeta 1 card .sol por módulo dentro de #slot-solucoes:
-             1) remova os elementos [data-preview]
-             2) clone o <template id="tpl-solucao"> e preencha os tokens
-           Tokens: {{NUM}} {{TITULO}} {{PRAZO}} {{PROBLEMA}} {{COMO_FUNCIONA}}
-                   {{BENEFICIO}} + listas {{ENTREGAVEIS}} {{DESTAQUES}} {{PRECISAMOS}}
-      ====================================================================== -->
-      <div id="slot-solucoes" data-slot="solucoes">
-
-        <div class="sol" data-preview>
-          <div class="sol-head"><span class="n">01</span><h3>Performance — tráfego orientado a dados</h3><span class="pill">Recorrente</span></div>
-          <div class="field"><div class="label">O problema que resolve</div><p>A verba de mídia sobe, mas o retorno não acompanha — falta leitura do funil inteiro e decisão por número de negócio.</p></div>
-          <div class="field"><div class="label">Como funciona</div><p>Gestão de performance completa em Meta e Google, com otimização por CAC, ROAS e margem. Começa pelo Gameplan no 1º mês.</p></div>
-          <div class="field"><div class="label">Benefício esperado</div><p>CAC sob controle e escala previsível — verba que cresce porque o número sustenta.</p></div>
-          <hr class="divider">
-          <div class="field"><div class="label">Entregáveis</div>
-            <ul class="checks"><li>Gameplan completo no 1º mês</li><li>Gestão Meta + Google</li><li>Otimização semanal por métrica de negócio</li><li>Relatórios de CAC / ROAS / margem</li></ul>
-          </div>
-          <div class="twocol" style="margin-top:22px">
-            <div><div class="label">Destaques</div><ul class="marks"><li>Estrategista dedicado</li></ul></div>
-            <div><div class="label muted">Precisamos de você</div><ul class="needs"><li>Acesso a gerenciador e analytics</li></ul></div>
-          </div>
-        </div>
-
-        <div class="sol" data-preview>
-          <div class="sol-head"><span class="n">02</span><h3>E-mail &amp; CRM — recompra e LTV</h3><span class="pill">Recorrente · flashCRM</span></div>
-          <div class="field"><div class="label">O problema que resolve</div><p>O cliente compra uma vez e some. A marca paga o CAC e não capitaliza a base.</p></div>
-          <div class="field"><div class="label">Como funciona</div><p>Réguas automatizadas e broadcasts em WhatsApp e e-mail pela flashCRM: recupera carrinho, ativa recompra e eleva o LTV.</p></div>
-          <div class="field"><div class="label">Benefício esperado</div><p>Mais receita da base que você já pagou pra conquistar — LTV sobe, dependência de mídia cai.</p></div>
-          <hr class="divider">
-          <div class="field"><div class="label">Entregáveis</div>
-            <ul class="checks"><li>Réguas de automação</li><li>Calendário de broadcasts</li><li>Recuperação de carrinho</li><li>Segmentação da base</li></ul>
-          </div>
-          <div class="twocol" style="margin-top:22px">
-            <div><div class="label">Destaques</div><ul class="marks"><li>flashCRM (plataforma própria)</li></ul></div>
-            <div><div class="label muted">Precisamos de você</div><ul class="needs"><li>Base de contatos e acesso à loja</li></ul></div>
-          </div>
-        </div>
-
-      </div>
-
-      <template id="tpl-solucao">
-        <div class="sol">
-          <div class="sol-head"><span class="n">{{NUM}}</span><h3>{{TITULO}}</h3><span class="pill">{{PRAZO}}</span></div>
-          <div class="field"><div class="label">O problema que resolve</div><p>{{PROBLEMA}}</p></div>
-          <div class="field"><div class="label">Como funciona</div><p>{{COMO_FUNCIONA}}</p></div>
-          <div class="field"><div class="label">Benefício esperado</div><p>{{BENEFICIO}}</p></div>
-          <hr class="divider">
-          <div class="field"><div class="label">Entregáveis</div><ul class="checks">{{ENTREGAVEIS}}</ul></div>
-          <div class="twocol" style="margin-top:22px">
-            <div><div class="label">Destaques</div><ul class="marks">{{DESTAQUES}}</ul></div>
-            <div><div class="label muted">Precisamos de você</div><ul class="needs">{{PRECISAMOS}}</ul></div>
-          </div>
-        </div>
-      </template>
-    </div>
-  </section>
-
-  <!-- ================= 6. PROVA SOCIAL ================= -->
-  <section class="block">
-    <div class="wrap reveal">
-      <div class="eyebrow">Tração que entregamos</div>
-      <h2 class="title">Não é promessa. É histórico.</h2>
-      <p class="lead">A Turbo cresceu de 0 a 1.300+ clientes em 4 anos fazendo o que está nesta proposta.</p>
-      <div class="metrics">
-        <div class="metric"><div class="big">1.300+</div><div class="cap">marcas aceleradas</div></div>
-        <div class="metric"><div class="big">120+</div><div class="cap">especialistas no time</div></div>
-        <div class="metric"><div class="big">4 anos</div><div class="cap">de 0 a 1.300+ clientes</div></div>
-        <div class="metric"><div class="big">6+</div><div class="cap">serviços moduláveis</div></div>
-      </div>
-      <div class="quotes">
-        <div class="quote"><p>“Só tenho a falar bem. Foi muito completo o desenvolvimento dos fluxos de automações e os e-mails, e estamos bem satisfeitos.”</p><div class="who"><b>Enzo Moreira</b> · Co-fundador da Guday · @guday.br</div></div>
-        <div class="quote"><p>“Via de regra eu nunca gostei de botar nosso marketing na mão de agência, eu sempre tive muita desconfiança — e com a Turbo foi muito pelo contrário. Estão sempre preocupados com o nosso resultado final. A Turbo foi nossa parceria desde o D+0 até o crescimento de 10x esse ano.”</p><div class="who"><b>Arthur</b> · Co-fundador da Noway · @nowaydrink</div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= 7. POR QUE NÓS ================= -->
-  <section class="block">
-    <div class="wrap reveal">
-      <div class="eyebrow">Por que a Turbo</div>
-      <h2 class="title">Growth com DNA de negócio.</h2>
-      <div class="why">
-        <div class="item"><span class="wn">01</span><div><h3>Otimizamos métrica de negócio, não de marketing</h3><p>CTR e alcance não pagam conta. A gente decide por CAC, LTV, ROAS, ticket e margem — o número que move o seu caixa.</p></div></div>
-        <div class="item"><span class="wn">02</span><div><h3>Gestão de performance, não tráfego pago</h3><p>Não é subir anúncio e olhar o gerenciador. É olhar o funil inteiro — criativo somado a dado — e decidir por número.</p></div></div>
-        <div class="item"><span class="wn">03</span><div><h3>Um ecossistema 360, não um serviço solto</h3><p>Mais que campanhas, somos uma operação completa pra tornar a vida de quem vende online mais fácil e rentável — da estratégia à tecnologia própria, como a Turbo Tech e a flashCRM, tudo puxando o mesmo resultado.</p></div></div>
-        <div class="item"><span class="wn">04</span><div><h3>Tração comprovada e case vivo</h3><p>1.300+ marcas aceleradas, 120+ especialistas e a Bready — nossa própria marca DTC — provando o método na prática.</p></div></div>
-      </div>
-      <div class="creds"><span>Métrica de negócio</span><span>Meta Ads</span><span>Google Ads</span><span>flashCRM</span><span>Turbo Tech</span></div>
-    </div>
-  </section>
-
   <!-- ================= 8. INVESTIMENTO (slot de bundles) ================= -->
   <section class="block" id="investimento">
     <div class="wrap reveal">
@@ -493,6 +393,40 @@
           <li>Cria a base de dados e criativo pra escalar com previsibilidade na fase seguinte.</li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- ================= 6. PROVA SOCIAL ================= -->
+  <section class="block">
+    <div class="wrap reveal">
+      <div class="eyebrow">Tração que entregamos</div>
+      <h2 class="title">Não é promessa. É histórico.</h2>
+      <p class="lead">A Turbo cresceu de 0 a 1.300+ clientes em 4 anos fazendo o que está nesta proposta.</p>
+      <div class="metrics">
+        <div class="metric"><div class="big">1.300+</div><div class="cap">marcas aceleradas</div></div>
+        <div class="metric"><div class="big">120+</div><div class="cap">especialistas no time</div></div>
+        <div class="metric"><div class="big">4 anos</div><div class="cap">de 0 a 1.300+ clientes</div></div>
+        <div class="metric"><div class="big">6+</div><div class="cap">serviços moduláveis</div></div>
+      </div>
+      <div class="quotes">
+        <div class="quote"><p>“Só tenho a falar bem. Foi muito completo o desenvolvimento dos fluxos de automações e os e-mails, e estamos bem satisfeitos.”</p><div class="who"><b>Enzo Moreira</b> · Co-fundador da Guday · @guday.br</div></div>
+        <div class="quote"><p>“Via de regra eu nunca gostei de botar nosso marketing na mão de agência, eu sempre tive muita desconfiança — e com a Turbo foi muito pelo contrário. Estão sempre preocupados com o nosso resultado final. A Turbo foi nossa parceria desde o D+0 até o crescimento de 10x esse ano.”</p><div class="who"><b>Arthur</b> · Co-fundador da Noway · @nowaydrink</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 7. POR QUE NÓS ================= -->
+  <section class="block">
+    <div class="wrap reveal">
+      <div class="eyebrow">Por que a Turbo</div>
+      <h2 class="title">Growth com DNA de negócio.</h2>
+      <div class="why">
+        <div class="item"><span class="wn">01</span><div><h3>Otimizamos métrica de negócio, não de marketing</h3><p>CTR e alcance não pagam conta. A gente decide por CAC, LTV, ROAS, ticket e margem — o número que move o seu caixa.</p></div></div>
+        <div class="item"><span class="wn">02</span><div><h3>Gestão de performance, não tráfego pago</h3><p>Não é subir anúncio e olhar o gerenciador. É olhar o funil inteiro — criativo somado a dado — e decidir por número.</p></div></div>
+        <div class="item"><span class="wn">03</span><div><h3>Um ecossistema 360, não um serviço solto</h3><p>Mais que campanhas, somos uma operação completa pra tornar a vida de quem vende online mais fácil e rentável — da estratégia à tecnologia própria, como a Turbo Tech e a flashCRM, tudo puxando o mesmo resultado.</p></div></div>
+        <div class="item"><span class="wn">04</span><div><h3>Tração comprovada e case vivo</h3><p>1.300+ marcas aceleradas, 120+ especialistas e a Bready — nossa própria marca DTC — provando o método na prática.</p></div></div>
+      </div>
+      <div class="creds"><span>Métrica de negócio</span><span>Meta Ads</span><span>Google Ads</span><span>flashCRM</span><span>Turbo Tech</span></div>
     </div>
   </section>
 
