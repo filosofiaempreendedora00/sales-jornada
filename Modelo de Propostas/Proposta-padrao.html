@@ -174,9 +174,16 @@
   .price .desc{color:var(--muted);font-size:14.5px;margin-bottom:8px}
   .price .gp{font-size:13px;color:var(--faint);margin-bottom:26px}
   .price .divider{margin-bottom:24px}
-  .plist li{list-style:none;display:flex;gap:11px;font-size:15px;margin-top:14px;align-items:flex-start}
-  .plist li::before{content:"✓";color:var(--accent);font-weight:700;flex:none}
+  /* li em BLOCO (não flex): conteúdo com <strong> + descrição flui inline numa
+     linha só. Com flex, o <strong> e o texto viravam 2 colunas com um vão no
+     meio ("caminho de rato"). ✓ posicionado absoluto mantém o alinhamento. */
+  .plist li{list-style:none;font-size:15px;margin-top:14px;padding-left:23px;position:relative;line-height:1.5}
+  .plist li::before{content:"✓";color:var(--accent);font-weight:700;position:absolute;left:0;top:0}
   .plist li:first-child{margin-top:0}
+  .plist li small{color:var(--faint)}
+  /* E-commerce (card único): preço riscado + prefixo "A partir de" */
+  .price .price-anchor{font-family:var(--sans);font-size:18px;color:var(--faint);text-decoration:line-through;font-weight:500;margin-right:9px}
+  .price .amt-prefix{display:block;font-family:var(--sans);font-size:13px;color:var(--muted);font-weight:500;letter-spacing:.03em;margin-bottom:2px}
   .callout{border:1px solid var(--border);border-radius:16px;padding:26px 30px;margin-top:26px;display:flex;gap:16px}
   .callout .star{color:var(--accent);font-size:18px;line-height:1.4;flex:none}
   .callout .label{margin-bottom:8px} .callout p{color:var(--muted);font-size:15px}

@@ -32088,6 +32088,44 @@ ${deckEmbedScript}
     const groups = [];
     doc.querySelectorAll('.pacotes-slide').forEach(slide => {
       const title = (slide.querySelector('.pacotes-title')?.textContent || '').replace(/\s+/g, ' ').trim();
+      // E-commerce (DNVB / Moda / Personalizado): tem estrutura própria (.dnvb-slide),
+      // sem .pacote-card. Monta 1 card único com preço + escopo (senão sumia do
+      // investimento quando selecionado junto com outras soluções).
+      if (slide.classList.contains('dnvb-slide')) {
+        const pc = slide.querySelector('.dnvb-price-card');
+        if (pc) {
+          const anchorEl = pc.querySelector('.dnvb-price-anchor');
+          const anchor  = anchorEl ? `<span class="price-anchor">${anchorEl.innerHTML.trim()}</span>` : '';
+          const prefix  = (pc.querySelector('.dnvb-price-prefix')?.textContent || '').trim();
+          const value   = pc.querySelector('.dnvb-price-value')?.innerHTML.trim() || '';
+          const eyebrow = (pc.querySelector('.dnvb-price-eyebrow')?.textContent || '').trim();
+          const installments = (pc.querySelector('.dnvb-price-installments')?.textContent || '').replace(/\s+/g, ' ').trim();
+          const prazo   = (pc.querySelector('.dnvb-price-prazo-value')?.textContent || '').trim();
+          const subtitle = (slide.querySelector('.pacotes-sub')?.textContent || '').replace(/\s+/g, ' ').trim();
+          const feats = [
+            ...slide.querySelectorAll('.dnvb-features-list li'),
+            ...slide.querySelectorAll('.dnvb-features-grid li')
+          ].map(li => `<li>${li.innerHTML.trim()}</li>`).join('');
+          const noteBits = [];
+          if (installments) noteBits.push(installments);
+          if (prazo) noteBits.push('Prazo de execução: ' + prazo);
+          const card = `
+            <div class="price">
+              <div class="price-top"><span class="tier">${eyebrow || 'Projeto'}</span></div>
+              <div class="amount">${prefix ? `<span class="amt-prefix">${prefix}</span>` : ''}${anchor}${value}</div>
+              ${subtitle ? `<div class="desc">${subtitle}</div>` : ''}
+              ${noteBits.length ? `<div class="gp">${noteBits.join(' · ')}</div>` : ''}
+              <hr class="divider">
+              <ul class="plist">${feats}</ul>
+            </div>`;
+          groups.push(`
+            <div class="bundle-group">
+              ${title ? `<div class="bundle-group-head">${title}</div>` : ''}
+              <div class="bundle-row">${card}</div>
+            </div>`);
+        }
+        return;
+      }
       const cardEls = [...slide.querySelectorAll('.pacote-card')];
       if (!cardEls.length) return;
       const cards = cardEls.map(card => {
