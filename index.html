@@ -5533,6 +5533,24 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
 .prop-custom-generate-btn.is-loading .prop-gen-spinner { display: inline-block; }
 @keyframes prop-spin { to { transform: rotate(360deg); } }
 
+/* "Gerar só investimento" — variação verde (sem IA, sem custo) */
+.prop-custom-invest-btn {
+  background: linear-gradient(135deg, rgba(45,212,150,0.20), rgba(13,207,232,0.18));
+  border-color: rgba(45,212,150,0.45);
+}
+.prop-custom-invest-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, rgba(45,212,150,0.30), rgba(13,207,232,0.26));
+  border-color: rgba(45,212,150,0.65);
+}
+.prop-invest-only-hint {
+  margin: 6px 2px 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-3);
+}
+.prop-invest-only-hint[hidden] { display: none; }
+.prop-invest-only-hint strong { color: var(--text-2); font-weight: 700; }
+
 /* ─── Barra de progresso da geração (IA) ─── */
 .prop-gen-progress {
   margin-top: 10px;
@@ -6267,6 +6285,15 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
   font-family: inherit;
   outline: none;
 }
+/* Estrela "recomendado" no label do tier (escolhe o plano em destaque) */
+.prop-invest-rec {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  font-size: 12px; line-height: 1; padding: 0 1px; margin-left: 5px;
+  color: rgba(255,255,255,0.22); transition: color 0.15s, transform 0.12s;
+  vertical-align: baseline;
+}
+.prop-invest-rec:hover { color: rgba(255,206,83,0.75); transform: scale(1.18); }
+.prop-invest-rec.is-rec { color: #ffce53; }
 /* Desconto inválido — preço abaixo do mínimo permitido */
 .prop-invest-input.is-below-min { color: #ff7373 !important; font-weight: 700; }
 .prop-invest-input-wrap:has(.prop-invest-input.is-below-min) {
@@ -15136,6 +15163,20 @@ a.xpto-pricing-btn { text-decoration: none; }
           <span class="prop-gen-label">⚡ Gerar proposta com IA</span>
           <span class="prop-gen-spinner" aria-hidden="true"></span>
         </button>
+
+        <!-- Gerar SÓ a seção de investimento (sem IA) — aparece no Modelo Oficial -->
+        <button
+          type="button"
+          class="prop-custom-generate-btn prop-custom-invest-btn"
+          id="prop-custom-invest-btn"
+          hidden
+        >
+          <span class="prop-gen-label">🔄 Atualizar proposta</span>
+          <span class="prop-gen-spinner" aria-hidden="true"></span>
+        </button>
+        <p class="prop-invest-only-hint" id="prop-invest-only-hint" hidden>
+          Proposta <strong>completa</strong> do Modelo Oficial. A seção <strong>"Escolha o nível ideal."</strong> reflete <strong>automaticamente</strong> os pacotes marcados (preço e escopo exatos). Closer, validade e data entram sozinhos; o resto você edita clicando no texto. <strong>Sem custo de IA</strong>.
+        </p>
 
         <!-- Barra de progresso da geração (aparece enquanto a IA trabalha) -->
         <div class="prop-gen-progress" id="prop-gen-progress" aria-live="polite">
@@ -25078,6 +25119,57 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     frame.srcdoc = html;
   }
 
+  // Closer + validade num DOM do Modelo Oficial (mexe IN-PLACE) + remove "Nº de
+  // proposta". Compartilhado pela injeção da IA e pelo Modelo sem-IA.
+  function applyCloserValidity(doc) {
+    let touched = false;
+    // Remove qualquer "Nº de proposta" remanescente (segurança)
+    doc.querySelectorAll('.docref').forEach(el => { el.remove(); touched = true; });
+    const extras = (typeof window.__smModeloExtras === 'function') ? window.__smModeloExtras() : null;
+    if (extras) {
+      if (extras.validity) {
+        // hero .meta "Válida até" + .validity no CTA final
+        doc.querySelectorAll('.meta > div').forEach(div => {
+          const k = div.querySelector('.k');
+          if (k && /v[áa]lida at[ée]/i.test(k.textContent || '')) {
+            const v = div.querySelector('.v'); if (v) { v.textContent = extras.validity; touched = true; }
+          }
+        });
+        doc.querySelectorAll('.validity').forEach(el => { el.textContent = `Proposta válida até ${extras.validity}`; touched = true; });
+      }
+      if (extras.closer) {
+        // footer .contact: Estrategista / Telefone / E-mail
+        doc.querySelectorAll('.contact > div').forEach(div => {
+          const k = div.querySelector('.k'); const v = div.querySelector('.v');
+          if (!k || !v) return;
+          const kt = (k.textContent || '').toLowerCase();
+          if (/estrateg|closer|respons/.test(kt))      { v.textContent = extras.closer.name; touched = true; }
+          else if (/telefone|fone|whats|contato/.test(kt)) { v.textContent = extras.closer.phone; touched = true; }
+          else if (/mail/.test(kt))                    { v.textContent = extras.closer.email; touched = true; }
+        });
+        // CTA "Aprovar proposta" → WhatsApp do closer (mantém o ?text= original)
+        doc.querySelectorAll('a[href*="wa.me"]').forEach(a => {
+          const q = (a.getAttribute('href') || '').split('?')[1];
+          a.setAttribute('href', extras.closer.whatsapp + (q ? '?' + q : '')); touched = true;
+        });
+      }
+    }
+    return touched;
+  }
+
+  // Pós-processa o HTML gerado pela IA: injeta os pacotes do Padrão no #slot-bundles
+  // + closer + validade. Retorna true se mudou algo.
+  async function applyModeloPostProcess(doc) {
+    let touched = false;
+    if (typeof window.__smBuildBundles === 'function') {
+      const bundles = await window.__smBuildBundles();
+      const slot = doc.getElementById('slot-bundles');
+      if (slot && bundles && bundles.trim()) { slot.innerHTML = bundles; touched = true; }
+    }
+    if (applyCloserValidity(doc)) touched = true;
+    return touched;
+  }
+
   // Injeta os pacotes selecionados (seletor do Padrão) na seção de Investimento
   // do Modelo Oficial (#slot-bundles), no estilo .price do template. Os preços/
   // escopo vêm EXATOS do Padrão (window.__smBuildBundles). Só age se o template
@@ -25088,55 +25180,77 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       // Só age no Modelo Oficial (tem #slot-bundles); outros tipos passam intactos.
       if (!/id=["']slot-bundles["']/.test(html)) return html;
       const doc = new DOMParser().parseFromString(html, 'text/html');
-      let touched = false;
-
-      // 1) Pacotes → seção de Investimento (preço/escopo exatos do Padrão)
-      if (typeof window.__smBuildBundles === 'function') {
-        const bundles = await window.__smBuildBundles();
-        const slot = doc.getElementById('slot-bundles');
-        if (slot && bundles && bundles.trim()) { slot.innerHTML = bundles; touched = true; }
-      }
-
-      // 2) Remove qualquer "Nº de proposta" remanescente (segurança)
-      doc.querySelectorAll('.docref').forEach(el => { el.remove(); touched = true; });
-
-      // 3) Closer + validade (mesmos seletores do Padrão)
-      const extras = (typeof window.__smModeloExtras === 'function') ? window.__smModeloExtras() : null;
-      if (extras) {
-        if (extras.validity) {
-          // hero .meta "Válida até" + .validity no CTA final
-          doc.querySelectorAll('.meta > div').forEach(div => {
-            const k = div.querySelector('.k');
-            if (k && /v[áa]lida at[ée]/i.test(k.textContent || '')) {
-              const v = div.querySelector('.v'); if (v) { v.textContent = extras.validity; touched = true; }
-            }
-          });
-          doc.querySelectorAll('.validity').forEach(el => { el.textContent = `Proposta válida até ${extras.validity}`; touched = true; });
-        }
-        if (extras.closer) {
-          // footer .contact: Estrategista / Telefone / E-mail
-          doc.querySelectorAll('.contact > div').forEach(div => {
-            const k = div.querySelector('.k'); const v = div.querySelector('.v');
-            if (!k || !v) return;
-            const kt = (k.textContent || '').toLowerCase();
-            if (/estrateg|closer|respons/.test(kt))      { v.textContent = extras.closer.name; touched = true; }
-            else if (/telefone|fone|whats|contato/.test(kt)) { v.textContent = extras.closer.phone; touched = true; }
-            else if (/mail/.test(kt))                    { v.textContent = extras.closer.email; touched = true; }
-          });
-          // CTA "Aprovar proposta" → WhatsApp do closer (mantém o ?text= original)
-          doc.querySelectorAll('a[href*="wa.me"]').forEach(a => {
-            const q = (a.getAttribute('href') || '').split('?')[1];
-            a.setAttribute('href', extras.closer.whatsapp + (q ? '?' + q : '')); touched = true;
-          });
-        }
-      }
-
+      const touched = await applyModeloPostProcess(doc);
       if (!touched) return html;
       return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
     } catch (e) {
       console.error('[modelo] pós-processo falhou (mantendo HTML da IA):', e);
       return html;
     }
+  }
+
+  // ── Modelo Oficial COMPLETO (sem IA) ───────────────
+  // Monta a proposta COMPLETA do Modelo Oficial (template Proposta-padrao.html),
+  // com a seção "Escolha o nível ideal." refletindo os pacotes marcados no seletor
+  // (preço + escopo exatos do Padrão). Preenche closer, validade e a data de
+  // emissão (hoje), e troca o nome de exemplo ("Aurora") pelo cliente informado.
+  // Sem IA, sem custo. O resto da apresentação fica editável inline no preview.
+  // Preenche o #slot-bundles: pacotes marcados, ou uma nota se nada selecionado.
+  async function fillBundlesSlot(doc) {
+    const slot = doc.getElementById('slot-bundles');
+    if (!slot) return;
+    let bundles = '';
+    if (typeof window.__smBuildBundles === 'function') bundles = await window.__smBuildBundles();
+    if (bundles && bundles.trim()) {
+      slot.innerHTML = bundles;
+    } else {
+      slot.innerHTML = '<div class="price" style="text-align:center;color:var(--muted)">Selecione as soluções no painel à esquerda para montar os pacotes de investimento aqui.</div>';
+    }
+  }
+
+  // Data de emissão (hoje, por extenso) + nome do cliente (troca o exemplo "Aurora").
+  function applyDateClient(doc) {
+    const meses = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    const now = new Date();
+    const hoje = `${now.getDate()} de ${meses[now.getMonth()]} de ${now.getFullYear()}`;
+    doc.querySelectorAll('.meta > div').forEach(div => {
+      const k = div.querySelector('.k');
+      if (k && /^\s*data\s*$/i.test(k.textContent || '')) {
+        const v = div.querySelector('.v'); if (v) v.textContent = hoje;
+      }
+    });
+    const cli = getClientName();
+    if (cli) {
+      const walker = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach(n => { if (n.nodeValue.includes('Aurora')) n.nodeValue = n.nodeValue.replace(/Aurora/g, cli); });
+    }
+  }
+
+  // Pinta um DOM do Modelo Oficial (sem-IA): pacotes/nota + closer + validade + data + cliente.
+  async function paintModelo(doc) {
+    await fillBundlesSlot(doc);
+    applyCloserValidity(doc);
+    applyDateClient(doc);
+  }
+
+  async function buildModeloProposta() {
+    const res = await fetch('Modelo%20de%20Propostas/Proposta-padrao.html?v=' + Date.now());
+    if (!res.ok) throw new Error('Não consegui carregar o Modelo Oficial.');
+    const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+    await paintModelo(doc);
+    return '<!DOCTYPE html>\n' + doc.documentElement.outerHTML;
+  }
+
+  // Atualiza a proposta JÁ renderizada no iframe IN-PLACE (preserva o scroll —
+  // sem trocar o srcdoc). Retorna false se ainda não há proposta carregada.
+  async function refreshModeloInPlace() {
+    let idoc = null;
+    try { idoc = frame.contentDocument; } catch {}
+    if (!idoc || !idoc.getElementById('investimento')) return false;
+    await paintModelo(idoc);
+    return true;
   }
 
   // Pega o HTML atual do iframe (com edições do usuário), limpo do edit-mode
@@ -25420,6 +25534,62 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Exposta pro FAB dentro do iframe (editor.js chama via window.parent)
   window.__smRequestDownload = downloadCurrentProposal;
 
+  // ── "Só investimento" (sem IA) ────────────────────────
+  // No Modelo Oficial, a seção "Escolha o nível ideal." reflete AUTOMATICAMENTE
+  // os pacotes marcados no seletor de soluções (preço + escopo exatos do Padrão),
+  // sem IA e sem custo. O botão é só um atalho manual de atualização.
+  const investBtn  = document.getElementById('prop-custom-invest-btn');
+  const investHint = document.getElementById('prop-invest-only-hint');
+
+  // Placeholder amigável quando nenhuma solução está marcada.
+  const INVEST_PLACEHOLDER_HTML = '<!DOCTYPE html><html lang="pt-br"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;height:100%}body{display:flex;align-items:center;justify-content:center;background:#0a0a14;color:#9aa0b4;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;text-align:center;padding:40px;box-sizing:border-box}.box{max-width:400px}.ic{font-size:36px;margin-bottom:14px}h3{color:#e8e8f0;font-weight:700;font-size:18px;margin:0 0 10px}p{font-size:14px;line-height:1.55;margin:0}</style></head><body><div class="box"><div class="ic">🧩</div><h3>Marque as soluções</h3><p>Selecione uma ou mais soluções no painel à esquerda. Os pacotes — preço e escopo exatos — aparecem aqui na hora, em "Escolha o nível ideal.".</p></div></body></html>';
+
+  async function doRenderInvestimentoOnly() {
+    try {
+      // Proposta já no iframe → atualiza no lugar (preserva o scroll: ele continua
+      // vendo a seção de investimento enquanto mexe nos pacotes).
+      if (await refreshModeloInPlace()) {
+        state.lastProposalType = '03';
+        if (downloadBtn) downloadBtn.hidden = false;
+        if (meta) meta.textContent = '— Modelo Oficial';
+        return;
+      }
+      // 1ª vez (ou outro template no preview) → render completo.
+      const html = await buildModeloProposta();
+      renderInFrame(html);
+      state.lastProposalType = '03';
+      if (downloadBtn) downloadBtn.hidden = false;
+      if (meta) meta.textContent = '— Modelo Oficial';
+    } catch (e) {
+      // Falha ao carregar o template → placeholder.
+      frame.removeAttribute('src');
+      frame.srcdoc = INVEST_PLACEHOLDER_HTML;
+      if (downloadBtn) downloadBtn.hidden = true;
+      if (meta) meta.textContent = '— Modelo Oficial · erro ao carregar';
+    }
+  }
+
+  // Exposto pro gerador Padrão (renderPreview) e pro auto-load: dispara o rebuild
+  // automático (debounced) sempre que seleção/preços/closer/validade mudam.
+  let _investDebounce = null;
+  window.__smRenderInvestimentoOnly = function () {
+    if (typeSelect.value !== '03') return false;   // só Modelo Oficial
+    if (_investDebounce) clearTimeout(_investDebounce);
+    _investDebounce = setTimeout(() => { doRenderInvestimentoOnly(); }, 220);
+    return true;
+  };
+
+  function syncInvestOnlyVisible() {
+    const on = typeSelect.value === '03';
+    if (investBtn)  investBtn.hidden  = !on;
+    if (investHint) investHint.hidden = !on;
+  }
+  typeSelect.addEventListener('change', syncInvestOnlyVisible);
+  syncInvestOnlyVisible();
+
+  // Botão = atalho manual (mesma coisa que o automático, na hora).
+  if (investBtn) investBtn.addEventListener('click', () => window.__smRenderInvestimentoOnly());
+
   // ── Importar HTML existente (sem consumir créditos) ──
   const importBtn = document.getElementById('prop-custom-import-btn');
   const importFile = document.getElementById('prop-custom-import-file');
@@ -25537,6 +25707,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     const v = select.value;
     const file = TYPE_TO_FILE[v];
     if (!file) return; // "Selecione..." mantém placeholder atual
+    // Modelo Oficial: não carrega o template "cru" (com cards de exemplo) — monta
+    // direto a seção de investimento com os pacotes marcados (sem IA, automático).
+    if (v === '03' && typeof window.__smRenderInvestimentoOnly === 'function') {
+      if (meta) meta.textContent = '— ' + (TYPE_TO_LABEL[v] || 'Modelo Oficial');
+      window.__smRenderInvestimentoOnly();
+      return;
+    }
     // O sistema padrão de propostas seta iframe.srcdoc, que sobrescreve src.
     // Precisamos limpar srcdoc antes de setar src para o iframe carregar
     // o arquivo standalone.
@@ -26216,6 +26393,41 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     return enabledTiers[sol]?.has(tier) ?? false;
   }
 
+  // ── Plano "recomendado" por solução (multi-tier) ──────────────────
+  // Default = o "mais vendido" fixo do Padrão. Ao escolher outro tier, o destaque
+  // (--featured + badge "mais vendido") é REALOCADO no pós-processo. Só age quando
+  // muda do default → o Padrão fica intocado por padrão (risco zero).
+  const REC_DEFAULTS = { performance: 'scale', creators: 'scale', social: 'scale', 'crm-vendas': 'scale' };
+  const recTier = { ...REC_DEFAULTS };
+  function isRecSol(sol) { return Object.prototype.hasOwnProperty.call(REC_DEFAULTS, sol); }
+  function isRec(sol, tier) { return recTier[sol] === tier; }
+  function recChanged(sol) { return recTier[sol] !== REC_DEFAULTS[sol]; }
+
+  // Realoca o card "recomendado" pro tier escolhido, casando por POSIÇÃO (tier
+  // habilitado N = card N — robusto, sem depender de label). Mexe no doc IN-PLACE.
+  function applyRecommended(doc) {
+    doc.querySelectorAll('.pacotes-slide[data-sol]').forEach(slide => {
+      const sol = slide.dataset.sol;
+      if (!isRecSol(sol) || !recChanged(sol)) return; // default → não mexe
+      const order = Object.keys(prices[sol] || {}).filter(t => isTierEnabled(sol, t));
+      const idx = order.indexOf(recTier[sol]);
+      const cards = [...slide.querySelectorAll('.pacote-card')];
+      if (idx < 0 || idx >= cards.length) return;
+      cards.forEach(c => {
+        c.classList.remove('pacote-card--featured');
+        c.querySelectorAll('.pacote-badge:not(.pacote-badge--tcv)').forEach(b => b.remove());
+      });
+      const target = cards[idx];
+      target.classList.add('pacote-card--featured');
+      if (!target.querySelector('.pacote-badge:not(.pacote-badge--tcv)')) {
+        const badge = doc.createElement('span');
+        badge.className = 'pacote-badge';
+        badge.textContent = 'mais vendido';
+        target.insertBefore(badge, target.firstChild);
+      }
+    });
+  }
+
   // ── CRM Estratégico: módulos (Broadcast / Régua / Plataforma) ──
   // Em vez de despejar os 11 preços de uma vez, o CRM é "modular": cada
   // módulo é um botão que liga/desliga (multi-seleção). Só os módulos
@@ -26821,7 +27033,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         : '';
       return `
         <div class="prop-invest-field${exclusive ? ' prop-invest-field--exclusive' : ''}${enabled || exclusive ? '' : ' is-disabled'}">
-          <span class="prop-invest-tier">${td.label}</span>
+          <span class="prop-invest-tier">${td.label}${(!exclusive && isRecSol(solId)) ? ` <button type="button" class="prop-invest-rec${isRec(solId, tier) ? ' is-rec' : ''}" data-rec-sol="${solId}" data-rec-tier="${tier}" title="${isRec(solId, tier) ? 'Plano recomendado — clique noutro pra mudar' : 'Marcar como recomendado'}" aria-label="Marcar ${td.label} como plano recomendado">★</button>` : ''}</span>
           <div class="prop-invest-input-wrap">
             <span class="prop-invest-currency">R$</span>
             <input type="text"
@@ -27024,6 +27236,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           input.value = formatted;
           input.dispatchEvent(new Event('input', { bubbles: true })); // reaproveita o handler de cima
         }
+      });
+    });
+
+    // Estrela "recomendado": escolhe qual tier fica em destaque (single-select
+    // por solução). Atualiza o estado + re-renderiza o painel + o preview.
+    $invest.querySelectorAll('.prop-invest-rec').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.stopPropagation(); e.preventDefault();
+        const sol = btn.dataset.recSol, tier = btn.dataset.recTier;
+        if (!sol || recTier[sol] === tier) return;
+        recTier[sol] = tier;
+        renderInvestimento();
+        previewDirty = true;
+        renderPreview();
       });
     });
 
@@ -28110,6 +28336,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const st = doc.createElement('style'); st.textContent = PROP_EYE_CSS; doc.head.appendChild(st);
       const sc = doc.createElement('script'); sc.textContent = PROP_EYE_JS; doc.body.appendChild(sc);
     }
+    // Realoca o "recomendado" pro tier escolhido (Padrão + Modelo Oficial). No-op
+    // quando nada foi mudado do default.
+    applyRecommended(doc);
     return '<!doctype html>\n' + doc.documentElement.outerHTML;
   }
 
@@ -28688,7 +28917,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <span class="pacotes-tcv-text">Contrato de <strong>3 meses</strong> <span class="pacotes-tcv-dot">·</span> Pagamento via <strong>PIX</strong> ou <strong>cartão de crédito</strong></span>
             </div>` : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-perf">
-          <div class="pacotes-slide">
+          <div class="pacotes-slide" data-sol="performance">
             <div class="pacotes-header">
               <h2 class="pacotes-title">${tcvEnabled ? 'Pacote' : 'Pacotes'} Gestão de <span class="pacotes-title-accent">Performance</span></h2>
             </div>
@@ -28702,7 +28931,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         const creatorsRecorrenteTag = creatorsMode === 'recorrente'
           ? '<span class="pacotes-recorrente-tag">A partir de 4 entregas</span>' : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-creators">
-          <div class="pacotes-slide">
+          <div class="pacotes-slide" data-sol="creators">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Creators</span></h2>
             </div>
@@ -28716,7 +28945,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       // Investimento original do deck Social: R$ 3.397 / R$ 3.897.
       if (socialCards.length) {
         sections.push(`<section class="proposal-section proposal-section--pacotes-social">
-          <div class="pacotes-slide pacotes-slide--two">
+          <div class="pacotes-slide pacotes-slide--two" data-sol="social">
             <div class="pacotes-header">
               <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Social Media</span></h2>
               <p class="pacotes-sub">Presença digital estratégica, mensal e consistente</p>
@@ -28829,7 +29058,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       if (crmVendasCards.length) {
         const crmFeeHtml = isExtraEnabled('crm-vendas', 'fee') ? renderFeeFooter('crm-vendas') : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-crm">
-          <div class="pacotes-slide">
+          <div class="pacotes-slide" data-sol="crm-vendas">
             <div class="pacotes-header">
               <h2 class="pacotes-title">CRM de <span class="pacotes-title-accent">Vendas</span></h2>
               <p class="pacotes-sub">Plataforma unificada de marketing e vendas</p>
@@ -30937,32 +31166,89 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
           display: block !important;
         }
 
+        /* == TEXTO-GRADIENTE -> COR SOLIDA no print/PDF ==
+           background-clip:text (titulo com gradiente) vira uma CAIXA no viewer do
+           iPhone (nao suporta o clip). Reseta pra cor SOLIDA: titulos brancos,
+           acentos ciano. Fica igual no desktop (o gradiente era sutil, branco/ciano-
+           dominante) E limpo no iPhone. IMPORTANTE: só os 43 elementos que são
+           texto-gradiente PURO (background só pro texto) — NÃO toca em cards/badges
+           com fundo real (foi o erro anterior). */
+        .cp-case-title, .cp-slide-case--bready .cp-case-title, .cp-cover-title,
+        .cp-framework-title, .cp-why-title, .cp-vs-title--pro, .cp-vs-symbol,
+        .pp-compare-title--pro, .pp-cases-title, .pp-gameplan-card-num,
+        .xpto-title, .xpto-icp-heading, .xpto-bonus-heading, .xpto-pricing-amount,
+        .xpto-cd-num, .xpto-stat-num, .turbo-dna-title, .turbo-focus-title,
+        .turbo-growth-title, .turbo-missao-text-big, .cm-section-title, .cm-metric-number,
+        .sm-section-title, .sm-setup-concept,
+        .proposal-section--closing .closing-title .closing-accent,
+        .proposal-section--investimento .invest-title {
+          -webkit-text-fill-color: #ffffff !important;
+          background: none !important;
+          -webkit-background-clip: border-box !important; background-clip: border-box !important;
+        }
+        .cm-hero-accent, .cm-section-title-accent, .sm-hero-accent, .sm-pricing-value--accent,
+        .turbo-metodo-title-accent, .turbo-depo-title-accent, .turbo-missao-text-highlight,
+        .turbo-growth-stat-value, .ee-accent, .proposal-section--turbo .pc-accent,
+        .pp-btn-label, .pp-compare-symbol, .pacotes-footer-gratis,
+        .proposal-section--pacotes-crm .pacotes-title-accent,
+        .proposal-section--pacotes-dnvb .pacotes-title-accent,
+        .proposal-section--pacotes-crm .pacotes-footer-value,
+        .proposal-section--pacotes-dnvb .pacotes-footer-value {
+          -webkit-text-fill-color: #0dcfe8 !important;
+          background: none !important;
+          -webkit-background-clip: border-box !important; background-clip: border-box !important;
+        }
+
         /* cada slide ocupa uma página inteira (paisagem), centralizado e escuro */
         .turbo-slide, .xpto-slide, .pacotes-slide, .invest-slide,
-        .pdnvb-slide, .pdnvb-cover {
+        .pdnvb-slide, .pdnvb-cover, .closing-slide, .crm-slideo, .ee-slide {
           break-before: page; page-break-before: always;
           break-inside: avoid; page-break-inside: avoid;
-          min-height: 209mm !important;   /* altura CHEIA da página A4 paisagem (210mm) → conteúdo centraliza na página, sem faixa preta embaixo. mm é confiável no print (vh buga) */
-          height: auto !important;
-          overflow: visible !important;    /* slide denso pode escorrer p/ próxima página (fundo escuro) */
+          /* DESCOBERTA (verificado gerando o PDF real): o Chrome IGNORA
+             min-height/height em mm durante a paginação (break-before) e encolhe
+             o slide pro tamanho do conteúdo → slide curto no topo + faixa preta
+             embaixo. Já height em VH é respeitado. 99vh (não 100) enche a página
+             SEM estourar 1px pra uma folha em branco. overflow:hidden garante
+             que nada vaze (o conteúdo denso já foi ajustado pra caber). */
+          height: 99vh !important;
+          min-height: 99vh !important;
+          overflow: hidden !important;
           background-color: #07070f !important; /* fundo garantido; gradientes pintam por cima */
           scroll-snap-align: none !important;
         }
-        /* IMPORTANTE: a regra de tela ".proposal-section .turbo-slide{min-height:720px}"
-           (especificidade 0,2,0) vencia a de cima (0,1,0), deixando os slides menores
-           que a página → conteúdo centralizado alto + faixa preta embaixo. Aqui igualamos
-           a especificidade pra cada slide encher a PÁGINA inteira (209mm) e centralizar. */
+        /* Mesma altura na regra mais específica (0,2,0) pra vencer o min-height:720px
+           de tela. Sem isto o slide fica menor que a página e desalinha. */
         .proposal-section .turbo-slide, .proposal-section .xpto-slide,
         .proposal-section .pacotes-slide, .proposal-section .invest-slide,
-        .proposal-section .pdnvb-slide, .proposal-section .pdnvb-cover {
-          min-height: 209mm !important;
-          padding-top: 40px !important; padding-bottom: 36px !important;
+        .proposal-section .pdnvb-slide, .proposal-section .pdnvb-cover,
+        .proposal-section .closing-slide, .proposal-section .crm-slideo,
+        .proposal-section .ee-slide {
+          height: 99vh !important;
+          min-height: 99vh !important;
+          padding-top: 30px !important; padding-bottom: 30px !important;
         }
         /* CRÍTICO: zera qualquer altura em vh dentro dos slides — no print o Chrome
            resolve vh errado e a página vira gigante (1ª folha preta, conteúdo no
            meio) e o gráfico de crescimento escala junto, invadindo várias páginas. */
         .turbo-slide-inner, .xpto-slide-inner,
         .turbo-slide--growth .turbo-slide-inner { height: auto !important; }
+
+        /* ── CENTRALIZAÇÃO VERTICAL na página ──────────────────────────────
+           A base dos slides já centraliza (justify-content:center), MAS vários
+           cases/módulos (ex: .cp-slide-* do Creators) sobrescrevem pra flex-start
+           e a coluna interna estica até 209mm, colando o conteúdo no TOPO e
+           deixando o preto embaixo. Aqui forçamos o slide a centralizar e o
+           inner a ter só a altura do conteúdo (sem esticar) → sobra igual em
+           cima e embaixo, em TODA página. */
+        .turbo-slide, .xpto-slide, .pacotes-slide, .invest-slide,
+        .closing-slide, .pdnvb-slide, .pdnvb-cover {
+          justify-content: center !important;
+        }
+        .turbo-slide-inner, .xpto-slide-inner {
+          min-height: 0 !important; flex: 0 0 auto !important;
+          margin-top: auto !important; margin-bottom: auto !important;
+          justify-content: center !important;
+        }
         .turbo-growth-chart {
           height: 145mm !important; max-height: 145mm !important; min-height: 0 !important;
           overflow: hidden !important; padding-top: 0 !important;
@@ -30984,20 +31270,48 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .proposal-section--pacotes-creators .pacotes-grid,
         .proposal-section--pacotes-social .pacotes-grid,
         .proposal-section--pacotes-comunidade .pacotes-grid,
+        .proposal-section--pacotes-crm .pacotes-grid,
         .proposal-section--pacotes-dnvb .pacotes-grid {
           flex-wrap: nowrap !important; justify-content: center !important; align-items: stretch !important;
         }
         /* metodologia (5 fases): em linha, num slide só (empilhava abaixo de 920px) */
         .turbo-metodo-flow { flex-direction: row !important; flex-wrap: nowrap !important; }
-        /* trava universal: nenhuma mídia passa de ~1 página no papel (várias imagens
-           usam max-height em vh — ex.: 58vh/78vh — que no print viram gigantes). */
+        /* Imagens de CASE (logos +400, prints, fotos) devem APROVEITAR o slide.
+           Cap generoso só pra não passar de 1 página. (150mm cortava a foto do DNA:
+           o wrap tem aspect-ratio > 150mm → o object-fit ficava menor que o wrap e
+           sobrava faixa preta embaixo. E deixava o +400 pequeno.) */
         .turbo-slide img, .turbo-slide svg, .turbo-slide canvas,
         .xpto-slide img, .xpto-slide svg, .xpto-slide canvas,
         .pacotes-slide img, .invest-slide img, .pdnvb-slide img, .pdnvb-cover img {
-          max-height: 160mm !important;
+          max-height: 192mm !important;
         }
+        /* Celular AVULSO (Creators/Cacow/Óticas): DIV com aspect-ratio 9/19.5 sem
+           altura própria → precisa de altura fixa pra não virar gigante. */
+        .cp-phone-frame {
+          height: 128mm !important; max-height: 128mm !important; width: auto !important;
+          min-height: 0 !important;
+        }
+        /* Ocean Drop: grid 2 fileiras de celulares. A altura fixa de 610px + o cap
+           global de 128mm/celular somavam >2 páginas e cortavam a fileira de baixo.
+           Deixa a coluna crescer com o conteúdo e encolhe cada celular pra as 2
+           fileiras caberem. (0,2,0 vence o cap global 0,1,0.) */
+        .cp-case-ocean-phones { height: auto !important; }
+        .cp-case-ocean-row .cp-phone-frame { height: 64mm !important; max-height: 64mm !important; }
+        /* Metodologia "5 fases": encolhe os cards pra os 5 caberem lado a lado sem
+           cortar as laterais. Esconde as setas separadoras (roubam largura) e
+           aperta gaps/padding/fonte. */
+        .turbo-metodo-flow { gap: 5px !important; }
+        .turbo-fase-sep { display: none !important; }
+        /* CRÍTICO: o @media(max-width:920px) (ativo no print) põe flex:0 0 auto nos
+           cards → largura natural → os 5 estouram as laterais. Volta pra flex:1 1 0
+           pra dividirem a largura igualmente e caberem. */
+        .turbo-fase { flex: 1 1 0 !important; min-width: 0 !important; padding: 11px 9px 13px !important; gap: 5px !important; }
+        .turbo-fase-nome { font-size: 11.5px !important; }
+        .turbo-fase-desc { font-size: 10px !important; }
+        .turbo-fase-exs { gap: 4px !important; }
+        .turbo-fase-exs li { font-size: 9.5px !important; padding: 4px 7px !important; }
         /* padding enxuto no papel (sem hint de scroll) ajuda slide denso a caber */
-        .turbo-slide, .xpto-slide { padding-top: 44px !important; padding-bottom: 40px !important; }
+        .turbo-slide, .xpto-slide { padding-top: 26px !important; padding-bottom: 24px !important; }
 
         /* blocos coesos não se partem caso um slide denso passe de 1 página */
         .pacote-card, .pp-gameplan-card, .pp-compare-card, .pp-result-card,
@@ -31005,6 +31319,18 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         .cp-phone-frame, .cp-case-row, .pacotes-footer {
           break-inside: avoid; page-break-inside: avoid;
         }
+
+        /* Slide "Escolha o nível certo" (Planos do Social): 2 cards densos + tarja
+           "Creators integrados..." passavam de 1 página e a tarja virava página
+           órfã. Enxuga espaçamentos pra caber tudo numa página só. */
+        .sm-plans-grid { grid-template-columns: 1fr 1fr !important; gap: 22px !important; }
+        .sm-plan-card { padding: 22px 24px !important; }
+        .sm-plan-features li { margin-top: 7px !important; font-size: 12.5px !important; line-height: 1.35 !important; }
+        .sm-plan-desc { margin-bottom: 10px !important; }
+        .sm-section-title { margin-bottom: 6px !important; }
+        .sm-section-sub { margin-bottom: 14px !important; }
+        .sm-plan-divider { margin: 12px 0 !important; }
+        .sm-plan-highlight { margin-top: 12px !important; padding: 10px 13px !important; }
 
         /* esconde controles/links interativos que não fazem sentido no papel
            (inclui o "toque pra ativar o som" do Creators, que vazava p/ o slide
@@ -31543,7 +31869,12 @@ ${deckEmbedScript}
     // No modo Personalizada o iframe é controlado pelo template escolhido no
     // "Tipo de proposta" (loadTemplate seta frame.src). O gerador Padrão NÃO
     // deve renderizar por cima (srcdoc vence src e apagaria o template).
-    if (document.querySelector('.prop-sidebar')?.classList.contains('is-custom-mode')) return;
+    if (document.querySelector('.prop-sidebar')?.classList.contains('is-custom-mode')) {
+      // Modelo Oficial: reflete os pacotes marcados na seção de investimento,
+      // automaticamente (sem IA). Demais tipos personalizados seguem o template.
+      if (typeof window.__smRenderInvestimentoOnly === 'function') window.__smRenderInvestimentoOnly();
+      return;
+    }
     // Sem soluções → renderiza só a Apresentação Turbo (proposta institucional).
     // O usuário pode baixar mesmo assim — útil pra mandar apresentação inicial
     // antes de fechar escopo. buildProposalHTML lida com selected vazio.
@@ -31704,11 +32035,14 @@ ${deckEmbedScript}
       return '';
     }
     const doc = new DOMParser().parseFromString(html, 'text/html');
-    const cards = [];
+    // Um GRUPO por solução: título da solução (estilo Padrão) + os tiers na MESMA
+    // linha. Sem tagzinha de serviço (vira o título) e sem banner de "recomendado".
+    const groups = [];
     doc.querySelectorAll('.pacotes-slide').forEach(slide => {
-      const accent = slide.querySelector('.pacotes-title-accent');
-      const sol = (accent ? accent.textContent : (slide.querySelector('.pacotes-title')?.textContent || '')).trim();
-      slide.querySelectorAll('.pacote-card').forEach(card => {
+      const title = (slide.querySelector('.pacotes-title')?.textContent || '').replace(/\s+/g, ' ').trim();
+      const cardEls = [...slide.querySelectorAll('.pacote-card')];
+      if (!cardEls.length) return;
+      const cards = cardEls.map(card => {
         const tier   = (card.querySelector('.pacote-name')?.textContent || '').trim();
         const priceEl = card.querySelector('.pacote-price');
         const amount = priceEl ? priceEl.innerHTML.trim() : '';
@@ -31717,20 +32051,24 @@ ${deckEmbedScript}
         const desc = [...card.querySelectorAll('.pacote-tag')].map(t => t.textContent.trim()).filter(Boolean).join(' · ');
         const note = (card.querySelector('.pacote-note')?.textContent || '').trim();
         const feats = [...card.querySelectorAll('.pacote-features li')].map(li => `<li>${li.innerHTML.trim()}</li>`).join('');
-        const featured = card.classList.contains('pacote-card--featured');
-        cards.push(`
-        <div class="price${featured ? ' rec' : ''}">
-          ${featured ? '<div class="rec-banner">Recomendado</div>' : ''}
-          <div class="price-top"><span class="tier">${tier}</span><span class="tag">${sol}</span></div>
-          <div class="amount">${anchor}${amount}</div>
-          ${desc ? `<div class="desc">${desc}</div>` : ''}
-          ${note ? `<div class="gp">${note}</div>` : ''}
-          <hr class="divider">
-          <ul class="plist">${feats}</ul>
+        const rec = card.classList.contains('pacote-card--featured');
+        return `
+          <div class="price${rec ? ' is-rec' : ''}">
+            <div class="price-top"><span class="tier">${tier}</span>${rec ? '<span class="rec-pill">Recomendado</span>' : ''}</div>
+            <div class="amount">${anchor}${amount}</div>
+            ${desc ? `<div class="desc">${desc}</div>` : ''}
+            ${note ? `<div class="gp">${note}</div>` : ''}
+            <hr class="divider">
+            <ul class="plist">${feats}</ul>
+          </div>`;
+      }).join('');
+      groups.push(`
+        <div class="bundle-group">
+          ${title ? `<div class="bundle-group-head">${title}</div>` : ''}
+          <div class="bundle-row">${cards}</div>
         </div>`);
-      });
     });
-    return cards.join('');
+    return groups.join('');
   }
   window.__smBuildBundles = buildModeloBundles;
 

@@ -145,6 +145,21 @@
   /* 8. pricing */
   .subhead{display:flex;align-items:center;gap:14px;margin:34px 0 24px;font-family:var(--serif);font-size:22px}
   .subhead::before{content:"";width:24px;height:1.5px;background:var(--accent);border-radius:2px}
+  /* Bundles agrupados por solução (título + cards na MESMA linha) — espelha o Padrão */
+  #slot-bundles{margin-top:18px}
+  .bundle-group{margin-top:38px}
+  .bundle-group:first-child{margin-top:0}
+  .bundle-group-head{display:flex;align-items:center;gap:14px;margin:0 0 18px;font-family:var(--serif);font-size:20px}
+  .bundle-group-head::before{content:"";width:26px;height:1.5px;background:var(--accent);flex:none}
+  .bundle-row{display:flex;gap:16px;align-items:stretch}
+  .bundle-row .price{flex:1 1 0;min-width:0;margin-top:0;padding:26px 24px}
+  .bundle-row .price .amount{font-size:clamp(22px,3vw,38px)}
+  /* Recomendado: destaque SUTIL (borda accent + pill), nada de banner pesado */
+  .bundle-row .price.is-rec{border-color:var(--accent);box-shadow:0 24px 60px -40px rgba(107,138,253,.55)}
+  .bundle-row .price.is-rec .price-top{align-items:center}
+  .rec-pill{font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  /* Só empilha em celular de verdade — no resto fica sempre na mesma linha. */
+  @media(max-width:480px){.bundle-row{flex-direction:column}}
   .price{background:linear-gradient(180deg,rgba(255,255,255,.022),rgba(255,255,255,0) 170px),var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 34px;margin-top:18px;overflow:hidden}
   .price.rec{border:1.5px solid var(--accent);padding-top:0;box-shadow:0 40px 90px -45px rgba(107,138,253,.5)}
   .rec-banner{margin:0 -34px 28px;background:var(--accent);color:#0a0a14;font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;text-align:center;padding:11px}
