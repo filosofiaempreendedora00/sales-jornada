@@ -243,6 +243,7 @@
   @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
   @media print{body{background:#fff!important}body::before,body::after{display:none}.reveal{opacity:1;transform:none}.btn{box-shadow:none}section.block{padding:32px 0;break-inside:avoid}.sol,.price,.reco,.guarantee,.tri,.quote{break-inside:avoid}}
 </style>
+<noscript><style>.reveal{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
 
@@ -471,8 +472,29 @@
   </footer>
 
   <script>
-    const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
-    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+    // Reveal robusto: nunca deixa um slide preto (opacity:0) num viewer que não
+    // dispara o IntersectionObserver de forma confiável no scroll (ex.: iOS
+    // Quicklook / preview de arquivo baixado). 3 camadas: IO (animação suave) +
+    // varredura por scroll/resize (fallback universal) + rede de segurança 4s.
+    (function () {
+      var els = [].slice.call(document.querySelectorAll('.reveal'));
+      function reveal(el) { el.classList.add('in'); }
+      function sweep() {
+        var vh = window.innerHeight || document.documentElement.clientHeight;
+        els.forEach(function (el) { if (el.getBoundingClientRect().top < vh * 0.92) reveal(el); });
+      }
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (es) {
+          es.forEach(function (e) { if (e.isIntersecting) { reveal(e.target); io.unobserve(e.target); } });
+        }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+        els.forEach(function (el) { io.observe(el); });
+      }
+      sweep();
+      window.addEventListener('scroll', sweep, { passive: true });
+      window.addEventListener('resize', sweep, { passive: true });
+      // Se algo não foi revelado (viewer sem IO e sem eventos de scroll), aparece.
+      setTimeout(function () { els.forEach(reveal); }, 4000);
+    })();
   </script>
 </body>
 </html>
