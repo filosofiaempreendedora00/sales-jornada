@@ -25987,6 +25987,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'crm',         icon: '💬', name: 'E-mail Marketing',      color: '#9b6dff', sourceId: 'crm-inner' },
     { id: 'crm-vendas',  icon: '📊', name: 'CRM de Vendas',         color: '#0dcfe8', sourceId: null },
     { id: 'sustentacao-tech', icon: '🛠️', name: 'Sustentação',     color: '#f5a623', sourceId: null },
+    { id: 'evolucao',    icon: '🚀', name: 'Evolução',             color: '#f5a623', sourceId: null },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
@@ -26000,7 +26001,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { num: '02', label: 'Aquecimento', color: '#4d8dff', sols: ['idvisual', 'estrutura-social', 'ecommerce'] },
     { num: '03', label: 'Aceleração',  color: '#0dcfe8', sols: ['performance', 'creators', 'consultoria-ugc', 'comunidade'] },
     { num: '04', label: 'Eficiência',  color: '#12d490', sols: ['social', 'crm', 'crm-vendas'] },
-    { num: '05', label: 'Fine Tuning', color: '#f5a623', sols: ['sustentacao-tech'] },
+    { num: '05', label: 'Fine Tuning', color: '#f5a623', sols: ['sustentacao-tech', 'evolucao'] },
   ];
 
   // Closers — aparecem no slide de fechamento (nome + telefone).
@@ -26110,7 +26111,13 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       enterprise: { label: 'Enterprise', value: 'R$ 597,00' }
     },
     'sustentacao-tech': {
-      starter: { label: 'Starter', value: 'R$ 1.997,00' }
+      starter: { label: 'Starter', value: 'R$ 1.997,00' },
+      scale:   { label: 'Scale',   value: 'R$ 3.497,00' }
+    },
+    evolucao: {
+      starter:    { label: 'Starter',    value: 'R$ 2.997,00' },
+      scale:      { label: 'Scale',      value: 'R$ 4.497,00' },
+      enterprise: { label: 'Enterprise', value: 'R$ 6.297,00' }
     },
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.997,00' },
@@ -26312,7 +26319,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     'estrutura-social': ['unico'],
     crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale'],
     'crm-vendas': ['starter', 'scale', 'enterprise'],
-    'sustentacao-tech': ['starter'],
+    'sustentacao-tech': ['starter', 'scale'],
+    evolucao:    ['starter', 'scale', 'enterprise'],
     ecommerce:   ['dnvb']
   };
 
@@ -26451,7 +26459,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   // Default = o "mais vendido" fixo do Padrão. Ao escolher outro tier, o destaque
   // (--featured + badge "mais vendido") é REALOCADO no pós-processo. Só age quando
   // muda do default → o Padrão fica intocado por padrão (risco zero).
-  const REC_DEFAULTS = { performance: 'scale', creators: 'scale', social: 'scale', 'crm-vendas': 'scale' };
+  const REC_DEFAULTS = { performance: 'scale', creators: 'scale', social: 'scale', 'crm-vendas': 'scale', 'sustentacao-tech': 'scale', evolucao: 'scale' };
   const recTier = { ...REC_DEFAULTS };
   function isRecSol(sol) { return Object.prototype.hasOwnProperty.call(REC_DEFAULTS, sol); }
   function isRec(sol, tier) { return recTier[sol] === tier; }
@@ -28750,12 +28758,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
-    // Sustentação (Tech · Shopify) — plano único recorrente (/mês). Suporte e
-    // pequenas alterações mensais. Mesmo esquema de card único do ID Visual;
-    // sem apresentação profunda (sourceId null → não entra no loop de slides).
+    // Sustentação (Tech · Shopify) — recorrente (/mês), 2 tiers. Suporte e
+    // manutenção contínua da loja. Sem apresentação profunda (sourceId null →
+    // não entra no loop de slides). Scale = recomendado (mais vendido).
     const sustentacaoTechCards = [];
-    if (selected.has('sustentacao-tech') && isTierEnabled('sustentacao-tech', 'starter')) {
-      sustentacaoTechCards.push(`
+    if (selected.has('sustentacao-tech')) {
+      if (isTierEnabled('sustentacao-tech', 'starter')) sustentacaoTechCards.push(`
         <div class="pacote-card">
           ${pacoteIcon}
           <h3 class="pacote-name">STARTER</h3>
@@ -28767,6 +28775,66 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
             <li>Acesso à biblioteca de seções e componentes Turbo</li>
             <li>Suporte prioritário via WhatsApp e telefone</li>
             <li>1 reunião mensal de alinhamento</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('sustentacao-tech', 'scale')) sustentacaoTechCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          ${priceWithAnchor('sustentacao-tech', 'scale', '<small>/mês</small>')}
+          <span class="pacote-tag">Mais horas e análise inicial do fluxo de compras.</span>
+          <ul class="pacote-features">
+            <li>8 horas técnicas</li>
+            <li>Tudo do plano Starter</li>
+            <li>Análise do fluxo de compras no 1º mês</li>
+          </ul>
+        </div>`);
+    }
+
+    // Evolução (Tech · Shopify) — recorrente (/mês), 3 tiers. Evolução contínua
+    // com acompanhamento analítico (Clarity). Sem apresentação profunda.
+    // Scale = recomendado (mais vendido).
+    const evolucaoCards = [];
+    if (selected.has('evolucao')) {
+      if (isTierEnabled('evolucao', 'starter')) evolucaoCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          ${priceWithAnchor('evolucao', 'starter', '<small>/mês</small>')}
+          <span class="pacote-tag">Acompanhamento analítico com Clarity.</span>
+          <ul class="pacote-features">
+            <li>4 horas técnicas</li>
+            <li>Alterações visuais e funcionalidades</li>
+            <li>Acesso à biblioteca Turbo</li>
+            <li>Suporte prioritário via WhatsApp e telefone</li>
+            <li>Painel de Análise: Clarity personalizado</li>
+            <li>1 reunião mensal de alinhamento</li>
+            <li>Análise mensal para gerar tasks de melhorias</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('evolucao', 'scale')) evolucaoCards.push(`
+        <div class="pacote-card pacote-card--featured">
+          <span class="pacote-badge">mais vendido</span>
+          ${pacoteIcon}
+          <h3 class="pacote-name">SCALE</h3>
+          ${priceWithAnchor('evolucao', 'scale', '<small>/mês</small>')}
+          <span class="pacote-tag">Mais horas com tudo do Starter.</span>
+          <ul class="pacote-features">
+            <li>8 horas técnicas</li>
+            <li>Tudo do plano Starter</li>
+          </ul>
+        </div>`);
+      if (isTierEnabled('evolucao', 'enterprise')) evolucaoCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">ENTERPRISE</h3>
+          ${priceWithAnchor('evolucao', 'enterprise', '<small>/mês</small>')}
+          <span class="pacote-tag">Máximo de horas e análise quinzenal.</span>
+          <ul class="pacote-features">
+            <li>12 horas técnicas</li>
+            <li>Tudo do Starter e Scale</li>
+            <li>Análise quinzenal das métricas mais relevantes</li>
           </ul>
         </div>`);
     }
@@ -28970,7 +29038,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || sustentacaoTechCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmVendasCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || sustentacaoTechCards.length || evolucaoCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmVendasCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -29094,15 +29162,30 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </section>`);
       }
 
-      // 3f-quinquies. Sustentação (Tech · Shopify) — plano único recorrente.
+      // 3f-quinquies. Sustentação (Tech · Shopify) — 2 tiers recorrentes.
       if (sustentacaoTechCards.length) {
+        const susTwo = sustentacaoTechCards.length === 2 ? ' pacotes-slide--two' : '';
+        const susGridTwo = sustentacaoTechCards.length === 2 ? ' pacotes-grid--two' : '';
         sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
-          <div class="pacotes-slide">
+          <div class="pacotes-slide${susTwo}" data-sol="sustentacao-tech">
             <div class="pacotes-header">
-              <h2 class="pacotes-title">Pacote <span class="pacotes-title-accent">Sustentação</span></h2>
-              <p class="pacotes-sub">Tech · Shopify — suporte e evolução contínua da sua loja</p>
+              <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Sustentação</span></h2>
+              <p class="pacotes-sub">Tech · Shopify — suporte e manutenção contínua da sua loja</p>
             </div>
-            <div class="pacotes-grid">${sustentacaoTechCards.join('')}</div>
+            <div class="pacotes-grid${susGridTwo}">${sustentacaoTechCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3f-sexies. Evolução (Tech · Shopify) — 3 tiers recorrentes.
+      if (evolucaoCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
+          <div class="pacotes-slide" data-sol="evolucao">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Pacotes <span class="pacotes-title-accent">Evolução</span></h2>
+              <p class="pacotes-sub">Tech · Shopify — evolução contínua com acompanhamento analítico</p>
+            </div>
+            <div class="pacotes-grid">${evolucaoCards.join('')}</div>
           </div>
         </section>`);
       }
