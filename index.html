@@ -25986,6 +25986,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { id: 'estrutura-social', icon: '✨', name: 'Estruturação do Social', color: '#12d490', sourceId: null },
     { id: 'crm',         icon: '💬', name: 'E-mail Marketing',      color: '#9b6dff', sourceId: 'crm-inner' },
     { id: 'crm-vendas',  icon: '📊', name: 'CRM de Vendas',         color: '#0dcfe8', sourceId: null },
+    { id: 'sustentacao-tech', icon: '🛠️', name: 'Sustentação',     color: '#f5a623', sourceId: null },
     { id: 'ecommerce',   icon: '🛒', name: 'E-commerce',           color: '#0dcfe8', sourceId: null, hasSubtypes: true }
   ];
 
@@ -25999,6 +26000,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     { num: '02', label: 'Aquecimento', color: '#4d8dff', sols: ['idvisual', 'estrutura-social', 'ecommerce'] },
     { num: '03', label: 'Aceleração',  color: '#0dcfe8', sols: ['performance', 'creators', 'consultoria-ugc', 'comunidade'] },
     { num: '04', label: 'Eficiência',  color: '#12d490', sols: ['social', 'crm', 'crm-vendas'] },
+    { num: '05', label: 'Fine Tuning', color: '#f5a623', sols: ['sustentacao-tech'] },
   ];
 
   // Closers — aparecem no slide de fechamento (nome + telefone).
@@ -26106,6 +26108,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       starter:    { label: 'Starter',    value: 'R$ 197,00' },
       scale:      { label: 'Scale',      value: 'R$ 297,00' },
       enterprise: { label: 'Enterprise', value: 'R$ 597,00' }
+    },
+    'sustentacao-tech': {
+      starter: { label: 'Starter', value: 'R$ 1.997,00' }
     },
     ecommerce: {
       dnvb:          { label: 'DNVB',          value: 'R$ 19.997,00' },
@@ -26307,6 +26312,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     'estrutura-social': ['unico'],
     crm:         ['bc-starter', 'bc-scale', 'bc-enterprise', 'bc-personalizado', 'rg-basic', 'rg-starter', 'rg-scale', 'rg-enterprise', 'sus-basic', 'sus-scale'],
     'crm-vendas': ['starter', 'scale', 'enterprise'],
+    'sustentacao-tech': ['starter'],
     ecommerce:   ['dnvb']
   };
 
@@ -28744,6 +28750,27 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         </div>`);
     }
 
+    // Sustentação (Tech · Shopify) — plano único recorrente (/mês). Suporte e
+    // pequenas alterações mensais. Mesmo esquema de card único do ID Visual;
+    // sem apresentação profunda (sourceId null → não entra no loop de slides).
+    const sustentacaoTechCards = [];
+    if (selected.has('sustentacao-tech') && isTierEnabled('sustentacao-tech', 'starter')) {
+      sustentacaoTechCards.push(`
+        <div class="pacote-card">
+          ${pacoteIcon}
+          <h3 class="pacote-name">STARTER</h3>
+          ${priceWithAnchor('sustentacao-tech', 'starter', '<small>/mês</small>')}
+          <span class="pacote-tag">Suporte e pequenas alterações mensais.</span>
+          <ul class="pacote-features">
+            <li>4 horas técnicas</li>
+            <li>Alterações visuais e implantação de funcionalidades</li>
+            <li>Acesso à biblioteca de seções e componentes Turbo</li>
+            <li>Suporte prioritário via WhatsApp e telefone</li>
+            <li>1 reunião mensal de alinhamento</li>
+          </ul>
+        </div>`);
+    }
+
     // CRM Estratégico — dois grupos de pacotes: Broadcast (e-mail marketing
     // gerenciado) + Implementação de CRM (plataforma unificada). Cada grupo
     // tem 3 tiers; o SCALE é o destaque (mais vendido) em ambos.
@@ -28943,7 +28970,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Subtipo escolhido via radio na sidebar (DNVB / Moda / Personalizado).
     const ecommerceActive = hasEcommerce && ecommerceSub;
 
-    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmVendasCards.length || ecommerceActive;
+    const anyPacote = perfCards.length || creatorsCards.length || socialCards.length || comunidadeCards.length || consultoriaUgcCards.length || idvisualCards.length || estruturaCards.length || estruturaSocialCards.length || sustentacaoTechCards.length || crmBroadcastCards.length || crmReguaCards.length || crmSustentacaoCards.length || crmVendasCards.length || ecommerceActive;
 
     if (anyPacote) {
       // 3a. INVESTIMENTO divisor
@@ -29063,6 +29090,19 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
               <p class="pacotes-sub">Feed, destaques e bio estruturados — entrega pontual</p>
             </div>
             <div class="pacotes-grid">${estruturaSocialCards.join('')}</div>
+          </div>
+        </section>`);
+      }
+
+      // 3f-quinquies. Sustentação (Tech · Shopify) — plano único recorrente.
+      if (sustentacaoTechCards.length) {
+        sections.push(`<section class="proposal-section proposal-section--pacotes-comunidade">
+          <div class="pacotes-slide">
+            <div class="pacotes-header">
+              <h2 class="pacotes-title">Pacote <span class="pacotes-title-accent">Sustentação</span></h2>
+              <p class="pacotes-sub">Tech · Shopify — suporte e evolução contínua da sua loja</p>
+            </div>
+            <div class="pacotes-grid">${sustentacaoTechCards.join('')}</div>
           </div>
         </section>`);
       }
