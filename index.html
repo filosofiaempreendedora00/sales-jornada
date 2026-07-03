@@ -6134,7 +6134,21 @@ body { display: flex; min-height: 100vh; overflow-x: hidden; }
    concessões viram uma seção separada por um divisor sutil no topo, com respiro. */
 .prop-conc { margin-top: 13px; padding: 13px 0 0; display: flex; flex-direction: column; gap: 8px;
   border-top: 1px solid color-mix(in srgb, var(--card-color, #0dcfe8) 30%, transparent); }
-.prop-conc-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+/* Cabeçalho é um botão que expande/recolhe as concessões (colapsado por padrão
+   pra não poluir). Título + contador ficam sempre visíveis; a lista some. */
+.prop-conc-head {
+  appearance: none; background: none; border: 0; width: 100%; padding: 0; margin: 0;
+  font-family: inherit; cursor: pointer; text-align: left;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  border-radius: 8px; transition: opacity 0.15s;
+}
+.prop-conc-head:hover { opacity: 0.85; }
+.prop-conc-head:focus-visible { outline: 2px solid color-mix(in srgb, var(--card-color, #0dcfe8) 60%, transparent); outline-offset: 3px; }
+.prop-conc-head-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.prop-conc-chevron { font-size: 12px; line-height: 1; color: var(--text-2); transition: transform 0.2s ease; }
+.prop-conc.is-expanded .prop-conc-chevron { transform: rotate(180deg); }
+.prop-conc-body { display: none; flex-direction: column; gap: 8px; margin-top: 8px; }
+.prop-conc.is-expanded .prop-conc-body { display: flex; }
 .prop-conc-title { font-size: 13px; font-weight: 800; color: var(--text); letter-spacing: 0.2px; }
 .prop-conc-count { font-size: 11px; font-weight: 800; color: #ffa826; background: rgba(255,168,38,0.14); border: 1px solid rgba(255,168,38,0.35); border-radius: 999px; padding: 2px 9px; white-space: nowrap; }
 .prop-conc-count.is-over { color: #ff8a8a; background: rgba(255,107,107,0.16); border-color: rgba(255,107,107,0.45); }
@@ -26237,6 +26251,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
   let concMode = 'com';
   const concGranted  = { performance: new Set(), social: new Set(), creators: new Set() };
   const concOverride = { performance: false, social: false, creators: false }; // destrave do gestor por produto
+  const concExpanded = {}; // painel de Concessões colapsado por padrão (menos poluição); expande por clique, por solução. Persiste entre re-renders.
   function resetConcOverride() { for (const k in concOverride) concOverride[k] = false; }
 
   // Categorias (doc §2.5):
@@ -26816,14 +26831,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       </div>`;
     }).join('');
 
-    return `<div class="prop-conc" data-conc-sol="${solId}">
-      <div class="prop-conc-head">
+    const open = !!concExpanded[solId];
+    return `<div class="prop-conc${open ? ' is-expanded' : ''}" data-conc-sol="${solId}">
+      <button type="button" class="prop-conc-head" aria-expanded="${open ? 'true' : 'false'}" title="${open ? 'Recolher' : 'Expandir'} concessões">
         <span class="prop-conc-title">🤝 Concessões</span>
-        <span class="prop-conc-count${st.over ? ' is-over' : ''}">${st.headline}</span>
+        <span class="prop-conc-head-right">
+          <span class="prop-conc-count${st.over ? ' is-over' : ''}">${st.headline}</span>
+          <span class="prop-conc-chevron" aria-hidden="true">▾</span>
+        </span>
+      </button>
+      <div class="prop-conc-body">
+        <p class="prop-conc-hint">${prod.hint}</p>
+        <div class="prop-conc-items">${itemsHtml}</div>
+        <div class="prop-conc-foot">${concFootHTML(solId)}</div>
       </div>
-      <p class="prop-conc-hint">${prod.hint}</p>
-      <div class="prop-conc-items">${itemsHtml}</div>
-      <div class="prop-conc-foot">${concFootHTML(solId)}</div>
     </div>`;
   }
   // Rodapé do painel (sinais + status). Separado pra ser regenerado in-place
@@ -27454,6 +27475,20 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
     // Concessões: toggle de item + destrave do gestor (em qualquer produto com
     // regra). Lê o produto pelo data-conc-sol do painel. Re-renderiza o painel e
     // revalida o Baixar. SEM rebuild do preview — concessão é registro interno.
+    // Expandir/recolher o painel de Concessões (in-place, sem rebuild → não
+    // perde foco nem estado; concExpanded persiste pro próximo render).
+    $invest.querySelectorAll('.prop-conc-head').forEach(head => {
+      head.addEventListener('click', () => {
+        const panel = head.closest('.prop-conc');
+        const sol = panel?.dataset.concSol;
+        if (!sol) return;
+        const now = !panel.classList.contains('is-expanded');
+        concExpanded[sol] = now;
+        panel.classList.toggle('is-expanded', now);
+        head.setAttribute('aria-expanded', String(now));
+        head.setAttribute('title', (now ? 'Recolher' : 'Expandir') + ' concessões');
+      });
+    });
     $invest.querySelectorAll('.prop-conc-item').forEach(el => {
       const toggle = () => {
         const sol = el.closest('.prop-conc')?.dataset.concSol;
