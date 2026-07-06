@@ -29285,6 +29285,12 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
         ).join('');
         const anchor = getAnchor('ecommerce', ecommerceTier);
         const anchorHtml = anchor ? `<div class="dnvb-price-anchor">${formatPriceHtml(anchor)}</div>` : '';
+        // Parcelamento AUTOMÁTICO: 4x baseado no valor REAL digitado (ex.: 80 mil → 4x de 20 mil).
+        // Se o valor for 0/inválido, cai no texto padrão do subtipo.
+        const ecomTotalNum = priceToNumber(prices.ecommerce[ecommerceTier].value);
+        const ecomInstallmentsHtml = (ecomTotalNum && ecomTotalNum > 0)
+          ? `ou em <strong>4x de R$ ${(ecomTotalNum / 4).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</strong> no boleto`
+          : sub.installmentsHtml;
         sections.push(`<section class="proposal-section proposal-section--pacotes-dnvb">
           <div class="pacotes-slide dnvb-slide">
             <div class="pacotes-header">
@@ -29316,7 +29322,7 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
                   ${anchorHtml}
                   ${sub.pricePrefix ? `<div class="dnvb-price-prefix">${sub.pricePrefix}</div>` : ''}
                   <div class="dnvb-price-value">${formatPriceHtml(prices.ecommerce[ecommerceTier].value)}</div>
-                  <div class="dnvb-price-installments">${sub.installmentsHtml}</div>
+                  <div class="dnvb-price-installments">${ecomInstallmentsHtml}</div>
                   <div class="dnvb-price-divider"></div>
                   <div class="dnvb-price-prazo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
