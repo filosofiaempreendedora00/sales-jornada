@@ -26689,7 +26689,9 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const floor = concPerfFloor(tier);
       if (floor == null) continue;
       const cur = priceToNumber(prices.performance?.[tier]?.value);
-      if (cur != null && cur < floor) {
+      // Closer isento (Roberto/João/Victor) fura o piso à vontade — consistente
+      // com isBelowMin (senão o aviso some mas o download trava).
+      if (cur != null && cur < floor && !FLOOR_EXEMPT_CLOSERS.has(closerId)) {
         const tlabel = (prices.performance[tier] && prices.performance[tier].label) || tier;
         blocks.push(`Preço abaixo do piso (${fmtMinReais(floor)}) no plano ${tlabel}.`);
       }
@@ -26726,7 +26728,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const def = priceToNumber(DEFAULT_PRICES.social?.[tier]?.value);
       const floor = MIN_PRICES.social?.[tier];
       if (cur != null && def != null && cur < def) financialUsed = true;
-      if (cur != null && floor != null && cur < floor) {
+      // Closer isento fura o piso à vontade (consistente com isBelowMin).
+      if (cur != null && floor != null && cur < floor && !FLOOR_EXEMPT_CLOSERS.has(closerId)) {
         const tlabel = (prices.social[tier] && prices.social[tier].label) || tier;
         blocks.push(`Preço abaixo do piso (${fmtMinReais(floor)}) no plano ${tlabel}.`);
       }
@@ -26759,7 +26762,8 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
       const def = priceToNumber(defStore?.[tier]?.value);
       const floor = MIN_PRICES.creators?.[creatorsMode]?.[tier];
       if (cur != null && def != null && cur < def) financialUsed = true;
-      if (cur != null && floor != null && cur < floor) {
+      // Closer isento fura o piso à vontade (consistente com isBelowMin).
+      if (cur != null && floor != null && cur < floor && !FLOOR_EXEMPT_CLOSERS.has(closerId)) {
         const tlabel = (prices.creators[tier] && prices.creators[tier].label) || tier;
         blocks.push(`Preço abaixo do piso ${pontual ? 'pontual' : 'recorrente'} (${fmtMinReais(floor)}) no plano ${tlabel}.`);
       }
