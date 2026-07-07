@@ -26981,7 +26981,50 @@ document.getElementById('avatar-input')?.addEventListener('change', e => {
 
   // Marca campo como faltando + foca + scrolla até ele. Usado quando o usuário
   // tenta baixar sem ter preenchido. Re-trigger da animação shake via reflow.
+  // Pop-up de aviso auto-contido (mesmo visual do "selecione uma solução").
+  // Fecha em OK / clique no overlay / Esc. Injeta o estilo 1x.
+  function showNeedModal(icon, title, msg) {
+    if (document.getElementById('prop-need-modal')) return;
+    if (!document.getElementById('prop-need-style')) {
+      const st = document.createElement('style');
+      st.id = 'prop-need-style';
+      st.textContent = `
+        #prop-need-modal{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(6,8,16,.72);backdrop-filter:blur(4px);animation:propNeedFade .18s ease}
+        #prop-need-modal .pn-panel{max-width:420px;width:100%;background:#12131f;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:30px 28px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:propNeedPop .2s cubic-bezier(.2,.9,.3,1.2)}
+        #prop-need-modal .pn-ic{font-size:38px;margin-bottom:12px}
+        #prop-need-modal h3{margin:0 0 10px;color:#eef0f8;font-size:19px;font-weight:700}
+        #prop-need-modal p{margin:0 0 22px;color:#a6adc4;font-size:14.5px;line-height:1.6}
+        #prop-need-modal .pn-ok{appearance:none;border:0;cursor:pointer;font:inherit;font-weight:700;font-size:14.5px;color:#06202a;background:linear-gradient(135deg,#22d3ee,#0dcfe8);padding:12px 30px;border-radius:11px;transition:transform .12s ease,filter .12s ease}
+        #prop-need-modal .pn-ok:hover{filter:brightness(1.08);transform:translateY(-1px)}
+        @keyframes propNeedFade{from{opacity:0}to{opacity:1}}
+        @keyframes propNeedPop{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}`;
+      document.head.appendChild(st);
+    }
+    const modal = document.createElement('div');
+    modal.id = 'prop-need-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.innerHTML = `
+      <div class="pn-panel" role="document">
+        <div class="pn-ic">${icon}</div>
+        <h3>${title}</h3>
+        <p>${msg}</p>
+        <button type="button" class="pn-ok">Entendi</button>
+      </div>`;
+    const close = () => { modal.remove(); document.removeEventListener('keydown', onKey); };
+    const onKey = e => { if (e.key === 'Escape') close(); };
+    modal.addEventListener('click', e => { if (e.target === modal) close(); });
+    modal.querySelector('.pn-ok').addEventListener('click', close);
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(modal);
+    modal.querySelector('.pn-ok').focus();
+  }
+
   function flagClientMissing() {
+    // Aviso explícito — antes era só o "shake" do campo, que passava batido e
+    // parecia que "não acontecia nada" ao clicar em Baixar.
+    showNeedModal('🧾', 'Preencha o nome do cliente',
+      'Antes de baixar, informe o <strong>nome do cliente</strong> (a empresa que vai receber a proposta) no campo à esquerda. O <em>closer</em> é quem envia — o nome do cliente é o campo obrigatório para gerar o arquivo.');
     if (!$clientInput) return;
     $clientInput.classList.remove('is-missing');
     void $clientInput.offsetWidth;
